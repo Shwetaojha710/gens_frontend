@@ -1,0 +1,249 @@
+<div class="container-fluid mt-5">
+  <div class="row mb-6" *ngIf="createFlag">
+    <div class="col-md">
+      <div class="card">
+        <h5
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <span>Apply Leave</span>
+          <button
+            type="button"
+            class="btn btn-xs btn-primary float-end"
+            (click)="back()"
+          >
+            <i class="fa-solid fa-arrow-left"></i>&nbsp;back
+          </button>
+        </h5>
+
+        <hr style="margin: 0rem 0 !important" />
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label"
+                >Select Employee</label
+              >
+              <ng-select
+                [items]="EmpList"
+                bindLabel="label"
+                bindValue="value"
+                [(ngModel)]="obj['employeeId']"
+                [multiple]="false"
+                placeholder="Select Employee"
+                name="state"
+                id="select2Danger"
+                required
+                #employeeRef="ngModel"
+              >
+              </ng-select>
+              <small
+                class="text-danger"
+                *ngIf="employeeRef.invalid && employeeRef.touched"
+              >
+                Select Employee Is required
+              </small>
+            </div>
+
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label"
+                >Leave Type</label
+              >
+              <ng-select
+                [items]="leaveTypeList"
+                bindLabel="label"
+                bindValue="value"
+                [(ngModel)]="obj['leaveTypeId']"
+                [multiple]="false"
+                placeholder="Select Leave Type"
+                name="state"
+                id="select2Danger"
+                required
+                #leaveTypeRef="ngModel"
+              >
+              </ng-select>
+              <small
+                class="text-danger"
+                *ngIf="leaveTypeRef.invalid && leaveTypeRef.touched"
+              >
+                Leave Type Is required
+              </small>
+            </div>
+            <div class="col-2">
+              <label for="defaultFormControlInput" class="form-label"
+                >Leave From</label
+              >
+              <input
+                type="date"
+                class="form-control"
+                id="defaultFormControlInput"
+                placeholder="Select Leave From"
+                [(ngModel)]="obj['fromDate']"
+                aria-describedby="defaultFormControlHelp"
+                #startDateRef="ngModel"
+              />
+              <small
+                class="text-danger"
+                *ngIf="startDateRef.invalid && startDateRef.touched"
+                >Leave From Is Required
+              </small>
+            </div>
+            <div class="col-2">
+              <label for="defaultFormControlInput" class="form-label"
+                >Leave To</label
+              >
+              <input
+                type="date"
+                class="form-control"
+                id="defaultFormControlInput"
+                placeholder="Select Leave To"
+                [(ngModel)]="obj['toDate']"
+                aria-describedby="defaultFormControlHelp"
+                #startDateRef="ngModel"
+              />
+              <small
+                class="text-danger"
+                *ngIf="startDateRef.invalid && startDateRef.touched"
+              >
+                Leave To Is Required
+              </small>
+            </div>
+
+            <div class="col-2">
+              <label class="form-label d-block">Duration Type</label>
+
+              <label class="form-check-label me-3 mt-2">
+                <input
+                  type="radio"
+                  name="leaveFreqfrom"
+                  value="second_half"
+                  class="form-check-input me-1"
+                  [(ngModel)]="obj['duration_type']"
+                />
+                Second Half
+              </label>
+
+              <label class="form-check-label">
+                <input
+                  type="radio"
+                  name="leavefreqto"
+                  value="first_half"
+                  class="form-check-input me-1"
+                  [(ngModel)]="obj['duration_type']"
+                />
+                First Half
+              </label>
+            </div>
+
+            <div class="col-12">
+              <label for="defaultFormControlInput" class="form-label"
+                >Reason</label
+              >
+              <textarea
+                class="form-control"
+                id="defaultFormControlInput"
+                [(ngModel)]="obj['reason']"
+                #reasonRef="ngModel"
+              ></textarea>
+
+              <small
+                class="text-danger"
+                *ngIf="reasonRef.invalid && reasonRef.touched"
+              >
+                Reason Is Required
+              </small>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 mt-2">
+              <button
+                *ngIf="createFlag && updateFlag == false"
+                type="button"
+                class="btn btn-sm btn-primary waves-effect waves-light"
+                (click)="onSubmit()"
+              >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-6">
+    <div class="col-md">
+      <div class="card">
+        <h5
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <span>Apply Leave List</span>
+          <button
+            *ngIf="createFlag == false"
+            type="button"
+            class="btn btn-xs btn-primary float-end"
+            (click)="opencreate()"
+          >
+            <i class="fa-solid fa-plus"></i>&nbsp;Add
+          </button>
+        </h5>
+
+        <div class="table-responsive text-nowrap">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>SI.No</th>
+                <th>Employee Name</th>
+                <th>Leave Type</th>
+                <th>From Date</th>
+                <th>To Date</th>
+                <th>Days</th>
+                <th>Duration Type</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>createdAt</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+              <tr *ngFor="let item of applyLeaveList; let i = index">
+                <th scope="row">{{ i + 1 }}</th>
+                <td>{{ item["employeeName"] }}
+                    <br />
+                  <span class="badge rounded-pill bg-label-primary">
+                    {{item["employeeEmail"]}}
+                  </span>
+                </td>
+                <td>{{ item["leaveName"] }}
+                  <br>
+                      <span class="badge rounded-pill bg-label-primary">
+                    {{item["leaveCode"]}}
+                  </span>
+                </td>
+                <td>{{ item["fromDate"] }}</td>
+                <td>{{ item["toDate"] }}</td>
+                <td>{{ item["days"] }}</td>
+                <td>{{ item["duration_type_name"] }}</td>
+                <td>{{ item["reason"] }}</td>
+                <td>{{ item["status"] }}</td>
+
+                <td>{{ item["createdAt"] }}</td>
+
+                <td>
+                  <button type="button" class="btn btn-outline-success btn-sm" *ngIf="item.status=='pending'" (click)="statuschange(item,'approved')" >
+                    <i class="fas fa-check"></i>
+                  </button>
+                  &nbsp;
+                  <button  *ngIf="item.status=='pending'"
+                    type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    (click)="statuschange(item,'rejected')"
+                  >
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

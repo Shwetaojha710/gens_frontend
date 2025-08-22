@@ -1,0 +1,162 @@
+<div class="container-fluid mt-5">
+  <div class="row mb-6" >
+    <div class="col-md">
+      <div class="card">
+        <h5
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <span>Generate Salary</span>
+          <!-- <button
+            type="button"
+            class="btn btn-xs btn-primary float-end"
+            (click)="back()"
+          >
+            <i class="fa-solid fa-arrow-left"></i>&nbsp;back
+          </button> -->
+        </h5>
+
+        <hr style="margin: 0rem 0 !important" />
+        <div class="card-body">
+          <div class="row g-3">
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label"
+                >Select Employee</label
+              >
+              <ng-select
+                [items]="EmpList"
+                bindLabel="label"
+                bindValue="value"
+                [(ngModel)]="obj['employeeId']"
+                [multiple]="false"
+                placeholder="Select Employee"
+                name="state"
+                id="select2Danger"
+                required
+                #employeeRef="ngModel"
+              >
+              </ng-select>
+              <small
+                class="text-danger"
+                *ngIf="employeeRef.invalid && employeeRef.touched"
+              >
+                 Employee Is required
+              </small>
+            </div>
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label"
+                >Select Month</label
+              >
+               <ng-select
+                [items]="monthList"
+                bindLabel="label"
+                bindValue="value"
+                [(ngModel)]="obj['month']"
+                [multiple]="false"
+                placeholder="Select Month"
+                name="state"
+                id="select2Danger"
+                required
+                #monthRef="ngModel"
+              >
+              </ng-select>
+              <small
+                class="text-danger"
+                *ngIf="monthRef.invalid && monthRef.touched"
+              >
+               Month Is Required
+              </small>
+            </div>
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label"
+                >Select Year</label
+              >
+                <ng-select
+                [items]="yearList"
+                bindLabel="label"
+                bindValue="value"
+                [(ngModel)]="obj['year']"
+                [multiple]="false"
+                placeholder="Select Year"
+                name="state"
+                id="select2Danger"
+                required
+                #yearRef="ngModel"
+              >
+              </ng-select>
+              <small
+                class="text-danger"
+                *ngIf="yearRef.invalid && yearRef.touched"
+              >
+                Year Is Required
+              </small>
+            </div>
+
+          </div>
+          <div class="row">
+            <div class="col-md-12 mt-2">
+              <button  type="button"   class="btn btn-sm btn-primary waves-effect waves-light"(click)="onSubmit()" >
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+    <div class="row mb-6">
+    <div class="col-md">
+      <div class="card">
+        <h5
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <span>Salary List</span>
+
+        </h5>
+
+        <div class="table-responsive text-nowrap">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>SI.No</th>
+                <th>Employee Id</th>
+                <th>Basic</th>
+                <th>Total Deduction</th>
+                <th>Total Leave Days</th>
+                <th>Total Working Days</th>
+                <th>Full Days</th>
+                <th>Absent Days</th>
+                <th>Allowed Leave</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+              <tr *ngFor="let item of SalaryArr; let i = index">
+                <th scope="row">{{ i + 1 }}</th>
+                <td>{{ item["employeeId"] }}
+                  <br>
+                  {{item["employeeName"]}}
+                </td>
+                <td>{{ item["basePay"] }}</td>
+                <td>{{ item["totalDeduction"] }}</td>
+                <td>{{item["totalLeaveDays"]}}</td>
+                <td> {{item["totalWorkingDays"]}}</td>
+                <td> {{item["fullDays"]}}</td>
+                <td>{{item["absentDays"]}}</td>
+                <td>{{item["allowedLeave"]}}</td>
+
+                <td>
+                  <button type="button"  class="btn btn-outline-success btn-sm"(click)="view(item)">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  &nbsp;
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>

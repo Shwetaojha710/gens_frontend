@@ -1,0 +1,266 @@
+<div class="container-fluid mt-5">
+  <div class="row mb-6" *ngIf="createFlag">
+    <div class="col-md">
+      <div class="card">
+        <h5
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <span>Holiday </span>
+          <button
+            type="button"
+            class="btn btn-xs btn-primary float-end"
+            (click)="back()"
+          >
+            <i class="fa-solid fa-arrow-left"></i>&nbsp;back
+          </button>
+        </h5>
+
+        <hr style="margin: 0rem 0 !important" />
+        <div class="card-body">
+          <div class="row">
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label"
+                >Holiday Type
+                <span style="color: red"> * </span>
+              </label>
+              <input
+                type="text"
+                class="form-control"
+                id="defaultFormControlInput"
+                placeholder="Enter Holiday Type"
+                [(ngModel)]="obj['holiday_type']"
+                aria-describedby="defaultFormControlHelp"
+                #holidayNameRef="ngModel"
+                required
+              />
+              <small
+                class="text-danger"
+                *ngIf="holidayNameRef.invalid && holidayNameRef.touched"
+              >
+                Holiday Type is Required
+              </small>
+            </div>
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label"
+                >Holiday Name<span style="color: red"> * </span></label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="defaultFormControlInput"
+                placeholder="Enter Holiday Name"
+                [(ngModel)]="obj['holiday_name']"
+                aria-describedby="defaultFormControlHelp"
+                #holidayNameRef="ngModel"
+                required
+              />
+              <small
+                class="text-danger"
+                *ngIf="holidayNameRef.invalid && holidayNameRef.touched"
+              >
+                Holiday Name is Required
+              </small>
+            </div>
+
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label"
+                >Holiday Date<span style="color: red"> * </span></label
+              >
+              <input
+                type="date"
+                class="form-control"
+                id="defaultFormControlInput"
+                placeholder="Select Holiday Date"
+                [(ngModel)]="obj['date']"
+                aria-describedby="defaultFormControlHelp"
+                #holidayNameRef="ngModel"
+                required
+              />
+              <small
+                class="text-danger"
+                *ngIf="holidayNameRef.invalid && holidayNameRef.touched"
+              >
+                Holiday Date is Required
+              </small>
+            </div>
+            <div class="col-3">
+              <label for="file" class="form-label">
+                Upload Image <span style="color: red">*</span>
+              </label>
+
+              <input
+                type="file"
+                accept="image/*"
+                class="form-control"
+                id="file"
+                name="file"
+                (change)="onFileChange($event)"
+              />
+
+              <div *ngIf="isFileInvalid" class="alert alert-danger mt-2">
+                File is required.
+              </div>
+              <div *ngIf="sanitizedImage">
+                <button
+                  style="position: absolute; right: 356px"
+                  (click)="close()"
+                  type="button"
+                  class="btn-close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+                <img
+                  [src]="sanitizedImage"
+                  alt="Uploaded Image"
+                  class="img-thumbnail"
+                  style="
+                    max-width: 80px;
+                    max-height: 80px;
+                    margin-top: 8px;
+                    object-fit: cover;
+                    border: 1px solid #cfd0d6;
+                    border-radius: 5px;
+                  "
+                  (click)="openModal1(sanitizedImage)"
+                />
+              </div>
+            </div>
+
+            <!-- <div class="col-4" *ngIf="updateFlag">
+              <label for="defaultFormControlInput" class="form-label"
+                >Status</label
+              >
+              <ng-select
+                [items]="status"
+                bindLabel="label"
+                bindValue="value"
+                [(ngModel)]="obj['status']"
+                [multiple]="false"
+                placeholder="Select Status"
+                name="status"
+                id="select2Danger"
+              >
+              </ng-select>
+            </div> -->
+          </div>
+          <div class="row">
+            <div class="col-md-12 mt-2">
+              <button
+                *ngIf="createFlag && updateFlag == false"
+                type="button"
+                class="btn btn-sm btn-primary waves-effect waves-light"
+                (click)="onSubmit()"
+              >
+                Submit
+              </button>
+              <button
+                *ngIf="updateFlag"
+                type="button"
+                class="btn btn-sm btn-primary waves-effect waves-light"
+                (click)="updatedata()"
+              >
+                Update
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row mb-6">
+    <div class="col-md">
+      <div class="card">
+        <h5
+          class="card-header d-flex justify-content-between align-items-center"
+        >
+          <span>Holiday List</span>
+          <button
+            *ngIf="createFlag == false"
+            type="button"
+            class="btn btn-xs btn-primary float-end"
+            (click)="opencreate()"
+          >
+            <i class="fa-solid fa-plus"></i>&nbsp;Add
+          </button>
+        </h5>
+
+        <div class="table-responsive text-nowrap">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>SI.No</th>
+                <th>Holiday Type</th>
+                <th>Holiday Name</th>
+                <th>Date</th>
+                <th>image</th>
+                <th>createdAt</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+              <tr *ngFor="let item of HolidayList; let i = index">
+                <th scope="row">{{ i + 1 }}</th>
+                <td>{{ item["holiday_type"] }}</td>
+                <td>{{ item["holiday_name"] }}</td>
+                <td>{{ item["date"] }}</td>
+                <td>
+                  <img
+                    [src]="item['image']"
+                    alt="Document"
+                    width="100"
+                    height="auto"
+                    style="cursor: pointer"
+                    (click)="openModal1(item['image'])"
+                  />
+                </td>
+                <td>{{ item["createdAt"] }}</td>
+
+                <td>
+                  <button
+                    type="button"
+                    class="btn btn-outline-success btn-sm"
+                    (click)="update(item)"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  &nbsp;
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    (click)="delete(item)"
+                  >
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="imageModal1"
+  tabindex="-1"
+  aria-labelledby="imageModalLabel1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Document</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body text-center">
+        <img [src]="imageUrls" class="img-fluid" />
+      </div>
+    </div>
+  </div>
+</div>
