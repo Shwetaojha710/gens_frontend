@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { PayrollService } from '../../services/payroll.service';
 import { StatusService } from '../../services/status.service';
-
+declare let bootstrap: any;
 @Component({
   selector: 'app-full-time-salary',
   imports: [NgSelectModule,
@@ -50,9 +50,9 @@ export class FullTimeSalaryComponent {
 
   isAllSelected() {
     this.masterSelected = this.SalaryArr.every((item: any) => item.isSelected);
-// this.SalaryArr=  this.SalaryArr.map({
+    // this.SalaryArr=  this.SalaryArr.map({
 
-// })
+    // })
   }
   async getYear() {
     this.yearList = []
@@ -74,15 +74,10 @@ export class FullTimeSalaryComponent {
 
   }
 
-generate_Salary(){
- console.log( this.masterSelected);
- console.log( this.SalaryArr,"alllsaalry ");
- console.log( this.SalaryArr,"alllsaalry ");
+  generate_Salary() {
+    let newArr = this.SalaryArr.filter((item: any) => item.isSelected == true)
 
- let newArr= this.SalaryArr.filter((item:any)=>item.isSelected==true)
- console.log(newArr,"new salary Array");
-
-}
+  }
   EmpList: any = []
   async empList() {
     this.EmpList = []
@@ -108,21 +103,23 @@ generate_Salary(){
 
   }
   SalaryArr: any = []
+  isLoading: boolean = false;
   onSubmit() {
+      this.isLoading = true; // ✅ Show loader before API call
     this.SalaryArr = []
-    let newObj=Object.assign({},this.obj)
- if (newObj['employeeId'] === 'All') {
-  newObj['employeeId'] = this.EmpList
-    .map((item: any) => item.value)
-    .filter((val: any) => val != 'All');
-}else{
-  newObj['employeeId']=[newObj['employeeId']]
-}
+    let newObj = Object.assign({}, this.obj)
+    if (newObj['employeeId'] === 'All') {
+      newObj['employeeId'] = this.EmpList
+        .map((item: any) => item.value)
+        .filter((val: any) => val != 'All');
+    } else {
+      newObj['employeeId'] = [newObj['employeeId']]
+    }
 
     this.payroll.calculateAttendance(newObj).subscribe({
       next: (response: any) => {
         console.log('response', response);
-
+         this.isLoading = false;
         let message = response.message ? response.message : 'Data found Successfully';
         let status = this.statusService.handleResponseStatus(response.status, message);
         console.log(status)
@@ -153,10 +150,50 @@ generate_Salary(){
 
 
   }
+  SalaryBreakup: any = []
+  modal: any;
   view(item: any) {
+    const obj = Object.assign({}, item)
+    this.SalaryBreakup = []
+    this.payroll.calculateSalaryComponent(obj).subscribe({
+      next: (response: any) => {
+        console.log('response', response);
 
+        let message = response.message ? response.message : 'Data found Successfully';
+        let status = this.statusService.handleResponseStatus(response.status, message);
+        console.log(status)
+        console.log("response", response);
+
+        if (status == true) {
+
+
+          this.notyf.success(message)
+          this.SalaryBreakup = response.data
+          console.log(this.SalaryBreakup, "SalaryBreakup Array");
+          const modalEl = document.getElementById('SalaryModal');
+          this.modal = new bootstrap.Modal(modalEl);
+          this.modal.show();
+        }
+        else if (status == "expired") {
+          this.router.navigate(["login"]);
+        }
+
+        else {
+          this.notyf.error(message)
+        }
+
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.notyf.error(err.error?.message)
+      }
+    });
   }
   delete(item: any) {
 
+  }
+  closeModal() {
+
+    this.modal.hide();
   }
 }

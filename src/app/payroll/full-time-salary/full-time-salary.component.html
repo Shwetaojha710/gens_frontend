@@ -1,5 +1,5 @@
-<div class="container-fluid mt-5">
-  <div class="row mb-6">
+<div class="container-fluid mt-5" >
+  <div class="row mb-6" >
     <div class="col-md">
       <div class="card">
         <h5
@@ -136,8 +136,10 @@
                 </th>
                 <th>SI.No</th>
                 <th>Employee Id</th>
-                <th>Basic</th>
-                <th>Total Deduction</th>
+                <th>Total Salary</th>
+                 <th>Total Deduction</th>
+                <th>Net Pay</th>
+
                 <th>Total Leave Days</th>
                 <th>Total Working Days</th>
                 <th>Full Days</th>
@@ -159,6 +161,7 @@
                 <td> {{ item["empCode"] }}
                   {{ item["employeeName"] }}
                 </td>
+                <td>{{ item["TotalSalary"] }}</td>
                 <td>{{ item["basePay"] }}</td>
                 <td>{{ item["totalDeduction"] }}</td>
                 <td>{{ item["totalLeaveDays"] }}</td>
@@ -184,4 +187,59 @@
       </div>
     </div>
   </div>
+</div>
+<!-- Modal -->
+<div
+  class="modal fade"
+  id="SalaryModal"
+  tabindex="-1"
+  aria-labelledby="imageModalLabel1"
+  aria-hidden="true"
+>
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Salary Breakup</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body text-center">
+         <div class="table-responsive text-nowrap">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+
+                <th>SI.No</th>
+                <th>Employee Code</th>
+                 <th>Component</th>
+                 <th>Pay Code</th>
+                 <th>Amount</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+              <tr *ngFor="let item of SalaryBreakup; let i = index">
+
+                <th scope="row">{{ i + 1 }}</th>
+                <td> {{ item["employeeId"] }}
+
+                </td>
+                <td>{{ item["name"] }}</td>
+                <td>{{ item["pay_code"] }}</td>
+                <td>{{ item["amount"] }}</td>
+
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Full Page Loader -->
+<div class="loading-state" *ngIf="isLoading">
+  <div class="loading"></div>
 </div>

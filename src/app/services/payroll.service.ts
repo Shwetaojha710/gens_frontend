@@ -60,5 +60,8 @@ baseUrl=environment.apiUrl
   calculateAttendance(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}calculate-attendance`, data);
   }
+  calculateSalaryComponent(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}calculate-salary-component`, data);
+  }
 
 }
