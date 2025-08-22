@@ -88,6 +88,7 @@ menuItems: MenuItem[] = [
       { title: 'Department Master', icon: 'ri-building-4-line', link: '/layout/master/department' },
       { title: 'Employment Type', icon: 'ri-briefcase-4-line', link: '/layout/master/employment-type' },
       {title: 'Documents', icon: 'ri-file-line', link: '/layout/master/documents'},
+      {title: 'Holiday Types', icon: 'ri-file-line', link: '/layout/master/holiday-type'},
       // {title: 'Attendance Master', icon: 'ri-file-line', link: '/layout/master/salary-master'}
 
     ]

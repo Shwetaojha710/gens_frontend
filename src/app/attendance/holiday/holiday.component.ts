@@ -38,7 +38,8 @@ HolidayList: any = [];
     public attendanceService: AttendanceService,
     public statusService: StatusService,
     private router: Router,
-    private sanitizer: DomSanitizer
+    private sanitizer: DomSanitizer,
+    public master:MasterService
   ) {
 
     this.notyf = new Notyf();
@@ -47,6 +48,7 @@ HolidayList: any = [];
   async ngOnInit() {
      this.baseurl = localStorage.getItem('base_url')?.replace(/["\\,]/g, '') || '';
     await this.fetchHoliday();
+    await this.fetchHolidaytype()
   }
   getStatusClass(status: any): string {
     switch (status) {
@@ -67,6 +69,22 @@ HolidayList: any = [];
            for (let i = 0; i < this.HolidayList.length; i++) {
           this.HolidayList[i]['image'] = `${this.baseurl}/${this.HolidayList[i]['image']}`
         }
+      } else {
+        this.notyf.error(data['message']);
+      }
+    });
+
+
+  }
+   HolidayTypeList:any=[]
+   async fetchHolidaytype() {
+    this.HolidayList = []
+    this.master.getHolidayTypeDD().subscribe(data => {
+      if (data['status'] == true) {
+        this.notyf.success(data['message']);
+
+        this.HolidayTypeList = data.data;
+
       } else {
         this.notyf.error(data['message']);
       }

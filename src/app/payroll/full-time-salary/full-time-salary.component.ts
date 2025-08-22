@@ -15,8 +15,10 @@ import { StatusService } from '../../services/status.service';
   templateUrl: './full-time-salary.component.html',
   styleUrl: './full-time-salary.component.css'
 })
+
+
 export class FullTimeSalaryComponent {
-    monthList = [
+  monthList = [
     { value: '01', label: 'January' },
     { value: '02', label: 'February' },
     { value: '03', label: 'March' },
@@ -31,16 +33,28 @@ export class FullTimeSalaryComponent {
     { value: '12', label: 'December' }
   ];
   yearList: any = [];
-    notyf: Notyf;
-    obj:any={}
-  constructor(private master: MasterService, private router: Router,private payroll:PayrollService,private statusService:StatusService) {
+  notyf: Notyf;
+  obj: any = {}
+  constructor(private master: MasterService, private router: Router, private payroll: PayrollService, private statusService: StatusService) {
     this.notyf = new Notyf();
   }
-    async ngOnInit() {
+  async ngOnInit() {
     await this.empList()
-      await this.getYear();
+    await this.getYear();
   }
-    async getYear() {
+
+  checkUncheckAll() {
+    this.SalaryArr.forEach((item: any) => item.isSelected = this.masterSelected);
+  }
+  masterSelected: boolean = false;
+
+  isAllSelected() {
+    this.masterSelected = this.SalaryArr.every((item: any) => item.isSelected);
+// this.SalaryArr=  this.SalaryArr.map({
+
+// })
+  }
+  async getYear() {
     this.yearList = []
     this.master.getAttendanceYear().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
@@ -60,9 +74,17 @@ export class FullTimeSalaryComponent {
 
   }
 
+generate_Salary(){
+ console.log( this.masterSelected);
+ console.log( this.SalaryArr,"alllsaalry ");
+ console.log( this.SalaryArr,"alllsaalry ");
 
-  EmpList:any = []
-    async empList() {
+ let newArr= this.SalaryArr.filter((item:any)=>item.isSelected==true)
+ console.log(newArr,"new salary Array");
+
+}
+  EmpList: any = []
+  async empList() {
     this.EmpList = []
     this.master.getemployeeList().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
@@ -82,13 +104,22 @@ export class FullTimeSalaryComponent {
 
   }
 
-back(){
+  back() {
 
+  }
+  SalaryArr: any = []
+  onSubmit() {
+    this.SalaryArr = []
+    let newObj=Object.assign({},this.obj)
+ if (newObj['employeeId'] === 'All') {
+  newObj['employeeId'] = this.EmpList
+    .map((item: any) => item.value)
+    .filter((val: any) => val != 'All');
+}else{
+  newObj['employeeId']=[newObj['employeeId']]
 }
-SalaryArr:any=[]
-onSubmit(){
-     this.SalaryArr=[]
-    this.payroll.calculateAttendance(this.obj).subscribe({
+
+    this.payroll.calculateAttendance(newObj).subscribe({
       next: (response: any) => {
         console.log('response', response);
 
@@ -100,8 +131,8 @@ onSubmit(){
         if (status == true) {
 
           this.notyf.success(message)
-          this.SalaryArr=response.data
-          console.log(this.SalaryArr,"salary Array");
+          this.SalaryArr = response.data
+          console.log(this.SalaryArr, "salary Array");
 
         }
         else if (status == "expired") {
@@ -121,11 +152,11 @@ onSubmit(){
 
 
 
-}
-view(item:any){
+  }
+  view(item: any) {
 
-}
-delete(item:any){
+  }
+  delete(item: any) {
 
-}
+  }
 }
