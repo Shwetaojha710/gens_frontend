@@ -185,6 +185,9 @@ addSalaryMaster(dept: any): Observable<any> {
   deleteHolidayType(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}deleteHolidayType`, data);
   }
+  getHolidayTypeDD(): Observable<any> {
+     return this.http.post(`${this.baseUrl}getHolidayTypeDD`, {});
+  }
 
 //    getAttendanceSetting(): Observable<any> {
 //     return this.http.post(`${this.baseUrl}get-attendance-setting`, {});

@@ -23,7 +23,18 @@
                 >Holiday Type
                 <span style="color: red"> * </span>
               </label>
-              <input
+                  <ng-select
+                [items]="HolidayTypeList"
+                bindLabel="label"
+                bindValue="value"
+                [(ngModel)]="obj['holiday_type']"
+                [multiple]="false"
+                placeholder="Select Holiday Type"
+                name="HolidayTypeList"
+                id="select2Danger"
+              >
+              </ng-select>
+              <!-- <input
                 type="text"
                 class="form-control"
                 id="defaultFormControlInput"
@@ -32,7 +43,7 @@
                 aria-describedby="defaultFormControlHelp"
                 #holidayNameRef="ngModel"
                 required
-              />
+              /> -->
               <small
                 class="text-danger"
                 *ngIf="holidayNameRef.invalid && holidayNameRef.touched"
@@ -200,7 +211,7 @@
             <tbody class="table-border-bottom-0">
               <tr *ngFor="let item of HolidayList; let i = index">
                 <th scope="row">{{ i + 1 }}</th>
-                <td>{{ item["holiday_type"] }}</td>
+                <td>{{ item["holiday_type_name"] }}</td>
                 <td>{{ item["holiday_name"] }}</td>
                 <td>{{ item["date"] }}</td>
                 <td>

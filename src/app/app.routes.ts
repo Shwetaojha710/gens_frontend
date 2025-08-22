@@ -43,6 +43,7 @@ import { AssignLeaveComponent } from './employee/profile/professional-info/assig
 import { ApplyLeaveComponent } from './employee/apply-leave/apply-leave.component';
 import { HolidayComponent } from './attendance/holiday/holiday.component';
 import { DateWiseAttendanceComponent } from './attendance/date-wise-attendance/date-wise-attendance.component';
+import { HolidayTypeComponent } from './master/holiday-type/holiday-type.component';
 export const routes: Routes = [
   { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: 'login', component: LoginComponent },
@@ -108,6 +109,7 @@ export const routes: Routes = [
           { path: 'designation', component: DesignationComponent },
           { path: 'employment-type', component: EmploymentTypeComponent },
           { path: 'documents', component: DocumentTypeComponent },
+          { path: 'holiday-type', component: HolidayTypeComponent },
         ]
       },
       {
