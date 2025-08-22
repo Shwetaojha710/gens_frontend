@@ -111,7 +111,7 @@
           </button>
         </h5>
 
-        <table class="table table-hover">
+        <table class="table table-stripped">
           <thead class="text-center">
             <tr>
               <th rowspan="2" style="vertical-align: middle">S.No.</th>
@@ -141,7 +141,7 @@
                         <td>{{ item1.endTime }}</td>
                         <td>
                           <span
-                            class="badge overflow-hidden px-2"
+                            class="badge bg-label-primary overflow-hidden px-2"
                             [ngClass]="getStatusClass(item1.is_week_off)"
                           >
                             {{ item1.is_week_off }}
@@ -149,7 +149,7 @@
                         </td>
                         <td>
                           <span
-                            class="badge  overflow-hidden px-2"
+                            class="badge bg-label-success  overflow-hidden px-2"
                             [ngClass]="getStatusClass(item1.status)"
                           >
                             {{ item1.status }}
