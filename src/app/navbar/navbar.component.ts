@@ -52,12 +52,12 @@ menuItems: MenuItem[] = [
     title: 'Attendance & Shift',
     icon: 'ri-calendar-check-line',
     children: [
-      { title: 'Shift Master', icon: 'ri-time-line', link: '/layout/attendance/shift' },
-      { title: 'Date Wise Attendance', icon: 'ri-time-line', link: '/layout/attendance/date-wise-attendance' },
-        { title: 'Holiday', icon: 'ri-leaf-line', link: '/layout/attendance/holiday' },
-      { title: 'Attendance Logs', icon: 'ri-clipboard-line', link: '/layout/attendance/logs' },
+      { title: 'Shift Master', icon: 'ri ri-user-3-line', link: '/layout/attendance/shift' },
+      { title: 'Date Wise Attendance', icon: 'ri-calendar-line', link: '/layout/attendance/date-wise-attendance' },
+        { title: 'Holiday', icon: 'ri-barricade-fill', link: '/layout/attendance/holiday' },
+      { title: 'Attendance Logs', icon: 'ri-calendar-line', link: '/layout/attendance/logs' },
       { title: 'Leaves', icon: 'ri-leaf-line', link: '/layout/attendance/leaves' },
-      { title: 'Attendance Master', icon: 'ri-leaf-line', link: '/layout/attendance/salary-master' }
+      { title: 'Attendance Master', icon: 'ri-calendar-line', link: '/layout/attendance/salary-master' }
 
     ]
   },
@@ -65,7 +65,7 @@ menuItems: MenuItem[] = [
     title: 'Payroll & Compensation',
     icon: 'ri-money-cny-circle-line',
     children: [
-      { title: 'Generate Salary', icon: 'ri-bank-card-line', link: '/layout/payroll/full-time' },
+      { title: 'Generate Salary', icon: 'ri-money-rupee-circle-line', link: '/layout/payroll/full-time' },
       // { title: 'Part Time Salary Master', icon: 'ri-time-line', link: '/layout/payroll/part-time' },
       // // { title: 'Allowances Master', icon: 'ri-gift-line', link: '/layout/payroll/allowances' },
       // { title: 'Deductions', icon: 'ri-subtract-line', link: '/layout/payroll/deductions' }
