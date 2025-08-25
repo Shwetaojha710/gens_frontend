@@ -1,0 +1,503 @@
+<div class="container-fluid mt-5">
+  <div class="row mb-6" *ngIf="createFlag">
+    <div class="col-xxl">
+      <div class="card">
+        <h5 class="card-header d-flex justify-content-between align-items-center mb-0">
+          <span>Personal Details</span>
+          <button type="button" class="btn btn-xs btn-primary float-end" (click)="back()">
+            <i class="fa-solid fa-arrow-left"></i>&nbsp;back
+          </button>
+        </h5>
+
+        <hr style="margin: 0rem 0 !important" />
+        <div class="card-body">
+          <div class="row">
+            <div class="col-md-3">
+              <div class="form-group">
+                <label class="col-form-label fw-bold">First Name
+                  <span style="color: red"> * </span>
+                </label>
+                <input type="text" class="form-control" placeholder="Enter First Name"
+                  [(ngModel)]="personalDetails.firstName" name="firstName" required #firstNameRef="ngModel" />
+                <small class="text-danger" *ngIf="firstNameRef.invalid && firstNameRef.touched">
+                  Enter valid First Name
+                </small>
+              </div>
+            </div>
+
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">Last Name
+                <span style="color: red"> *</span>
+              </label>
+              <input type="text" class="form-control" placeholder="Enter Last Name"
+                [(ngModel)]="personalDetails.lastName" name="lastName" required #lastNameRef="ngModel" />
+              <small class="text-danger" *ngIf="lastNameRef.invalid && lastNameRef.touched">
+                Enter valid Last Name
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">Phone Number
+                <span style="color: red"> *</span>
+              </label>
+              <input type="tel" class="form-control" placeholder="Enter Phone Number"
+                [(ngModel)]="personalDetails.mobile" name="phoneNumber" pattern="^[6-9]\d{9}$" maxlength="10" required
+                #mobileRef="ngModel" (keypress)="
+                  preventMoreThanTenDigits($event, personalDetails.mobile)
+                " />
+
+              <small class="text-danger" *ngIf="mobileRef.invalid && mobileRef.touched">
+                Enter valid 10-digit Mobile number
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">Alternate Phone Number
+                <span style="color: red"> * </span>
+              </label>
+              <input type="tel" class="form-control" placeholder="Enter Phone Number"
+                [(ngModel)]="personalDetails.alternateMobile" name="phoneNumber" pattern="^[6-9]\d{9}$" maxlength="10"
+                required #alternateMobileRef="ngModel" (keypress)="
+                  preventMoreThanTenDigits(
+                    $event,
+                    personalDetails.alternateMobile
+                  )
+                " />
+
+              <small class="text-danger" *ngIf="alternateMobileRef.invalid && alternateMobileRef.touched">
+                Enter valid 10-digit Alternate Mobile number
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">Gender
+                <span style="color: red"> *</span>
+              </label>
+              <ng-select [items]="genderList" bindLabel="label" bindValue="value" [(ngModel)]="personalDetails.gender"
+                [multiple]="false" placeholder="Select Gender" name="status" id="select2Danger">
+              </ng-select>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">Email
+                <span style="color: red"> *</span>
+              </label>
+
+              <input type="email" class="form-control" placeholder="Enter Email" [(ngModel)]="personalDetails.email"
+                name="email" required #emailRef="ngModel" />
+              <small class="text-danger" *ngIf="emailRef.invalid && emailRef.touched">
+                Enter valid Email
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">Aadhaar Number
+                <span style="color: red"> *</span>
+              </label>
+              <input type="text" class="form-control" placeholder="Enter Aadhaar Number" maxlength="14"
+                [(ngModel)]="personalDetails.adhaarNo" name="aadhaarNumber" (input)="onAadhaarInput($event, 'space')"
+                (keypress)="adhaarvalidaiton($event, personalDetails.mobile)" pattern="^\d{4}\s\d{4}\s\d{4}$" required
+                #aadhaarRef="ngModel" />
+              <small class="text-danger" *ngIf="aadhaarRef.invalid && aadhaarRef.touched">
+                Enter valid 12-digit Aadhaar number
+              </small>
+            </div>
+
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">PAN
+                <span style="color: red"> *</span>
+              </label>
+              <input type="text" class="form-control text-uppercase" placeholder="Enter PAN Number"
+                [(ngModel)]="personalDetails.panNo" (ngModelChange)="toUppercase()" name="pan"
+                pattern="^[A-Z]{5}[0-9]{4}[A-Z]{1}$" maxlength="10" required #panRef="ngModel" />
+              <small class="text-danger" *ngIf="panRef.invalid && panRef.touched">
+                Enter valid PAN (e.g., ABCDE1234F)
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">Blood Group
+                <span style="color: red"> *</span>
+              </label>
+              <input type="text" class="form-control" placeholder="Enter Blood Group"
+                [(ngModel)]="personalDetails.bloodGroup" name="bloodGroup" required #bloodGroupRef="ngModel" />
+              <small class="text-danger" *ngIf="bloodGroupRef.invalid && bloodGroupRef.touched">
+                Enter valid First Name
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">Marital Status
+                <span style="color: red"> *</span>
+              </label>
+              <ng-select [items]="maritalStatusList" bindLabel="label" bindValue="value"
+                [(ngModel)]="personalDetails.martialStatus" placeholder="Select Marital Status" name="maritalStatus"
+                id="select2Danger">
+              </ng-select>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">Father Name
+                <span style="color: red"> *</span>
+              </label>
+              <input type="text" class="form-control" placeholder="Enter Father Name"
+                [(ngModel)]="personalDetails.fatherName" name="fatherName" required #fatherNameRef="ngModel" />
+              <small class="text-danger" *ngIf="fatherNameRef.invalid && fatherNameRef.touched">
+                Enter valid Father Name
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">Mother Name
+                <span style="color: red"> *</span>
+              </label>
+              <input type="text" class="form-control" placeholder="Enter Mother Name"
+                [(ngModel)]="personalDetails.motherName" name="motherName" required #motherNameRef="ngModel" />
+              <small class="text-danger" *ngIf="motherNameRef.invalid && motherNameRef.touched">
+                Enter valid Mother Name
+              </small>
+            </div>
+
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">Nationality
+                <span style="color: red"> *</span>
+              </label>
+              <input type="text" class="form-control" placeholder="Enter Nationality"
+                [(ngModel)]="personalDetails.nationality" name="nationality" required #nationalityRef="ngModel" />
+              <small class="text-danger" *ngIf="nationalityRef.invalid && nationalityRef.touched">
+                Enter valid NationalityRef
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">DOB
+                <span style="color: red"> *</span>
+              </label>
+              <input type="date" class="form-control" [(ngModel)]="personalDetails.dateOfBirth" [max]="maxDate"
+                name="dateOfBirth" required #dateOfBirthRef="ngModel" (ngModelChange)="calculateAge($event)" />
+
+              <small class="text-danger" *ngIf="dateOfBirthRef.invalid && dateOfBirthRef.touched">
+                Enter valid DOB
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">Age
+                <span style="color: red"> *</span>
+              </label>
+              <input type="number" class="form-control" placeholder="Enter Age" [(ngModel)]="personalDetails.age"
+                name="age" required #ageRef="ngModel" disabled />
+              <small class="text-danger" *ngIf="ageRef.invalid && ageRef.touched">
+                Enter valid Age
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">Employment Type
+                <span style="color: red"> *</span>
+              </label>
+              <ng-select [items]="employmentTypes" bindLabel="label" bindValue="value"
+                [(ngModel)]="personalDetails['empType']" [multiple]="false" placeholder="Select Employment Types"
+                name="country" id="select2Danger">
+              </ng-select>
+            </div>
+
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">Country
+                <span style="color: red"> *</span>
+              </label>
+              <ng-select [items]="countryList" bindLabel="label" bindValue="value"
+                [(ngModel)]="personalDetails['country']" [multiple]="false" placeholder="Select country" name="country"
+                id="select2Danger" (change)="getstates($event)">
+              </ng-select>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">State
+                <span style="color: red"> *</span>
+              </label>
+              <ng-select [items]="states" bindLabel="label" bindValue="value" [(ngModel)]="personalDetails['state']"
+                [multiple]="false" placeholder="Select state" name="state" id="select2Danger"
+                (change)="getcity($event)">
+              </ng-select>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">PIN Code
+                <span style="color: red"> *</span>
+              </label>
+              <input type="text" class="form-control" placeholder="Enter PIN Code" [(ngModel)]="personalDetails.pinCode"
+                name="pinCode" required #pinCodeRef="ngModel" pattern="^[1-9][0-9]{5}$" maxlength="6" />
+
+              <small class="text-danger" *ngIf="pinCodeRef.invalid && pinCodeRef.touched">
+                Please enter a valid 6-digit PIN code.
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">City
+                <span style="color: red"> *</span>
+              </label>
+              <ng-select [items]="cities" bindLabel="label" bindValue="value" [(ngModel)]="personalDetails['city']"
+                [multiple]="false" placeholder="Select City" name="city" id="select2Danger">
+              </ng-select>
+            </div>
+
+            <div class="col-md-6">
+              <label class="col-form-label fw-bold">Permanent Address
+                <span style="color: red"> *</span>
+              </label>
+              <textarea class="form-control" rows="4" placeholder="Enter Permanent Address"
+                [(ngModel)]="personalDetails.permanentAddress" name="address"></textarea>
+            </div>
+            <div class="col-md-6">
+              <label class="col-form-label fw-bold">Current Address
+                <span style="color: red"> *</span>
+              </label>
+              <textarea class="form-control" rows="4" placeholder="Enter Current Address"
+                [(ngModel)]="personalDetails  .currentAddress" name="address"></textarea>
+            </div>
+          </div>
+          <br />
+          <!-- Submit -->
+          <div class="row mb-4 justify-content-end">
+            <div class="col-sm-12">
+              <button *ngIf="updateFlag == false && createFlag == true" type="button" class="btn btn-primary"
+                (click)="submitForm()">
+                Submit
+              </button>
+              <button *ngIf="updateFlag == true && createFlag == true" type="button" class="btn btn-primary"
+                (click)="updateform()">
+                Update
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Header-->
+  <div
+    class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-6 row-gap-4">
+    <div class="d-flex flex-column justify-content-center">
+      <h4 class="mb-1">Employee List</h4>
+      <nav>
+        <ol class="breadcrumb mb-0">
+          <li class="breadcrumb-item">
+            <a href="#"><i class="ri ri-home-smile-line"></i></a>
+          </li>
+          <li class="breadcrumb-item active" aria-current="page">Employee List</li>
+        </ol>
+      </nav>
+    </div>
+    <!-- <div class="d-flex align-content-center flex-wrap gap-4">
+        <button class="btn btn-outline-secondary waves-effect">Discard</button>
+        <button class="btn btn-outline-primary waves-effect">Save draft</button>
+        <button type="submit" class="btn btn-primary waves-effect waves-light">Publish product</button>
+      </div> -->
+  </div>
+  <!--Header-->
+
+
+  <div class="row mb-6">
+    <div class="col-lg-3 col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center flex-wrap">
+            <div class="avatar me-4">
+              <div class="avatar-initial bg-label-primary rounded-3">
+                <i class="icon-base ri ri-user-star-line icon-24px"> </i>
+              </div>
+            </div>
+            <div class="card-info">
+              <div class="d-flex align-items-center">
+                <h5 class="mb-0 me-2">8,458</h5>
+              </div>
+              <p class="mb-0">
+                Total Employee</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center flex-wrap">
+            <div class="avatar me-4">
+              <div class="avatar-initial bg-label-warning rounded-3">
+                <i class="icon-base ri ri-pie-chart-2-line icon-24px"></i>
+              </div>
+            </div>
+            <div class="card-info">
+              <div class="d-flex align-items-center">
+                <h5 class="mb-0 me-2">28.6k</h5>
+              </div>
+              <p class="mb-0">
+                Active</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center flex-wrap">
+            <div class="avatar me-4">
+              <div class="avatar-initial bg-label-info rounded-3">
+                <i class="icon-base ri ri-bank-card-line icon-24px"></i>
+              </div>
+            </div>
+            <div class="card-info">
+              <div class="d-flex align-items-center">
+                <h5 class="mb-0 me-2">13.6k</h5>
+              </div>
+              <p class="mb-0">InActive</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-3 col-sm-6">
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex align-items-center flex-wrap">
+            <div class="avatar me-4">
+              <div class="avatar-initial bg-label-danger rounded-3">
+                <i class="icon-base ri ri-bank-card-line icon-24px"></i>
+              </div>
+            </div>
+            <div class="card-info">
+              <div class="d-flex align-items-center">
+                <h5 class="mb-0 me-2">13.6k</h5>
+              </div>
+              <p class="mb-0">New Joiners</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="row mb-6">
+    <div class="col-md">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span style="font-weight: bold">Employee List</span>
+          <button *ngIf="createFlag == false" type="button" class="btn btn-xs btn-primary float-end"
+            (click)="opencreate()">
+            <i class="fa-solid fa-plus"></i>&nbsp;Add
+          </button>
+        </div>
+
+        <div class="card-body">
+          <div class="table-responsive text-nowrap">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Emp ID</th>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Aadhaar Number</th>
+                  <th>Date of Birth</th>
+                  <th>Gender</th>
+                  <th>Actions</th>
+                </tr>
+                <!-- <tr>
+                  <th>SI.No</th>
+                  <th>Basic Information</th>
+                  <th>Contact Information</th>
+                  <th>createdAt</th>
+                  <th>Actions</th>
+                </tr> -->
+              </thead>
+              <tbody class="table-border-bottom-0">
+                <tr *ngFor="let item of employees; let i = index">
+                  <td>{{ i + 1 }}</td>
+                  <td>
+                    <div class="d-flex align-items-center">
+                      <div class="avatar avatar-sm me-4">
+                        <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                      </div>
+                      <div>
+                        <h6 class="mb-0 text-truncate">{{ item["firstName"] }} {{ item["lastName"] }}</h6>
+                        <small class="text-truncate">Trainee</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    {{ item["email"] }}
+                  </td>
+                  <td>
+                    {{ item["mobile"] }}
+                  </td>
+                  <td>
+                    {{ item["adhaarNo"] }}
+                  </td>
+                  <td>
+                    {{ item["dateOfBirth"] | date : "dd-MM-yyyy" }}</td>
+                  <td>
+                    {{ item["gender"] }}</td>
+                  <td>
+
+
+
+                    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="view(item)">
+                      <i class="far fa-eye"></i></button>&nbsp;
+                    <button type="button" class="btn btn-outline-success btn-sm" (click)="update(item)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    &nbsp;
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="delete(item)">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </td>
+                </tr>
+
+
+                <!-- <tr *ngFor="let item of employees; let i = index">
+                  <th scope="row">{{ i + 1 }}</th>
+                  <td>
+                    <span style="font-weight: bold"> Name: </span>
+                    {{ item["firstName"] }} {{ item["lastName"] }}
+
+                    <br />
+                    <span style="font-weight: bold"> DOB: </span>
+                    {{ item["dateOfBirth"] | date : "dd-MM-yyyy" }}
+                    <br />
+
+                    <span style="font-weight: bold">Gender: </span>
+                    {{ item["gender"] }}
+                    <br />
+                    <span style="font-weight: bold">Marital Status :</span>
+                    {{ item["martialStatus"] }}
+
+                  </td>
+                  <td>
+                    <span style="font-weight: bold">Mobile :</span>
+                    {{ item["mobile"] }}
+                    <br />
+                    <span style="font-weight: bold">Email :</span>
+                    {{ item["email"] }}
+                    <br />
+                    <span style="font-weight: bold">Pan No :</span>
+                    {{ item["panNo"] }}
+                    <br />
+                    <span style="font-weight: bold">Aadhaar Number :</span>
+                    {{ item["adhaarNo"] }}
+                    <br />
+                    <span style="font-weight: bold">Employment Type:</span>
+                    {{ item["emptypename"] }}
+                  </td>
+
+                  <td>{{ item["createdAt"] | date : "M/d/yyyy, h:mm a" }}</td>
+
+                  <td>
+                    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="view(item)">
+                      <i class="far fa-eye"></i></button>&nbsp;
+                    <button type="button" class="btn btn-outline-success btn-sm" (click)="update(item)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    &nbsp;
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="delete(item)">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </td>
+                </tr> -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
