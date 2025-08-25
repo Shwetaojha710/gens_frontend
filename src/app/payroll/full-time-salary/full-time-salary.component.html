@@ -162,8 +162,8 @@
                   {{ item["employeeName"] }}
                 </td>
                 <td>{{ item["TotalSalary"] }}</td>
+                 <td>{{ item["totalDeduction"] }}</td>
                 <td>{{ item["basePay"] }}</td>
-                <td>{{ item["totalDeduction"] }}</td>
                 <td>{{ item["totalLeaveDays"] }}</td>
                 <td>{{ item["totalWorkingDays"] }}</td>
                 <td>{{ item["fullDays"] }}</td>
@@ -207,7 +207,39 @@
         ></button>
       </div>
       <div class="modal-body text-center">
-         <div class="table-responsive text-nowrap">
+
+        <div class="row">
+											<div class="col-md-6">
+												<div class="list-group mb-3">
+													<div class="list-group-item bg-light p-3 border-bottom-0">
+														<h6>Earnings</h6>
+													</div>
+													<div class="list-group-item" *ngFor="let item of PayArr; let i = index">
+														<div class="d-flex align-items-center justify-content-between">
+															<p class="mb-0">{{item?.name}}</p>
+															<h6 class="fw-medium">{{item?.pay_amount}}</h6>
+														</div>
+													</div>
+
+												</div>
+											</div>
+											<div class="col-md-6">
+												<div class="list-group mb-3">
+													<div class="list-group-item bg-light p-3 border-bottom-0">
+														<h6>Deductions</h6>
+													</div>
+													<div class="list-group-item"  *ngFor="let item1 of DedArr; let i = index">
+														<div class="d-flex align-items-center justify-content-between">
+															<p class="mb-0">{{item1?.name}}</p>
+															<h6 class="fw-medium">{{item1?.pay_amount}}</h6>
+														</div>
+													</div>
+
+												</div>
+											</div>
+										</div>
+
+         <!-- <div class="table-responsive text-nowrap">
           <table class="table table-hover">
             <thead>
               <tr>
@@ -233,7 +265,7 @@
               </tr>
             </tbody>
           </table>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>
@@ -243,3 +275,4 @@
 <div class="loading-state" *ngIf="isLoading">
   <div class="loading"></div>
 </div>
+
