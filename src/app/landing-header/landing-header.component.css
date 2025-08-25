@@ -336,7 +336,6 @@ body {
   }
 }
 
-
 .card[class*=card-hover-border-] {
   transition: all 0.2s ease-in-out;
 }

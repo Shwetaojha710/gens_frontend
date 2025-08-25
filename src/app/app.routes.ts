@@ -45,12 +45,13 @@ import { HolidayComponent } from './attendance/holiday/holiday.component';
 import { DateWiseAttendanceComponent } from './attendance/date-wise-attendance/date-wise-attendance.component';
 import { HolidayTypeComponent } from './master/holiday-type/holiday-type.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
+import { CheckoutComponent } from './checkout/checkout.component';
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '', redirectTo: '/Home', pathMatch: 'full'},
   { path: 'Home', component: LandingPageComponent},
   { path: 'login', component: LoginComponent },
-
+ { path: 'check-out', component: CheckoutComponent},
   {
     path: 'layout',
     component: LayoutComponent,
