@@ -28,7 +28,7 @@
   --bs-gray-700: #676a7b;
   --bs-gray-800: #515569;
   --bs-gray-900: #3b4055;
-  --bs-primary: #005495;
+  --bs-primary: #18599a;
   --bs-secondary: #6d788d;
   --bs-success: #72e128;
   --bs-info: #26c6f9;
@@ -15809,7 +15809,7 @@ form .form-floating:has(.select2.is-invalid) label {
 
 .border-primary {
   --bs-border-opacity: 1;
-  border-color: rgba(var(--bs-primary-rgb), var(--bs-border-opacity)) !important;
+  border-color: #18599a !important;
 }
 
 .border-secondary {
@@ -18026,7 +18026,7 @@ form .form-floating:has(.select2.is-invalid) label {
 /* rtl:end:remove */
 .text-primary {
   --bs-text-opacity: 1;
-  color: rgba(var(--bs-primary-rgb), var(--bs-text-opacity)) !important;
+  color: #18599a !important;
 }
 
 .text-secondary {
