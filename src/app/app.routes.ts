@@ -46,6 +46,8 @@ import { DateWiseAttendanceComponent } from './attendance/date-wise-attendance/d
 import { HolidayTypeComponent } from './master/holiday-type/holiday-type.component';
 import { LandingPageComponent } from './landing-page/landing-page.component';
 import { CheckoutComponent } from './checkout/checkout.component';
+import { GeneratedSalaryComponent } from './payroll/generated-salary/generated-salary.component';
+import { PreffixComponent } from './master/preffix/preffix.component';
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '', redirectTo: '/Home', pathMatch: 'full'},
@@ -100,6 +102,7 @@ export const routes: Routes = [
         path: 'payroll',
         children: [
           { path: 'full-time', component: FullTimeSalaryComponent },
+          { path: 'generated-salary', component: GeneratedSalaryComponent },
           { path: 'part-time', component: PartTimeSalaryComponent },
           { path: 'allowances', component: AllowancesComponent },
           { path: 'deductions', component: DeductionsComponent },
@@ -114,6 +117,7 @@ export const routes: Routes = [
           { path: 'employment-type', component: EmploymentTypeComponent },
           { path: 'documents', component: DocumentTypeComponent },
           { path: 'holiday-type', component: HolidayTypeComponent },
+          { path: 'prefix', component: PreffixComponent },
         ]
       },
       {

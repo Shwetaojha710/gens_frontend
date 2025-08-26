@@ -12,7 +12,7 @@ export class EmployeeService {
 baseUrl=environment.apiUrl
 
   constructor(private http: HttpClient) {}
- newUrl='http://192.168.23.13:3000'
+ newUrl='http://192.168.23.13:8000'
   createEmp(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}createEmp`, data);
   }
