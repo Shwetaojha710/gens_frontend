@@ -8,6 +8,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { PayrollService } from '../../services/payroll.service';
 import { StatusService } from '../../services/status.service';
 declare let bootstrap: any;
+import { firstValueFrom } from 'rxjs';
 @Component({
   selector: 'app-full-time-salary',
   imports: [NgSelectModule,
@@ -59,7 +60,7 @@ export class FullTimeSalaryComponent {
     this.master.getAttendanceYear().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.yearList = data.data;
         console.log(this.EmpList, "attendance master list");
 
@@ -68,23 +69,57 @@ export class FullTimeSalaryComponent {
         this.router.navigate(['login'])
       }
       else {
-        this.notyf.error(data['message']);
+        // this.notyf.error(data['message']);
       }
     });
 
   }
+  employeeSalaryData: any[] = [];
 
-  generate_Salary() {
-    let newArr = this.SalaryArr.filter((item: any) => item.isSelected == true)
+  async generate_Salary() {
 
+    this.employeeSalaryData = [];
+
+    const selectedEmployees = this.SalaryArr.filter((item: any) => item.isSelected);
+
+    this.employeeSalaryData = await Promise.all(
+      selectedEmployees.map(async (item: any) => {
+        const components = await this.getSalaryComponent(item);
+        return { ...item, components };
+      })
+    );
+    this.isLoading = true
+    try {
+      const response: any = await firstValueFrom(
+        this.payroll.generateSalary(this.employeeSalaryData)
+      );
+   this.isLoading = false
+      if (this.statusService.handleResponseStatus(response.status, response.message || "Success")) {
+
+        this.notyf.success(response.message);
+      } else {
+        this.isLoading = false
+        this.notyf.error(response.message);
+      }
+    } catch (error: any) {
+      this.isLoading = false
+      console.error("API Error:", error);
+
+      if (error.error?.message) {
+        this.notyf.error(error.error.message);
+      } else {
+        this.notyf.error("Something went wrong!");
+      }
+    }
   }
+
   EmpList: any = []
   async empList() {
     this.EmpList = []
     this.master.getemployeeList().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.EmpList = data.data;
         console.log(this.EmpList, "attendance master list");
 
@@ -93,7 +128,7 @@ export class FullTimeSalaryComponent {
         this.router.navigate(['login'])
       }
       else {
-        this.notyf.error(data['message']);
+        // this.notyf.error(data['message']);
       }
     });
 
@@ -105,7 +140,7 @@ export class FullTimeSalaryComponent {
   SalaryArr: any = []
   isLoading: boolean = false;
   onSubmit() {
-      this.isLoading = true; // ✅ Show loader before API call
+    this.isLoading = true; // ✅ Show loader before API call
     this.SalaryArr = []
     let newObj = Object.assign({}, this.obj)
     if (newObj['employeeId'] === 'All') {
@@ -119,7 +154,7 @@ export class FullTimeSalaryComponent {
     this.payroll.calculateAttendance(newObj).subscribe({
       next: (response: any) => {
         console.log('response', response);
-         this.isLoading = false;
+        this.isLoading = false;
         let message = response.message ? response.message : 'Data found Successfully';
         let status = this.statusService.handleResponseStatus(response.status, message);
         console.log(status)
@@ -142,6 +177,7 @@ export class FullTimeSalaryComponent {
 
       },
       error: (err) => {
+         this.isLoading = false;
         console.error('Error:', err);
         this.notyf.error(err.error?.message)
       }
@@ -152,6 +188,8 @@ export class FullTimeSalaryComponent {
   }
   SalaryBreakup: any = []
   modal: any;
+  PayArr: any = []
+  DedArr: any = []
   view(item: any) {
     const obj = Object.assign({}, item)
     this.SalaryBreakup = []
@@ -169,7 +207,20 @@ export class FullTimeSalaryComponent {
 
           this.notyf.success(message)
           this.SalaryBreakup = response.data
-          console.log(this.SalaryBreakup, "SalaryBreakup Array");
+          this.PayArr = []
+          this.DedArr = []
+          this.PayArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'PAY')
+          this.DedArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'DED')
+          // Calculate totals
+          const totalEarning = this.PayArr.reduce((sum: number, item: any) => sum + Number(item.pay_amount || 0), 0);
+          const totalDeduction = this.DedArr.reduce((sum: number, item: any) => sum + Number(item.pay_amount || 0), 0);
+          const netPay = totalEarning - totalDeduction;
+
+          // Add as new keys
+          this.PayArr = [...this.PayArr, { isSummary: true, name: 'Total Earnings',pay_amount: totalEarning }];
+          this.DedArr = [...this.DedArr, { isSummary: true, name: 'Total Deductions',pay_amount: totalDeduction }];
+
+
           const modalEl = document.getElementById('SalaryModal');
           this.modal = new bootstrap.Modal(modalEl);
           this.modal.show();
@@ -189,6 +240,18 @@ export class FullTimeSalaryComponent {
       }
     });
   }
+  async getSalaryComponent(item: any) {
+    const obj = { ...item };
+    const response: any = await this.payroll.calculateSalaryComponent(obj).toPromise();
+
+    if (this.statusService.handleResponseStatus(response.status, response.message || "Success")) {
+
+      return response.data;
+    } else {
+      // throw new Error(response.message);
+    }
+  }
+
   delete(item: any) {
 
   }

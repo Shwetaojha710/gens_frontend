@@ -104,10 +104,15 @@ export class AddComponent {
 
   }
   addPhoto() {
+    console.log("apii callled")
     const uploadData = new FormData();
     uploadData.append('id', this.personalDetails.id)
+    uploadData.append('employeeId', this.personalDetails.id)
+    uploadData.append('name', this.personalDetails.firstName)
+
     if (this.selectedFile) {
       uploadData.append('profileImage', this.selectedFile, this.selectedFile.name);
+      uploadData.append('file', this.selectedFile, this.selectedFile.name);
     } else {
       Swal.fire({
         toast: true,
@@ -120,9 +125,37 @@ export class AddComponent {
       return;
     }
 
+  //  this.employeeService.pythonregister(uploadData).subscribe({
+  //     next: (response: any) => {
+  //       console.log('response', response);
 
+  //       let message = response.message ? response.message : 'Data found Successfully';
+  //       let status = this.statusService.handleResponseStatus(response.status, message);
+  //       console.log(status)
+  //       console.log("response", response);
 
-    this.employeeService.uploadImage(uploadData).subscribe({
+  //       if (status === true) {
+
+  //         this.notyf.success(message)
+  //         this.fetchDocument();
+  //         // this.resetForm();
+  //       }
+  //       else if (status === "expired") {
+  //         this.router.navigate(["login"]);
+  //       }
+
+  //       else {
+  //         this.notyf.error(message)
+  //       }
+
+  //     },
+  //     error: (err:any) => {
+  //       console.error('Error:', err);
+  //       this.notyf.error(err)
+  //     }
+  //   });
+
+    this.employeeService.pythonregister(uploadData).subscribe({
       next: (response: any) => {
         console.log('response', response);
 
@@ -156,98 +189,98 @@ export class AddComponent {
   isFileInvalid: boolean = false;
   selectedFile: File | null = null;
 
-  // onFileChange(event: any): void {
-  //   const file: File = event.target.files[0];
+  onFileChange(event: any): void {
+    const file: File = event.target.files[0];
 
-  //   if (!file) {
-  //     this.selectedFile = null;
-  //     return;
-  //   }
+    if (!file) {
+      this.selectedFile = null;
+      return;
+    }
 
-  //   const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
-  //   const maxSize = 2 * 1024 * 1024; // 2MB
+    const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
+    const maxSize = 2 * 1024 * 1024; // 2MB
 
-  //   if (!allowedTypes.includes(file.type)) {
-  //     Swal.fire({
-  //       icon: 'error',
-  //       title: 'Invalid File Type',
-  //       text: 'Only JPG, JPEG, and PNG formats are allowed.',
-  //     });
-  //     event.target.value = ''; // Clear the file input
-  //     this.selectedFile = null;
-  //     return;
-  //   }
+    if (!allowedTypes.includes(file.type)) {
+      Swal.fire({
+        icon: 'error',
+        title: 'Invalid File Type',
+        text: 'Only JPG, JPEG, and PNG formats are allowed.',
+      });
+      event.target.value = ''; // Clear the file input
+      this.selectedFile = null;
+      return;
+    }
 
-  //   if (file.size > maxSize) {
-  //     Swal.fire({
-  //       icon: 'error',
-  //       title: 'File Too Large',
-  //       text: 'Maximum allowed file size is 2MB.',
-  //     });
-  //     event.target.value = ''; // Clear the file input
-  //     this.selectedFile = null;
-  //     return;
-  //   }
+    if (file.size > maxSize) {
+      Swal.fire({
+        icon: 'error',
+        title: 'File Too Large',
+        text: 'Maximum allowed file size is 2MB.',
+      });
+      event.target.value = ''; // Clear the file input
+      this.selectedFile = null;
+      return;
+    }
 
-  //   this.selectedFile = file;
-  // }
-
-  onFileChange(event: any) {
-  const file = event.target.files[0];
-
-  if (file && file.type.startsWith('image/')) {
-    const img = new Image();
-    const reader = new FileReader();
-
-    reader.onload = (e: any) => {
-      img.src = e.target.result;
-
-      img.onload = async () => {
-        const originalWidth = img.width;
-        const originalHeight = img.height;
-
-        const minWidth = 100;
-        const minHeight = 100;
-        const maxWidth = 1000;
-        const maxHeight = 1000;
-
-        if (
-          originalWidth < minWidth ||
-          originalHeight < minHeight ||
-          originalWidth > maxWidth ||
-          originalHeight > maxHeight
-        ) {
-          this.notyf.error(
-            `Image dimensions should be between ${minWidth}x${minHeight} and ${maxWidth}x${maxHeight}px.`
-          );
-          event.target.value = '';
-          return;
-        }
-
-        // Resize and compress to target dimensions
-        const targetWidth = 200;
-        const targetHeight = 200;
-        const quality = 0.6; // 60% quality
-
-        const compressedFile = await this.resizeAndCompressImage(
-          img,
-          targetWidth,
-          targetHeight,
-          quality
-        );
-
-        console.log('Compressed file:', compressedFile);
-
-        // You can patch to a form or upload:
-        // this.form.patchValue({ profileImage: compressedFile });
-      };
-    };
-
-    reader.readAsDataURL(file);
-  } else {
-    this.notyf.error('Only image files are allowed.');
+    this.selectedFile = file;
   }
-}
+
+//   onFileChange(event: any) {
+//   const file = event.target.files[0];
+
+//   if (file && file.type.startsWith('image/')) {
+//     const img = new Image();
+//     const reader = new FileReader();
+
+//     reader.onload = (e: any) => {
+//       img.src = e.target.result;
+
+//       img.onload = async () => {
+//         const originalWidth = img.width;
+//         const originalHeight = img.height;
+
+//         const minWidth = 100;
+//         const minHeight = 100;
+//         const maxWidth = 1000;
+//         const maxHeight = 1000;
+
+//         if (
+//           originalWidth < minWidth ||
+//           originalHeight < minHeight ||
+//           originalWidth > maxWidth ||
+//           originalHeight > maxHeight
+//         ) {
+//           this.notyf.error(
+//             `Image dimensions should be between ${minWidth}x${minHeight} and ${maxWidth}x${maxHeight}px.`
+//           );
+//           event.target.value = '';
+//           return;
+//         }
+
+//         // Resize and compress to target dimensions
+//         const targetWidth = 200;
+//         const targetHeight = 200;
+//         const quality = 0.6; // 60% quality
+
+//         const compressedFile = await this.resizeAndCompressImage(
+//           img,
+//           targetWidth,
+//           targetHeight,
+//           quality
+//         );
+
+//         console.log('Compressed file:', compressedFile);
+
+//         // You can patch to a form or upload:
+//         // this.form.patchValue({ profileImage: compressedFile });
+//       };
+//     };
+
+//     reader.readAsDataURL(file);
+//   } else {
+//     this.notyf.error('Only image files are allowed.');
+//   }
+// }
 
 resizeAndCompressImage(
   img: HTMLImageElement,

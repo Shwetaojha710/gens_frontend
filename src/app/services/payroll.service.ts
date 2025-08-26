@@ -63,5 +63,8 @@ baseUrl=environment.apiUrl
   calculateSalaryComponent(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}calculate-salary-component`, data);
   }
+  generateSalary(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}generate-Salary`, data);
+  }
 
 }
