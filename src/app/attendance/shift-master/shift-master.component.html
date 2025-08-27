@@ -2,15 +2,9 @@
   <div class="row mb-6" *ngIf="createFlag">
     <div class="col-md">
       <div class="card">
-        <h5
-          class="card-header d-flex justify-content-between align-items-center"
-        >
+        <h5 class="card-header d-flex justify-content-between align-items-center">
           <span>Shift</span>
-          <button
-            type="button"
-            class="btn btn-xs btn-primary float-end"
-            (click)="back()"
-          >
+          <button type="button" class="btn btn-xs btn-primary float-end" (click)="back()">
             <i class="fa-solid fa-arrow-left"></i>&nbsp;back
           </button>
         </h5>
@@ -19,19 +13,9 @@
         <div class="card-body">
           <div class="row">
             <div class="col-4">
-              <label for="defaultFormControlInput" class="form-label"
-                >Type</label
-              >
-              <ng-select
-                [items]="status"
-                bindLabel="label"
-                bindValue="value"
-                [(ngModel)]="obj['shift']"
-                [multiple]="false"
-                placeholder="Select Shift Type"
-                name="status"
-                id="select2Danger"
-              >
+              <label for="defaultFormControlInput" class="form-label">Type</label>
+              <ng-select [items]="status" bindLabel="label" bindValue="value" [(ngModel)]="obj['shift']"
+                [multiple]="false" placeholder="Select Shift Type" name="status" id="select2Danger">
               </ng-select>
             </div>
           </div>
@@ -52,18 +36,10 @@
                     <th scope="row">{{ i + 1 }}</th>
                     <td>{{ item["day_of_week"] }}</td>
                     <td>
-                      <input
-                        class="form-control"
-                        type="time"
-                        [(ngModel)]="item['startTime']"
-                      />
+                      <input class="form-control" type="time" [(ngModel)]="item['startTime']" />
                     </td>
                     <td>
-                      <input
-                        class="form-control"
-                        type="time"
-                        [(ngModel)]="item['endTime']"
-                      />
+                      <input class="form-control" type="time" [(ngModel)]="item['endTime']" />
                     </td>
                   </tr>
                 </tbody>
@@ -72,20 +48,12 @@
           </div>
           <div class="row">
             <div class="col-md-12 mt-2">
-              <button
-                *ngIf="createFlag && updateFlag == false"
-                type="button"
-                class="btn btn-sm btn-primary waves-effect waves-light"
-                (click)="onSubmit()"
-              >
+              <button *ngIf="createFlag && updateFlag == false" type="button"
+                class="btn btn-sm btn-primary waves-effect waves-light" (click)="onSubmit()">
                 Submit
               </button>
-              <button
-                *ngIf="updateFlag"
-                type="button"
-                class="btn btn-sm btn-primary waves-effect waves-light"
-                (click)="updatedata()"
-              >
+              <button *ngIf="updateFlag" type="button" class="btn btn-sm btn-primary waves-effect waves-light"
+                (click)="updatedata()">
                 Update
               </button>
             </div>
@@ -97,21 +65,15 @@
   <div class="row mb-6">
     <div class="col-md">
       <div class="card">
-        <h5
-          class="card-header d-flex justify-content-between align-items-center"
-        >
+        <h5 class="card-header d-flex justify-content-between align-items-center">
           <span>Shift List</span>
-          <button
-            *ngIf="createFlag == false"
-            type="button"
-            class="btn btn-xs btn-primary float-end"
-            (click)="opencreate()"
-          >
+          <button *ngIf="createFlag == false" type="button" class="btn btn-xs btn-primary float-end"
+            (click)="opencreate()">
             <i class="fa-solid fa-plus"></i>&nbsp;Add
           </button>
         </h5>
 
-        <table class="table table-stripped">
+       <!-- <table class="table table-stripped">
           <thead class="text-center">
             <tr>
               <th rowspan="2" style="vertical-align: middle">S.No.</th>
@@ -140,18 +102,14 @@
                         <td>{{ item1.startTime }}</td>
                         <td>{{ item1.endTime }}</td>
                         <td>
-                          <span
-                            class="badge bg-label-primary overflow-hidden px-2"
-                            [ngClass]="getStatusClass(item1.is_week_off)"
-                          >
+                          <span class="badge bg-label-primary overflow-hidden px-2"
+                            [ngClass]="getStatusClass(item1.is_week_off)">
                             {{ item1.is_week_off }}
                           </span>
                         </td>
                         <td>
-                          <span
-                            class="badge bg-label-success  overflow-hidden px-2"
-                            [ngClass]="getStatusClass(item1.status)"
-                          >
+                          <span class="badge bg-label-success  overflow-hidden px-2"
+                            [ngClass]="getStatusClass(item1.status)">
                             {{ item1.status }}
                           </span>
                         </td>
@@ -161,26 +119,74 @@
                 </td>
 
                 <td>
-                  <button
-                    type="button"
-                    class="btn btn-outline-success btn-sm"
-                    (click)="update(item)"
-                  >
+                  <button type="button" class="btn btn-outline-success btn-sm" (click)="update(item)">
                     <i class="fas fa-edit"></i>
                   </button>
                   &nbsp;
-                  <button
-                    type="button"
-                    class="btn btn-outline-danger btn-sm"
-                    (click)="delete(item)"
-                  >
+                  <button type="button" class="btn btn-outline-danger btn-sm" (click)="delete(item)">
                     <i class="fas fa-trash-alt"></i>
                   </button>
                 </td>
               </tr>
             </ng-container>
           </tbody>
-        </table>
+        </table> -->
+
+
+        <div class="card-body">
+          <div class="table-responsive">
+          <table class="table table-stripped table-bordered">
+            <thead>
+              <tr>
+                <th>Shift Type</th>
+                <th colspan="7" style="text-align: center;">Day and Timing</th>
+              </tr>
+              <tr>
+                <th>Crew</th>
+                <th>Monday</th>
+                <th>Tuesday</th>
+                <th>Wednesday</th>
+                <th>Thursday</th>
+                <th>Friday</th>
+                <th>Saturday</th>
+                <th>Sunday</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Days</td>
+                <td>09:00 to 18:30</td>
+                <td>09:00 to 18:30</td>
+                <td>09:00 to 18:30</td>
+                <td>09:00 to 18:30</td>
+                <td>09:00 to 18:30</td>
+                <td>Week Off</td>
+               <td>Week Off</td>
+              </tr>
+              <tr>
+                <td>Afternoon</td>
+                <td>09:00 to 18:30</td>
+                <td>09:00 to 18:30</td>
+                <td>09:00 to 18:30</td>
+                <td>09:00 to 18:30</td>
+                <td>09:00 to 18:30</td>
+                <td>Week Off</td>
+               <td>Week Off</td>
+              </tr>
+              <tr>
+                <td>Nights</td>
+                <td>09:00 to 18:30</td>
+                <td>09:00 to 18:30</td>
+                <td>09:00 to 18:30</td>
+                <td>09:00 to 18:30</td>
+                <td>09:00 to 18:30</td>
+                <td>Week Off</td>
+               <td>Week Off</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        </div>
 
         <!-- <div class="table-responsive text-nowrap">
           <table class="table table-hover">
