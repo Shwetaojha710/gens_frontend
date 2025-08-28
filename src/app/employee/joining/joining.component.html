@@ -772,26 +772,16 @@
                     {{ item["gender"] }}
                   </td>
                   <td>
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-outline-secondary"
-                      (click)="view(item)"
-                    >
-                      <i class="far fa-eye"></i></button
-                    >&nbsp;
-                    <button
-                      type="button"
-                      class="btn btn-outline-success btn-sm"
-                      (click)="update(item)"
-                    >
+
+
+
+                    <button type="button" class="badge badge-center bg-label-secondary" (click)="view(item)">
+                      <i class="far fa-eye"></i></button>&nbsp;
+                    <button type="button" class="badge badge-center bg-label-primary" (click)="update(item)">
                       <i class="fas fa-edit"></i>
                     </button>
                     &nbsp;
-                    <button
-                      type="button"
-                      class="btn btn-sm btn-outline-danger"
-                      (click)="delete(item)"
-                    >
+                    <button type="button" class="badge badge-center bg-label-danger" (click)="delete(item)">
                       <i class="fas fa-trash-alt"></i>
                     </button>
                   </td>
