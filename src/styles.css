@@ -26,6 +26,25 @@ span.bg-light-success {
     color: #12d854 !important;
 }
 
+div.dt-container div.dt-length select {
+    margin-inline: 0.5rem;
+}
+div.dt-container div.dt-length select {
+    width: auto;
+    display: inline-block;
+    margin-right: 0.5em;
+}
+
+div.dt-container div.dt-search input {
+    margin-inline: 0.5rem 0;
+}
+
+div.dt-container div.dt-search input {
+    margin-left: 0.5em;
+    display: inline-block;
+    width: auto;
+}
+
 /* nav.layout-navbar {
     position: fixed;
     inset-block-start: 0;

@@ -8,11 +8,12 @@ import Swal from 'sweetalert2';
 import { MasterService } from '../../services/master.service';
 import { StatusService } from '../../services/status.service';
 import { ValidationUtil } from '../../shared/utils/validation.util';
+import { SearchPaginationComponent } from '../search-pagination/search-pagination.component';
 
 @Component({
   selector: 'app-document-type',
   imports: [NgSelectModule,
-    FormsModule, CommonModule],
+    FormsModule, CommonModule,SearchPaginationComponent],
   templateUrl: './document-type.component.html',
   styleUrl: './document-type.component.css'
 })
@@ -33,7 +34,7 @@ export class DocumentTypeComponent {
   //    console.log(this.obj)
   // }
   DocumentForm!: FormGroup;
-  DocumentList = [];
+  DocumentList:any = [];
   editingId: number | null = null;
 
   constructor(
@@ -54,6 +55,52 @@ export class DocumentTypeComponent {
 
     await this.fetchDocument();
   }
+  pageSize = 5;
+  currentPage = 1;
+  searchTerm = '';
+  itemsPerPage = 10;
+  onSearch(term: string) {
+    this.searchTerm = term.toLowerCase();
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  // 🔹 pagination handler
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.applyFilters();
+  }
+
+  // 🔹 page size handler
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+  filteredDesignation: any = []
+  searchText: any = ''
+
+  applyFilters() {
+    let data = [...this.DocumentList];
+
+
+    const value = this.searchTerm || '';
+    this.searchText = value.trim();
+
+    if (this.searchText === '') {
+      this.DocumentList = [...this.originalList];
+    } else {
+      this.DocumentList = this.originalList.filter((item: any) =>
+        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+
+
+    // pagination
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.filteredDesignation = data.slice(start, end);
+  }
   getStatusClass(status: any): string {
     switch (status) {
       case 'pending': return 'bg-light-warning';
@@ -62,13 +109,15 @@ export class DocumentTypeComponent {
       default: return 'bg-light-secondary';
     }
   }
-
+originalList:any = []
   async fetchDocument() {
     this.DocumentList = []
+    this.originalList = []
     this.master.getDocumentType().subscribe(data => {
       if (data['status'] == true) {
         this.notyf.success(data['message']);
         this.DocumentList = data.data;
+        this.originalList = data.data;
       } else {
         this.notyf.error(data['message']);
       }

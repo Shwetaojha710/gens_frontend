@@ -90,9 +90,16 @@
           </button>
         </h5>
 
-        <div class="table-responsive text-nowrap">
-          <table class="table table-hover">
-            <thead>
+              <app-search-pagination
+          [totalItems]="HolidayTypeList.length"
+          [pageSize]="itemsPerPage"
+          [currentPage]="currentPage"
+          (search)="onSearch($event)"
+          (pageChange)="onPageChange($event)"
+          (pageSizeChange)="onPageSizeChange($event)"
+        >
+          <table class="table table-striped dataTable">
+          <thead>
               <tr>
                 <th>SI.No</th>
                 <th>Name</th>
@@ -135,7 +142,8 @@
               </tr>
             </tbody>
           </table>
-        </div>
+        </app-search-pagination>
+
       </div>
     </div>
   </div>

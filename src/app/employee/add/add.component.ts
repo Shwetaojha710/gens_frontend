@@ -51,7 +51,8 @@ export class AddComponent {
   ]
   baseurl: any;
   async ngOnInit() {
-    this.baseurl = localStorage.getItem('base_url')?.replace(/["\\,]/g, '') || '';
+    // this.baseurl = localStorage.getItem('base_url')?.replace(/["\\,]/g, '') || '';
+      this.baseurl = this.Documentervice.getBaseUrl();
     await this.fetchDocument()
     await this.countrydd()
     await this.getstates(this.personalDetails.country)

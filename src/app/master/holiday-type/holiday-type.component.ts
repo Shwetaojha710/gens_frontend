@@ -8,17 +8,18 @@ import Swal from 'sweetalert2';
 import { MasterService } from '../../services/master.service';
 import { StatusService } from '../../services/status.service';
 import { ValidationUtil } from '../../shared/utils/validation.util';
+import { SearchPaginationComponent } from '../search-pagination/search-pagination.component';
 
 @Component({
   selector: 'app-holiday-type',
   imports: [NgSelectModule,
-    FormsModule, CommonModule],
+    FormsModule, CommonModule, SearchPaginationComponent],
   templateUrl: './holiday-type.component.html',
   styleUrl: './holiday-type.component.css'
 })
 
 export class HolidayTypeComponent {
- obj: any = {}
+  obj: any = {}
   notyf: Notyf;
 
 
@@ -33,7 +34,7 @@ export class HolidayTypeComponent {
   //    console.log(this.obj)
   // }
   HolidayTypeForm!: FormGroup;
-  HolidayTypeList = [];
+  HolidayTypeList: any = [];
   editingId: number | null = null;
 
   constructor(
@@ -58,6 +59,53 @@ export class HolidayTypeComponent {
 
     await this.fetchHolidayType();
   }
+  pageSize = 5;
+  currentPage = 1;
+  searchTerm = '';
+  itemsPerPage = 10;
+  onSearch(term: string) {
+    this.searchTerm = term.toLowerCase();
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.applyFilters();
+  }
+
+
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+  filteredDesignation: any = []
+  searchText: any = ''
+
+  applyFilters() {
+    let data = [...this.HolidayTypeList];
+
+
+    const value = this.searchTerm || '';
+    this.searchText = value.trim();
+
+    if (this.searchText === '') {
+      this.HolidayTypeList = [...this.originalList];
+    } else {
+      this.HolidayTypeList = this.originalList.filter((item: any) =>
+        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+
+
+    // pagination
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.filteredDesignation = data.slice(start, end);
+  }
+
   getStatusClass(status: any): string {
     switch (status) {
       case 'pending': return 'bg-light-warning';
@@ -66,13 +114,15 @@ export class HolidayTypeComponent {
       default: return 'bg-light-secondary';
     }
   }
-
+  originalList: any = []
   async fetchHolidayType() {
     this.HolidayTypeList = []
+    this.originalList = []
     this.master.getHolidayType().subscribe(data => {
       if (data['status'] == true) {
         this.notyf.success(data['message']);
         this.HolidayTypeList = data.data;
+        this.originalList = data.data;
       } else {
         this.notyf.error(data['message']);
       }
@@ -158,7 +208,7 @@ export class HolidayTypeComponent {
 
   delete(data: number) {
 
-     Swal.fire({
+    Swal.fire({
       title: "Are you sure?",
       text: "Do you Want to Delete this",
       icon: "warning",
@@ -189,8 +239,8 @@ export class HolidayTypeComponent {
 
 
   }
-  deleteHolidayType(data:any){
-       this.master.deleteHolidayType(data).subscribe({
+  deleteHolidayType(data: any) {
+    this.master.deleteHolidayType(data).subscribe({
       next: (response: any) => {
         console.log('response', response);
         let message = response.message ? response.message : 'Data found Successfully';

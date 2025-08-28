@@ -6,7 +6,6 @@
           class="card-header d-flex justify-content-between align-items-center"
         >
           <span>Attendance List</span>
-
         </h5>
         <div class="card-body">
           <div class="row">
@@ -85,7 +84,7 @@
     </div>
   </div>
 
-  <div class="card" *ngIf="AttendanceMasterList.length>0">
+  <div class="card">
     <div class="card-datatable text-nowrap">
       <div
         id="DataTables_Table_0_wrapper"
@@ -96,20 +95,17 @@
             class="d-md-flex justify-content-between align-items-center dt-layout-start col-md-auto me-auto"
           >
             <p class="card-title mb-0 text-md-start text-center">
+              <span class="text-success">P = Present</span> &nbsp;
 
-        <span class="text-success">P = Present</span> &nbsp;
+              <span class="text-danger">A = Absent</span> &nbsp;
 
-        <span class="text-danger">A = Absent</span> &nbsp;
+              <span class="text-danger">L = Leave</span> &nbsp;
 
-        <span class="text-danger">L = Leave</span> &nbsp;
+              <span class="text-info">H = Holiday</span> &nbsp;
 
-        <span class="text-info">H = Holiday</span> &nbsp;
+              <span class="text-warning">O = Off Day</span> &nbsp;
 
-        <span class="text-warning">O = Off Day</span> &nbsp;
-
-        <span class="text-primary">WO = Week Off</span> &nbsp;
-
-
+              <span class="text-primary">WO = Week Off</span> &nbsp;
             </p>
           </div>
           <div
@@ -135,28 +131,32 @@
                     ></span
                   >
                 </button>
-
               </div>
             </div>
           </div>
         </div>
 
         <div class="row m-3 mx-2 my-0 justify-content-between">
-
-          <div  class="d-md-flex justify-content-between align-items-center dt-layout-start col-md-auto me-auto" >
+          <div
+            class="d-md-flex justify-content-between align-items-center dt-layout-start col-md-auto me-auto"
+          >
             <div class="dt-length">
-              <label for="dt-length-0" >Show
-                <select name="DataTables_Table_0_length"  aria-controls="DataTables_Table_0"
-                 class="form-select form-select-sm"  id="dt-length-0"
-                   (change)="onItemsPerPageChange($event)"
-                 >
-
-                <!-- <option value="7">7</option> -->
+              <label for="dt-length-0"
+                >Show
+                <select
+                  name="DataTables_Table_0_length"
+                  aria-controls="DataTables_Table_0"
+                  class="form-select form-select-sm"
+                  id="dt-length-0"
+                  (change)="onItemsPerPageChange($event)"
+                >
+                  <!-- <option value="7">7</option> -->
                   <option value="10">10</option>
                   <option value="25">25</option>
                   <option value="50">50</option>
-                  <option value="100">100</option>
-                  </select>entries</label>
+                  <option value="100">100</option></select
+                >entries</label
+              >
             </div>
           </div>
           <div
@@ -172,7 +172,6 @@
                 aria-controls="DataTables_Table_0"
                 (input)="applyFilter($event)"
               />
-
             </div>
           </div>
         </div>
@@ -185,7 +184,7 @@
               id="DataTables_Table_0"
               aria-describedby="DataTables_Table_0_info"
             >
-                            <thead>
+              <thead>
                 <tr role="row">
                   <th style="width: 120px; font-size: 12px">Employee</th>
 
@@ -198,7 +197,7 @@
                 </tr>
               </thead>
 
-               <tbody>
+              <tbody>
                 <tr *ngFor="let item of AttendanceMasterList">
                   <td style="width: 100px; font-size: 12px">
                     {{ item.employee_name }}
@@ -223,47 +222,52 @@
           </div>
         </div>
         <!-- Pagination & Info -->
-<div class="row mx-3 justify-content-between">
-  <div
-    class="d-md-flex justify-content-between align-items-center dt-layout-start col-md-auto me-auto"
-  >
-    <div class="dt-info" aria-live="polite" role="status">
-   Showing {{ (currentPage - 1) * itemsPerPage + 1 }}
-to {{ getMin(currentPage * itemsPerPage, originalList.length) }}
-of {{ originalList.length }} entries
-    </div>
-  </div>
-
-  <div
-    class="d-md-flex justify-content-between align-items-center dt-layout-end col-md-auto mt-0"
-  >
-    <div class="dt-paging">
-      <nav aria-label="pagination">
-        <ul class="pagination">
-          <li class="page-item" [class.disabled]="currentPage === 1">
-            <a class="page-link" (click)="goToPage(currentPage - 1)">Prev</a>
-          </li>
-
-          <li
-            class="page-item"
-            *ngFor="let p of [].constructor(totalPages); let i = index"
-            [class.active]="i + 1 === currentPage"
+        <div class="row mx-3 justify-content-between">
+          <div
+            class="d-md-flex justify-content-between align-items-center dt-layout-start col-md-auto me-auto"
           >
-            <a class="page-link" (click)="goToPage(i + 1)">{{ i + 1 }}</a>
-          </li>
+            <div class="dt-info" aria-live="polite" role="status">
+              Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to
+              {{ getMin(currentPage * itemsPerPage, originalList.length) }} of
+              {{ originalList.length }} entries
+            </div>
+          </div>
 
-          <li
-            class="page-item"
-            [class.disabled]="currentPage === totalPages"
+          <div
+            class="d-md-flex justify-content-between align-items-center dt-layout-end col-md-auto mt-0"
           >
-            <a class="page-link" (click)="goToPage(currentPage + 1)">Next</a>
-          </li>
-        </ul>
-      </nav>
-    </div>
-  </div>
-</div>
+            <div class="dt-paging">
+              <nav aria-label="pagination">
+                <ul class="pagination">
+                  <li class="page-item" [class.disabled]="currentPage === 1">
+                    <a class="page-link" (click)="goToPage(currentPage - 1)"
+                      >Prev</a
+                    >
+                  </li>
 
+                  <li
+                    class="page-item"
+                    *ngFor="let p of [].constructor(totalPages); let i = index"
+                    [class.active]="i + 1 === currentPage"
+                  >
+                    <a class="page-link" (click)="goToPage(i + 1)">{{
+                      i + 1
+                    }}</a>
+                  </li>
+
+                  <li
+                    class="page-item"
+                    [class.disabled]="currentPage === totalPages"
+                  >
+                    <a class="page-link" (click)="goToPage(currentPage + 1)"
+                      >Next</a
+                    >
+                  </li>
+                </ul>
+              </nav>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

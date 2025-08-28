@@ -16,6 +16,7 @@ import {
 } from "ng-apexcharts";
 import { DashboardService } from '../services/dashboard.service';
 import { Notyf } from 'notyf';
+import { MasterService } from '../services/master.service';
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -36,7 +37,7 @@ export class DashboardComponent {
   notyf: Notyf = new Notyf();
   public chartOptions!: Partial<ChartOptions>;
 
-  constructor(private dashboardService: DashboardService, private router: Router) {
+  constructor(private dashboardService: DashboardService, private router: Router,public masterService:MasterService) {
     // this.chartOptions = {
     //   series: [
     //     {
@@ -83,8 +84,12 @@ export class DashboardComponent {
   leaveList: any = []
   baseurl: any;
   Event: any = []
+
+
   ngOnInit(): void {
-    this.baseurl = localStorage.getItem('base_url')?.replace(/["\\,]/g, '') || '';
+    // this.baseurl = localStorage.getItem('base_url')?.replace(/["\\,]/g, '') || '';
+    this.baseurl = this.masterService.getBaseUrl();
+
     this.stats = []
     this.Event = []
     this.employeeList = []

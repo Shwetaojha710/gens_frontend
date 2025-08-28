@@ -14,6 +14,12 @@ export class MasterService {
   // getDepartments(): Observable<any> {
   //   return this.http.get(`${this.baseUrl}/departments`);
   // }
+  getBaseUrl(): string {
+  const PORT = localStorage.getItem('PORT')?.replace(/["\\,]/g, '') || '3002';
+  return window.location.hostname == 'localhost'
+    ? localStorage.getItem('base_url')?.replace(/["\\,]/g, '')|| ''
+    : `http://${window.location.hostname}:${PORT}`;
+}
 
   getDesignations(): Observable<any> {
     return this.http.post(`${this.baseUrl}getDesignations`, {});

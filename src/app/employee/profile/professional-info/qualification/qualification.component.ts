@@ -50,7 +50,7 @@ export class QualificationComponent {
   }
   baseurl: any;
   async ngOnInit() {
-    this.baseurl = localStorage.getItem('base_url')?.replace(/["\\,]/g, '') || '';
+      this.baseurl = this.Documentervice.getBaseUrl();
     await this.fetchDocument();
     await this.documentdd()
   }

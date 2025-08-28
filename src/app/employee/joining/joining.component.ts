@@ -9,10 +9,11 @@ import { Notyf } from 'notyf';
 import { Router } from '@angular/router';
 import { ValidationUtil } from '../../shared/utils/validation.util';
 import { DataService } from '../../services/data.service';
+import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
 
 @Component({
   selector: 'app-joining',
-  imports: [FormsModule, CommonModule, NgSelectModule,],
+  imports: [FormsModule, CommonModule, NgSelectModule, SearchPaginationComponent],
   templateUrl: './joining.component.html',
   styleUrl: './joining.component.css'
 })
@@ -47,6 +48,47 @@ export class JoiningComponent {
     await this.DepartmentDD()
 
   }
+
+  pageSize = 5;
+  currentPage = 1;
+  itemsPerPage = 10;
+  searchTerm = '';
+  onSearch(term: string) {
+    this.searchTerm = term.toLowerCase();
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.applyFilters();
+  }
+
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+  filteredDesignation: any = []
+  searchText: any = ''
+  originalList: any = []
+  applyFilters() {
+    let data = [...this.employees];
+    const value = this.searchTerm || '';
+    this.searchText = value.trim();
+    if (this.searchText === '') {
+      this.employees = [...this.originalList];
+    } else {
+      this.employees = this.originalList.filter((item: any) =>
+        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+    // pagination
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.filteredDesignation = data.slice(start, end);
+  }
+
   async getEmploymentTypes() {
     this.employmentTypes = [];
     this.master.getEmploymentTypes().subscribe(data => {
@@ -218,8 +260,8 @@ export class JoiningComponent {
 
 
   }
-departmentDD:any=[]
-    async DepartmentDD() {
+  departmentDD: any = []
+  async DepartmentDD() {
     this.departmentDD = []
 
 
@@ -253,11 +295,11 @@ departmentDD:any=[]
       }
     });
   }
-  designationDD:any=[]
-  getDesignation(item:any){
-       this.designationDD = []
-        let obj:any={}
-       obj['department'] =item
+  designationDD: any = []
+  getDesignation(item: any) {
+    this.designationDD = []
+    let obj: any = {}
+    obj['department'] = item
     this.master.designationDD(obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
@@ -284,22 +326,24 @@ departmentDD:any=[]
     });
   }
   employees: any = []
-  employeeList:any=[]
-  cardData:any={}
+  employeeList: any = []
+  cardData: any = {}
   async loadEmployees() {
     this.employees = []
-    this.employeeList=[]
-      this.cardData=[]
+    this.employeeList = []
+    this.cardData = []
+    this.originalList = []
     this.employeeService.getEmp().subscribe((response: any) => {
       if (response && response.data && response.status === true) {
         this.notyf.success(response.message || 'Employees loaded successfully');
         this.employees = [];
-        this.cardData=response.data.cardData
+        this.cardData = response.data.cardData
         this.employees = response.data.formattedEmps || [];
-      this.employeeList = response.data?.formattedEmps?.map((item: any) => ({
-  value: item.id,
-  label: `${item.firstName} ${item?.lastName || ''}`
-}));
+        this.originalList = response.data.formattedEmps || [];
+        this.employeeList = response.data?.formattedEmps?.map((item: any) => ({
+          value: item.id,
+          label: `${item.firstName} ${item?.lastName || ''}`
+        }));
 
       } else if (response.status === false) {
         this.notyf.error(response.message)

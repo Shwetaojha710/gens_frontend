@@ -26,84 +26,7 @@
   </div>
 
 
-    <!-- <div class="col-sm-6 col-lg-3">
-      <div class="card card-border-shadow-primary h-100">
-        <div class="card-body">
-          <div class="d-flex align-items-center mb-2">
-            <div class="avatar me-4">
-              <span class="avatar-initial img-fluid rounded-circle w-auto h-auto bg-label-primary"><i
-                  class="icon-base ri ri-group-line icon-24px"></i></span>
-            </div>
-            <h4 class="mb-0">42/50</h4>
-          </div>
-          <h6 class="mb-0 fw-normal">Total Employees</h6>
-          <p class="mb-0 text-end">
 
-            <a href="#"><small class="text-body-info">View
-                All</small></a>
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-6 col-lg-3">
-      <div class="card card-border-shadow-warning h-100">
-        <div class="card-body">
-          <div class="d-flex align-items-center mb-2">
-            <div class="avatar me-4">
-              <span class="avatar-initial img-fluid rounded-circle w-auto h-auto bg-label-warning"><i
-                  class="icon-base ri ri-alert-line icon-24px"></i></span>
-            </div>
-            <h4 class="mb-0">28/50</h4>
-          </div>
-          <h6 class="mb-0 fw-normal">Attendance Overview</h6>
-          <p class="mb-0 text-end">
-
-            <a href="#"><small class="text-body-info">View
-                All</small></a>
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="col-sm-6 col-lg-3">
-      <div class="card card-border-shadow-danger h-100">
-        <div class="card-body">
-          <div class="d-flex align-items-center mb-2">
-            <div class="avatar me-4">
-              <span class="avatar-initial img-fluid rounded-circle w-auto h-auto bg-label-danger"><i
-                  class="icon-base ri ri-route-line icon-24px"></i></span>
-            </div>
-            <h4 class="mb-0">27</h4>
-          </div>
-          <h6 class="mb-0 fw-normal">Job Applicants</h6>
-          <p class="mb-0 text-end">
-
-            <a href="#"><small class="text-body-info">View
-                All</small></a>
-          </p>
-        </div>
-      </div>
-    </div> -->
-    <!-- <div class="col-sm-6 col-lg-3">
-      <div class="card card-border-shadow-info h-100">
-        <div class="card-body">
-          <div class="d-flex align-items-center mb-2">
-            <div class="avatar me-4">
-              <span class="avatar-initial img-fluid rounded-circle w-auto h-auto bg-label-info"><i
-                  class="icon-base ri ri-time-line icon-24px"></i></span>
-            </div>
-            <h4 class="mb-0">23/50</h4>
-          </div>
-          <h6 class="mb-0 fw-normal">Today's Attendance</h6>
-          <p class="mb-0 text-end">
-
-            <a href="#"><small class="text-body-info">View
-                All</small></a>
-          </p>
-        </div>
-      </div>
-    </div> -->
-    <!--/ Card Border Shadow -->
-    <!-- Vehicles overview -->
     <div class="col-lg-3 col-xxl-3 order-3 order-xxl-1">
       <div class="card h-100">
         <div class="card-header d-flex align-items-center justify-content-between">
@@ -128,8 +51,7 @@
         </div>
       </div>
     </div>
-    <!--/ Vehicles overview -->
-    <!-- Shipment statistics-->
+
     <div class="col-lg-3 col-xxl-3 order-3 order-xxl-1">
       <div class="card h-100">
         <div class="card-header d-flex align-items-center justify-content-between">
@@ -195,7 +117,7 @@
                   <h6 class="mb-1">{{item?.name}}</h6>
                   <small>{{item?.type}}</small>
                 </div>
-                <div class="badge bg-label-primary rounded-pill">{{item?.date }}</div>
+                <div class="badge bg-label-primary rounded-pill">{{item?.date |date:'dd-MM-yyyy' }}</div>
               </div>
             </li>
 
@@ -235,50 +157,12 @@
               </li>
               <div class="border-1 border-light border-dashed mb-2"></div>
             </ul>
-            <!-- <div class="border-1 border-light border-dashed mb-2"></div>
-            <ul class="timeline mb-0">
 
-              <li class="timeline-item ps-6 border-transparent">
-                <span class="timeline-indicator-advanced text-primary border-0 shadow-none">
-                  <i class="icon-base ri ri-map-pin-line"></i>
-                </span>
-                <div class="timeline-event ps-1">
-                  <div class="timeline-header">
-                    <small class="text-warning text-uppercase fw-medium">Priya Dubey</small>
-                  </div>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <h6 class="my-50 leave type">Casual Leave</h6>
-                    <small class="text-danger text-uppercase fw-medium text-end">Declined</small>
-                  </div>
-                  <p class="mb-0 small">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum, maxime?</p>
-                </div>
-              </li>
-            </ul>
-            <div class="border-1 border-light border-dashed mb-2"></div>
-            <ul class="timeline mb-0">
-
-              <li class="timeline-item ps-6 border-transparent">
-                <span class="timeline-indicator-advanced text-primary border-0 shadow-none">
-                  <i class="icon-base ri ri-map-pin-line"></i>
-                </span>
-                <div class="timeline-event ps-1">
-                  <div class="timeline-header">
-                    <small class="text-danger text-uppercase fw-medium">Salman Malik</small>
-                  </div>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <h6 class="my-50 leave type">Casual Leave</h6>
-                    <small class="text-success text-uppercase fw-medium text-end">Approved</small>
-                  </div>
-                  <p class="mb-0 small">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum, maxime?</p>
-                </div>
-              </li>
-            </ul> -->
           </div>
         </div>
       </div>
     </div>
-    <!--/ Shipment statistics -->
-    <!-- Delivery Performance -->
+
     <div class="col-lg-6 col-xxl-3 order-2 order-xxl-2">
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between">

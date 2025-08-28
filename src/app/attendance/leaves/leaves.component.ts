@@ -7,10 +7,11 @@ import { Notyf } from 'notyf';
 import Swal from 'sweetalert2';
 import { MasterService } from '../../services/master.service';
 import { StatusService } from '../../services/status.service';
+import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
 
 @Component({
   selector: 'app-leaves',
-    imports: [FormsModule, CommonModule, NgSelectModule,],
+  imports: [FormsModule, CommonModule, NgSelectModule, SearchPaginationComponent],
 
   templateUrl: './leaves.component.html',
   styleUrl: './leaves.component.css'
@@ -32,7 +33,7 @@ export class LeavesComponent {
   // onSubmit() {
   //    console.log(this.obj)
   // }
-  leaveList = [];
+  leaveList: any = [];
   editingId: number | null = null;
 
   constructor(
@@ -50,6 +51,54 @@ export class LeavesComponent {
 
     await this.fetchLeaveList();
   }
+
+  pageSize = 5;
+  currentPage = 1;
+  searchTerm = '';
+  itemsPerPage = 10;
+  onSearch(term: string) {
+    this.searchTerm = term.toLowerCase();
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.applyFilters();
+  }
+
+
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+  filteredDesignation: any = []
+  searchText: any = ''
+
+  applyFilters() {
+    let data = [...this.leaveList];
+
+
+    const value = this.searchTerm || '';
+    this.searchText = value.trim();
+
+    if (this.searchText === '') {
+      this.leaveList = [...this.originalList];
+    } else {
+      this.leaveList = this.originalList.filter((item: any) =>
+        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+
+
+    // pagination
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.filteredDesignation = data.slice(start, end);
+  }
+
   getStatusClass(status: any): string {
     switch (status) {
       case 'pending': return 'bg-light-warning';
@@ -58,45 +107,47 @@ export class LeavesComponent {
       default: return 'bg-light-secondary';
     }
   }
-
+  originalList: any = []
   async fetchLeaveList() {
     this.leaveList = []
+    this.originalList = []
     this.master.getLeaveList().subscribe(data => {
       console.log(data)
       if (data['status'] == true) {
         this.notyf.success(data['message']);
         this.leaveList = data.data;
-        console.log(this.leaveList,"attendance master list");
+        this.originalList = data.data;
+        console.log(this.leaveList, "attendance master list");
 
       } else {
         this.notyf.error(data['message']);
       }
     })
   }
-validateField(value: any, fieldName: string): boolean {
-  // Allow boolean false as valid, but disallow undefined, null, '', etc.
-  if (
-    value === null ||
-    value === undefined ||
-    (typeof value === 'string' && value.trim() === '') ||
-    (typeof value !== 'boolean' && !value)
-  ) {
-    this.notyf.error(`Please enter a valid ${fieldName}`);
-    return false;
+  validateField(value: any, fieldName: string): boolean {
+    // Allow boolean false as valid, but disallow undefined, null, '', etc.
+    if (
+      value === null ||
+      value === undefined ||
+      (typeof value === 'string' && value.trim() === '') ||
+      (typeof value !== 'boolean' && !value)
+    ) {
+      this.notyf.error(`Please enter a valid ${fieldName}`);
+      return false;
+    }
+    return true;
   }
-  return true;
-}
 
   onSubmit() {
-  if (
-      !this.validateField( this.obj.allowedPerYear, 'Allowed Leave Per Year') ||
+    if (
+      !this.validateField(this.obj.allowedPerYear, 'Allowed Leave Per Year') ||
       !this.validateField(this.obj.applyBeforeDays, 'Apply Before (in Days)') ||
       !this.validateField(this.obj.carryForward, 'Carry Forward Allowed') ||
-      !this.validateField(this.obj.genderRestriction, 'Applicable For')||
-      !this.validateField(this.obj.isPaid, 'isPaid')||
-      !this.validateField(this.obj.leaveCode, 'Leave Code')||
-      !this.validateField(this.obj.leaveName, 'Leave Name')||
-      !this.validateField(this.obj.maxCarryForward, 'Max Carry Forward Days')||
+      !this.validateField(this.obj.genderRestriction, 'Applicable For') ||
+      !this.validateField(this.obj.isPaid, 'isPaid') ||
+      !this.validateField(this.obj.leaveCode, 'Leave Code') ||
+      !this.validateField(this.obj.leaveName, 'Leave Name') ||
+      !this.validateField(this.obj.maxCarryForward, 'Max Carry Forward Days') ||
       !this.validateField(this.obj.requiresApproval, 'Requires Approval ')
     ) {
       return;
