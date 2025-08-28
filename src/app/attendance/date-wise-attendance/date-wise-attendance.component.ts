@@ -253,7 +253,7 @@ export class DateWiseAttendanceComponent {
       if (data['status'] == true) {
         this.notyf.success(data['message']);
         this.EmpList = data.data;
-        console.log(this.EmpList, "attendance master list");
+        this.EmpList = this.EmpList.filter((item: any) => item.label != 'All')
 
       }
       else if (data['status'] == 'expired') {
@@ -301,8 +301,28 @@ export class DateWiseAttendanceComponent {
     }
     return true;
   }
-    newObj:any={}
+  newObj: any = {}
   updateFlag: boolean = false;
+    applyUpdate(item: any) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you Want to Update this",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Update it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+         item.editable = true // toggle enable/disable
+
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+ item.editable = false
+      }
+    });
+
+  }
+
   update(data: any) {
     Swal.fire({
       title: "Are you sure?",
@@ -317,10 +337,10 @@ export class DateWiseAttendanceComponent {
 
         this.newObj = data;
         this.editingId = data.id;
-       this.newObj.checkIn=`${data?.date} ${data?.checkIn}`
-        this.newObj.checkOut=`${data?.date} ${data?.checkOut}`
-       this.newObj.startDate = new Date(data.startDate);
-       this.newObj.endDate = new Date(data.endDate);
+        this.newObj.checkIn = `${data?.date} ${data?.checkIn}`
+        this.newObj.checkOut = `${data?.date} ${data?.checkOut}`
+        this.newObj.startDate = new Date(data.startDate);
+        this.newObj.endDate = new Date(data.endDate);
         this.generateDayList(this.newObj.startDate, this.newObj.endDate);
         this.UpdateAttendance()
         // Swal.fire({

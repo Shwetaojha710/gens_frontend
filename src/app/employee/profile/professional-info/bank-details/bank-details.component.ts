@@ -128,7 +128,7 @@ this.obj['accountNumber']=this.obj['accountNumber'].toString()
 
       if (status == true) {
            this.desigantionList = []
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.desigantionList = data.data;
       } else {
         this.notyf.error(data['message']);

@@ -54,7 +54,7 @@ export class AssignLeaveComponent {
     this.master.getLeaveTypeList().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.leaveTypeList = data.data;
 
       }
@@ -73,7 +73,7 @@ export class AssignLeaveComponent {
     this.master.getAttendanceYear().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.yearList = data.data;
 
       }
@@ -154,7 +154,7 @@ export class AssignLeaveComponent {
 
       if (status == true) {
         this.LeaveList = []
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
 
         this.LeaveList = data.data;
         this.originalList = this.LeaveList

@@ -1,4 +1,4 @@
-<div class="container-fluid mt-5">
+<div class="container-xxl mt-5">
   <div class="row mb-6" *ngIf="createFlag">
     <div class="col-xxl">
       <div class="card">
@@ -748,7 +748,12 @@
                 <td>
                   <div class="d-flex align-items-center">
                     <div class="avatar avatar-sm me-4">
-                      <img
+                      <img *ngIf="item?.['gender']=='Female'"
+                        src="../../assets/img/avatars/2.png"
+                        alt="Avatar"
+                        class="rounded-circle"
+                      />
+                         <img *ngIf="item?.['gender']=='Male'"
                         src="../../assets/img/avatars/1.png"
                         alt="Avatar"
                         class="rounded-circle"
@@ -758,7 +763,7 @@
                       <h6 class="mb-0 text-truncate">
                         {{ item["firstName"] }} {{ item["lastName"] }}
                       </h6>
-                      <small class="text-truncate">Trainee</small>
+                      <small class="text-truncate">{{item?.['designation']}}</small>
                     </div>
                   </div>
                 </td>

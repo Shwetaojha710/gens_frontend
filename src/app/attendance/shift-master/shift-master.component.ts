@@ -50,11 +50,6 @@ export class ShiftMasterComponent {
   }
 
   async ngOnInit() {
-    this.departmentForm = this.fb.group({
-      name: ['', Validators.required],
-      description: ['']
-    });
-
     await this.fetchshifts();
   }
   getStatusClass(status: any): string {

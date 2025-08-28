@@ -59,7 +59,7 @@ export class QualificationComponent {
     this.docTypeList = []
     this.Documentervice.getDocumentDD().subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.docTypeList = data.data;
       } else {
         this.notyf.error(data['message']);
@@ -82,7 +82,7 @@ export class QualificationComponent {
     console.log(obj, "object data ")
     this.Documentervice.getDocument(obj).subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.DocumentList = data.data;
         for (let i = 0; i < this.DocumentList.length; i++) {
           this.DocumentList[i]['doc_name'] = `${this.baseurl}/${this.DocumentList[i]['doc_name']}`

@@ -322,7 +322,7 @@ resizeAndCompressImage(
     console.log(obj, "object data ")
     this.employeeService.getUploadImage(obj).subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.DocumentList = data.data;
         console.log(this.DocumentList);
 

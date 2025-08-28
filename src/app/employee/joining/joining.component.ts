@@ -335,7 +335,7 @@ export class JoiningComponent {
     this.originalList = []
     this.employeeService.getEmp().subscribe((response: any) => {
       if (response && response.data && response.status === true) {
-        this.notyf.success(response.message || 'Employees loaded successfully');
+        // this.notyf.success(response.message || 'Employees loaded successfully');
         this.employees = [];
         this.cardData = response.data.cardData
         this.employees = response.data.formattedEmps || [];
