@@ -185,7 +185,73 @@
           </button>
         </h5>
 
-        <div class="table-responsive text-nowrap">
+           <app-search-pagination
+          [totalItems]="applyLeaveList.length"
+          [pageSize]="itemsPerPage"
+          [currentPage]="currentPage"
+          (search)="onSearch($event)"
+          (pageChange)="onPageChange($event)"
+          (pageSizeChange)="onPageSizeChange($event)"
+        >
+          <table class="table table-striped dataTable">
+            <thead>
+              <tr>
+                <th>SI.No</th>
+                <th>Employee Name</th>
+                <th>Leave Type</th>
+                <th>From Date</th>
+                <th>To Date</th>
+                <th>Days</th>
+                <th>Duration Type</th>
+                <th>Reason</th>
+                <th>Status</th>
+                <th>createdAt</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+              <tr *ngFor="let item of applyLeaveList; let i = index">
+                <th scope="row">{{ i + 1 }}</th>
+                <td>{{ item["employeeName"] }}
+                    <br />
+                  <span class="badge rounded-pill bg-label-primary">
+                    {{item["employeeEmail"]}}
+                  </span>
+                </td>
+                <td>{{ item["leaveName"] }}
+                  <br>
+                      <span class="badge rounded-pill bg-label-primary">
+                    {{item["leaveCode"]}}
+                  </span>
+                </td>
+                <td>{{ item["fromDate"] }}</td>
+                <td>{{ item["toDate"] }}</td>
+                <td>{{ item["days"] }}</td>
+                <td>{{ item["duration_type_name"] }}</td>
+                <td>{{ item["reason"] }}</td>
+                <td>{{ item["status"] }}</td>
+
+                <td>{{ item["createdAt"] }}</td>
+
+                <td>
+                  <button type="button" class="btn btn-outline-success btn-sm" *ngIf="item.status=='pending'" (click)="statuschange(item,'approved')" >
+                    <i class="fas fa-check"></i>
+                  </button>
+                  &nbsp;
+                  <button  *ngIf="item.status=='pending'"
+                    type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    (click)="statuschange(item,'rejected')"
+                  >
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </app-search-pagination>
+
+        <!-- <div class="table-responsive text-nowrap">
           <table class="table table-hover">
             <thead>
               <tr>
@@ -242,7 +308,7 @@
               </tr>
             </tbody>
           </table>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

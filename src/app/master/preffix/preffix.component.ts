@@ -8,11 +8,12 @@ import Swal from 'sweetalert2';
 import { MasterService } from '../../services/master.service';
 import { StatusService } from '../../services/status.service';
 import { ValidationUtil } from '../../shared/utils/validation.util';
+import { SearchPaginationComponent } from '../search-pagination/search-pagination.component';
 
 @Component({
   selector: 'app-preffix',
   imports: [NgSelectModule,
-    FormsModule, CommonModule],
+    FormsModule, CommonModule,SearchPaginationComponent],
   templateUrl: './preffix.component.html',
   styleUrl: './preffix.component.css'
 })
@@ -32,7 +33,7 @@ export class PreffixComponent {
   //    console.log(this.obj)
   // }
   PrefixForm!: FormGroup;
-  PrefixList = [];
+  PrefixList:any = [];
   editingId: number | null = null;
 
   constructor(
@@ -56,6 +57,52 @@ export class PreffixComponent {
     });
 
     await this.fetchprefix();
+  }
+    pageSize = 5;
+  currentPage = 1;
+  searchTerm = '';
+  itemsPerPage = 10;
+  onSearch(term: string) {
+    this.searchTerm = term.toLowerCase();
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.applyFilters();
+  }
+
+
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+  filteredDesignation: any = []
+  searchText: any = ''
+originalList:any = []
+  applyFilters() {
+    let data = [...this.PrefixList];
+
+
+    const value = this.searchTerm || '';
+    this.searchText = value.trim();
+
+    if (this.searchText === '') {
+      this.PrefixList = [...this.originalList];
+    } else {
+      this.PrefixList = this.originalList.filter((item: any) =>
+        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+
+
+    // pagination
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.filteredDesignation = data.slice(start, end);
   }
   getStatusClass(status: any): string {
     switch (status) {

@@ -73,7 +73,66 @@
           </button>
         </h5>
 
-       <!-- <table class="table table-stripped">
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-stripped table-bordered">
+              <thead>
+                <tr>
+                  <th>Shift Type</th>
+                  <th colspan="8" style="text-align: center">Day and Timing</th>
+                </tr>
+                <tr>
+                  <th>Crew</th>
+                  <th>Monday</th>
+                  <th>Tuesday</th>
+                  <th>Wednesday</th>
+                  <th>Thursday</th>
+                  <th>Friday</th>
+                  <th>Saturday</th>
+                  <th>Sunday</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <tr *ngFor="let shiftGroup of shiftList">
+                  <td>{{ shiftGroup.shift }}</td>
+                  <td *ngFor="let day of weekDays; let i = index">
+                    <span>
+  {{ shiftGroup.shifts[i]?.is_week_off == "Working"
+      ? (formatTime(shiftGroup.shifts[i]?.startTime) + " to " + formatTime(shiftGroup.shifts[i]?.endTime))
+      : "Week Off" }}
+
+                    </span>
+                       <br>
+                       <span class="badge bg-label-success  overflow-hidden px-2" [ngClass]="getStatusClass(shiftGroup.shifts[i]?.status)">
+                            {{ shiftGroup.shifts[i]?.status }}
+                      </span>
+                  </td>
+                  <td>
+                    <button
+                      type="button"
+                      class="btn btn-outline-success btn-sm"
+                      (click)="update(shiftGroup)"
+                    >
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    &nbsp;
+                    <button
+                      type="button"
+                      class="btn btn-outline-danger btn-sm"
+                      (click)="delete(shiftGroup)"
+                    >
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- <table class="table table-stripped">
           <thead class="text-center">
             <tr>
               <th rowspan="2" style="vertical-align: middle">S.No.</th>
@@ -131,62 +190,6 @@
             </ng-container>
           </tbody>
         </table> -->
-
-
-        <div class="card-body">
-          <div class="table-responsive">
-          <table class="table table-stripped table-bordered">
-            <thead>
-              <tr>
-                <th>Shift Type</th>
-                <th colspan="7" style="text-align: center;">Day and Timing</th>
-              </tr>
-              <tr>
-                <th>Crew</th>
-                <th>Monday</th>
-                <th>Tuesday</th>
-                <th>Wednesday</th>
-                <th>Thursday</th>
-                <th>Friday</th>
-                <th>Saturday</th>
-                <th>Sunday</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Days</td>
-                <td>09:00 to 18:30</td>
-                <td>09:00 to 18:30</td>
-                <td>09:00 to 18:30</td>
-                <td>09:00 to 18:30</td>
-                <td>09:00 to 18:30</td>
-                <td>Week Off</td>
-               <td>Week Off</td>
-              </tr>
-              <tr>
-                <td>Afternoon</td>
-                <td>09:00 to 18:30</td>
-                <td>09:00 to 18:30</td>
-                <td>09:00 to 18:30</td>
-                <td>09:00 to 18:30</td>
-                <td>09:00 to 18:30</td>
-                <td>Week Off</td>
-               <td>Week Off</td>
-              </tr>
-              <tr>
-                <td>Nights</td>
-                <td>09:00 to 18:30</td>
-                <td>09:00 to 18:30</td>
-                <td>09:00 to 18:30</td>
-                <td>09:00 to 18:30</td>
-                <td>09:00 to 18:30</td>
-                <td>Week Off</td>
-               <td>Week Off</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-        </div>
 
         <!-- <div class="table-responsive text-nowrap">
           <table class="table table-hover">

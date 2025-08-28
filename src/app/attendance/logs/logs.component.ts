@@ -98,27 +98,42 @@ export class LogsComponent {
     this.updateDisplayedList();
   }
   applyFilter(event: any) {
-    this.searchText = event?.target.value;
+  const value = event?.target?.value || '';
+  this.searchText = value.trim();
 
-    if (!this.searchText || this.searchText.trim() === '') {
-      this.AttendanceMasterList = [...this.originalList];
-        this.updateDisplayedList();
-      return;
-    }
-
-    const search = this.searchText.toLowerCase();
-
-    this.AttendanceMasterList = this.originalList.filter((item: any) => {
-      return (
-        item.employee_name.toLowerCase().includes(search) ||
-        item.data.some((d: any) =>
-          d.date?.toLowerCase().includes(search) ||
-          d.status?.toLowerCase().includes(search)
-        )
-      );
-    });
-    this.currentPage = 1;
+  if (this.searchText === '') {
+    this.AttendanceMasterList = [...this.originalList];
+  } else {
+    this.AttendanceMasterList = this.originalList.filter((item: any) =>
+      JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+    );
   }
+
+  // this.updateDisplayedList();
+}
+
+  // applyFilter(event: any) {
+  //   this.searchText = event?.target.value;
+
+  //   if (!this.searchText || this.searchText.trim() === '') {
+  //     this.AttendanceMasterList = [...this.originalList];
+  //       this.updateDisplayedList();
+  //     return;
+  //   }
+
+  //   const search = this.searchText.toLowerCase();
+
+  //   this.AttendanceMasterList = this.originalList.filter((item: any) => {
+  //     return (
+  //       item.employee_name.toLowerCase().includes(search) ||
+  //       item.data.some((d: any) =>
+  //         d.date?.toLowerCase().includes(search) ||
+  //         d.status?.toLowerCase().includes(search)
+  //       )
+  //     );
+  //   });
+  //   this.currentPage = 1;
+  // }
   async ngOnInit() {
 
     await this.empList();

@@ -10,10 +10,11 @@ import { EmployeeService } from '../../services/employee.service';
 import { StatusService } from '../../services/status.service';
 import { MasterService } from '../../services/master.service';
 import { ValidationUtil } from '../../shared/utils/validation.util';
+import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
 
 @Component({
   selector: 'app-salary-master',
-  imports: [FormsModule, CommonModule, NgSelectModule,],
+  imports: [FormsModule, CommonModule, NgSelectModule,SearchPaginationComponent],
   templateUrl: './salary-master.component.html',
   styleUrl: './salary-master.component.css'
 })
@@ -32,7 +33,7 @@ export class SalaryMasterComponent {
   // onSubmit() {
   //    console.log(this.obj)
   // }
-  AttendanceMasterList = [];
+  AttendanceMasterList:any = [];
   editingId: number | null = null;
 
   constructor(
@@ -49,7 +50,56 @@ export class SalaryMasterComponent {
 
 
     await this.fetchSalaryMaster();
+
   }
+
+    pageSize = 5;
+  currentPage = 1;
+  searchTerm = '';
+  itemsPerPage = 10;
+  onSearch(term: string) {
+    this.searchTerm = term.toLowerCase();
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.applyFilters();
+  }
+
+
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+  filteredDesignation: any = []
+  searchText: any = ''
+originalList :any = []
+  applyFilters() {
+    let data = [...this.AttendanceMasterList];
+
+
+    const value = this.searchTerm || '';
+    this.searchText = value.trim();
+
+    if (this.searchText === '') {
+      this.AttendanceMasterList = [...this.originalList];
+    } else {
+      this.AttendanceMasterList = this.originalList.filter((item: any) =>
+        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+
+
+    // pagination
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.filteredDesignation = data.slice(start, end);
+  }
+
   getStatusClass(status: any): string {
     switch (status) {
       case 'pending': return 'bg-light-warning';
@@ -66,6 +116,7 @@ export class SalaryMasterComponent {
       if (data['status'] == true) {
         this.notyf.success(data['message']);
         this.AttendanceMasterList = data.data;
+        this.originalList = data.data;
         console.log(this.AttendanceMasterList,"attendance master list");
 
       } else {

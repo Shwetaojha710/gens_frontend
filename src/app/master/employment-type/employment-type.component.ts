@@ -8,11 +8,11 @@ import Swal from 'sweetalert2';
 import { MasterService } from '../../services/master.service';
 import { StatusService } from '../../services/status.service';
 import { ValidationUtil } from '../../shared/utils/validation.util';
-
+import { SearchPaginationComponent } from '../search-pagination/search-pagination.component';
 @Component({
   selector: 'app-employment-type',
   imports: [NgSelectModule,
-    FormsModule, CommonModule],
+    FormsModule, CommonModule,SearchPaginationComponent],
   templateUrl: './employment-type.component.html',
   styleUrl: './employment-type.component.css'
 })
@@ -31,7 +31,7 @@ export class EmploymentTypeComponent {
   //    console.log(this.obj)
   // }
   EmployeeForm!: FormGroup;
-  EmployeeList = [];
+  EmployeeList :any= [];
   editingId: number | null = null;
 
   constructor(
@@ -56,6 +56,54 @@ export class EmploymentTypeComponent {
 
     await this.fetchEmployee();
   }
+
+    pageSize = 5;
+  currentPage = 1;
+  searchTerm = '';
+  itemsPerPage = 10;
+  onSearch(term: string) {
+    this.searchTerm = term.toLowerCase();
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.applyFilters();
+  }
+
+
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+  filteredDesignation: any = []
+  searchText: any = ''
+
+  applyFilters() {
+    let data = [...this.EmployeeList];
+
+
+    const value = this.searchTerm || '';
+    this.searchText = value.trim();
+
+    if (this.searchText === '') {
+      this.EmployeeList = [...this.originalList];
+    } else {
+      this.EmployeeList = this.originalList.filter((item: any) =>
+        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+
+
+    // pagination
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.filteredDesignation = data.slice(start, end);
+  }
+
   getStatusClass(status: any): string {
     switch (status) {
       case 'pending': return 'bg-light-warning';
@@ -64,13 +112,15 @@ export class EmploymentTypeComponent {
       default: return 'bg-light-secondary';
     }
   }
-
+originalList:any = []
   async fetchEmployee() {
     this.EmployeeList = []
+    this.originalList = []
     this.master.getEmployee().subscribe(data => {
       if (data['status'] == true) {
         this.notyf.success(data['message']);
         this.EmployeeList = data.data;
+        this.originalList = data.data;
       } else {
         this.notyf.error(data['message']);
       }

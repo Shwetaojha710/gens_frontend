@@ -19,10 +19,9 @@
               <li
                 class="menu-item"
                 [ngClass]="{
-                  active: menu.active,
-                  open: isAnyChildActive(menu.children || [])
+                  active: menu.active
                 }"
-                (click)="toggleMenu(menu)"
+
               >
                 <a
                   href="javascript:void(0)"

@@ -50,6 +50,7 @@ export class LoginComponent {
         if (data.status === true) {
           localStorage.setItem('token', data.data.token);
            localStorage.setItem("base_url", data.data.baseUrl);
+           localStorage.setItem("PORT", data.data.PORT);
           this.notyf.success(data.message);
           this.router.navigate(['layout/dashboard']);
         } else {
