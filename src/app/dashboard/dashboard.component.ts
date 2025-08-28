@@ -1,10 +1,11 @@
 import { Component, ViewChild } from '@angular/core';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { HeaderComponent } from '../include/header/header.component';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { EmployeeComponent } from '../employee/employee.component';
 import { NgApexchartsModule } from 'ng-apexcharts';
-
+import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
 import {
   ApexAxisChartSeries,
   ApexChart,
@@ -13,65 +14,111 @@ import {
   ApexXAxis,
   ApexPlotOptions
 } from "ng-apexcharts";
-
+import { DashboardService } from '../services/dashboard.service';
+import { Notyf } from 'notyf';
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
   dataLabels: ApexDataLabels;
   plotOptions: ApexPlotOptions;
   xaxis: ApexXAxis;
-  colors?: string[]; // ✅ Added optional colors property
+  colors?: string[];
 };
 
 @Component({
   selector: 'app-dashboard',
-  imports: [NavbarComponent, HeaderComponent, RouterModule, NgApexchartsModule],
+  imports: [RouterModule, NgApexchartsModule, CommonModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
   @ViewChild("chart") chart: ChartComponent | undefined;
-  public chartOptions: Partial<ChartOptions>;
+  notyf: Notyf = new Notyf();
+  public chartOptions!: Partial<ChartOptions>;
 
-  constructor() {
-    this.chartOptions = {
-      series: [
-        {
-          name: "basic",
-          data: [2, 5, 4, 3, 1, 2, 3, 11, 12, 10]
-        }
-      ],
-      chart: {
-        type: "bar",
-        height: 300
-      },
-      plotOptions: {
-        bar: {
-          horizontal: true,
-          distributed: true  // ✅ Each bar gets its own color
-        }
-      },
-      dataLabels: {
-        enabled: false
-      },
-      xaxis: {
-        categories: [
-          "UI/UX Designer",
-          "React Developer",
-          "Dot Net Developer",
-          "AI/ML Developer",
-          "Application Tester",
-          "Sales",
-          "HR Management",
-          "BDE",
-          "Frontend Developer",
-          "Trainee"
-        ]
-      },
-      colors: [
-        "#FF5733", "#33FF57", "#3357FF", "#F39C12", "#8E44AD",
-        "#2ECC71", "#E74C3C", "#3498DB", "#9B59B6", "#34495E"
-      ]
-    };
+  constructor(private dashboardService: DashboardService, private router: Router) {
+    // this.chartOptions = {
+    //   series: [
+    //     {
+    //       name: "basic",
+    //       data: [2, 5, 4, 3, 1, 2, 3, 11, 12, 10]
+    //     }
+    //   ],
+    //   chart: {
+    //     type: "bar",
+    //     height: 300
+    //   },
+    //   plotOptions: {
+    //     bar: {
+    //       horizontal: true,
+    //       distributed: true  // ✅ Each bar gets its own color
+    //     }
+    //   },
+    //   dataLabels: {
+    //     enabled: false
+    //   },
+    //   xaxis: {
+    //     categories: [
+    //       "UI/UX Designer",
+    //       "React Developer",
+    //       "Dot Net Developer",
+    //       "AI/ML Developer",
+    //       "Application Tester",
+    //       "Sales",
+    //       "HR Management",
+    //       "BDE",
+    //       "Frontend Developer",
+    //       "Trainee"
+    //     ]
+    //   },
+    //   colors: [
+    //     "#FF5733", "#33FF57", "#3357FF", "#F39C12", "#8E44AD",
+    //     "#2ECC71", "#E74C3C", "#3498DB", "#9B59B6", "#34495E"
+    //   ]
+    // };
   }
+  stats: any = []
+  employeeList: any = []
+  holidayList: any = []
+  leaveList: any = []
+  baseurl: any;
+  Event: any = []
+  ngOnInit(): void {
+    this.baseurl = localStorage.getItem('base_url')?.replace(/["\\,]/g, '') || '';
+    this.stats = []
+    this.Event = []
+    this.employeeList = []
+    this.chartOptions = {}
+    this.holidayList = []
+    this.leaveList = []
+    this.dashboardService.getDashboardData().subscribe((res) => {
+      if (res.status == true) {
+        this.notyf.success(res.message || 'Dashboard data loaded successfully')
+        this.stats = res.data.stats;
+        this.chartOptions = res.data.chartOptions
+        this.employeeList = res.data.employees
+        this.leaveList = res.data.leaves
+        this.holidayList = res.data.holidays
+        this.holidayList = this.holidayList.map((item: any) => {
+          return {
+            ...item,
+            image: `${this.baseurl}/${item['image']}`
+          }
+        })
+        this.Event = res.data
+      } else if (res.status == 'expired') {
+        this.router.navigate(['login'])
+      } else {
+        this.notyf.error(res.message || 'Something went wrong')
+        this.stats = []
+        this.Event = []
+        this.employeeList = []
+        this.chartOptions = {}
+        this.holidayList = []
+        this.leaveList = []
+
+      }
+    });
+  }
+
 }

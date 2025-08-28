@@ -69,7 +69,11 @@ HolidayList: any = [];
            for (let i = 0; i < this.HolidayList.length; i++) {
           this.HolidayList[i]['image'] = `${this.baseurl}/${this.HolidayList[i]['image']}`
         }
-      } else {
+      }
+      else if(data['status']=='expired'){
+        this.router.navigate(['login'])
+      }
+      else {
         this.notyf.error(data['message']);
       }
     });
@@ -85,7 +89,11 @@ HolidayList: any = [];
 
         this.HolidayTypeList = data.data;
 
-      } else {
+      }
+        else if(data['status']=='expired'){
+        this.router.navigate(['login'])
+      }
+      else {
         this.notyf.error(data['message']);
       }
     });

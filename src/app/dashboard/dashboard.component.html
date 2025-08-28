@@ -1,6 +1,32 @@
 <div class="container-fluid  mt-5">
   <div class="row g-6">
-    <div class="col-sm-6 col-lg-3">
+
+  <div class="col-sm-6 col-lg-3" *ngFor="let item of stats">
+    <div class="card h-100" [ngClass]="'card-border-shadow-' + item.color">
+      <div class="card-body">
+        <div class="d-flex align-items-center mb-2">
+          <div class="avatar me-4">
+            <span
+              class="avatar-initial img-fluid rounded-circle w-auto h-auto"
+              [ngClass]="'bg-label-' + item.color"
+            >
+              <i class="icon-base ri icon-24px" [ngClass]="item.icon"></i>
+            </span>
+          </div>
+          <h4 class="mb-0">{{ item.value }}</h4>
+        </div>
+        <h6 class="mb-0 fw-normal">{{ item.title }}</h6>
+        <p class="mb-0 text-end">
+          <a [routerLink]="item.link">
+            <small class="text-body-info">View All</small>
+          </a>
+        </p>
+      </div>
+    </div>
+  </div>
+
+
+    <!-- <div class="col-sm-6 col-lg-3">
       <div class="card card-border-shadow-primary h-100">
         <div class="card-body">
           <div class="d-flex align-items-center mb-2">
@@ -56,8 +82,8 @@
           </p>
         </div>
       </div>
-    </div>
-    <div class="col-sm-6 col-lg-3">
+    </div> -->
+    <!-- <div class="col-sm-6 col-lg-3">
       <div class="card card-border-shadow-info h-100">
         <div class="card-body">
           <div class="d-flex align-items-center mb-2">
@@ -75,7 +101,7 @@
           </p>
         </div>
       </div>
-    </div>
+    </div> -->
     <!--/ Card Border Shadow -->
     <!-- Vehicles overview -->
     <div class="col-lg-3 col-xxl-3 order-3 order-xxl-1">
@@ -116,85 +142,23 @@
         </div>
         <div class="card-body">
           <ul class="p-0 m-0">
-            <li class="d-flex align-items-center mb-6">
-              <div class="avatar flex-shrink-0 me-4">
-                <img src="../../assets/img/avatars/4.png" alt="avatar" class="img-fluid rounded-circle w-auto h-auto">
-              </div>
-              <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                <div class="me-2">
-                  <h6 class="mb-0">Bharti Verma</h6>
-                  <small class="d-flex align-items-center">
+           <li class="d-flex align-items-center mb-6" *ngFor="let item of employeeList">
+  <div class="avatar flex-shrink-0 me-4">
+    <img src="../../assets/img/avatars/5.png" alt="avatar" class="img-fluid rounded-circle w-auto h-auto">
+  </div>
+  <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+    <div class="me-2">
+      <h6 class="mb-0">{{ item.name }}</h6>
+      <small class="d-flex align-items-center">
+        <span class="text-{{ item.badgeColor }} fw-medium">{{ item.role }}</span>
+      </small>
+    </div>
+    <div class="badge bg-label-{{ item.badgeColor }} rounded-pill">
+      {{ item.badge }}
+    </div>
+  </div>
+</li>
 
-                    <span class="text-primary fw-medium">React Developer</span>
-                  </small>
-                </div>
-                <div class="badge bg-label-primary rounded-pill">React Developer</div>
-              </div>
-            </li>
-            <li class="d-flex align-items-center mb-6">
-              <div class="avatar flex-shrink-0 me-4">
-                <img src="../../assets/img/avatars/5.png" alt="avatar" class="img-fluid rounded-circle w-auto h-auto">
-              </div>
-              <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                <div class="me-2">
-                  <h6 class="mb-0">Abhishek Shukla</h6>
-                  <small class="d-flex align-items-center">
-
-                    <span class="text-warning fw-medium">Team Lead (Open Source)</span>
-                  </small>
-                </div>
-                <div class="badge bg-label-warning rounded-pill">Software
-                  Developer</div>
-              </div>
-            </li>
-            <li class="d-flex align-items-center mb-6">
-              <div class="avatar flex-shrink-0 me-4">
-                <img src="../../assets/img/avatars/3.png" alt="avatar" class="img-fluid rounded-circle w-auto h-auto">
-              </div>
-              <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                <div class="me-2">
-                  <h6 class="mb-0">Shashank Pandey</h6>
-                  <small class="d-flex align-items-center">
-
-                    <span class="text-info fw-medium">UI/UX Designer</span>
-                  </small>
-                </div>
-                <div class="badge bg-label-info rounded-pill">UI/UX
-                  Designer</div>
-              </div>
-            </li>
-            <li class="d-flex align-items-center mb-6">
-              <div class="avatar flex-shrink-0 me-4">
-                <img src="../../assets/img/avatars/14.png" alt="avatar" class="img-fluid rounded-circle w-auto h-auto">
-              </div>
-              <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                <div class="me-2">
-                  <h6 class="mb-0">Abhishek Srivastava </h6>
-                  <small class="d-flex align-items-center">
-
-                    <span class="text-danger fw-medium">Team Lead (Mobile)</span>
-                  </small>
-                </div>
-                <div class="badge bg-label-danger rounded-pill">Sales
-                  Manager</div>
-              </div>
-            </li>
-            <li class="d-flex align-items-center mb-6">
-              <div class="avatar flex-shrink-0 me-4">
-                <img src="../../assets/img/avatars/14.png" alt="avatar" class="img-fluid rounded-circle w-auto h-auto">
-              </div>
-              <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                <div class="me-2">
-                  <h6 class="mb-0">Dainik Kumar</h6>
-                  <small class="d-flex align-items-center">
-
-                    <span class="text-success fw-medium">Team Lead (Dot NET)</span>
-                  </small>
-                </div>
-                <div class="badge bg-label-success rounded-pill">Software
-                  Engineer</div>
-              </div>
-            </li>
           </ul>
         </div>
       </div>
@@ -212,86 +176,29 @@
         </div>
         <div class="card-body">
           <ul class="p-0 m-0">
-            <li class="d-flex align-items-center mb-6">
+            <li class="d-flex align-items-center mb-6" *ngFor="let item of holidayList;">
               <div class="avatar avatar-md flex-shrink-0 me-4">
                 <div class="avatar-initial bg-lightest img-fluid rounded-circle w-auto h-auto">
                   <div>
-                    <img src="../../assets/img/icons/misc/3d-illustration.png" alt="User" class="h-25">
+                    <img
+                    [src]="item['image']"
+                    alt="Document"
+                    width="100"
+                    height="auto"
+                    style="cursor: pointer"
+                    >
                   </div>
                 </div>
               </div>
               <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                 <div class="me-2">
-                  <h6 class="mb-1">Holi</h6>
-                  <small>Ristricted</small>
+                  <h6 class="mb-1">{{item?.name}}</h6>
+                  <small>{{item?.type}}</small>
                 </div>
-                <div class="badge bg-label-primary rounded-pill">10/03/2026</div>
+                <div class="badge bg-label-primary rounded-pill">{{item?.date }}</div>
               </div>
             </li>
-            <li class="d-flex align-items-center mb-6">
-              <div class="avatar avatar-md flex-shrink-0 me-4">
-                <div class="avatar-initial bg-lightest img-fluid rounded-circle w-auto h-auto">
-                  <div>
-                    <img src="../../assets/img/icons/misc/finance-app-design.png" alt="User" class="h-25">
-                  </div>
-                </div>
-              </div>
-              <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                <div class="me-2">
-                  <h6 class="mb-1">Rakshabandhan</h6>
-                  <small>Gezetted</small>
-                </div>
-                <div class="badge bg-label-primary rounded-pill">09/08/2025</div>
-              </div>
-            </li>
-            <li class="d-flex align-items-center mb-6">
-              <div class="avatar avatar-md flex-shrink-0 me-4">
-                <div class="avatar-initial bg-lightest img-fluid rounded-circle w-auto h-auto">
-                  <div>
-                    <img src="../../assets/img/icons/misc/3d-illustration.png" alt="User" class="h-25">
-                  </div>
-                </div>
-              </div>
-              <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                <div class="me-2">
-                  <h6 class="mb-1">Holi</h6>
-                  <small>Ristricted</small>
-                </div>
-                <div class="badge bg-label-primary rounded-pill">10/03/2026</div>
-              </div>
-            </li>
-            <li class="d-flex align-items-center mb-6">
-              <div class="avatar avatar-md flex-shrink-0 me-4">
-                <div class="avatar-initial bg-lightest img-fluid rounded-circle w-auto h-auto">
-                  <div>
-                    <img src="../../assets/img/icons/misc/finance-app-design.png" alt="User" class="h-25">
-                  </div>
-                </div>
-              </div>
-              <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                <div class="me-2">
-                  <h6 class="mb-1">Rakshabandhan</h6>
-                  <small>Gezetted</small>
-                </div>
-                <div class="badge bg-label-primary rounded-pill">09/08/2025</div>
-              </div>
-            </li>
-            <li class="d-flex align-items-center">
-              <div class="avatar avatar-md flex-shrink-0 me-4">
-                <div class="avatar-initial bg-lightest img-fluid rounded-circle w-auto h-auto">
-                  <div>
-                    <img src="../../assets/img/icons/misc/ecommerce-website.png" alt="User" class="h-25">
-                  </div>
-                </div>
-              </div>
-              <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                <div class="me-2">
-                  <h6 class="mb-1">Holi</h6>
-                  <small>Ristricted</small>
-                </div>
-                <div class="badge bg-label-primary rounded-pill">10/03/2026</div>
-              </div>
-            </li>
+
           </ul>
         </div>
       </div>
@@ -309,7 +216,7 @@
         </div>
         <div class="card-body">
           <div>
-            <ul class="timeline mb-0">
+            <ul class="timeline mb-0" *ngFor="let item of leaveList;">
 
               <li class="timeline-item ps-6 border-transparent">
                 <span class="timeline-indicator-advanced text-primary border-0 shadow-none">
@@ -317,17 +224,18 @@
                 </span>
                 <div class="timeline-event ps-1">
                   <div class="timeline-header">
-                    <small class="text-primary text-uppercase fw-medium">Shashank Pandey</small>
+                    <small class="text-primary text-uppercase fw-medium">{{item?.name}}</small>
                   </div>
                   <div class="d-flex justify-content-between align-items-center">
-                    <h6 class="my-50 leave type">Casual Leave</h6>
-                    <small class="text-success text-uppercase fw-medium text-end">Approved</small>
+                    <h6 class="my-50 leave type">{{item?.type}}</h6>
+                    <small class="text-success text-uppercase fw-medium text-end">{{item?.status}}</small>
                   </div>
-                  <p class="mb-0 small">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum, maxime?</p>
+                  <p class="mb-0 small">{{item?.reason}}</p>
                 </div>
               </li>
+              <div class="border-1 border-light border-dashed mb-2"></div>
             </ul>
-            <div class="border-1 border-light border-dashed mb-2"></div>
+            <!-- <div class="border-1 border-light border-dashed mb-2"></div>
             <ul class="timeline mb-0">
 
               <li class="timeline-item ps-6 border-transparent">
@@ -364,7 +272,7 @@
                   <p class="mb-0 small">Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum, maxime?</p>
                 </div>
               </li>
-            </ul>
+            </ul> -->
           </div>
         </div>
       </div>
@@ -662,7 +570,28 @@
             <div class="tab-content border-0 pb-0 px-6 mx-1">
               <div class="tab-pane fade show active" id="navs-justified-new" role="tabpanel">
                 <ul class="p-0 m-0">
-                  <li class="d-flex align-items-center mb-4 pb-2">
+                          <li class="d-flex align-items-center mb-4 pb-2" *ngFor="let emp of Event.birthdays">
+    <div class="avatar flex-shrink-0 me-4">
+        <img src="../../assets/img/avatars/4.png" alt="avatar" class="rounded-3">
+    </div>
+
+    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+      <div class="me-2">
+        <h6 class="mb-0">{{ emp.firstName }} {{ emp.lastName }}</h6>
+        <small class="d-flex align-items-center">
+          <i class="icon-base ri ri-calendar-line icon-16px"></i>
+          <span class="ms-2">{{ emp.designationName || 'No Designation' }}</span>
+        </small>
+      </div>
+
+
+       <div class="badge bg-label-{{ emp.badgeColor }} rounded-pill">
+     {{ emp.dateOfBirth | date:'dd MMMM yyyy' }}
+
+    </div>
+    </div>
+  </li>
+                  <!-- <li class="d-flex align-items-center mb-4 pb-2">
                     <div class="avatar flex-shrink-0 me-4">
                       <img src="../../assets/img/avatars/4.png" alt="avatar" class="rounded-3">
                     </div>
@@ -736,7 +665,7 @@
                       </div>
                       <div class="badge bg-label-success rounded-pill">March</div>
                     </div>
-                  </li>
+                  </li> -->
 
                 </ul>
 
@@ -823,7 +752,27 @@
               </div>
               <div class="tab-pane fade" id="navs-justified-link-shipping" role="tabpanel">
                 <ul class="p-0 m-0">
-                  <li class="d-flex align-items-center mb-4 pb-2">
+                   <li class="d-flex align-items-center mb-4 pb-2" *ngFor="let emp of Event.anniversaries">
+    <div class="avatar flex-shrink-0 me-4">
+        <img src="../../assets/img/avatars/4.png" alt="avatar" class="rounded-3">
+    </div>
+
+    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+      <div class="me-2">
+        <h6 class="mb-0">{{ emp.firstName }} {{ emp.lastName }}</h6>
+        <small class="d-flex align-items-center">
+          <i class="icon-base ri ri-calendar-line icon-16px"></i>
+          <span class="ms-2">{{ emp.designationName || 'No Designation' }}</span>
+        </small>
+      </div>
+
+
+       <div class="badge bg-label-{{ emp.badgeColor }} rounded-pill">
+      {{emp.joiningDate | date:'dd/MM/yyyy' }}
+    </div>
+    </div>
+  </li>
+                  <!-- <li class="d-flex align-items-center mb-4 pb-2">
                     <div class="avatar flex-shrink-0 me-4">
                       <img src="../../assets/img/avatars/4.png" alt="avatar" class="rounded-3">
                     </div>
@@ -897,7 +846,7 @@
                       </div>
                       <div class="badge bg-label-success rounded-pill">March</div>
                     </div>
-                  </li>
+                  </li> -->
 
                 </ul>
               </div>
@@ -1144,11 +1093,21 @@
                 <th>Leave To</th>
                 <th>Days</th>
                 <th>Status</th>
-                <th>Details</th>
+                <!-- <th>Details</th> -->
               </tr>
             </thead>
             <tbody>
-              <tr>
+            <tr *ngFor="let item of leaveList; let i = index">
+                <td>{{item?.empCode}}</td>
+                <td>{{item?.name}}</td>
+                <td>{{item?.type}}</td>
+                <td>{{item?.fromDate | date:'dd-MM-YYYY'}}</td>
+                <td>{{item?.toDate | date:'dd-MM-YYYY'}}</td>
+                   <td>{{item?.days}}</td>
+                   <td>{{item?.status}}</td>
+                <!-- <td><a href="#">Details</a></td> -->
+              </tr>
+              <!-- <tr>
                 <td>ID7865</td>
                 <td>Jens Brincker</td>
                 <td>Sick Leave</td>
@@ -1168,16 +1127,6 @@
                 <td><a href="#">View</a></td>
                 <td><a href="#">Details</a></td>
               </tr>
-              <tr>
-                <td>ID7865</td>
-                <td>Jens Brincker</td>
-                <td>Sick Leave</td>
-                <td>05/22/2021</td>
-                <td>05/27/2021</td>
-                <td>6</td>
-                <td><a href="#">View</a></td>
-                <td><a href="#">Details</a></td>
-              </tr>
                <tr>
                 <td>ID7865</td>
                 <td>Jens Brincker</td>
@@ -1217,8 +1166,8 @@
                 <td>6</td>
                 <td><a href="#">View</a></td>
                 <td><a href="#">Details</a></td>
-              </tr>
-              
+              </tr> -->
+
             </tbody>
           </table>
         </div>
@@ -1238,7 +1187,7 @@
         <a href="https://pixinvent.com" target="_blank" class="footer-link fw-medium">Quaeretech</a>
       </div>
       <div class="d-none d-lg-inline-block">
-<!-- 
+<!--
         <a href="https://themeforest.net/licenses/standard" class="footer-link me-4" target="_blank">License</a>
 
         <a href="https://themeforest.net/user/pixinvent/portfolio" target="_blank" class="footer-link me-4">More
