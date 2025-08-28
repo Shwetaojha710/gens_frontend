@@ -251,7 +251,7 @@ export class DateWiseAttendanceComponent {
     this.master.getemployeeList().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.EmpList = data.data;
         this.EmpList = this.EmpList.filter((item: any) => item.label != 'All')
 
@@ -270,7 +270,7 @@ export class DateWiseAttendanceComponent {
     this.master.getAttendanceYear().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.yearList = data.data;
         console.log(this.EmpList, "attendance master list");
 

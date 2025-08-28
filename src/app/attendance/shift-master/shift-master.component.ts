@@ -70,7 +70,7 @@ export class ShiftMasterComponent {
     this.shiftService.getshifts().subscribe(data => {
       if (data['status'] == true) {
         this.shiftList = []
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.shiftList = data.data;
         this.shiftList = this.shiftList.map((item: any) => {
           return {

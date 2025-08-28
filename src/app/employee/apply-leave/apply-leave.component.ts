@@ -121,7 +121,7 @@ export class ApplyLeaveComponent {
 
         if (status == true) {
 
-          this.notyf.success(message)
+          // this.notyf.success(message)
           this.applyLeaveList=response.data
           this.originalList=response.data
         }
@@ -146,7 +146,7 @@ export class ApplyLeaveComponent {
     this.master.getLeaveTypeList().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.leaveTypeList = data.data;
 
       }
@@ -168,7 +168,7 @@ export class ApplyLeaveComponent {
     this.master.getemployeeList().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.EmpList = data.data;
         console.log(this.EmpList, "attendance master list");
 
