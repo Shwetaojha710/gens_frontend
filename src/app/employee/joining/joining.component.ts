@@ -284,13 +284,23 @@ departmentDD:any=[]
     });
   }
   employees: any = []
+  employeeList:any=[]
+  cardData:any={}
   async loadEmployees() {
     this.employees = []
+    this.employeeList=[]
+      this.cardData=[]
     this.employeeService.getEmp().subscribe((response: any) => {
       if (response && response.data && response.status === true) {
         this.notyf.success(response.message || 'Employees loaded successfully');
         this.employees = [];
-        this.employees = response.data || [];
+        this.cardData=response.data.cardData
+        this.employees = response.data.formattedEmps || [];
+      this.employeeList = response.data?.formattedEmps?.map((item: any) => ({
+  value: item.id,
+  label: `${item.firstName} ${item?.lastName || ''}`
+}));
+
       } else if (response.status === false) {
         this.notyf.error(response.message)
       }

@@ -56,21 +56,18 @@ export class DashboardComponent {
       },
       xaxis: {
         categories: [
-          "UI/UX Designer",
-          "React Developer",
-          "Dot Net Developer",
-          "AI/ML Developer",
-          "Application Tester",
-          "Sales",
-          "HR Management",
-          "BDE",
-          "Frontend Developer",
-          "Trainee"
+          "UI/UX",
+          "Development",
+          "Management",
+          "HR",
+          "Testing",
+          "Marketing",
+         
         ]
       },
       colors: [
-        "#FF5733", "#33FF57", "#3357FF", "#F39C12", "#8E44AD",
-        "#2ECC71", "#E74C3C", "#3498DB", "#9B59B6", "#34495E"
+        "#154D71", "#005890", "#3357FF", "#1c6ea4",
+        "#33a1e0","#3498DB",
       ]
     };
   }

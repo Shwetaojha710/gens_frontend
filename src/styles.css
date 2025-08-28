@@ -26,5 +26,16 @@ span.bg-light-success {
     color: #12d854 !important;
 }
 
+.card-title h5{
+    color: #3B6E8F;
+}
 
+button.btn.btn-xs.btn-primary.waves-effect.waves-light {
+    background: #4FA3D1;
+    border-color: #4FA3D1;
+}
+
+.text-developer{
+   color: #154d71;
+}
 
