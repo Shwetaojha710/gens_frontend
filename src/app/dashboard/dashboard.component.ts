@@ -43,7 +43,7 @@ export class DashboardComponent {
       ],
       chart: {
         type: "bar",
-        height: 300
+        height: 320
       },
       plotOptions: {
         bar: {

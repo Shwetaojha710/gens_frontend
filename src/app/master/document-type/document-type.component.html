@@ -109,7 +109,7 @@
                 <td>{{ item["type"] }}</td>
                 <td>
                   <span
-                    class="badge rounded overflow-hidden px-2"
+                    class="badge bg-label-success"
                     [ngClass]="getStatusClass(item['status'])"
                   >
                     {{ item["status"] }}
@@ -120,7 +120,7 @@
                 <td>
                   <button
                     type="button"
-                    class="btn btn-outline-success btn-sm"
+                    class="badge badge-center bg-label-success"
                     (click)="update(item)"
                   >
                     <i class="fas fa-edit"></i>
@@ -128,7 +128,7 @@
                   &nbsp;
                   <button
                     type="button"
-                    class="btn btn-sm btn-outline-danger"
+                    class="badge badge-center bg-label-danger"
                     (click)="delete(item)"
                   >
                     <i class="fas fa-trash-alt"></i>
