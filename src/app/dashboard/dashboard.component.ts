@@ -85,6 +85,44 @@ export class DashboardComponent {
   baseurl: any;
   Event: any = []
 
+//   constructor() {
+//     this.chartOptions = {
+//       series: [
+//         {
+//           name: "basic",
+//           data: [2, 5, 4, 3, 1, 2, 3, 11, 12, 10]
+//         }
+//       ],
+//       chart: {
+//         type: "bar",
+//         height: 320
+//       },
+//       plotOptions: {
+//         bar: {
+//           horizontal: true,
+//           distributed: true  // ✅ Each bar gets its own color
+//         }
+//       },
+//       dataLabels: {
+//         enabled: false
+//       },
+//       xaxis: {
+//         categories: [
+//           "UI/UX",
+//           "Development",
+//           "Management",
+//           "HR",
+//           "Testing",
+//           "Marketing",
+         
+//         ]
+//       },
+//       colors: [
+//         "#154D71", "#005890", "#3357FF", "#1c6ea4",
+//         "#33a1e0","#3498DB",
+//       ]
+//     };
+
 
   ngOnInit(): void {
     // this.baseurl = localStorage.getItem('base_url')?.replace(/["\\,]/g, '') || '';
@@ -124,6 +162,7 @@ export class DashboardComponent {
 
       }
     });
+
   }
 
 }

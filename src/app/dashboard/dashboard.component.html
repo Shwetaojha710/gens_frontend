@@ -1,389 +1,580 @@
-<div class="container-fluid  mt-5">
+<div class="container-xxl mt-5">
   <div class="row g-6">
-
-  <div class="col-sm-6 col-lg-3" *ngFor="let item of stats">
-    <div class="card h-100" [ngClass]="'card-border-shadow-' + item.color">
-      <div class="card-body">
-        <div class="d-flex align-items-center mb-2">
-          <div class="avatar me-4">
-            <span
+    <div class="col-sm-6 col-lg-3" *ngFor="let item of stats">
+      <div
+        class="card h-100"
+        [style.background-color]="item.color"
+        style="border-width: 2px; border-style: solid"
+      >
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-2">
+            <div class="avatar me-4">
+              <!-- <span
               class="avatar-initial img-fluid rounded-circle w-auto h-auto"
-              [ngClass]="'bg-label-' + item.color"
-            >
-              <i class="icon-base ri icon-24px" [ngClass]="item.icon"></i>
-            </span>
+              [ngClass]="'bg-label-' + item.icon_color"
+            > -->
+              <span
+                class="avatar-initial img-fluid rounded-circle w-auto h-auto bg-label-primary"
+              >
+                <i class="icon-base ri icon-24px" [ngClass]="item.icon"></i>
+              </span>
+            </div>
+            <h4 class="mb-0 text-white">{{ item.value }}</h4>
           </div>
-          <h4 class="mb-0">{{ item.value }}</h4>
-        </div>
-        <h6 class="mb-0 fw-normal">{{ item.title }}</h6>
-        <p class="mb-0 text-end">
-          <a [routerLink]="item.link">
+          <h6 class="mb-0 fw-normal text-white">{{ item.title }}</h6>
+          <p class="mb-0 text-end">
+            <!-- <a [routerLink]="item.link">
             <small class="text-body-info">View All</small>
-          </a>
-        </p>
+          </a> -->
+          </p>
+        </div>
       </div>
     </div>
-  </div>
 
-
-
-    <div class="col-lg-3 col-xxl-3 order-3 order-xxl-1">
+    <div class="col-lg-3 col-xxl-6 order-6 order-xxl-1">
       <div class="card h-100">
-        <div class="card-header d-flex align-items-center justify-content-between">
+        <div
+          class="card-header d-flex align-items-center justify-content-between"
+        >
           <div class="card-title mb-0">
             <h5 class="m-0 me-2 mb-1">Employees By Department</h5>
           </div>
           <div class="btn-group">
-            <button type="button" class="btn btn-xs btn-primary waves-effect waves-light">View All</button>
-
+            <button
+              type="button"
+              class="btn btn-xs btn-primary waves-effect waves-light"
+            >
+              View All
+            </button>
           </div>
         </div>
         <div class="card-body">
-
           <div id="chart">
-            <apx-chart #chart [series]="chartOptions.series!" [chart]="chartOptions.chart!"
-              [xaxis]="chartOptions.xaxis!" [dataLabels]="chartOptions.dataLabels!"
-              [plotOptions]="chartOptions.plotOptions!"></apx-chart>
-
+            <apx-chart
+              #chart
+              [series]="chartOptions.series!"
+              [chart]="chartOptions.chart!"
+              [xaxis]="chartOptions.xaxis!"
+              [dataLabels]="chartOptions.dataLabels!"
+              [plotOptions]="chartOptions.plotOptions!"
+            ></apx-chart>
           </div>
-
-
         </div>
       </div>
     </div>
 
-    <div class="col-lg-3 col-xxl-3 order-3 order-xxl-1">
+    <div class="col-lg-3 col-xxl-6 order-3 order-xxl-1">
       <div class="card h-100">
-        <div class="card-header d-flex align-items-center justify-content-between">
+        <div
+          class="card-header d-flex align-items-center justify-content-between"
+        >
           <div class="card-title mb-0">
             <h5 class="m-0 me-2 mb-1">Employees</h5>
           </div>
           <div class="btn-group">
-            <button type="button" class="btn btn-xs btn-primary waves-effect waves-light">View All</button>
+            <button
+              type="button"
+              class="btn btn-xs btn-primary waves-effect waves-light"
+            >
+              View All
+            </button>
           </div>
         </div>
         <div class="card-body">
           <ul class="p-0 m-0">
-           <li class="d-flex align-items-center mb-6" *ngFor="let item of employeeList">
-  <div class="avatar flex-shrink-0 me-4">
-    <img src="../../assets/img/avatars/5.png" alt="avatar" class="img-fluid rounded-circle w-auto h-auto">
-  </div>
-  <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-    <div class="me-2">
-      <h6 class="mb-0">{{ item.name }}</h6>
-      <small class="d-flex align-items-center">
-        <span class="text-{{ item.badgeColor }} fw-medium">{{ item.role }}</span>
-      </small>
-    </div>
-    <div class="badge bg-label-{{ item.badgeColor }} rounded-pill">
-      {{ item.badge }}
-    </div>
-  </div>
-</li>
-
+            <li
+              class="d-flex align-items-center mb-6"
+              *ngFor="let item of employeeList"
+            >
+              <div class="avatar flex-shrink-0 me-4">
+                <img
+                  src="../../assets/img/avatars/5.png"
+                  alt="avatar"
+                  class="img-fluid rounded-circle w-auto h-auto"
+                />
+              </div>
+              <div
+                class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2"
+              >
+                <div class="me-2">
+                  <h6 class="mb-0">{{ item.name }}</h6>
+                  <small class="d-flex align-items-center">
+                    <span class="text-{{ item.badgeColor }} fw-medium">{{
+                      item.role
+                    }}</span>
+                  </small>
+                </div>
+                <div class="badge bg-label-{{ item.badgeColor }} rounded-pill">
+                  {{ item.badge }}
+                </div>
+              </div>
+            </li>
           </ul>
         </div>
       </div>
     </div>
-    <div class="col-lg-3 col-xxl-3 order-3 order-xxl-1">
+    <div class="col-lg-3 col-xxl-4 order-3 order-xxl-1">
       <div class="card h-100">
-        <div class="card-header d-flex align-items-center justify-content-between">
+        <div
+          class="card-header d-flex align-items-center justify-content-between"
+        >
           <div class="card-title mb-0">
             <h5 class="m-0 me-2 mb-1">Holiday List</h5>
           </div>
           <div class="btn-group">
-            <button type="button" class="btn btn-xs btn-primary waves-effect waves-light">View All</button>
-
+            <button
+              type="button"
+              class="btn btn-xs btn-primary waves-effect waves-light"
+            >
+              View All
+            </button>
           </div>
         </div>
         <div class="card-body">
           <ul class="p-0 m-0">
-            <li class="d-flex align-items-center mb-6" *ngFor="let item of holidayList;">
+            <li
+              class="d-flex align-items-center mb-6"
+              *ngFor="let item of holidayList"
+            >
               <div class="avatar avatar-md flex-shrink-0 me-4">
-                <div class="avatar-initial bg-lightest img-fluid rounded-circle w-auto h-auto">
+                <div
+                  class="avatar-initial bg-lightest img-fluid rounded-circle w-auto h-auto"
+                >
                   <div>
                     <img
-                    [src]="item['image']"
-                    alt="Document"
-                    width="100"
-                    height="auto"
-                    style="cursor: pointer"
-                    >
+                      [src]="item['image']"
+                      alt="Document"
+                      width="100"
+                      height="auto"
+                      style="cursor: pointer"
+                    />
                   </div>
                 </div>
               </div>
-              <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+              <div
+                class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2"
+              >
                 <div class="me-2">
-                  <h6 class="mb-1">{{item?.name}}</h6>
-                  <small>{{item?.type}}</small>
+                  <h6 class="mb-1">{{ item?.name }}</h6>
+                  <small>{{ item?.type }}</small>
                 </div>
-                <div class="badge bg-label-primary rounded-pill">{{item?.date |date:'dd-MM-yyyy' }}</div>
+                <div class="badge bg-label-primary rounded-pill">
+                  {{ item?.date | date : "dd-MM-yyyy" }}
+                </div>
               </div>
             </li>
-
           </ul>
         </div>
       </div>
     </div>
-    <div class="col-lg-3 col-xxl-3 order-3 order-xxl-1">
+    <div class="col-lg-3 col-xxl-4 order-3 order-xxl-1">
       <div class="card h-100">
-        <div class="card-header d-flex align-items-center justify-content-between">
+        <div
+          class="card-header d-flex align-items-center justify-content-between"
+        >
           <div class="card-title mb-0">
             <h5 class="m-0 me-2 mb-1">Leave List</h5>
           </div>
           <div class="btn-group">
-            <button type="button" class="btn btn-xs btn-primary waves-effect waves-light">View All</button>
-
+            <button
+              type="button"
+              class="btn btn-xs btn-primary waves-effect waves-light"
+            >
+              View All
+            </button>
           </div>
         </div>
         <div class="card-body">
           <div>
-            <ul class="timeline mb-0" *ngFor="let item of leaveList;">
-
+            <ul class="timeline mb-0" *ngFor="let item of leaveList">
               <li class="timeline-item ps-6 border-transparent">
-                <span class="timeline-indicator-advanced text-primary border-0 shadow-none">
+                <span
+                  class="timeline-indicator-advanced text-primary border-0 shadow-none"
+                >
                   <i class="icon-base ri ri-map-pin-line"></i>
                 </span>
                 <div class="timeline-event ps-1">
                   <div class="timeline-header">
-                    <small class="text-primary text-uppercase fw-medium">{{item?.name}}</small>
+                    <small class="text-primary text-uppercase fw-medium">{{
+                      item?.name
+                    }}</small>
                   </div>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <h6 class="my-50 leave type">{{item?.type}}</h6>
-                    <small class="text-success text-uppercase fw-medium text-end">{{item?.status}}</small>
+                  <div
+                    class="d-flex justify-content-between align-items-center"
+                  >
+                    <h6 class="my-50 leave type">{{ item?.type }}</h6>
+                    <small
+                      class="text-success text-uppercase fw-medium text-end"
+                      >{{ item?.status }}</small
+                    >
                   </div>
-                  <p class="mb-0 small">{{item?.reason}}</p>
+                  <p class="mb-0 small">{{ item?.reason }}</p>
                 </div>
               </li>
               <div class="border-1 border-light border-dashed mb-2"></div>
             </ul>
-
           </div>
         </div>
       </div>
     </div>
 
-    <div class="col-lg-6 col-xxl-3 order-2 order-xxl-2">
+    <div class="col-lg-6 col-xxl-4 order-2 order-xxl-2">
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between">
           <div>
             <h5 class="card-title mb-1">Jobs Applicants</h5>
           </div>
           <div class="btn-group">
-            <button type="button" class="btn btn-xs btn-primary waves-effect waves-light">View All</button>
-
+            <button
+              type="button"
+              class="btn btn-xs btn-primary waves-effect waves-light"
+            >
+              View All
+            </button>
           </div>
         </div>
         <div class="card-body p-0">
           <div class="nav-align-top">
             <ul class="nav nav-tabs nav-fill" role="tablist">
               <li class="nav-item">
-                <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab"
-                  data-bs-target="#navs-justified" aria-controls="navs-justified" aria-selected="true">
+                <button
+                  type="button"
+                  class="nav-link active"
+                  role="tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#navs-justified"
+                  aria-controls="navs-justified"
+                  aria-selected="true"
+                >
                   Openings
                 </button>
               </li>
               <li class="nav-item">
-                <button type="button" class="nav-link" role="tab" data-bs-toggle="tab"
-                  data-bs-target="#navs-justified-link" aria-controls="navs-justified-link" aria-selected="false">
+                <button
+                  type="button"
+                  class="nav-link"
+                  role="tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#navs-justified-link"
+                  aria-controls="navs-justified-link"
+                  aria-selected="false"
+                >
                   Applicants
                 </button>
               </li>
-
             </ul>
             <div class="tab-content border-0 pb-0 px-6 mx-1">
-              <div class="tab-pane fade show active" id="navs-justified" role="tabpanel">
-
-                <div class="d-flex align-items-center justify-content-between mb-4">
+              <div
+                class="tab-pane fade show active"
+                id="navs-justified"
+                role="tabpanel"
+              >
+                <div
+                  class="d-flex align-items-center justify-content-between mb-4"
+                >
                   <div class="d-flex align-items-center">
-                    <a href="#" class="avatar overflow-hidden flex-shrink-0 bg-gray-100">
-                      <img src="../../assets/img/avatars/1.png" class="img-fluid rounded-circle w-auto h-auto"
-                        alt="img">
+                    <a
+                      href="#"
+                      class="avatar overflow-hidden flex-shrink-0 bg-gray-100"
+                    >
+                      <img
+                        src="../../assets/img/avatars/1.png"
+                        class="img-fluid rounded-circle w-auto h-auto"
+                        alt="img"
+                      />
                     </a>
                     <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0"><a href="javascript:void(0);">Senior IOS
-                          Developer</a></p>
-                      <span class="fs-12">No of Openings : 25
-                      </span>
+                      <p class="text-dark fw-medium text-truncate mb-0">
+                        <a href="javascript:void(0);">Senior IOS Developer</a>
+                      </p>
+                      <span class="fs-12">No of Openings : 25 </span>
                     </div>
                   </div>
-                  <a href="javascript:void(0);"
-                    class="btn btn-light btn-sm p-0 btn-icon d-flex align-items-center justify-content-center"><i
-                      class="icon-base ri ri-edit-box-line me-1"></i></a>
+                  <a
+                    href="javascript:void(0);"
+                    class="btn btn-light btn-sm p-0 btn-icon d-flex align-items-center justify-content-center"
+                    ><i class="icon-base ri ri-edit-box-line me-1"></i
+                  ></a>
                 </div>
 
                 <div class="border-1 border-light border-dashed mb-2"></div>
 
-                <div class="d-flex align-items-center justify-content-between mb-4">
+                <div
+                  class="d-flex align-items-center justify-content-between mb-4"
+                >
                   <div class="d-flex align-items-center">
-                    <a href="#" class="avatar overflow-hidden flex-shrink-0 bg-gray-100">
-                      <img src="../../assets/img/avatars/1.png" class="img-fluid rounded-circle w-auto h-auto"
-                        alt="img">
+                    <a
+                      href="#"
+                      class="avatar overflow-hidden flex-shrink-0 bg-gray-100"
+                    >
+                      <img
+                        src="../../assets/img/avatars/1.png"
+                        class="img-fluid rounded-circle w-auto h-auto"
+                        alt="img"
+                      />
                     </a>
                     <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0"><a href="javascript:void(0);">Senior IOS
-                          Developer</a></p>
-                      <span class="fs-12">No of Openings : 25
-                      </span>
+                      <p class="text-dark fw-medium text-truncate mb-0">
+                        <a href="javascript:void(0);">Senior IOS Developer</a>
+                      </p>
+                      <span class="fs-12">No of Openings : 25 </span>
                     </div>
                   </div>
-                  <a href="javascript:void(0);"
-                    class="btn btn-light btn-sm p-0 btn-icon d-flex align-items-center justify-content-center"><i
-                      class="icon-base ri ri-edit-box-line me-1"></i></a>
+                  <a
+                    href="javascript:void(0);"
+                    class="btn btn-light btn-sm p-0 btn-icon d-flex align-items-center justify-content-center"
+                    ><i class="icon-base ri ri-edit-box-line me-1"></i
+                  ></a>
                 </div>
 
                 <div class="border-1 border-light border-dashed mb-2"></div>
 
-                <div class="d-flex align-items-center justify-content-between mb-4">
+                <div
+                  class="d-flex align-items-center justify-content-between mb-4"
+                >
                   <div class="d-flex align-items-center">
-                    <a href="#" class="avatar overflow-hidden flex-shrink-0 bg-gray-100">
-                      <img src="../../assets/img/avatars/1.png" class="img-fluid rounded-circle w-auto h-auto"
-                        alt="img">
+                    <a
+                      href="#"
+                      class="avatar overflow-hidden flex-shrink-0 bg-gray-100"
+                    >
+                      <img
+                        src="../../assets/img/avatars/1.png"
+                        class="img-fluid rounded-circle w-auto h-auto"
+                        alt="img"
+                      />
                     </a>
                     <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0"><a href="javascript:void(0);">Senior IOS
-                          Developer</a></p>
-                      <span class="fs-12">No of Openings : 25
-                      </span>
+                      <p class="text-dark fw-medium text-truncate mb-0">
+                        <a href="javascript:void(0);">Senior IOS Developer</a>
+                      </p>
+                      <span class="fs-12">No of Openings : 25 </span>
                     </div>
                   </div>
-                  <a href="javascript:void(0);"
-                    class="btn btn-light btn-sm p-0 btn-icon d-flex align-items-center justify-content-center"><i
-                      class="icon-base ri ri-edit-box-line me-1"></i></a>
+                  <a
+                    href="javascript:void(0);"
+                    class="btn btn-light btn-sm p-0 btn-icon d-flex align-items-center justify-content-center"
+                    ><i class="icon-base ri ri-edit-box-line me-1"></i
+                  ></a>
                 </div>
 
                 <div class="border-1 border-light border-dashed mb-2"></div>
 
-                <div class="d-flex align-items-center justify-content-between mb-4">
+                <div
+                  class="d-flex align-items-center justify-content-between mb-4"
+                >
                   <div class="d-flex align-items-center">
-                    <a href="#" class="avatar overflow-hidden flex-shrink-0 bg-gray-100">
-                      <img src="../../assets/img/avatars/1.png" class="img-fluid rounded-circle w-auto h-auto"
-                        alt="img">
+                    <a
+                      href="#"
+                      class="avatar overflow-hidden flex-shrink-0 bg-gray-100"
+                    >
+                      <img
+                        src="../../assets/img/avatars/1.png"
+                        class="img-fluid rounded-circle w-auto h-auto"
+                        alt="img"
+                      />
                     </a>
                     <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0"><a href="javascript:void(0);">Senior IOS
-                          Developer</a></p>
-                      <span class="fs-12">No of Openings : 25
-                      </span>
+                      <p class="text-dark fw-medium text-truncate mb-0">
+                        <a href="javascript:void(0);">Senior IOS Developer</a>
+                      </p>
+                      <span class="fs-12">No of Openings : 25 </span>
                     </div>
                   </div>
-                  <a href="javascript:void(0);"
-                    class="btn btn-light btn-sm p-0 btn-icon d-flex align-items-center justify-content-center"><i
-                      class="icon-base ri ri-edit-box-line me-1"></i></a>
+                  <a
+                    href="javascript:void(0);"
+                    class="btn btn-light btn-sm p-0 btn-icon d-flex align-items-center justify-content-center"
+                    ><i class="icon-base ri ri-edit-box-line me-1"></i
+                  ></a>
                 </div>
 
                 <div class="border-1 border-light border-dashed mb-2"></div>
 
-                <div class="d-flex align-items-center justify-content-between mb-4">
+                <div
+                  class="d-flex align-items-center justify-content-between mb-4"
+                >
                   <div class="d-flex align-items-center">
-                    <a href="#" class="avatar overflow-hidden flex-shrink-0 bg-gray-100">
-                      <img src="../../assets/img/avatars/1.png" class="img-fluid rounded-circle w-auto h-auto"
-                        alt="img">
+                    <a
+                      href="#"
+                      class="avatar overflow-hidden flex-shrink-0 bg-gray-100"
+                    >
+                      <img
+                        src="../../assets/img/avatars/1.png"
+                        class="img-fluid rounded-circle w-auto h-auto"
+                        alt="img"
+                      />
                     </a>
                     <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0"><a href="javascript:void(0);">Senior IOS
-                          Developer</a></p>
-                      <span class="fs-12">No of Openings : 25
-                      </span>
+                      <p class="text-dark fw-medium text-truncate mb-0">
+                        <a href="javascript:void(0);">Senior IOS Developer</a>
+                      </p>
+                      <span class="fs-12">No of Openings : 25 </span>
                     </div>
                   </div>
-                  <a href="javascript:void(0);"
-                    class="btn btn-light btn-sm p-0 btn-icon d-flex align-items-center justify-content-center"><i
-                      class="icon-base ri ri-edit-box-line me-1"></i></a>
+                  <a
+                    href="javascript:void(0);"
+                    class="btn btn-light btn-sm p-0 btn-icon d-flex align-items-center justify-content-center"
+                    ><i class="icon-base ri ri-edit-box-line me-1"></i
+                  ></a>
                 </div>
 
                 <div class="border-1 border-light border-dashed mb-2"></div>
-
               </div>
               <!-- New Tab -->
-              <div class="tab-pane fade" id="navs-justified-link" role="tabpanel">
-                <div class="d-flex align-items-center justify-content-between mb-4">
+              <div
+                class="tab-pane fade"
+                id="navs-justified-link"
+                role="tabpanel"
+              >
+                <div
+                  class="d-flex align-items-center justify-content-between mb-4"
+                >
                   <div class="d-flex align-items-center">
                     <a href="#" class="avatar overflow-hidden flex-shrink-0">
-                      <img src="../../assets/img/avatars/1.png" class="img-fluid rounded-circle" alt="img">
+                      <img
+                        src="../../assets/img/avatars/1.png"
+                        class="img-fluid rounded-circle"
+                        alt="img"
+                      />
                     </a>
                     <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0"><a href="#">Brian Villalobos</a></p>
-                      <span class="fs-13 d-inline-flex align-items-center">Exp
-                        : 5+ Years<i class="ti ti-circle-filled fs-4 mx-2 text-primary"></i>USA</span>
+                      <p class="text-dark fw-medium text-truncate mb-0">
+                        <a href="#">Brian Villalobos</a>
+                      </p>
+                      <span class="fs-13 d-inline-flex align-items-center"
+                        >Exp : 5+ Years<i
+                          class="ti ti-circle-filled fs-4 mx-2 text-primary"
+                        ></i
+                        >USA</span
+                      >
                     </div>
                   </div>
-                  <span class="badge badge-secondary badge-xs">UI/UX
-                    Designer</span>
+                  <span class="badge badge-secondary badge-xs"
+                    >UI/UX Designer</span
+                  >
                 </div>
 
                 <div class="border-1 border-light border-dashed mb-2"></div>
 
-                <div class="d-flex align-items-center justify-content-between mb-4">
+                <div
+                  class="d-flex align-items-center justify-content-between mb-4"
+                >
                   <div class="d-flex align-items-center">
                     <a href="#" class="avatar overflow-hidden flex-shrink-0">
-                      <img src="../../assets/img/avatars/1.png" class="img-fluid rounded-circle" alt="img">
+                      <img
+                        src="../../assets/img/avatars/1.png"
+                        class="img-fluid rounded-circle"
+                        alt="img"
+                      />
                     </a>
                     <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0"><a href="#">Brian Villalobos</a></p>
-                      <span class="fs-13 d-inline-flex align-items-center">Exp
-                        : 5+ Years<i class="ti ti-circle-filled fs-4 mx-2 text-primary"></i>USA</span>
+                      <p class="text-dark fw-medium text-truncate mb-0">
+                        <a href="#">Brian Villalobos</a>
+                      </p>
+                      <span class="fs-13 d-inline-flex align-items-center"
+                        >Exp : 5+ Years<i
+                          class="ti ti-circle-filled fs-4 mx-2 text-primary"
+                        ></i
+                        >USA</span
+                      >
                     </div>
                   </div>
-                  <span class="badge badge-secondary badge-xs">UI/UX
-                    Designer</span>
+                  <span class="badge badge-secondary badge-xs"
+                    >UI/UX Designer</span
+                  >
                 </div>
 
                 <div class="border-1 border-light border-dashed mb-2"></div>
 
-                <div class="d-flex align-items-center justify-content-between mb-4">
+                <div
+                  class="d-flex align-items-center justify-content-between mb-4"
+                >
                   <div class="d-flex align-items-center">
                     <a href="#" class="avatar overflow-hidden flex-shrink-0">
-                      <img src="../../assets/img/avatars/1.png" class="img-fluid rounded-circle" alt="img">
+                      <img
+                        src="../../assets/img/avatars/1.png"
+                        class="img-fluid rounded-circle"
+                        alt="img"
+                      />
                     </a>
                     <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0"><a href="#">Brian Villalobos</a></p>
-                      <span class="fs-13 d-inline-flex align-items-center">Exp
-                        : 5+ Years<i class="ti ti-circle-filled fs-4 mx-2 text-primary"></i>USA</span>
+                      <p class="text-dark fw-medium text-truncate mb-0">
+                        <a href="#">Brian Villalobos</a>
+                      </p>
+                      <span class="fs-13 d-inline-flex align-items-center"
+                        >Exp : 5+ Years<i
+                          class="ti ti-circle-filled fs-4 mx-2 text-primary"
+                        ></i
+                        >USA</span
+                      >
                     </div>
                   </div>
-                  <span class="badge badge-secondary badge-xs">UI/UX
-                    Designer</span>
+                  <span class="badge badge-secondary badge-xs"
+                    >UI/UX Designer</span
+                  >
                 </div>
 
                 <div class="border-1 border-light border-dashed mb-2"></div>
 
-                <div class="d-flex align-items-center justify-content-between mb-4">
+                <div
+                  class="d-flex align-items-center justify-content-between mb-4"
+                >
                   <div class="d-flex align-items-center">
                     <a href="#" class="avatar overflow-hidden flex-shrink-0">
-                      <img src="../../assets/img/avatars/1.png" class="img-fluid rounded-circle" alt="img">
+                      <img
+                        src="../../assets/img/avatars/1.png"
+                        class="img-fluid rounded-circle"
+                        alt="img"
+                      />
                     </a>
                     <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0"><a href="#">Brian Villalobos</a></p>
-                      <span class="fs-13 d-inline-flex align-items-center">Exp
-                        : 5+ Years<i class="ti ti-circle-filled fs-4 mx-2 text-primary"></i>USA</span>
+                      <p class="text-dark fw-medium text-truncate mb-0">
+                        <a href="#">Brian Villalobos</a>
+                      </p>
+                      <span class="fs-13 d-inline-flex align-items-center"
+                        >Exp : 5+ Years<i
+                          class="ti ti-circle-filled fs-4 mx-2 text-primary"
+                        ></i
+                        >USA</span
+                      >
                     </div>
                   </div>
-                  <span class="badge badge-secondary badge-xs">UI/UX
-                    Designer</span>
+                  <span class="badge badge-secondary badge-xs"
+                    >UI/UX Designer</span
+                  >
                 </div>
 
                 <div class="border-1 border-light border-dashed mb-2"></div>
 
-                <div class="d-flex align-items-center justify-content-between mb-4">
+                <div
+                  class="d-flex align-items-center justify-content-between mb-4"
+                >
                   <div class="d-flex align-items-center">
                     <a href="#" class="avatar overflow-hidden flex-shrink-0">
-                      <img src="../../assets/img/avatars/1.png" class="img-fluid rounded-circle" alt="img">
+                      <img
+                        src="../../assets/img/avatars/1.png"
+                        class="img-fluid rounded-circle"
+                        alt="img"
+                      />
                     </a>
                     <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0"><a href="#">Brian Villalobos</a></p>
-                      <span class="fs-13 d-inline-flex align-items-center">Exp
-                        : 5+ Years<i class="ti ti-circle-filled fs-4 mx-2 text-primary"></i>USA</span>
+                      <p class="text-dark fw-medium text-truncate mb-0">
+                        <a href="#">Brian Villalobos</a>
+                      </p>
+                      <span class="fs-13 d-inline-flex align-items-center"
+                        >Exp : 5+ Years<i
+                          class="ti ti-circle-filled fs-4 mx-2 text-primary"
+                        ></i
+                        >USA</span
+                      >
                     </div>
                   </div>
-                  <span class="badge badge-secondary badge-xs">UI/UX
-                    Designer</span>
+                  <span class="badge badge-secondary badge-xs"
+                    >UI/UX Designer</span
+                  >
                 </div>
 
                 <div class="border-1 border-light border-dashed mb-2"></div>
-
               </div>
-
             </div>
           </div>
         </div>
@@ -416,65 +607,107 @@
     </div> -->
     <!--/ Attendance Overview -->
     <!-- Orders by Countries -->
-    <div class="col-md-6 col-xxl-3 order-0 order-xxl-4">
+    <div class="col-md-6 col-xxl-4 order-0 order-xxl-4">
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between">
           <div class="card-title mb-0">
             <h5 class="m-0 me-2">Events</h5>
           </div>
           <div class="btn-group">
-            <button type="button" class="btn btn-xs btn-primary waves-effect waves-light">View All</button>
-
+            <button
+              type="button"
+              class="btn btn-xs btn-primary waves-effect waves-light"
+            >
+              View All
+            </button>
           </div>
         </div>
         <div class="card-body p-0">
           <div class="nav-align-top">
             <ul class="nav nav-tabs nav-fill" role="tablist">
               <li class="nav-item">
-                <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab"
-                  data-bs-target="#navs-justified-new" aria-controls="navs-justified-new" aria-selected="true">
+                <button
+                  type="button"
+                  class="nav-link active"
+                  role="tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#navs-justified-new"
+                  aria-controls="navs-justified-new"
+                  aria-selected="true"
+                >
                   Birthdays
                 </button>
               </li>
               <li class="nav-item">
-                <button type="button" class="nav-link" role="tab" data-bs-toggle="tab"
-                  data-bs-target="#navs-justified-link-preparing" aria-controls="navs-justified-link-preparing"
-                  aria-selected="false">
+                <button
+                  type="button"
+                  class="nav-link"
+                  role="tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#navs-justified-link-preparing"
+                  aria-controls="navs-justified-link-preparing"
+                  aria-selected="false"
+                >
                   Anniversary
                 </button>
               </li>
               <li class="nav-item">
-                <button type="button" class="nav-link" role="tab" data-bs-toggle="tab"
-                  data-bs-target="#navs-justified-link-shipping" aria-controls="navs-justified-link-shipping"
-                  aria-selected="false">
+                <button
+                  type="button"
+                  class="nav-link"
+                  role="tab"
+                  data-bs-toggle="tab"
+                  data-bs-target="#navs-justified-link-shipping"
+                  aria-controls="navs-justified-link-shipping"
+                  aria-selected="false"
+                >
                   Work Anniversary
                 </button>
               </li>
             </ul>
             <div class="tab-content border-0 pb-0 px-6 mx-1">
-              <div class="tab-pane fade show active" id="navs-justified-new" role="tabpanel">
+              <div
+                class="tab-pane fade show active"
+                id="navs-justified-new"
+                role="tabpanel"
+              >
                 <ul class="p-0 m-0">
-                          <li class="d-flex align-items-center mb-4 pb-2" *ngFor="let emp of Event.birthdays">
-    <div class="avatar flex-shrink-0 me-4">
-        <img src="../../assets/img/avatars/4.png" alt="avatar" class="rounded-3">
-    </div>
+                  <li
+                    class="d-flex align-items-center mb-4 pb-2"
+                    *ngFor="let emp of Event.birthdays"
+                  >
+                    <div class="avatar flex-shrink-0 me-4">
+                      <img
+                        src="../../assets/img/avatars/4.png"
+                        alt="avatar"
+                        class="rounded-3"
+                      />
+                    </div>
 
-    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-      <div class="me-2">
-        <h6 class="mb-0">{{ emp.firstName }} {{ emp.lastName }}</h6>
-        <small class="d-flex align-items-center">
-          <i class="icon-base ri ri-calendar-line icon-16px"></i>
-          <span class="ms-2">{{ emp.designationName || 'No Designation' }}</span>
-        </small>
-      </div>
+                    <div
+                      class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2"
+                    >
+                      <div class="me-2">
+                        <h6 class="mb-0">
+                          {{ emp.firstName }} {{ emp.lastName }}
+                        </h6>
+                        <small class="d-flex align-items-center">
+                          <i
+                            class="icon-base ri ri-calendar-line icon-16px"
+                          ></i>
+                          <span class="ms-2">{{
+                            emp.designationName || "No Designation"
+                          }}</span>
+                        </small>
+                      </div>
 
-
-       <div class="badge bg-label-{{ emp.badgeColor }} rounded-pill">
-     {{ emp.dateOfBirth | date:'dd MMMM yyyy' }}
-
-    </div>
-    </div>
-  </li>
+                      <div
+                        class="badge bg-label-{{ emp.badgeColor }} rounded-pill"
+                      >
+                        {{ emp.dateOfBirth | date : "dd MMMM yyyy" }}
+                      </div>
+                    </div>
+                  </li>
                   <!-- <li class="d-flex align-items-center mb-4 pb-2">
                     <div class="avatar flex-shrink-0 me-4">
                       <img src="../../assets/img/avatars/4.png" alt="avatar" class="rounded-3">
@@ -550,112 +783,180 @@
                       <div class="badge bg-label-success rounded-pill">March</div>
                     </div>
                   </li> -->
-
                 </ul>
-
               </div>
-              <div class="tab-pane fade" id="navs-justified-link-preparing" role="tabpanel">
+              <div
+                class="tab-pane fade"
+                id="navs-justified-link-preparing"
+                role="tabpanel"
+              >
                 <ul class="p-0 m-0">
                   <li class="d-flex align-items-center mb-4 pb-2">
                     <div class="avatar flex-shrink-0 me-4">
-                      <img src="../../assets/img/avatars/4.png" alt="avatar" class="rounded-3">
+                      <img
+                        src="../../assets/img/avatars/4.png"
+                        alt="avatar"
+                        class="rounded-3"
+                      />
                     </div>
-                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                    <div
+                      class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2"
+                    >
                       <div class="me-2">
                         <h6 class="mb-0">Himanshu Kumar</h6>
                         <small class="d-flex align-items-center">
-
                           <span class="ms-2">UI/UX Designer</span>
                         </small>
                       </div>
-                      <div class="badge bg-label-primary rounded-pill">05/06/2025</div>
+                      <div class="badge bg-label-primary rounded-pill">
+                        05/06/2025
+                      </div>
                     </div>
                   </li>
                   <li class="d-flex align-items-center mb-4 pb-2">
                     <div class="avatar flex-shrink-0 me-4">
-                      <img src="../../assets/img/avatars/5.png" alt="avatar" class="rounded-3">
+                      <img
+                        src="../../assets/img/avatars/5.png"
+                        alt="avatar"
+                        class="rounded-3"
+                      />
                     </div>
-                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                    <div
+                      class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2"
+                    >
                       <div class="me-2">
                         <h6 class="mb-0">Bharti Verma</h6>
                         <small class="d-flex align-items-center">
-                          <i class="icon-base ri ri-calendar-line icon-16px"></i>
+                          <i
+                            class="icon-base ri ri-calendar-line icon-16px"
+                          ></i>
                           <span class="ms-2">React Developer</span>
                         </small>
                       </div>
-                      <div class="badge bg-label-warning rounded-pill">01/07/2025</div>
+                      <div class="badge bg-label-warning rounded-pill">
+                        01/07/2025
+                      </div>
                     </div>
                   </li>
                   <li class="d-flex align-items-center mb-4 pb-2">
                     <div class="avatar flex-shrink-0 me-4">
-                      <img src="../../assets/img/avatars/3.png" alt="avatar" class="rounded-3">
+                      <img
+                        src="../../assets/img/avatars/3.png"
+                        alt="avatar"
+                        class="rounded-3"
+                      />
                     </div>
-                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                    <div
+                      class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2"
+                    >
                       <div class="me-2">
                         <h6 class="mb-0">Shashank Pandey</h6>
                         <small class="d-flex align-items-center">
-                          <i class="icon-base ri ri-calendar-line icon-16px"></i>
+                          <i
+                            class="icon-base ri ri-calendar-line icon-16px"
+                          ></i>
                           <span class="ms-2">UI/UX Designer</span>
                         </small>
                       </div>
-                      <div class="badge bg-label-secondary rounded-pill">30/09/2025</div>
+                      <div class="badge bg-label-secondary rounded-pill">
+                        30/09/2025
+                      </div>
                     </div>
                   </li>
                   <li class="d-flex align-items-center mb-4 pb-2">
                     <div class="avatar flex-shrink-0 me-4">
-                      <img src="../../assets/img/avatars/14.png" alt="avatar" class="rounded-3">
+                      <img
+                        src="../../assets/img/avatars/14.png"
+                        alt="avatar"
+                        class="rounded-3"
+                      />
                     </div>
-                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                    <div
+                      class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2"
+                    >
                       <div class="me-2">
                         <h6 class="mb-0">Shewta Ojha</h6>
                         <small class="d-flex align-items-center">
-                          <i class="icon-base ri ri-calendar-line icon-16px"></i>
+                          <i
+                            class="icon-base ri ri-calendar-line icon-16px"
+                          ></i>
                           <span class="ms-2">Software Developer</span>
                         </small>
                       </div>
-                      <div class="badge bg-label-danger rounded-pill">02/10/2025</div>
+                      <div class="badge bg-label-danger rounded-pill">
+                        02/10/2025
+                      </div>
                     </div>
                   </li>
                   <li class="d-flex align-items-center mb-4 pb-2">
                     <div class="avatar flex-shrink-0 me-4">
-                      <img src="../../assets/img/avatars/8.png" alt="avatar" class="rounded-3">
+                      <img
+                        src="../../assets/img/avatars/8.png"
+                        alt="avatar"
+                        class="rounded-3"
+                      />
                     </div>
-                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                    <div
+                      class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2"
+                    >
                       <div class="me-2">
                         <h6 class="mb-0">Ekta Srivastava</h6>
                         <small class="d-flex align-items-center">
-                          <i class="icon-base ri ri-calendar-line icon-16px"></i>
+                          <i
+                            class="icon-base ri ri-calendar-line icon-16px"
+                          ></i>
                           <span class="ms-2">react Developer</span>
                         </small>
                       </div>
-                      <div class="badge bg-label-success rounded-pill">March</div>
+                      <div class="badge bg-label-success rounded-pill">
+                        March
+                      </div>
                     </div>
                   </li>
-
                 </ul>
               </div>
-              <div class="tab-pane fade" id="navs-justified-link-shipping" role="tabpanel">
+              <div
+                class="tab-pane fade"
+                id="navs-justified-link-shipping"
+                role="tabpanel"
+              >
                 <ul class="p-0 m-0">
-                   <li class="d-flex align-items-center mb-4 pb-2" *ngFor="let emp of Event.anniversaries">
-    <div class="avatar flex-shrink-0 me-4">
-        <img src="../../assets/img/avatars/4.png" alt="avatar" class="rounded-3">
-    </div>
+                  <li
+                    class="d-flex align-items-center mb-4 pb-2"
+                    *ngFor="let emp of Event.anniversaries"
+                  >
+                    <div class="avatar flex-shrink-0 me-4">
+                      <img
+                        src="../../assets/img/avatars/4.png"
+                        alt="avatar"
+                        class="rounded-3"
+                      />
+                    </div>
 
-    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-      <div class="me-2">
-        <h6 class="mb-0">{{ emp.firstName }} {{ emp.lastName }}</h6>
-        <small class="d-flex align-items-center">
-          <i class="icon-base ri ri-calendar-line icon-16px"></i>
-          <span class="ms-2">{{ emp.designationName || 'No Designation' }}</span>
-        </small>
-      </div>
+                    <div
+                      class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2"
+                    >
+                      <div class="me-2">
+                        <h6 class="mb-0">
+                          {{ emp.firstName }} {{ emp.lastName }}
+                        </h6>
+                        <small class="d-flex align-items-center">
+                          <i
+                            class="icon-base ri ri-calendar-line icon-16px"
+                          ></i>
+                          <span class="ms-2">{{
+                            emp.designationName || "No Designation"
+                          }}</span>
+                        </small>
+                      </div>
 
-
-       <div class="badge bg-label-{{ emp.badgeColor }} rounded-pill">
-      {{emp.joiningDate | date:'dd/MM/yyyy' }}
-    </div>
-    </div>
-  </li>
+                      <div
+                        class="badge bg-label-{{ emp.badgeColor }} rounded-pill"
+                      >
+                        {{ emp.joiningDate | date : "dd/MM/yyyy" }}
+                      </div>
+                    </div>
+                  </li>
                   <!-- <li class="d-flex align-items-center mb-4 pb-2">
                     <div class="avatar flex-shrink-0 me-4">
                       <img src="../../assets/img/avatars/4.png" alt="avatar" class="rounded-3">
@@ -731,7 +1032,6 @@
                       <div class="badge bg-label-success rounded-pill">March</div>
                     </div>
                   </li> -->
-
                 </ul>
               </div>
             </div>
@@ -959,9 +1259,11 @@
     </div> -->
     <!--/ Orders by Countries -->
     <!-- On route vehicles Table -->
-    <div class="col-md-6 col-xxl-6 order-0 order-xxl-4">
+    <div class="col-md-6 col-xxl-8 order-0 order-xxl-4">
       <div class="card">
-        <div class="card-header d-flex align-items-center justify-content-between">
+        <div
+          class="card-header d-flex align-items-center justify-content-between"
+        >
           <div class="card-title mb-0">
             <h5 class="m-0 me-2">Leave Request</h5>
           </div>
@@ -981,14 +1283,14 @@
               </tr>
             </thead>
             <tbody>
-            <tr *ngFor="let item of leaveList; let i = index">
-                <td>{{item?.empCode}}</td>
-                <td>{{item?.name}}</td>
-                <td>{{item?.type}}</td>
-                <td>{{item?.fromDate | date:'dd-MM-YYYY'}}</td>
-                <td>{{item?.toDate | date:'dd-MM-YYYY'}}</td>
-                   <td>{{item?.days}}</td>
-                   <td>{{item?.status}}</td>
+              <tr *ngFor="let item of leaveList; let i = index">
+                <td>{{ item?.empCode }}</td>
+                <td>{{ item?.name }}</td>
+                <td>{{ item?.type }}</td>
+                <td>{{ item?.fromDate | date : "dd-MM-YYYY" }}</td>
+                <td>{{ item?.toDate | date : "dd-MM-YYYY" }}</td>
+                <td>{{ item?.days }}</td>
+                <td>{{ item?.status }}</td>
                 <!-- <td><a href="#">Details</a></td> -->
               </tr>
               <!-- <tr>
@@ -1051,7 +1353,6 @@
                 <td><a href="#">View</a></td>
                 <td><a href="#">Details</a></td>
               </tr> -->
-
             </tbody>
           </table>
         </div>
@@ -1062,16 +1363,24 @@
 
 <footer class="content-footer footer bg-footer-theme mt-5 bg-white">
   <div class="container-fluid">
-    <div class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
+    <div
+      class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column"
+    >
       <div class="mb-2 mb-md-0">
         ©
         <script>
           document.write(new Date().getFullYear());
-        </script>2025
-        <a href="https://pixinvent.com" target="_blank" class="footer-link fw-medium text-primary">Quaeretech</a>
+        </script>
+        2025
+        <a
+          href="https://pixinvent.com"
+          target="_blank"
+          class="footer-link fw-medium text-primary"
+          >Quaeretech</a
+        >
       </div>
       <div class="d-none d-lg-inline-block">
-<!--
+        <!--
         <a href="https://themeforest.net/licenses/standard" class="footer-link me-4" target="_blank">License</a>
 
         <a href="https://themeforest.net/user/pixinvent/portfolio" target="_blank" class="footer-link me-4">More
@@ -1081,7 +1390,6 @@
 
 
         <a href="https://pixinvent.ticksy.com/" target="_blank" class="footer-link d-none d-sm-inline-block">Support</a> -->
-
       </div>
     </div>
   </div>
