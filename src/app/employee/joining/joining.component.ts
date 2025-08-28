@@ -44,6 +44,7 @@ export class JoiningComponent {
     await this.countrydd();
     await this.loadEmployees();
     await this.getEmploymentTypes();
+    await this.DepartmentDD()
 
   }
   async getEmploymentTypes() {
@@ -216,6 +217,71 @@ export class JoiningComponent {
 
 
 
+  }
+departmentDD:any=[]
+    async DepartmentDD() {
+    this.departmentDD = []
+
+
+    this.master.Departmentsdd().subscribe({
+      next: (response: any) => {
+        console.log('response', response);
+
+        let message = response.message ? response.message : 'Data found Successfully';
+        // let status = this.statusService.handleResponseStatus(response.status, message);
+        // console.log(status)
+        // console.log("response", response);
+
+        if (response.status === true) {
+          this.departmentDD = response.data;
+          // this.notyf.success(message)
+
+          this.back()
+        }
+        else if (response.status === "expired") {
+          this.router.navigate(["login"]);
+        }
+
+        else {
+          this.notyf.error(message)
+        }
+
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.notyf.error(err)
+      }
+    });
+  }
+  designationDD:any=[]
+  getDesignation(item:any){
+       this.designationDD = []
+        let obj:any={}
+       obj['department'] =item
+    this.master.designationDD(obj).subscribe({
+      next: (response: any) => {
+        console.log('response', response);
+
+        let message = response.message ? response.message : 'Data found Successfully';
+
+        if (response.status === true) {
+          this.designationDD = response.data;
+
+        }
+        else if (response.status === "expired") {
+          this.router.navigate(["login"]);
+        }
+
+        else {
+          this.notyf.error(message)
+        }
+
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.notyf.error(err)
+      }
+    });
   }
   employees: any = []
   async loadEmployees() {

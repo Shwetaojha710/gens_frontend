@@ -181,6 +181,30 @@
               </small>
             </div>
             <div class="col-md-3">
+              <label class="col-form-label fw-bold">Department
+                <span style="color: red"> *</span>
+              </label>
+               <ng-select [items]="departmentDD" bindLabel="label" bindValue="value"
+                [(ngModel)]="personalDetails['departmentId']" [multiple]="false" placeholder="Select Department"
+                name="country" id="select2Danger" #departmentRef="ngModel" (change)="getDesignation(personalDetails['departmentId'])">
+              </ng-select>
+              <small class="text-danger" *ngIf="departmentRef.invalid && departmentRef.touched">
+                Select Department
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">Designation
+                <span style="color: red"> *</span>
+              </label>
+               <ng-select [items]="designationDD" bindLabel="label" bindValue="value"
+                [(ngModel)]="personalDetails['designationId']" [multiple]="false" placeholder="Select Designation"
+                name="country" id="select2Danger"  #designationRef="ngModel">
+              </ng-select>
+              <small class="text-danger" *ngIf="designationRef.invalid && designationRef.touched">
+                  Select Designation
+              </small>
+            </div>
+            <div class="col-md-3">
               <label class="col-form-label fw-bold">Employment Type
                 <span style="color: red"> *</span>
               </label>

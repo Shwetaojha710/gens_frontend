@@ -66,6 +66,7 @@ menuItems: MenuItem[] = [
     icon: 'ri-money-cny-circle-line',
     children: [
       { title: 'Generate Salary', icon: 'ri-money-rupee-circle-line', link: '/layout/payroll/full-time' },
+      { title: 'Generated Salary List', icon: 'ri-suitcase-line', link: '/layout/payroll/generated-salary' },
       // { title: 'Part Time Salary Master', icon: 'ri-time-line', link: '/layout/payroll/part-time' },
       // // { title: 'Allowances Master', icon: 'ri-gift-line', link: '/layout/payroll/allowances' },
       // { title: 'Deductions', icon: 'ri-subtract-line', link: '/layout/payroll/deductions' }
@@ -88,7 +89,8 @@ menuItems: MenuItem[] = [
       { title: 'Department Master', icon: 'ri-building-4-line', link: '/layout/master/department' },
       { title: 'Employment Type', icon: 'ri-briefcase-4-line', link: '/layout/master/employment-type' },
       {title: 'Documents', icon: 'ri-file-line', link: '/layout/master/documents'},
-      {title: 'Holiday Types', icon: 'ri-file-line', link: '/layout/master/holiday-type'},
+      {title: 'Holiday Types', icon: 'ri-suitcase-line', link: '/layout/master/holiday-type'},
+      {title: 'Prefix', icon: 'ri-file-line', link: '/layout/master/prefix'},
       // {title: 'Attendance Master', icon: 'ri-file-line', link: '/layout/master/salary-master'}
 
     ]

@@ -1,24 +1,22 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
-import { Notyf } from 'notyf';
-import { MasterService } from '../../services/master.service';
 import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { Router } from '@angular/router';
+import { INotyfNotificationOptions, Notyf } from 'notyf';
+import { firstValueFrom } from 'rxjs';
+import { MasterService } from '../../services/master.service';
 import { PayrollService } from '../../services/payroll.service';
 import { StatusService } from '../../services/status.service';
 declare let bootstrap: any;
-import { firstValueFrom } from 'rxjs';
 @Component({
-  selector: 'app-full-time-salary',
+  selector: 'app-generated-salary',
   imports: [NgSelectModule,
     FormsModule, CommonModule],
-  templateUrl: './full-time-salary.component.html',
-  styleUrl: './full-time-salary.component.css'
+  templateUrl: './generated-salary.component.html',
+  styleUrl: './generated-salary.component.css'
 })
-
-
-export class FullTimeSalaryComponent {
+export class GeneratedSalaryComponent {
   monthList = [
     { value: '01', label: 'January' },
     { value: '02', label: 'February' },
@@ -74,50 +72,9 @@ export class FullTimeSalaryComponent {
     });
 
   }
-  employeeSalaryData: any[] = [];
-
-  async generate_Salary() {
 
 
-    this.employeeSalaryData = [];
 
-    const selectedEmployees = this.SalaryArr.filter((item: any) => item.isSelected);
-    if (selectedEmployees.length == 0) {
-      this.notyf.error('Please Select CheckBox');
-      return;
-    }
-    this.employeeSalaryData = await Promise.all(
-      selectedEmployees.map(async (item: any) => {
-        const components = await this.getSalaryComponent(item);
-        return { ...item, components };
-      })
-    );
-    this.isLoading = true
-    try {
-      const response: any = await firstValueFrom(
-        this.payroll.generateSalary(this.employeeSalaryData)
-      );
-      this.isLoading = false
-      if (this.statusService.handleResponseStatus(response.status, response.message || "Success")) {
-        this.masterSelected = false
-        this.notyf.success(response.message);
-      } else {
-
-        this.isLoading = false
-        this.notyf.error(response.message);
-      }
-    } catch (error: any) {
-      this.isLoading = false
-      console.error("API Error:", error);
-
-      if (error.error?.message) {
-        this.notyf.error(error.error.message);
-      } else {
-        this.notyf.error("Something went wrong!");
-      }
-    }
-    return;
-  }
 
   EmpList: any = []
   async empList() {
@@ -157,7 +114,7 @@ export class FullTimeSalaryComponent {
       newObj['employeeId'] = [newObj['employeeId']]
     }
 
-    this.payroll.calculateAttendance(newObj).subscribe({
+    this.payroll.getGeneratedSalaryList(newObj).subscribe({
       next: (response: any) => {
         console.log('response', response);
         this.isLoading = false;
@@ -228,8 +185,12 @@ export class FullTimeSalaryComponent {
 
 
           const modalEl = document.getElementById('SalaryModal');
-          this.modal = new bootstrap.Modal(modalEl);
-          this.modal.show();
+          if (modalEl) {
+            this.modal = new bootstrap.Modal(modalEl);
+            this.modal.show();
+          } else {
+            console.error('SalaryModal element not found');
+          }
         }
         else if (status == "expired") {
           this.router.navigate(["login"]);
@@ -246,18 +207,41 @@ export class FullTimeSalaryComponent {
       }
     });
   }
-  async getSalaryComponent(item: any) {
-    const obj = { ...item };
-    const response: any = await this.payroll.calculateSalaryComponent(obj).toPromise();
+  revert(item:any){
+    let obj :any ={}
+    obj['id']=item?.id
+    obj['bill_id']=item?.bill_id
+    obj["employeeId"]=item?.employeeId
+    obj["month"]=item?.month
+    obj["year"]=item?.year
+         this.payroll.revertSalary(obj).subscribe({
+      next: (response: any) => {
+        console.log('response', response);
 
-    if (response && response.status == true) {
+        let message = response.message ? response.message : 'Data found Successfully';
+        let status = this.statusService.handleResponseStatus(response.status, message);
+        console.log(status)
+        console.log("response", response);
 
-      return response.data;
-    } else {
-      // throw new Error(response.message);
-    }
+        if (status == true) {
+          this.notyf.success(message)
+              this.onSubmit()
+        }
+        else if (status == "expired") {
+          this.router.navigate(["login"]);
+        }
+
+        else {
+          this.notyf.error(message)
+        }
+
+      },
+      error: (err: { error: { message: string | Partial<INotyfNotificationOptions>; }; }) => {
+        console.error('Error:', err);
+        this.notyf.error(err.error?.message)
+      }
+    });
   }
-
   closeModal() {
 
     this.modal.hide();

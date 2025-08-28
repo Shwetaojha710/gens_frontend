@@ -36,6 +36,9 @@ export class MasterService {
   Departmentsdd(): Observable<any> {
     return this.http.post(`${this.baseUrl}department-dd`, {});
   }
+  designationDD(obj:any): Observable<any> {
+    return this.http.post(`${this.baseUrl}designation-dd`, obj);
+  }
 
   deleteDepartment(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}deleteDepartment`, data);
@@ -187,6 +190,21 @@ addSalaryMaster(dept: any): Observable<any> {
   }
   getHolidayTypeDD(): Observable<any> {
      return this.http.post(`${this.baseUrl}getHolidayTypeDD`, {});
+  }
+
+  addPrefix(dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}add-prefix`, dept);
+  }
+
+  updatePrefix(id: any, dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}update-prefix`, dept);
+  }
+
+  deletePrefix(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}delete-prefix`, data);
+  }
+  getPrefix(): Observable<any> {
+     return this.http.post(`${this.baseUrl}get-prefix`, {});
   }
 
 //    getAttendanceSetting(): Observable<any> {
