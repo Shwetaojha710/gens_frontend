@@ -140,6 +140,7 @@ export class DesignationComponent {
           this.notyf.success(message)
 
           this.back()
+            this.fetchdesignation()
         }
         else if (status === "expired") {
           this.router.navigate(["login"]);

@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { ValidationUtil } from '../../shared/utils/validation.util';
 import { DataService } from '../../services/data.service';
 import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-joining',
@@ -267,7 +268,6 @@ export class JoiningComponent {
 
     this.master.Departmentsdd().subscribe({
       next: (response: any) => {
-        console.log('response', response);
 
         let message = response.message ? response.message : 'Data found Successfully';
         // let status = this.statusService.handleResponseStatus(response.status, message);
@@ -412,14 +412,35 @@ export class JoiningComponent {
 
   }
   delete(data: any) {
-    this.employeeService.deleteEmp(data).subscribe(
+
+  Swal.fire({
+      title: "Are you sure?",
+      text: "Do you Want to Delete this",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+         this.deleteConfirm(data);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+
+      }
+    });
+
+
+
+  }
+  deleteConfirm(data: any) {
+      this.employeeService.deleteEmp(data).subscribe(
       (response) => {
         console.log('Employee deleted successfully:', response);
         if (response && response.status === true) {
           this.loadEmployees();
           this.notyf.success(response.message || 'Employee deleted successfully');
         }
-        else if (response && response.status === false) {
+        else if (response && response.status == false) {
           this.notyf.error(response.message || 'Failed to delete employee');
         }
         else {
@@ -429,7 +450,7 @@ export class JoiningComponent {
       },
       (error) => {
         console.error('Error deleting employee:', error);
-        alert('Failed to delete employee. Please try again.');
+          this.notyf.error('Failed to delete employee');
       }
     )
   }
