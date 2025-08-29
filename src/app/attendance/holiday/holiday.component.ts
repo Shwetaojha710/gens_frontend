@@ -313,7 +313,7 @@ close(){
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err)
+        this.notyf.error(err?.error?.message || 'An error occurred')
       }
 
 

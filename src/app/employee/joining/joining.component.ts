@@ -296,10 +296,10 @@ export class JoiningComponent {
     });
   }
   designationDD: any = []
-  getDesignation(item: any) {
+  getDesignation(departmentId: any) {
     this.designationDD = []
     let obj: any = {}
-    obj['department'] = item
+    obj['department'] = departmentId?.value || departmentId
     this.master.designationDD(obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
@@ -361,6 +361,7 @@ export class JoiningComponent {
 
   }
   async update(data: any) {
+
     this.personalDetails = Object.assign({}, data);
     const dob = new Date(this.personalDetails.dateOfBirth);
     const formattedDob = `${dob.getFullYear()}-${(dob.getMonth() + 1).toString().padStart(2, '0')}-${dob.getDate().toString().padStart(2, '0')}`;;
@@ -370,6 +371,8 @@ export class JoiningComponent {
     this.personalDetails.country = Number(this.personalDetails.country);
     await this.getstates(this.personalDetails.country);
     await this.getcity(this.personalDetails.state);
+    await this.getDesignation(this.personalDetails.departmentId);
+    this.employeeList=this.employeeList.filter((item: any) => item.value != this.personalDetails.id);
     this.createFlag = true;
     this.updateFlag = true;
   }
@@ -464,6 +467,10 @@ export class JoiningComponent {
   back() {
     this.personalDetails = {}
     this.createFlag = false
+     this.employeeList = this.employees?.map((item: any) => ({
+          value: item.id,
+          label: `${item.firstName} ${item?.lastName || ''}`
+        }));
   }
   toUppercase() {
     this.personalDetails.panNo = this.personalDetails.panNo?.toUpperCase() || '';

@@ -35,7 +35,7 @@ export class ApplyLeaveComponent {
   EmployeeForm!: FormGroup;
   EmployeeList = [];
   editingId: number | null = null;
-
+ minDate: any
   constructor(
     private fb: FormBuilder,
     private master: MasterService,
@@ -46,10 +46,14 @@ export class ApplyLeaveComponent {
       name: ['', Validators.required],
       status: ['', [Validators.required]]
     });
-
+ const today = new Date();
+    this.minDate = today.toISOString().split('T')[0]; // today
     this.notyf = new Notyf();
   }
-
+  // This will return either today (for "from date") or selected fromDate (for "to date")
+  getToDateMin(): string {
+    return this.obj['fromDate'] || this.minDate;
+  }
   async ngOnInit() {
     this.EmployeeForm = this.fb.group({
       name: ['', Validators.required],

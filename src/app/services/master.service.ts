@@ -18,7 +18,7 @@ export class MasterService {
   const PORT = localStorage.getItem('PORT')?.replace(/["\\,]/g, '') || '3002';
   return window.location.hostname == 'localhost'
     ? localStorage.getItem('base_url')?.replace(/["\\,]/g, '')|| ''
-    : `http://${window.location.hostname}:${PORT}`;
+    :  localStorage.getItem('base_url')?.replace(/["\\,]/g, '')|| '';
 }
 
   getDesignations(): Observable<any> {
@@ -109,7 +109,7 @@ export class MasterService {
     return this.http.post<any>(`${this.baseUrl}createDocument`, dept);
   }
 
-  updateDocument(id: any, dept: any): Observable<any> {
+  updateDocument(dept: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}editDocument`, dept);
   }
   updateDocumentType(id: any, dept: any): Observable<any> {
