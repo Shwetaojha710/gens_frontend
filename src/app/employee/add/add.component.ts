@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { EmployeeService } from '../../services/employee.service';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -104,6 +104,7 @@ export class AddComponent {
   toUppercase() {
 
   }
+  @ViewChild('fileInput') fileInput!: ElementRef;
   addPhoto() {
     console.log("apii callled")
     const uploadData = new FormData();
@@ -113,7 +114,8 @@ export class AddComponent {
 
     if (this.selectedFile) {
       uploadData.append('profileImage', this.selectedFile, this.selectedFile.name);
-      uploadData.append('file', this.selectedFile, this.selectedFile.name);
+      // uploadData.append('image', this.selectedFile, this.selectedFile.name);
+      // uploadData.append('file', this.selectedFile, this.selectedFile.name);
     } else {
       Swal.fire({
         toast: true,
@@ -126,37 +128,7 @@ export class AddComponent {
       return;
     }
 
-  //  this.employeeService.pythonregister(uploadData).subscribe({
-  //     next: (response: any) => {
-  //       console.log('response', response);
-
-  //       let message = response.message ? response.message : 'Data found Successfully';
-  //       let status = this.statusService.handleResponseStatus(response.status, message);
-  //       console.log(status)
-  //       console.log("response", response);
-
-  //       if (status === true) {
-
-  //         this.notyf.success(message)
-  //         this.fetchDocument();
-  //         // this.resetForm();
-  //       }
-  //       else if (status === "expired") {
-  //         this.router.navigate(["login"]);
-  //       }
-
-  //       else {
-  //         this.notyf.error(message)
-  //       }
-
-  //     },
-  //     error: (err:any) => {
-  //       console.error('Error:', err);
-  //       this.notyf.error(err)
-  //     }
-  //   });
-
-    this.employeeService.pythonregister(uploadData).subscribe({
+   this.employeeService.uploadImage(uploadData).subscribe({
       next: (response: any) => {
         console.log('response', response);
 
@@ -166,8 +138,9 @@ export class AddComponent {
         console.log("response", response);
 
         if (status === true) {
-
           this.notyf.success(message)
+          this.selectedFile = null;
+          this.fileInput.nativeElement.value = '';
           this.fetchDocument();
           // this.resetForm();
         }
@@ -185,6 +158,36 @@ export class AddComponent {
         this.notyf.error(err)
       }
     });
+
+    // this.employeeService.pythonregister(uploadData).subscribe({
+    //   next: (response: any) => {
+    //     console.log('response', response);
+
+    //     let message = response.message ? response.message : 'Data found Successfully';
+    //     let status = this.statusService.handleResponseStatus(response.status, message);
+    //     console.log(status)
+    //     console.log("response", response);
+
+    //     if (status === true) {
+
+    //       this.notyf.success(message)
+    //       this.fetchDocument();
+    //       // this.resetForm();
+    //     }
+    //     else if (status === "expired") {
+    //       this.router.navigate(["login"]);
+    //     }
+
+    //     else {
+    //       this.notyf.error(message)
+    //     }
+
+    //   },
+    //   error: (err) => {
+    //     console.error('Error:', err);
+    //     this.notyf.error(err)
+    //   }
+    // });
 
   }
   isFileInvalid: boolean = false;
