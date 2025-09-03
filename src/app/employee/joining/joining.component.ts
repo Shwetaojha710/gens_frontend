@@ -10,6 +10,7 @@ import { Router } from '@angular/router';
 import { ValidationUtil } from '../../shared/utils/validation.util';
 import { DataService } from '../../services/data.service';
 import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-joining',
@@ -28,6 +29,8 @@ export class JoiningComponent {
     const day = today.getDate().toString().padStart(2, '0');
     this.maxDate = `${year}-${month}-${day}`;
   }
+    shift: any = [{ value: 'Day', label: 'Day' }, { value: 'Afternoon', label: 'Afternoon' }, { value: 'Night', label: 'Night' }]
+
   maritalStatusList = [
     { value: 'Single', label: 'Single' },
     { value: 'Married', label: 'Married' },
@@ -205,7 +208,8 @@ export class JoiningComponent {
       !this.validateField(this.personalDetails.permanentAddress, 'Permanent Address') ||
       !this.validateField(this.personalDetails.city, 'City') ||
       !this.validateField(this.personalDetails.gender, 'Gender') ||
-      !this.validateField(this.personalDetails.martialStatus, 'Marital Status')
+      !this.validateField(this.personalDetails.martialStatus, 'Marital Status')||
+      !this.validateField(this.personalDetails.shift_id, 'Shift')
     ) {
       return;
     }
@@ -267,7 +271,6 @@ export class JoiningComponent {
 
     this.master.Departmentsdd().subscribe({
       next: (response: any) => {
-        console.log('response', response);
 
         let message = response.message ? response.message : 'Data found Successfully';
         // let status = this.statusService.handleResponseStatus(response.status, message);
@@ -296,10 +299,10 @@ export class JoiningComponent {
     });
   }
   designationDD: any = []
-  getDesignation(item: any) {
+  getDesignation(departmentId: any) {
     this.designationDD = []
     let obj: any = {}
-    obj['department'] = item
+    obj['department'] = departmentId?.value || departmentId
     this.master.designationDD(obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
@@ -335,7 +338,7 @@ export class JoiningComponent {
     this.originalList = []
     this.employeeService.getEmp().subscribe((response: any) => {
       if (response && response.data && response.status === true) {
-        this.notyf.success(response.message || 'Employees loaded successfully');
+        // this.notyf.success(response.message || 'Employees loaded successfully');
         this.employees = [];
         this.cardData = response.data.cardData
         this.employees = response.data.formattedEmps || [];
@@ -361,6 +364,7 @@ export class JoiningComponent {
 
   }
   async update(data: any) {
+
     this.personalDetails = Object.assign({}, data);
     const dob = new Date(this.personalDetails.dateOfBirth);
     const formattedDob = `${dob.getFullYear()}-${(dob.getMonth() + 1).toString().padStart(2, '0')}-${dob.getDate().toString().padStart(2, '0')}`;;
@@ -370,6 +374,8 @@ export class JoiningComponent {
     this.personalDetails.country = Number(this.personalDetails.country);
     await this.getstates(this.personalDetails.country);
     await this.getcity(this.personalDetails.state);
+    await this.getDesignation(this.personalDetails.departmentId);
+    this.employeeList=this.employeeList.filter((item: any) => item.value != this.personalDetails.id);
     this.createFlag = true;
     this.updateFlag = true;
   }
@@ -412,14 +418,35 @@ export class JoiningComponent {
 
   }
   delete(data: any) {
-    this.employeeService.deleteEmp(data).subscribe(
+
+  Swal.fire({
+      title: "Are you sure?",
+      text: "Do you Want to Delete this",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+         this.deleteConfirm(data);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+
+      }
+    });
+
+
+
+  }
+  deleteConfirm(data: any) {
+      this.employeeService.deleteEmp(data).subscribe(
       (response) => {
         console.log('Employee deleted successfully:', response);
         if (response && response.status === true) {
           this.loadEmployees();
           this.notyf.success(response.message || 'Employee deleted successfully');
         }
-        else if (response && response.status === false) {
+        else if (response && response.status == false) {
           this.notyf.error(response.message || 'Failed to delete employee');
         }
         else {
@@ -429,7 +456,7 @@ export class JoiningComponent {
       },
       (error) => {
         console.error('Error deleting employee:', error);
-        alert('Failed to delete employee. Please try again.');
+          this.notyf.error('Failed to delete employee');
       }
     )
   }
@@ -443,6 +470,10 @@ export class JoiningComponent {
   back() {
     this.personalDetails = {}
     this.createFlag = false
+     this.employeeList = this.employees?.map((item: any) => ({
+          value: item.id,
+          label: `${item.firstName} ${item?.lastName || ''}`
+        }));
   }
   toUppercase() {
     this.personalDetails.panNo = this.personalDetails.panNo?.toUpperCase() || '';

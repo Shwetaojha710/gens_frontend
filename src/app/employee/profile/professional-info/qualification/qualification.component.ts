@@ -10,6 +10,7 @@ import { StatusService } from '../../../../services/status.service';
 import { ValidationUtil } from '../../../../shared/utils/validation.util';
 import { DataService } from '../../../../services/data.service';
 import * as bootstrap from 'bootstrap';
+import { DomSanitizer } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-qualification',
@@ -42,7 +43,8 @@ export class QualificationComponent {
     private fb: FormBuilder,
     private Documentervice: MasterService,
     public statusService: StatusService,
-    private router: Router, public dataService: DataService
+    private router: Router, public dataService: DataService,
+       private sanitizer: DomSanitizer,
   ) {
 
      this.personalDetails = JSON.parse(localStorage.getItem('employeeId') || '{}');
@@ -59,7 +61,7 @@ export class QualificationComponent {
     this.docTypeList = []
     this.Documentervice.getDocumentDD().subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.docTypeList = data.data;
       } else {
         this.notyf.error(data['message']);
@@ -82,7 +84,7 @@ export class QualificationComponent {
     console.log(obj, "object data ")
     this.Documentervice.getDocument(obj).subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.DocumentList = data.data;
         for (let i = 0; i < this.DocumentList.length; i++) {
           this.DocumentList[i]['doc_name'] = `${this.baseurl}/${this.DocumentList[i]['doc_name']}`
@@ -102,7 +104,7 @@ export class QualificationComponent {
 
 
     const uploadData = new FormData();
-    uploadData.append('type', this.obj['docType']);
+    uploadData.append('type', this.obj['type']);
     uploadData.append('employeeId', this.personalDetails.id)
     if (this.selectedFile) {
       uploadData.append('doc_name', this.selectedFile, this.selectedFile.name);
@@ -144,7 +146,7 @@ export class QualificationComponent {
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err)
+        this.notyf.error(err?.error?.message)
       }
     });
 
@@ -155,9 +157,22 @@ export class QualificationComponent {
     this.editingId = this.obj.id;
     this.createFlag = true
     this.updateFlag = true
+    this.sanitizedImage=this.obj['doc_name']
+    this.documentdd()
   }
   updatedata() {
-    this.Documentervice.updateDocument(this.editingId, this.obj).subscribe({
+
+     const uploadData = new FormData();
+    uploadData.append('type', this.obj['type']);
+    uploadData.append('employeeId', this.personalDetails.id)
+    uploadData.append('id', this.obj.id)
+    uploadData.append('status', this.personalDetails.status)
+    uploadData.append('typeName', this.personalDetails.typeName)
+    if (this.selectedFile) {
+      uploadData.append('doc_name', this.selectedFile, this.selectedFile.name);
+    }
+
+    this.Documentervice.updateDocument(uploadData).subscribe({
       next: (response: any) => {
         console.log('response', response);
         let message = response.message ? response.message : 'Data found Successfully';
@@ -178,7 +193,7 @@ export class QualificationComponent {
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err)
+        this.notyf.error(err?.error?.message)
       }
 
 
@@ -265,11 +280,12 @@ export class QualificationComponent {
     this.createFlag = true
     this.listflag = false
     this.updateFlag = false
+     this.sanitizedImage=null
   }
 
   isFileInvalid: boolean = false;
   selectedFile: File | null = null;
-
+sanitizedImage: any;
   onFileChange(event: any) {
     const file = event.target.files[0];
 
@@ -280,7 +296,19 @@ export class QualificationComponent {
       this.selectedFile = event.target.files[0]
       // Save the file to a model or FormData here
     }
+
+    const reader = new FileReader();
+  reader.onload = () => {
+    const imageUrl = reader.result as string;
+    this.sanitizedImage = this.sanitizer.bypassSecurityTrustUrl(imageUrl);
+  };
+  reader.readAsDataURL(file);
   }
+  close(){
+  this.sanitizedImage = null;
+  this.selectedFile = null;
+  this.isFileInvalid = false;
+}
 imageUrls:any;
 openModal1(imageUrl: any) {
   this.imageUrls = imageUrl;

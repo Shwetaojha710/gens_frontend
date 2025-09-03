@@ -119,6 +119,7 @@ originalList:any = []
       if (data['status'] == true) {
         this.notyf.success(data['message']);
         this.PrefixList = data.data;
+        this.originalList = data.data;
       } else {
         this.notyf.error(data['message']);
       }

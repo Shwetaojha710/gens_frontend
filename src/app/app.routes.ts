@@ -48,6 +48,8 @@ import { LandingPageComponent } from './landing-page/landing-page.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { GeneratedSalaryComponent } from './payroll/generated-salary/generated-salary.component';
 import { PreffixComponent } from './master/preffix/preffix.component';
+import { AttendanceUploadComponent } from './attendance/attendance-upload/attendance-upload.component';
+import { SalaryComponentComponent } from './master/salary-component/salary-component.component';
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '', redirectTo: '/Home', pathMatch: 'full'},
@@ -96,6 +98,7 @@ export const routes: Routes = [
           { path: 'leaves', component: LeavesComponent },
            { path: 'salary-master', component: SalaryMasterComponent },
            { path: 'holiday', component: HolidayComponent },
+           { path: 'upload-attendance', component: AttendanceUploadComponent },
         ]
       },
       {
@@ -118,6 +121,7 @@ export const routes: Routes = [
           { path: 'documents', component: DocumentTypeComponent },
           { path: 'holiday-type', component: HolidayTypeComponent },
           { path: 'prefix', component: PreffixComponent },
+          { path: 'salary-component', component: SalaryComponentComponent },
         ]
       },
       {

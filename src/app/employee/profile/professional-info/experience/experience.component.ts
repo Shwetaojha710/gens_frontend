@@ -129,7 +129,7 @@ this.obj['employeeId']=this.personalDetails.id
 
       if (status == true) {
            this.desigantionList = []
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.desigantionList = data.data;
       } else {
         this.notyf.error(data['message']);
@@ -156,6 +156,8 @@ this.obj['employeeId']=this.personalDetails.id
 
   update(dept: any) {
     this.obj = Object.assign({}, dept)
+     this.obj['from']=this.obj['from']?.split(' ')[0]
+     this.obj['to']=this.obj['to']?.split(' ')[0]
     this.editingId = this.obj.id;
     this.createFlag = true
     this.updateFlag = true

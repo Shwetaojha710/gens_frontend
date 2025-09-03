@@ -1,27 +1,28 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
+
 import { Notyf } from 'notyf';
 import Swal from 'sweetalert2';
 import { MasterService } from '../../services/master.service';
 import { StatusService } from '../../services/status.service';
 import { ValidationUtil } from '../../shared/utils/validation.util';
-import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
+import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-apply-leave',
+  selector: 'app-salary-component',
   imports: [NgSelectModule,
-    FormsModule, CommonModule,SearchPaginationComponent],
-  templateUrl: './apply-leave.component.html',
-  styleUrl: './apply-leave.component.css'
+    FormsModule, CommonModule],
+  templateUrl: './salary-component.component.html',
+  styleUrl: './salary-component.component.css'
 })
 
-export class ApplyLeaveComponent {
- obj: any = {}
+export class SalaryComponentComponent {
+  obj: any = {}
   notyf: Notyf;
-
+  valueType: any = [{ value: 'fixed', label: 'Fixed' }, { value: 'percentage', label: 'Percentage' }, { value: 'basic_dependent', label: 'Basic Dependent' }]
+  componentType: any = [{ value: 'payable', label: 'Earning' }, { value: 'deductible', label: 'Deduction' }]
   back() {
     this.obj = {}
     this.createFlag = false
@@ -32,168 +33,118 @@ export class ApplyLeaveComponent {
   // onSubmit() {
   //    console.log(this.obj)
   // }
-  EmployeeForm!: FormGroup;
-  EmployeeList = [];
+  departmentForm!: FormGroup;
+  SalaryComponentList: any[] = [];
   editingId: number | null = null;
- minDate: any
+
   constructor(
     private fb: FormBuilder,
-    private master: MasterService,
+    private masterService: MasterService,
     public statusService: StatusService,
     private router: Router,
   ) {
-    this.EmployeeForm = this.fb.group({
+    this.departmentForm = this.fb.group({
       name: ['', Validators.required],
       status: ['', [Validators.required]]
     });
- const today = new Date();
-    this.minDate = today.toISOString().split('T')[0]; // today
+
     this.notyf = new Notyf();
   }
-  // This will return either today (for "from date") or selected fromDate (for "to date")
-  getToDateMin(): string {
-    return this.obj['fromDate'] || this.minDate;
-  }
+  searchText: any = '';
   async ngOnInit() {
-    this.EmployeeForm = this.fb.group({
-      name: ['', Validators.required],
-      description: ['']
-    });
-    await this.getApplyLeaveList()
-    await this.getLeaveTypeList()
-    await this.empList()
+    await this.fetchComponentMaster()
+    await this.getcomponentname()
+
   }
-    pageSize = 5;
-  currentPage = 1;
-  searchTerm = '';
-  itemsPerPage = 10;
-  onSearch(term: string) {
-    this.searchTerm = term.toLowerCase();
-    this.currentPage = 1;
-    this.applyFilters();
+  getLabel(list: any[], value: string): string {
+    return list.find(x => x.value === value)?.label || value;
   }
+  dependentComp: any = []
+  async getcomponentname() {
 
+    this.dependentComp = []
 
-  onPageChange(page: number) {
-    this.currentPage = page;
-    this.applyFilters();
+    this.masterService.getComponent().subscribe((response: any) => {
+      if (response.status == true) {
+
+        this.dependentComp = response.data.map((item: any) => {
+          return { value: item.id, label: item.component_name }
+        })
+      } else if (response.status == "expired") {
+        this.router.navigate(["login"]);
+      } else {
+        this.notyf.error(response.message)
+      }
+
+    })
   }
-
-
-  onPageSizeChange(size: number) {
-    this.pageSize = size;
-    this.currentPage = 1;
-    this.applyFilters();
-  }
-  filteredDesignation: any = []
-  searchText: any = ''
-
-  applyFilters() {
-    let data = [...this.applyLeaveList];
-
-
-    const value = this.searchTerm || '';
+  applyFilter(event: any) {
+    const value = event?.target?.value || '';
     this.searchText = value.trim();
 
     if (this.searchText === '') {
-      this.applyLeaveList = [...this.originalList];
+      this.SalaryComponentList = [...this.originalList];
     } else {
-      this.applyLeaveList = this.originalList.filter((item: any) =>
+      this.SalaryComponentList = this.originalList.filter((item: any) =>
         JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
       );
     }
 
 
-    // pagination
-    const start = (this.currentPage - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    this.filteredDesignation = data.slice(start, end);
   }
-  applyLeaveList:any=[]
-  originalList:any=[]
-  async getApplyLeaveList(){
-    this.applyLeaveList=[]
-    this.originalList=[]
-        this.master.getapplyLeaveList().subscribe({
-      next: (response: any) => {
-        console.log('response', response);
-
-        let message = response.message ? response.message : 'Data found Successfully';
-        let status = this.statusService.handleResponseStatus(response.status, message);
-        console.log(status)
-        console.log("response", response);
-
-        if (status == true) {
-
-          // this.notyf.success(message)
-          this.applyLeaveList=response.data
-          this.originalList=response.data
-        }
-        else if (status == "expired") {
-          this.router.navigate(["login"]);
-        }
-
-        else {
-          this.notyf.error(message)
-        }
-
-      },
-      error: (err) => {
-        console.error('Error:', err);
-        this.notyf.error(err.error?.message)
-      }
-    });
+  getMin(a: number, b: number): number {
+    return Math.min(a, b);
   }
-    leaveTypeList: any = [];
-  async getLeaveTypeList() {
-    this.leaveTypeList = []
-    this.master.getLeaveTypeList().subscribe((data: { [x: string]: any; data: any; }) => {
-      console.log(data)
+  onItemsPerPageChange(event: any) {
+    this.itemsPerPage = +event.target.value;
+    this.currentPage = 1; // Reset to first page
+    this.fetchComponentMaster();
+  }
+  goToPage(page: number) {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.fetchComponentMaster();
+  }
+  getStatusClass(status: any): string {
+    switch (status) {
+      case 'pending': return 'bg-light-warning';
+      case 'cancelled': return 'bg-light-danger';
+      case 'completed': return 'bg-light-success';
+      default: return 'bg-light-secondary';
+    }
+  }
+  originalList: any[] = [];
+  currentPage = 1;
+  itemsPerPage = 10;
+  totalPages = 0;
+
+  async fetchComponentMaster() {
+    this.SalaryComponentList = []
+    this.originalList = []
+    this.masterService.fetchComponentsMaster().subscribe(data => {
       if (data['status'] == true) {
         // this.notyf.success(data['message']);
-        this.leaveTypeList = data.data;
-
+        this.SalaryComponentList = data.data;
+        this.originalList = this.SalaryComponentList
       }
-      else if (data['status'] == 'expired') {
-        this.router.navigate(['login'])
+      else if (data['status'] == "expired") {
+        this.router.navigate(["login"]);
       }
       else {
         this.notyf.error(data['message']);
       }
     });
 
-  }
-
-
-
-  EmpList:any = []
-    async empList() {
-    this.EmpList = []
-    this.master.getemployeeList().subscribe((data: { [x: string]: any; data: any; }) => {
-      console.log(data)
-      if (data['status'] == true) {
-        // this.notyf.success(data['message']);
-        this.EmpList = data.data;
-        console.log(this.EmpList, "attendance master list");
-
-      }
-      else if (data['status'] == 'expired') {
-        this.router.navigate(['login'])
-      }
-      else {
-        this.notyf.error(data['message']);
-      }
-    });
 
   }
 
   onSubmit() {
-    // if (!ValidationUtil.showRequiredError('Employment Type', this.obj.name, this.notyf)) {
-    //   return;
-    // }
-    // this.obj['employeeId']=
+    if (!ValidationUtil.showRequiredError('Component name', this.obj.component_name, this.notyf)) {
+      return;
+    }
 
-    this.master.ApplyLeave(this.obj).subscribe({
+
+    this.masterService.addComponent(this.obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
 
@@ -205,7 +156,7 @@ export class ApplyLeaveComponent {
         if (status === true) {
 
           this.notyf.success(message)
-          this.getApplyLeaveList();
+          this.fetchComponentMaster();
           this.resetForm();
         }
         else if (status === "expired") {
@@ -219,54 +170,52 @@ export class ApplyLeaveComponent {
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err.error?.message)
+        this.notyf.error(err?.error?.message)
       }
     });
 
   }
- statuschange(item:any,status:any){
-      let newObj :any={}
-      newObj=Object.assign({},item)
-      // newObj['id']=item.id
-      newObj['status']=status
-      // newObj['employeeId']=item.employeeId
 
-      this.master.UpdateApplyLeaveStatus(newObj).subscribe({
+  update(dept: any) {
+    this.obj = Object.assign({}, dept)
+    this.editingId = this.obj.id;
+    this.createFlag = true
+    this.updateFlag = true
+  }
+  updatedata() {
+    this.masterService.updateSalaryComponent(this.editingId, this.obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
-
         let message = response.message ? response.message : 'Data found Successfully';
         let status = this.statusService.handleResponseStatus(response.status, message);
         console.log(status)
         console.log("response", response);
-
         if (status === true) {
-
           this.notyf.success(message)
-          this.getApplyLeaveList();
+          this.fetchComponentMaster();
           this.resetForm();
         }
         else if (status === "expired") {
           this.router.navigate(["login"]);
         }
-
         else {
           this.notyf.error(message)
         }
-
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err.error?.message)
+        this.notyf.error(err)
       }
-    });
- }
 
 
+
+    })
+
+  }
 
   delete(data: number) {
 
-     Swal.fire({
+    Swal.fire({
       title: "Are you sure?",
       text: "Do you Want to Delete this",
       icon: "warning",
@@ -276,7 +225,7 @@ export class ApplyLeaveComponent {
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
-        this.deleteemployee(data)
+        this.deleteSalaryComponent(data)
         // Swal.fire({
         //   title: "Deleted!",
         //   text: "Your file has been deleted.",
@@ -297,8 +246,8 @@ export class ApplyLeaveComponent {
 
 
   }
-  deleteemployee(data:any){
-       this.master.deleteEmployee(data).subscribe({
+  deleteSalaryComponent(data: any) {
+    this.masterService.deleteSalaryComponent(data).subscribe({
       next: (response: any) => {
         console.log('response', response);
         let message = response.message ? response.message : 'Data found Successfully';
@@ -307,7 +256,7 @@ export class ApplyLeaveComponent {
         console.log("response", response);
         if (status === true) {
           this.notyf.success(message)
-          this.getApplyLeaveList();
+          this.fetchComponentMaster();
         }
         else if (status === "expired") {
           this.router.navigate(["login"]);
@@ -316,9 +265,9 @@ export class ApplyLeaveComponent {
           this.notyf.error(message)
         }
       },
-      error: (err: any) => {
+      error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err.error.message)
+        this.notyf.error(err.message)
       }
 
     })
@@ -330,7 +279,7 @@ export class ApplyLeaveComponent {
     this.editingId = null;
   }
   isInvalid(field: string): boolean {
-    const control = this.EmployeeForm.get(field);
+    const control = this.departmentForm.get(field);
     return !!(control && control.touched && control.invalid);
   }
 
@@ -339,12 +288,30 @@ export class ApplyLeaveComponent {
   updateFlag: any = false
   opencreate() {
     this.obj = {}
+    this.dependentComp = []
+    this.getcomponentname()
     this.createFlag = true
     this.listflag = false
     this.updateFlag = false
   }
+  percentageFlag: boolean = false
+  fixedFlag: boolean = true
+  onChange(event: any) {
+    console.log(event)
 
+    if (event.value == 'fixed') {
+      this.obj['dependent_component'] = null
+    }
+    else if (event.value == 'basic_dependent') {
+      this.obj['dependent_component'] = null
+      this.obj['amount'] = null
+      this.obj['value'] = null
+    }
+    else {
 
-
+      this.obj['amount'] = null
+      this.obj['value'] = null
+    }
+  }
 
 }

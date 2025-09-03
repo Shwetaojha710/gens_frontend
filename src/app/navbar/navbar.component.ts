@@ -57,7 +57,8 @@ export class NavbarComponent {
         { title: 'Holiday', icon: 'ri-barricade-fill', link: '/layout/attendance/holiday' },
         { title: 'Attendance Logs', icon: 'ri-calendar-line', link: '/layout/attendance/logs' },
         { title: 'Leaves', icon: 'ri-leaf-line', link: '/layout/attendance/leaves' },
-        { title: 'Attendance Master', icon: 'ri-calendar-line', link: '/layout/attendance/salary-master' }
+        { title: 'Attendance Master', icon: 'ri-calendar-line', link: '/layout/attendance/salary-master' },
+        { title: 'Upload Attendance', icon: 'ri-calendar-line', link: '/layout/attendance/upload-attendance' }
 
       ]
     },
@@ -91,6 +92,7 @@ export class NavbarComponent {
         { title: 'Documents', icon: 'ri-file-line', link: '/layout/master/documents' },
         { title: 'Holiday Types', icon: 'ri-suitcase-line', link: '/layout/master/holiday-type' },
         { title: 'Prefix', icon: 'ri-file-line', link: '/layout/master/prefix' },
+        { title: 'Salary Component', icon: 'ri-file-line', link: '/layout/master/salary-component' },
         // {title: 'Attendance Master', icon: 'ri-file-line', link: '/layout/master/salary-master'}
 
       ]

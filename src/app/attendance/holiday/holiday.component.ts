@@ -112,7 +112,7 @@ HolidayList: any = [];
      this.originalList =[]
     this.attendanceService.getHolidayList().subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
 
         this.HolidayList = data.data;
            for (let i = 0; i < this.HolidayList.length; i++) {
@@ -135,7 +135,7 @@ HolidayList: any = [];
     this.HolidayList = []
     this.master.getHolidayTypeDD().subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
 
         this.HolidayTypeList = data.data;
 
@@ -313,7 +313,7 @@ close(){
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err)
+        this.notyf.error(err?.error?.message || 'An error occurred')
       }
 
 

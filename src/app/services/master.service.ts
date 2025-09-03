@@ -18,7 +18,7 @@ export class MasterService {
   const PORT = localStorage.getItem('PORT')?.replace(/["\\,]/g, '') || '3002';
   return window.location.hostname == 'localhost'
     ? localStorage.getItem('base_url')?.replace(/["\\,]/g, '')|| ''
-    : `http://${window.location.hostname}:${PORT}`;
+    :  localStorage.getItem('base_url')?.replace(/["\\,]/g, '')|| '';
 }
 
   getDesignations(): Observable<any> {
@@ -109,7 +109,7 @@ export class MasterService {
     return this.http.post<any>(`${this.baseUrl}createDocument`, dept);
   }
 
-  updateDocument(id: any, dept: any): Observable<any> {
+  updateDocument(dept: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}editDocument`, dept);
   }
   updateDocumentType(id: any, dept: any): Observable<any> {
@@ -211,6 +211,26 @@ addSalaryMaster(dept: any): Observable<any> {
   }
   getPrefix(): Observable<any> {
      return this.http.post(`${this.baseUrl}get-prefix`, {});
+  }
+
+  addComponent(dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}create-component`, dept);
+  }
+
+  updateComponent(id: any, dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}updateComponent`, dept);
+  }
+  getComponent(): Observable<any> {
+    return this.http.post(`${this.baseUrl}get-component`, {});
+  }
+  fetchComponentsMaster(): Observable<any> {
+    return this.http.post(`${this.baseUrl}get-component`, {});
+  }
+  deleteSalaryComponent(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}delete-component`, data);
+  }
+    updateSalaryComponent(id: any, dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}update-component`, dept);
   }
 
 //    getAttendanceSetting(): Observable<any> {

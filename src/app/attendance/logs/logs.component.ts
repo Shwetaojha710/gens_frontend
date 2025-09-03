@@ -249,9 +249,9 @@ export class LogsComponent {
     this.master.getemployeeList().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.EmpList = data.data;
-        console.log(this.EmpList, "attendance master list");
+        // console.log(this.EmpList, "attendance master list");
 
       }
       else if (data['status'] == 'expired') {
@@ -268,7 +268,7 @@ export class LogsComponent {
     this.master.getAttendanceYear().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.yearList = data.data;
         console.log(this.EmpList, "attendance master list");
 

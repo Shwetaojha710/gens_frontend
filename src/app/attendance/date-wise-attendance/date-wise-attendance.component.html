@@ -1,19 +1,19 @@
- <div class="container-xxl  mt-5">
+<div class="container-xxl mt-5">
   <div class="row mb-6" *ngIf="updateFlag == false">
     <div class="col-md">
       <div class="card">
         <h5
           class="card-header d-flex justify-content-between align-items-center"
         >
-          <span>Attendance List</span>
-          <button
+          <span>Date Wise Attendance List</span>
+          <!-- <button
             *ngIf="updateFlag == false"
             type="button"
             class="btn btn-xs btn-primary float-end"
             (click)="openupdate()"
           >
             <i class="fa-solid fa-plus"></i>&nbsp;Update
-          </button>
+          </button> -->
         </h5>
         <div class="card-body">
           <div class="row">
@@ -212,15 +212,17 @@
                       type="time"
                       [(ngModel)]="item.checkIn"
                       class="form-control"
+                      [disabled]="!item.editable"
                     />
                     <!-- {{item?.checkIn}} -->
                   </td>
 
                   <td style="width: 50px; font-size: 12px">
-                     <input
+                    <input
                       type="time"
                       [(ngModel)]="item.checkOut"
                       class="form-control"
+                      [disabled]="!item.editable"
                     />
                     <!-- {{ item?.checkOut }} -->
                   </td>
@@ -238,6 +240,14 @@
                     </span>
                   </td>
                   <td>
+                    <button
+                      type="button"
+                      class="btn btn-outline-primary btn-sm"
+                      (click)="applyUpdate(item)"
+                    >
+                      <i class="ri ri-refresh-line"></i>
+                    </button>
+                    &nbsp;
                     <button
                       type="button"
                       class="btn btn-outline-success btn-sm"

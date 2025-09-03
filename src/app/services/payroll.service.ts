@@ -72,5 +72,10 @@ baseUrl=environment.apiUrl
   revertSalary(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}revert-Salary`, data);
   }
-
+  AddSalarycomp(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}update-salary`, data);
+  }
+    SetUpsalary(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}setup-salary`, data);
+  }
 }

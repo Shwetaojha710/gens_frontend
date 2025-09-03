@@ -24,7 +24,7 @@
             [items]="docTypeList"
             bindLabel="label"
             bindValue="value"
-            [(ngModel)]="obj['docType']"
+            [(ngModel)]="obj['type']"
             [multiple]="false"
             placeholder="Select Doc type"
             name="doc_type"
@@ -45,6 +45,30 @@
             accept="image/*"
             #fileInput
           />
+           <div *ngIf="sanitizedImage">
+                <button
+                  style="position: absolute; right: 356px"
+                  (click)="close()"
+                  type="button"
+                  class="btn-close"
+                  data-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+                <img
+                  [src]="sanitizedImage"
+                  alt="Uploaded Image"
+                  class="img-thumbnail"
+                  style="
+                    max-width: 80px;
+                    max-height: 80px;
+                    margin-top: 8px;
+                    object-fit: cover;
+                    border: 1px solid #cfd0d6;
+                    border-radius: 5px;
+                  "
+                  (click)="openModal1(sanitizedImage)"
+                />
+              </div>
         </div>
         &nbsp;
         <div class="col-4" *ngIf="updateFlag">
@@ -117,7 +141,7 @@
           <tbody class="table-border-bottom-0">
             <tr *ngFor="let item of DocumentList; let i = index">
               <th scope="row">{{ i + 1 }}</th>
-              <td>{{ item["type"] }}</td>
+              <td>{{ item["typeName"] }}</td>
               <td>
                 <img
                   [src]="item['doc_name']"

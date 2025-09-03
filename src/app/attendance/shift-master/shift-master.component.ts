@@ -50,11 +50,6 @@ export class ShiftMasterComponent {
   }
 
   async ngOnInit() {
-    this.departmentForm = this.fb.group({
-      name: ['', Validators.required],
-      description: ['']
-    });
-
     await this.fetchshifts();
   }
   getStatusClass(status: any): string {
@@ -75,7 +70,7 @@ export class ShiftMasterComponent {
     this.shiftService.getshifts().subscribe(data => {
       if (data['status'] == true) {
         this.shiftList = []
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.shiftList = data.data;
         this.shiftList = this.shiftList.map((item: any) => {
           return {
@@ -145,7 +140,7 @@ export class ShiftMasterComponent {
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err)
+        this.notyf.error(err?.error?.message)
       }
     });
 
