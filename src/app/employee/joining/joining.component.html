@@ -378,6 +378,31 @@
             </div>
             <div class="col-md-3">
               <label class="col-form-label fw-bold"
+                >Shift
+                <span style="color: red"> *</span>
+              </label>
+              <ng-select
+                [items]="shift"
+                bindLabel="label"
+                bindValue="value"
+                [(ngModel)]="personalDetails['shift_id']"
+                [multiple]="false"
+                placeholder="Select shift"
+                name="country"
+                id="select2Danger"
+                #shiftRef="ngModel"
+                   (change)="getDesignation($event)"
+              >
+              </ng-select>
+              <small
+                class="text-danger"
+                *ngIf="shiftRef.invalid && shiftRef.touched"
+              >
+                Select shift
+              </small>
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold"
                 >Department
                 <span style="color: red"> *</span>
               </label>

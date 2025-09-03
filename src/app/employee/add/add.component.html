@@ -48,6 +48,20 @@
           class="nav-link waves-effect"
           role="tab"
           data-bs-toggle="tab"
+          data-bs-target="#navs-top-messages-new-salary"
+          aria-controls="navs-top-messages-new-salary"
+          aria-selected="false"
+          tabindex="-1"
+        >
+          New Salary
+        </button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button
+          type="button"
+          class="nav-link waves-effect"
+          role="tab"
+          data-bs-toggle="tab"
           data-bs-target="#navs-top-leave"
           aria-controls="navs-top-leave"
           aria-selected="false"
@@ -610,7 +624,7 @@ disabled
         </div>
       </div>
 
-      <div class="tab-pane fade" id="navs-top-messages" role="tabpanel">
+     <div class="tab-pane fade" id="navs-top-messages" role="tabpanel">
         Set Salary
 
         <hr />
@@ -707,6 +721,29 @@ disabled
           </div>
         </div>
       </div>
+
+        <div class="tab-pane fade" id="navs-top-messages-new-salary" role="tabpanel">
+       New Set Salary
+
+        <hr />
+        <div class="row mt-1">
+
+
+          <div class="col-lg-12 col-md-10 col-12">
+            <div class="tab-content p-0">
+               <div
+                class="tab-pane fade show active"
+                id="payment1"
+                role="tabpanel"
+              >
+                <app-salary-setup></app-salary-setup>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
          <div class="tab-pane fade" id="navs-top-leave" role="tabpanel">
         <router-outlet></router-outlet>
       </div>

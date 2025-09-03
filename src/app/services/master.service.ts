@@ -213,6 +213,26 @@ addSalaryMaster(dept: any): Observable<any> {
      return this.http.post(`${this.baseUrl}get-prefix`, {});
   }
 
+  addComponent(dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}create-component`, dept);
+  }
+
+  updateComponent(id: any, dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}updateComponent`, dept);
+  }
+  getComponent(): Observable<any> {
+    return this.http.post(`${this.baseUrl}get-component`, {});
+  }
+  fetchComponentsMaster(): Observable<any> {
+    return this.http.post(`${this.baseUrl}get-component`, {});
+  }
+  deleteSalaryComponent(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}delete-component`, data);
+  }
+    updateSalaryComponent(id: any, dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}update-component`, dept);
+  }
+
 //    getAttendanceSetting(): Observable<any> {
 //     return this.http.post(`${this.baseUrl}get-attendance-setting`, {});
 //   }

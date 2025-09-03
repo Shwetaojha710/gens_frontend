@@ -92,6 +92,7 @@ export class NavbarComponent {
         { title: 'Documents', icon: 'ri-file-line', link: '/layout/master/documents' },
         { title: 'Holiday Types', icon: 'ri-suitcase-line', link: '/layout/master/holiday-type' },
         { title: 'Prefix', icon: 'ri-file-line', link: '/layout/master/prefix' },
+        { title: 'Salary Component', icon: 'ri-file-line', link: '/layout/master/salary-component' },
         // {title: 'Attendance Master', icon: 'ri-file-line', link: '/layout/master/salary-master'}
 
       ]

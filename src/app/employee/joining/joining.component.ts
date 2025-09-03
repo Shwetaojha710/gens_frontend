@@ -29,6 +29,8 @@ export class JoiningComponent {
     const day = today.getDate().toString().padStart(2, '0');
     this.maxDate = `${year}-${month}-${day}`;
   }
+    shift: any = [{ value: 'Day', label: 'Day' }, { value: 'Afternoon', label: 'Afternoon' }, { value: 'Night', label: 'Night' }]
+
   maritalStatusList = [
     { value: 'Single', label: 'Single' },
     { value: 'Married', label: 'Married' },
@@ -206,7 +208,8 @@ export class JoiningComponent {
       !this.validateField(this.personalDetails.permanentAddress, 'Permanent Address') ||
       !this.validateField(this.personalDetails.city, 'City') ||
       !this.validateField(this.personalDetails.gender, 'Gender') ||
-      !this.validateField(this.personalDetails.martialStatus, 'Marital Status')
+      !this.validateField(this.personalDetails.martialStatus, 'Marital Status')||
+      !this.validateField(this.personalDetails.shift_id, 'Shift')
     ) {
       return;
     }

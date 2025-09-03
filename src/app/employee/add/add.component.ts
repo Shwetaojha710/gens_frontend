@@ -17,10 +17,11 @@ import { BasicComponent } from "../../payroll/basic/basic.component";
 import { AllowancesComponent } from "../../payroll/allowances/allowances.component";
 import { TotalSalaryComponentComponent } from "../../payroll/total-salary-component/total-salary-component.component";
 import { DeductionsComponent } from "../../payroll/deductions/deductions.component";
+import { SalarySetupComponent } from "../../payroll/salary-setup/salary-setup.component";
 @Component({
   selector: 'app-add',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgSelectModule, RouterModule, QualificationComponent, ExperienceComponent, BankDetailsComponent, BasicComponent, AllowancesComponent, TotalSalaryComponentComponent, DeductionsComponent],
+  imports: [CommonModule, SalarySetupComponent,FormsModule, NgSelectModule, RouterModule, QualificationComponent, ExperienceComponent, BankDetailsComponent, BasicComponent, AllowancesComponent, TotalSalaryComponentComponent, DeductionsComponent, SalarySetupComponent],
   templateUrl: './add.component.html',
   styleUrls: ['./add.component.css']
 })
