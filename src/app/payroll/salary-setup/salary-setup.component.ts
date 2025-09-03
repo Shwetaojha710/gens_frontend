@@ -46,6 +46,24 @@ export class SalarySetupComponent {
   }
   status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
 
+  convertNumberToWords(amount: number): string {
+  if (amount === 0) return 'zero';
+  const a = [
+    '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+    'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'
+  ];
+  const b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+  const numToWords = (n: number): string => {
+    if (n < 20) return a[n];
+    if (n < 100) return b[Math.floor(n / 10)] + (n % 10 ? ' ' + a[n % 10] : '');
+    if (n < 1000) return a[Math.floor(n / 100)] + ' hundred' + (n % 100 ? ' and ' + numToWords(n % 100) : '');
+    if (n < 100000) return numToWords(Math.floor(n / 1000)) + ' thousand' + (n % 1000 ? ' ' + numToWords(n % 1000) : '');
+    if (n < 10000000) return numToWords(Math.floor(n / 100000)) + ' lakh' + (n % 100000 ? ' ' + numToWords(n % 100000) : '');
+    return numToWords(Math.floor(n / 10000000)) + ' crore' + (n % 10000000 ? ' ' + numToWords(n % 10000000) : '');
+  };
+  return numToWords(Math.floor(amount));
+}
+
   onSubmit() {
     console.log(this.obj)
     this.ComponentList=this.ComponentList.map((item: any) => ({
@@ -78,7 +96,10 @@ export class SalarySetupComponent {
 
         if (status === true) {
           this.notyf.success(message)
-
+          this.ComponentList=[]
+          this.totalPayable =0
+          this.totalDeductible =0
+          this.obj={}
           this.back()
         }
         else if (status === "expired") {

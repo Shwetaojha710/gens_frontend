@@ -115,7 +115,7 @@ originalList:any = []
     this.originalList = []
     this.master.getDocumentType().subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.DocumentList = data.data;
         this.originalList = data.data;
       } else {

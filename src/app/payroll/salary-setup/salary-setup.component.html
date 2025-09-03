@@ -92,7 +92,7 @@
         >
           <span>Salary Setup </span>
           <span>
-            TOTAL PAYABLE: {{ totalPayable }} | TOTAL DEDUCTIBLE: {{ totalDeductible }} | NET PAYABLE {{ totalPayable - totalDeductible }}
+            TOTAL PAYABLE: {{ totalPayable }} | TOTAL DEDUCTIBLE: {{ totalDeductible }} | NET PAYABLE: {{ totalPayable - totalDeductible }}
           </span>
          <button
                 type="button"
@@ -175,6 +175,16 @@
             </tbody>
           </table>
         </div>
+       <div class="row d-flex justify-content-between align-items-center">
+  <div class="col">
+    <span>
+
+      <strong style="font-weight: bold;">NET PAYABLE (TOTAL PAYABLE - TOTAL DEDUCTIBLE):</strong> {{ totalPayable - totalDeductible }} (IN Words: {{ convertNumberToWords(totalPayable - totalDeductible) }})
+      <br />
+    </span>
+  </div>
+</div>
+
 
     </div>
   </div>
