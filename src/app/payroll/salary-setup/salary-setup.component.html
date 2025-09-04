@@ -1,190 +1,118 @@
 <div class="mt-5">
   <div class="row mb-6">
     <div class="col-md">
-        <!-- <h5
-          class="card-header d-flex justify-content-between align-items-center"
-        >
-          <span>Set Salary Component</span>
-
-        </h5> -->
-        <div class="card-body">
-          <div class="row">
-             <div class="col-4">
-              <label for="defaultFormControlInput" class="form-label"
-                >CTC</label
-              >
-              <input
-                type="number"
-                class="form-control"
-                id="defaultFormControlInput"
-                placeholder="Enter CTC"
-                [(ngModel)]="obj['CTC']"
-                aria-describedby="defaultFormControlHelp"
-                (change)="calculateSalary()"
-              />
-            </div>
-             <div class="col-4">
-              <label for="defaultFormControlInput" class="form-label"
-                >Effective Date</label
-              >
-              <input
-                type="date"
-                class="form-control"
-                id="defaultFormControlInput"
-                placeholder="Enter Date"
-                [(ngModel)]="obj['startDate']"
-                aria-describedby="defaultFormControlHelp"
-              />
-            </div>
-
-
-
-
-
-
-
-<!--
-            <div class="col-6" *ngIf="updateFlag">
-              <label for="defaultFormControlInput" class="form-label"
-                >Status</label
-              >
-              <ng-select
-                [items]="status"
-                bindLabel="label"
-                bindValue="value"
-                [(ngModel)]="obj['status']"
-                [multiple]="false"
-                placeholder="Select Status"
-                name="status"
-                id="select2Danger"
-              >
-              </ng-select>
-            </div> -->
-
+      <div class="card-body">
+        <div class="row">
+          <div class="col-4">
+            <label for="defaultFormControlInput" class="form-label">CTC</label>
+            <input type="number" class="form-control" id="defaultFormControlInput" placeholder="Enter CTC"
+              [(ngModel)]="obj['CTC']" aria-describedby="defaultFormControlHelp" (change)="calculateSalary()" />
           </div>
-          <div class="row">
-            <div class="col-md-12 mt-2">
-              <button
-                *ngIf="createFlag && updateFlag == false"
-                type="button"
-                class="btn btn-sm btn-primary waves-effect waves-light"
-                (click)="onSubmit()"
-              >
-                Submit
-              </button>
-              <button
-                *ngIf="updateFlag == true"
-                type="button"
-                class="btn btn-sm btn-primary waves-effect waves-light"
-                (click)="updatedata()"
-              >
-                Update
-              </button>
-            </div>
+          <div class="col-4">
+            <label for="defaultFormControlInput" class="form-label">Effective Date</label>
+            <input type="date" class="form-control" id="defaultFormControlInput" placeholder="Enter Date"
+              [(ngModel)]="obj['startDate']" aria-describedby="defaultFormControlHelp" />
+          </div>
+
+
+
+        </div>
+        <div class="row">
+          <div class="col-md-12 mt-2">
+            <button *ngIf="createFlag && updateFlag == false" type="button"
+              class="btn btn-sm btn-primary waves-effect waves-light" (click)="onSubmit()">
+              Submit
+            </button>
+            <button *ngIf="updateFlag == true" type="button" class="btn btn-sm btn-primary waves-effect waves-light"
+              (click)="updatedata()">
+              Update
+            </button>
           </div>
         </div>
+      </div>
     </div>
   </div>
   <div class="row mb-6">
     <div class="col-md">
-        <h5
-          class="card-header d-flex justify-content-between align-items-center"
-        >
-          <span>Salary Setup </span>
-          <span>
-            TOTAL PAYABLE: {{ totalPayable }} | TOTAL DEDUCTIBLE: {{ totalDeductible }} | NET PAYABLE: {{ totalPayable - totalDeductible }}
-          </span>
-         <button
-                type="button"
-                class="btn btn-sm btn-primary waves-effect waves-light"
-                (click)="onSubmit()">
-             Submit
+      <h5 class="card-header d-flex justify-content-between align-items-center">
+        <span>Salary Setup </span>
+        <button type="button" class="btn btn-sm btn-primary waves-effect waves-light" (click)="onSubmit()">
+          Submit
 
-    </button>
-        </h5>
-        <div class="table-responsive text-nowrap mt-2">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                 <th>
-                  <input
-                    type="checkbox"
-                    [(ngModel)]="masterSelected"
-                    (change)="checkUncheckAll()"
-                  />
-                </th>
-                <th>SI.No</th>
-                <th>Component Name</th>
-                <th>Type</th>
-                <th>Amount</th>
+        </button>
+      </h5>
+      <div class="table-responsive text-nowrap mt-2">
+        <table style="width: 100%;" class="table table-hover">
+          <thead>
+            <tr>
+              <th>
+                <input type="checkbox" [(ngModel)]="masterSelected" (change)="checkUncheckAll()" />
+              </th>
+              <th>SI.No</th>
+              <th>Component Name</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th style="width: 20%;">Amount</th>
+            </tr>
+          </thead>
+          <tbody class="table-border-bottom-0">
+            <tr *ngFor="let item of ComponentList; let i = index">
+              <td>
+                <input type="checkbox" [(ngModel)]="item.isSelected" (change)="isAllSelected()" />
+              </td>
+              <td scope="row">{{ i + 1 }}</td>
+              <td>{{ item["component_name"] }}</td>
+              <td>
+                {{ item["component_type"] }}
+              </td>
+              <td>
+                <span class="badge" [ngClass]="getStatusClass(item['status'])">
+                  {{ item["status"] }}
+                </span>
+              </td>
 
-                <th>Status</th>
-
-
-                <!-- <th>Actions</th> -->
-              </tr>
-            </thead>
-            <tbody class="table-border-bottom-0">
-              <tr *ngFor="let item of ComponentList; let i = index">
-                <td>
-                  <input
-                    type="checkbox"
-                    [(ngModel)]="item.isSelected"
-                    (change)="isAllSelected()"
-                  />
-                </td>
-                <td scope="row">{{ i + 1 }}</td>
-                <td>{{ item["component_name"] }}</td>
-                <td>
-                  {{ item["component_type"] }}
-                </td>
-                  <td>
-                  <input type="number" class="form-control" [(ngModel)]="item.calculated_amount" *ngIf="item.value_type=='fixed' "   (keyup)="addamount()"/>
-                    <input type="number" class="form-control" [(ngModel)]="item.calculated_amount" *ngIf="item.value_type=='percentage'|| item.value_type=='basic_dependent'" disabled  />
-                </td>
+              <td>
+                <input type="number" class="form-control" [(ngModel)]="item.calculated_amount"
+                  *ngIf="item.value_type=='fixed' " (keyup)="addamount()" />
+                <input type="number" class="form-control" [(ngModel)]="item.calculated_amount"
+                  *ngIf="item.value_type=='percentage'|| item.value_type=='basic_dependent'" disabled />
+              </td>
 
 
-                <td>
-                  <span
-                    class="badge"
-                    [ngClass]="getStatusClass(item['status'])"
-                  >
-                    {{ item["status"] }}
-                  </span>
-                </td>
+            </tr>
+            <tr>
+              <td colspan="6"style="table-border-bottom-0;padding: 0;"></td>
+            </tr>
+          </tbody>
 
+          <tfoot *ngIf="ComponentList.length>0">
 
-                <td>
-                  <!-- <button
-                    type="button"
-                    class="btn btn-outline-success btn-sm"
-                    (click)="update(item)"
-                  >
-                    <i class="fas fa-edit"></i>
-                  </button> -->
-                  <!-- &nbsp;
-                  <button
-                    type="button"
-                    class="btn btn-sm btn-outline-danger"
-                    (click)="delete(item.id)"
-                  >
-                    <i class="fas fa-trash-alt"></i>
-                  </button> -->
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-       <div class="row d-flex justify-content-between align-items-center">
-  <div class="col">
-    <span>
+                <tr>
+              <td colspan="5" style="text-align: end;font-size: 14px; ">TOTAL PAYABLE:</td>
+              <td style="text-align: left;  font-style: italic; font-size: 14px; ">{{ totalPayable }}
+              </td>
+            </tr>
+                <tr>
+              <td colspan="5" style="text-align: end;font-size: 14px;  "> TOTAL
+                DEDUCTIBLE:</td>
+              <td style="text-align: left;  font-style: italic;font-size: 14px; ">{{ totalDeductible }}
+              </td>
+            </tr>
 
-      <strong style="font-weight: bold;">NET PAYABLE (TOTAL PAYABLE - TOTAL DEDUCTIBLE):</strong> {{ totalPayable - totalDeductible }} (IN Words: {{ convertNumberToWords(totalPayable - totalDeductible) }})
-      <br />
-    </span>
-  </div>
-</div>
-
+            <tr>
+              <td colspan="5" style="text-align: end;font-size:14px;font-style: italic; "><b>NET PAYABLE (TOTAL PAYABLE - TOTAL
+                DEDUCTIBLE)</b>:</td>
+              <td style="text-align: left; font-size:14px;font-style: italic;"> <b>{{ totalPayable - totalDeductible }}</b>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="5" style="text-align: end;  font-style: italic; font-size:14px;"><b>In Words</b></td>
+              <td style="text-align: left; font-size:14px;"> <b>{{convertNumberToWords(totalPayable - totalDeductible).toLocaleUpperCase() }}</b>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
 
     </div>
   </div>

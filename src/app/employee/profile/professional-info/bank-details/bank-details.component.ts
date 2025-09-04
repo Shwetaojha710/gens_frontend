@@ -111,6 +111,7 @@ this.obj['accountNumber']=this.obj['accountNumber'].toString()
       },
       error: (err) => {
         console.error('Error:', err);
+          this.notyf.error(err?.error?.message)
       }
     });
 

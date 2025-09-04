@@ -132,7 +132,7 @@ addSalaryMaster(dept: any): Observable<any> {
   }
 
  updateSalaryMaster(id: any, dept: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}updateSalaryMaster`, dept);
+    return this.http.post<any>(`${this.baseUrl}update-attendance-setting`, dept);
   }
 
   deleteSalaryMaster(data: any): Observable<any> {

@@ -18,10 +18,11 @@ import { AllowancesComponent } from "../../payroll/allowances/allowances.compone
 import { TotalSalaryComponentComponent } from "../../payroll/total-salary-component/total-salary-component.component";
 import { DeductionsComponent } from "../../payroll/deductions/deductions.component";
 import { SalarySetupComponent } from "../../payroll/salary-setup/salary-setup.component";
+import { PartTimeSalaryComponent } from "../../payroll/part-time-salary/part-time-salary.component";
 @Component({
   selector: 'app-add',
   standalone: true,
-  imports: [CommonModule, SalarySetupComponent,FormsModule, NgSelectModule, RouterModule, QualificationComponent, ExperienceComponent, BankDetailsComponent, BasicComponent, AllowancesComponent, TotalSalaryComponentComponent, DeductionsComponent, SalarySetupComponent],
+  imports: [CommonModule,PartTimeSalaryComponent, SalarySetupComponent, FormsModule, NgSelectModule, RouterModule, QualificationComponent, ExperienceComponent, BankDetailsComponent, BasicComponent, AllowancesComponent, TotalSalaryComponentComponent, DeductionsComponent, SalarySetupComponent, PartTimeSalaryComponent],
   templateUrl: './add.component.html',
   styleUrls: ['./add.component.css']
 })
@@ -376,5 +377,8 @@ resizeAndCompressImage(
   }
     navigateToLeave() {
     this.router.navigate(['/layout/employee/add/profile/professional-info/assign-leave']);
+  }
+    navigateToSalarySetup() {
+    this.router.navigate(['/layout/payroll/salary-setup']);
   }
 }

@@ -196,8 +196,11 @@ export class FullTimeSalaryComponent {
   modal: any;
   PayArr: any = []
   DedArr: any = []
+  personalDetails:any={}
   view(item: any) {
     const obj = Object.assign({}, item)
+    this.personalDetails={}
+    this.personalDetails=obj
     this.SalaryBreakup = []
     this.payroll.calculateSalaryComponent(obj).subscribe({
       next: (response: any) => {

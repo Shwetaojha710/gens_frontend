@@ -81,4 +81,7 @@ baseUrl=environment.apiUrl
     SetUpsalary(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}setup-salary`, data);
   }
+    getSalarySetupList(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}get-active-salary-component`, data);
+  }
 }
