@@ -1,4 +1,4 @@
-<div class="mt-5">
+<!-- <div class="mt-5">
   <div class="row mb-6">
     <div class="col-md">
       <div class="card-body">
@@ -114,6 +114,201 @@
         </table>
       </div>
 
+    </div>
+  </div>
+</div> -->
+
+<div class="mt-2">
+  <div class="row mb-6" *ngIf="createFlag">
+    <div class="col-md">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Add Salary SetUp</h5>
+        <!-- <span></span> -->
+        <button type="button" class="btn btn-xs btn-primary float-end" (click)="back()">
+          <i class="fa-solid fa-arrow-left"></i>&nbsp;Back
+        </button>
+      </div>
+      <hr />
+      <div class="card-body mt-5">
+        <div class="row mb-6">
+          <div class="col-md">
+            <div class="card-body">
+              <div class="row">
+                <div class="col-4">
+                  <label for="defaultFormControlInput" class="form-label">CTC</label>
+                  <input type="number" class="form-control" id="defaultFormControlInput" placeholder="Enter CTC"
+                    [(ngModel)]="obj['CTC']" aria-describedby="defaultFormControlHelp" (change)="calculateSalary()" />
+                </div>
+                <div class="col-4">
+                  <label for="defaultFormControlInput" class="form-label">Effective Date</label>
+                  <input type="date" class="form-control" id="defaultFormControlInput" placeholder="Enter Date"
+                    [(ngModel)]="obj['startDate']" aria-describedby="defaultFormControlHelp" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row mb-6">
+          <div class="col-md">
+            <h5 class="card-header d-flex justify-content-between align-items-center">
+              <span>Salary Setup </span>
+              <button type="button" class="btn btn-sm btn-primary waves-effect waves-light" (click)="onSubmit()">
+                Submit
+              </button>
+            </h5>
+            <div class="table-responsive text-nowrap mt-2">
+              <table style="width: 100%" class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>
+                      <input type="checkbox" [(ngModel)]="masterSelected" (change)="checkUncheckAll()" />
+                    </th>
+                    <th>SI.No</th>
+                    <th>Component Name</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th style="width: 20%">Amount</th>
+
+                  </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                  <tr *ngFor="let item of ComponentList; let i = index">
+                    <td>
+                      <input type="checkbox" [(ngModel)]="item.isSelected" (change)="isAllSelected()" />
+                    </td>
+                    <td scope="row">{{ i + 1 }}</td>
+                    <td>{{ item["component_name"] }}</td>
+                    <td>
+                      {{ item["component_type"] }}
+                    </td>
+                    <td>
+                      <span class="badge" [ngClass]="getStatusClass(item['status'])">
+                        {{ item["status"] }}
+                      </span>
+                    </td>
+
+                    <td>
+                      <input type="number" class="form-control" [(ngModel)]="item.calculated_amount"
+                        *ngIf="item.value_type == 'fixed'" (keyup)="addamount()" />
+                      <input type="number" class="form-control" [(ngModel)]="item.calculated_amount"
+                        *ngIf="item.value_type == 'percentage' ||  item.value_type == 'basic_dependent'" disabled />
+                    </td>
+
+                  </tr>
+                  <tr>
+                    <td colspan="6" style="border-bottom: 0; padding: 0;"></td>
+                  </tr>
+                </tbody>
+
+                <tfoot *ngIf="ComponentList.length > 0">
+                  <tr>
+                    <td colspan="5" style="text-align: end; font-size: 14px">
+                      TOTAL PAYABLE:
+                    </td>
+                    <td style="text-align: left;font-style: italic;font-size: 14px;">
+                      {{ totalPayable }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="5" style="text-align: end; font-size: 14px">
+                      TOTAL DEDUCTIBLE:
+                    </td>
+                    <td style="  text-align: left; font-style: italic;  font-size: 14px;">
+                      {{ totalDeductible }}
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td colspan="5" style="
+                        text-align: end;
+                        font-size: 14px;
+                        font-style: italic;
+                      ">
+                      <b>NET PAYABLE (TOTAL PAYABLE - TOTAL DEDUCTIBLE)</b>:
+                    </td>
+                    <td style="
+                        text-align: left;
+                        font-size: 14px;
+                        font-style: italic;
+                      ">
+                      <b>{{ totalPayable - totalDeductible }}</b>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="5" style="
+                        text-align: end;
+                        font-style: italic;
+                        font-size: 14px;
+                      ">
+                      <b>In Words</b>
+                    </td>
+                    <td style="text-align: left; font-size: 14px">
+                      <b>{{
+                        convertNumberToWords(
+                        totalPayable - totalDeductible
+                        ).toLocaleUpperCase()
+                        }}</b>
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mb-6" *ngIf="!createFlag">
+    <div class="col-md">
+      <div class="row mb-2 align-items-center">
+        <div class="col-md-9">
+          <h5 class="mb-0">Yearly Salary BreakUp</h5>
+        </div>
+        <div class="col-md-3 text-end">
+          <button *ngIf="createFlag == false" type="button" class="btn btn-xs btn-block btn-primary"
+            (click)="opencreate()">
+            <i class="fa-solid fa-plus"></i>&nbsp;Add
+          </button>
+        </div>
+      </div>
+      <hr />
+      <div class="table-responsive text-nowrap mt-2">
+        <table style="width: 100%" class="table table-hover">
+          <thead>
+            <tr>
+              <th>SI.No</th>
+              <th>Component Name</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Effective Date</th>
+              <th style="width: 20%">Amount</th>
+
+            </tr>
+          </thead>
+          <tbody class="table-border-bottom-0">
+            <tr *ngFor="let item of SalArr; let i = index">
+              <td scope="row">{{ i + 1 }}</td>
+              <td>{{ item["name"] }}</td>
+              <td>
+                {{ item["component_type"] }}
+              </td>
+              <td>
+                <span class="badge" [ngClass]="getStatusClass(item['status'])">
+                  {{ item["status"] }}
+                </span>
+              </td>
+              <td>
+                {{item?.startDate}}
+              </td>
+              <td>
+                {{ item.finalAmount }}
+              </td>
+
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 </div>

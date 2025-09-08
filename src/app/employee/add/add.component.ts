@@ -17,12 +17,12 @@ import { BasicComponent } from "../../payroll/basic/basic.component";
 import { AllowancesComponent } from "../../payroll/allowances/allowances.component";
 import { TotalSalaryComponentComponent } from "../../payroll/total-salary-component/total-salary-component.component";
 import { DeductionsComponent } from "../../payroll/deductions/deductions.component";
-import { SalarySetupComponent } from "../../payroll/salary-setup/salary-setup.component";
-import { PartTimeSalaryComponent } from "../../payroll/part-time-salary/part-time-salary.component";
+import { AssignLeaveComponent } from "../profile/professional-info/assign-leave/assign-leave.component";
+
 @Component({
   selector: 'app-add',
   standalone: true,
-  imports: [CommonModule,PartTimeSalaryComponent, SalarySetupComponent, FormsModule, NgSelectModule, RouterModule, QualificationComponent, ExperienceComponent, BankDetailsComponent, BasicComponent, AllowancesComponent, TotalSalaryComponentComponent, DeductionsComponent, SalarySetupComponent, PartTimeSalaryComponent],
+  imports: [CommonModule, FormsModule,AssignLeaveComponent, NgSelectModule, RouterModule, QualificationComponent, ExperienceComponent, BankDetailsComponent, BasicComponent, AllowancesComponent, TotalSalaryComponentComponent, DeductionsComponent, AssignLeaveComponent],
   templateUrl: './add.component.html',
   styleUrls: ['./add.component.css']
 })
@@ -59,6 +59,7 @@ export class AddComponent {
     await this.countrydd()
     await this.getstates(this.personalDetails.country)
     await this.getcity(this.personalDetails.state)
+    await this.navigateToLeave()
   }
   countryList: any = [];
   employmentTypes: any[] = [];
@@ -378,7 +379,9 @@ resizeAndCompressImage(
     navigateToLeave() {
     this.router.navigate(['/layout/employee/add/profile/professional-info/assign-leave']);
   }
-    navigateToSalarySetup() {
-    this.router.navigate(['/layout/payroll/salary-setup']);
-  }
+  navigateToSalarySetup() {
+  this.router.navigate(['/layout/employee/add/profile/professional-info/salary-setup'])
+
+}
+
 }

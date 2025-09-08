@@ -47,6 +47,8 @@ export class AssignLeaveComponent {
     await this.fetchAssignLeaveList()
     await this.getYear()
     await this.getLeaveTypeList()
+    const year = new Date().getFullYear()
+   this.NewObj['year'] = this.yearList.find((item: any) => item.value == year);
   }
   leaveTypeList: any = [];
   async getLeaveTypeList() {

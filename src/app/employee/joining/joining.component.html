@@ -750,7 +750,8 @@
           <table class="table table-striped dataTable">
             <thead>
               <tr>
-                <th>Emp ID</th>
+                <th>SI.NO </th>
+
                 <th>Name</th>
                 <th>Email</th>
                 <th>Phone</th>
@@ -762,14 +763,15 @@
               <!-- <tr>
                   <th>SI.No</th>
                   <th>Basic Information</th>
-                  <th>Contact Information</th>
+                  <th>Contact Info rmation</th>
                   <th>createdAt</th>
                   <th>Actions</th>
                 </tr> -->
             </thead>
             <tbody class="table-border-bottom-0">
-              <tr *ngFor="let item of employees; let i = index">
-                <td>{{ i + 1 }}</td>
+              <tr *ngFor="let item of filteredDesignation; let i = index">
+              <td>{{item?.si_no}}</td>
+
                 <td>
                   <div class="d-flex align-items-center">
                     <div class="avatar avatar-sm me-4">
@@ -789,6 +791,7 @@
                         {{ item["firstName"] }} {{ item["lastName"] }}
                       </h6>
                       <small class="text-truncate">{{item?.['designation']}}</small>
+                      <small class="text-truncate">{{item?.empCode}}</small>
                     </div>
                   </div>
                 </td>

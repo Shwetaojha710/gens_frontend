@@ -175,13 +175,13 @@ export class GeneratedSalaryComponent {
           this.PayArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'PAY')
           this.DedArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'DED')
           // Calculate totals
-          const totalEarning = this.PayArr.reduce((sum: number, item: any) => sum + Number(item.pay_amount || 0), 0);
-          const totalDeduction = this.DedArr.reduce((sum: number, item: any) => sum + Number(item.pay_amount || 0), 0);
+          const totalEarning = this.PayArr.reduce((sum: number, item: any) => sum + Number(item.finalAmount || 0), 0);
+          const totalDeduction = this.DedArr.reduce((sum: number, item: any) => sum + Number(item.finalAmount || 0), 0);
           const netPay = totalEarning - totalDeduction;
 
           // Add as new keys
-          this.PayArr = [...this.PayArr, { isSummary: true, name: 'Total Earnings', pay_amount: totalEarning }];
-          this.DedArr = [...this.DedArr, { isSummary: true, name: 'Total Deductions', pay_amount: totalDeduction }];
+          this.PayArr = [...this.PayArr, { isSummary: true, name: 'Total Earnings', finalAmount: totalEarning }];
+          this.DedArr = [...this.DedArr, { isSummary: true, name: 'Total Deductions', finalAmount: totalDeduction }];
 
 
           const modalEl = document.getElementById('SalaryModal');

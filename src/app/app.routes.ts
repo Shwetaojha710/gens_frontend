@@ -78,7 +78,8 @@ export const routes: Routes = [
         { path: 'profile/professional-info/salary', component: SalaryStructureComponent },
         { path: 'profile/professional-info/documents', component: DocumentsComponent },
         { path: 'profile/professional-info/bank-details', component: BankDetailsComponent },
-        { path: 'profile/professional-info/assign-leave', component: AssignLeaveComponent }
+        { path: 'profile/professional-info/assign-leave', component: AssignLeaveComponent },
+           { path: 'profile/professional-info/salary-setup', component: SalarySetupComponent }
       ]
 
            },
@@ -111,7 +112,7 @@ export const routes: Routes = [
           { path: 'allowances', component: AllowancesComponent },
           { path: 'deductions', component: DeductionsComponent },
           { path: 'total-salary', component: TotalSalaryComponentComponent },
-           { path: 'salary-setup', component: SalarySetupComponent }
+
         ]
       },
       {
