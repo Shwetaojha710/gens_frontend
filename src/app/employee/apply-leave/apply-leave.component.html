@@ -18,7 +18,7 @@
         <hr style="margin: 0rem 0 !important" />
         <div class="card-body">
           <div class="row g-3">
-            <div class="col-3">
+            <div class="col-2">
               <label for="defaultFormControlInput" class="form-label"
                 >Select Employee</label
               >
@@ -43,7 +43,7 @@
               </small>
             </div>
 
-            <div class="col-3">
+            <div class="col-2">
               <label for="defaultFormControlInput" class="form-label"
                 >Leave Type</label
               >
@@ -67,9 +67,9 @@
                 Leave Type Is required
               </small>
             </div>
-               <div class="col-2">
+               <div class="col-4">
               <label class="form-label d-block">Duration Type</label>
-             <label class="form-check-label me-3 mt-2">
+             <!-- <label class="form-check-label me-3 mt-2">
                 <input
                   type="radio"
                   name="leaveFreqTo"
@@ -79,7 +79,7 @@
                 />
                 First Half
               </label>
-              <label class="form-check-label ">
+              <label class="form-check-label me-3 mt-2">
                 <input
                   type="radio"
                   name="leaveFreqFrom"
@@ -90,7 +90,7 @@
                 Second Half
               </label>
 
-               <label class="form-check-label ">
+               <label class="form-check-label me-3 mt-2">
                 <input
                   type="radio"
                   name="leaveFreqFullDay"
@@ -99,7 +99,40 @@
                   [(ngModel)]="obj['duration_type']"
                 />
                 Full Day
-              </label>
+              </label> -->
+
+              <div class="btn-group w-100" role="group" aria-label="Basic radio toggle button group">
+                <input
+                  type="radio"
+                  name="leaveFreqTo"
+                  value="first_half"
+                  class="btn-check"
+                  id="btnradio1"
+                  [(ngModel)]="obj['duration_type']"
+                />
+                <label class="btn btn-outline-primary waves-effect" for="btnradio1">First Half</label>
+
+                <input
+                  type="radio"
+                  name="leaveFreqFrom"
+                  value="second_half"
+                  class="btn-check"
+                  id="btnradio2"
+                  [(ngModel)]="obj['duration_type']"
+                />
+                <label class="btn btn-outline-primary waves-effect" for="btnradio2">Second Half</label>
+
+                 <input
+                  type="radio"
+                  name="leaveFreqFullDay"
+                  value="full_day"
+                  class="btn-check"
+                  id="btnradio3"
+                  [(ngModel)]="obj['duration_type']"
+                />
+                <label class="btn btn-outline-primary waves-effect" for="btnradio3">Full Day</label>
+              </div>
+
 
 
             </div>
