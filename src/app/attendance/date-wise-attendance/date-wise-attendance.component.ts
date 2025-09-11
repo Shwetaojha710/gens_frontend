@@ -309,7 +309,7 @@ export class DateWiseAttendanceComponent {
       text: "Do you Want to Enable this",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, Update it!",
+      confirmButtonText: "Yes, Enable it!",
       cancelButtonText: "No, cancel!",
       reverseButtons: true
     }).then((result) => {

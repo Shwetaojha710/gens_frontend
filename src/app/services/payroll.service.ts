@@ -23,6 +23,15 @@ baseUrl=environment.apiUrl
     updateBasic(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}updateBasic`, data);
   }
+    updateSalarySetUp(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}updateSalarySetUp`, data);
+  }
+    getComponentDd(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}getComponentDD`, data);
+  }
+    createVariable(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}createVariable`, data);
+  }
 
 
 
