@@ -170,7 +170,7 @@ export class DesignationComponent {
 
       if (status == true) {
         this.desigantionList = []
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.desigantionList = data.data;
         this.originalList = data.data;
       } else {

@@ -102,7 +102,7 @@ export class DepartmentComponent {
     this.originalList = []
     this.departmentService.getDepartments().subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.departmentList = data.data;
         this.originalList = this.departmentList
       } else {

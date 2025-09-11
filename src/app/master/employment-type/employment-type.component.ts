@@ -118,10 +118,14 @@ originalList:any = []
     this.originalList = []
     this.master.getEmployee().subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.EmployeeList = data.data;
         this.originalList = data.data;
-      } else {
+      }
+      else if(data['status']=='expired'){
+        this.router.navigate(['login'])
+      }
+      else {
         this.notyf.error(data['message']);
       }
     });

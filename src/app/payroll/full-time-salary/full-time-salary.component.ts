@@ -146,6 +146,10 @@ export class FullTimeSalaryComponent {
   SalaryArr: any = []
   isLoading: boolean = false;
   onSubmit() {
+    if(this.obj['year']==undefined||this.obj['year']==null||this.obj['year']==''){
+      this.notyf.error("year is Required");
+      return
+    }
     this.isLoading = true;
     this.SalaryArr = []
     let newObj = Object.assign({}, this.obj)
@@ -196,8 +200,11 @@ export class FullTimeSalaryComponent {
   modal: any;
   PayArr: any = []
   DedArr: any = []
+  personalDetails:any={}
   view(item: any) {
     const obj = Object.assign({}, item)
+    this.personalDetails={}
+    this.personalDetails=obj
     this.SalaryBreakup = []
     this.payroll.calculateSalaryComponent(obj).subscribe({
       next: (response: any) => {

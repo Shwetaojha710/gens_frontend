@@ -63,3 +63,13 @@ div.dt-container div.dt-search input {
     inset-block-start: 0;
     inset-inline: 0;
 } */
+
+.btn-success{
+  background-color: #2f7400!important;
+  border-color: #2f7400!important;
+}
+
+.btn-success:hover{
+  background-color: #408e0b !important;
+  border-color: #408e0b !important;
+}

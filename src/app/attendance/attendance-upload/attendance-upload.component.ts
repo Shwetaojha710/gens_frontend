@@ -24,8 +24,8 @@ export class AttendanceUploadComponent {
     this.notyf = new Notyf();
   }
 
-  onFileSelected(event: any) {
-    this.selectedFile = event.target.files[0];
+async  onFileSelected(event: any) {
+    this.selectedFile =await event.target.files[0];
   }
 
   onUpload() {
