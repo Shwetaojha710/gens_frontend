@@ -57,9 +57,14 @@ export class LeavesComponent {
   searchTerm = '';
   itemsPerPage = 10;
   onSearch(term: string) {
-    this.searchTerm = term.toLowerCase();
+    if(!term){
+      this.fetchLeaveList()
+    }else{
+this.searchTerm = term.toLowerCase();
     this.currentPage = 1;
     this.applyFilters();
+    }
+
   }
 
 
@@ -78,7 +83,7 @@ export class LeavesComponent {
   searchText: any = ''
 
   applyFilters() {
-    let data = [...this.leaveList];
+
 
 
     const value = this.searchTerm || '';
@@ -92,11 +97,11 @@ export class LeavesComponent {
       );
     }
 
-
+let data = [...this.leaveList];
     // pagination
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
-    this.filteredDesignation = data.slice(start, end);
+    this.leaveList = data.slice(start, end);
   }
 
   getStatusClass(status: any): string {
@@ -114,7 +119,7 @@ export class LeavesComponent {
     this.master.getLeaveList().subscribe(data => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.leaveList = data.data;
         this.originalList = data.data;
         console.log(this.leaveList, "attendance master list");

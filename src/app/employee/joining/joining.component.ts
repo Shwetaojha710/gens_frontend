@@ -29,7 +29,7 @@ export class JoiningComponent {
     const day = today.getDate().toString().padStart(2, '0');
     this.maxDate = `${year}-${month}-${day}`;
   }
-    shift: any = [{ value: 'Day', label: 'Day' }, { value: 'Afternoon', label: 'Afternoon' }, { value: 'Night', label: 'Night' }]
+  shift: any = [{ value: 'Day', label: 'Day' }, { value: 'Afternoon', label: 'Afternoon' }, { value: 'Night', label: 'Night' }]
 
   maritalStatusList = [
     { value: 'Single', label: 'Single' },
@@ -49,17 +49,23 @@ export class JoiningComponent {
     await this.loadEmployees();
     await this.getEmploymentTypes();
     await this.DepartmentDD()
-
+    await this.applyFilters()
   }
 
-  pageSize = 5;
+  pageSize = 10;
   currentPage = 1;
   itemsPerPage = 10;
   searchTerm = '';
   onSearch(term: string) {
-    this.searchTerm = term.toLowerCase();
+    if(!term){
+      this.loadEmployees()
+    }else{
+     this.searchTerm = term.toLowerCase();
     this.currentPage = 1;
     this.applyFilters();
+    }
+
+    // this.loadEmployees()
   }
 
   onPageChange(page: number) {
@@ -208,7 +214,7 @@ export class JoiningComponent {
       !this.validateField(this.personalDetails.permanentAddress, 'Permanent Address') ||
       !this.validateField(this.personalDetails.city, 'City') ||
       !this.validateField(this.personalDetails.gender, 'Gender') ||
-      !this.validateField(this.personalDetails.martialStatus, 'Marital Status')||
+      !this.validateField(this.personalDetails.martialStatus, 'Marital Status') ||
       !this.validateField(this.personalDetails.shift_id, 'Shift')
     ) {
       return;
@@ -332,6 +338,7 @@ export class JoiningComponent {
   employeeList: any = []
   cardData: any = {}
   async loadEmployees() {
+    // this.filteredDesignation = []
     this.employees = []
     this.employeeList = []
     this.cardData = []
@@ -345,9 +352,26 @@ export class JoiningComponent {
         this.originalList = response.data.formattedEmps || [];
         this.employeeList = response.data?.formattedEmps?.map((item: any) => ({
           value: item.id,
-          label: `${item.firstName} ${item?.lastName || ''}`
+          label: `${item?.empCode}-${item.firstName} ${item?.lastName || ''}`
         }));
+        this.employees = this.employees.map((item: any, index: any) => {
+          return {
+            ...item,
+            si_no: index + 1
+          }
+        })
+        this.originalList = this.originalList.map((item: any, index: any) => {
+          return {
+            ...item,
+            si_no: index + 1
+          }
+        })
+        console.log(this.employees, "this.employees");
 
+        // pagination
+        const start = (this.currentPage - 1) * this.pageSize;
+        const end = start + this.pageSize;
+        this.filteredDesignation = this.employees.slice(start, end);
       } else if (response.status === false) {
         this.notyf.error(response.message)
       }
@@ -357,7 +381,7 @@ export class JoiningComponent {
     },
       (error: any) => {
         console.error('Error loading employees:', error);
-        this.notyf.error(error)
+        this.notyf.error(error?.error?.message)
         // alert('Failed to load employees. Please try again.');
       }
     );
@@ -375,7 +399,7 @@ export class JoiningComponent {
     await this.getstates(this.personalDetails.country);
     await this.getcity(this.personalDetails.state);
     await this.getDesignation(this.personalDetails.departmentId);
-    this.employeeList=this.employeeList.filter((item: any) => item.value != this.personalDetails.id);
+    this.employeeList = this.employeeList.filter((item: any) => item.value != this.personalDetails.id);
     this.createFlag = true;
     this.updateFlag = true;
   }
@@ -419,7 +443,7 @@ export class JoiningComponent {
   }
   delete(data: any) {
 
-  Swal.fire({
+    Swal.fire({
       title: "Are you sure?",
       text: "Do you Want to Delete this",
       icon: "warning",
@@ -429,7 +453,7 @@ export class JoiningComponent {
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
-         this.deleteConfirm(data);
+        this.deleteConfirm(data);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
 
       }
@@ -439,7 +463,7 @@ export class JoiningComponent {
 
   }
   deleteConfirm(data: any) {
-      this.employeeService.deleteEmp(data).subscribe(
+    this.employeeService.deleteEmp(data).subscribe(
       (response) => {
         console.log('Employee deleted successfully:', response);
         if (response && response.status === true) {
@@ -456,7 +480,7 @@ export class JoiningComponent {
       },
       (error) => {
         console.error('Error deleting employee:', error);
-          this.notyf.error('Failed to delete employee');
+        this.notyf.error('Failed to delete employee');
       }
     )
   }
@@ -470,10 +494,10 @@ export class JoiningComponent {
   back() {
     this.personalDetails = {}
     this.createFlag = false
-     this.employeeList = this.employees?.map((item: any) => ({
-          value: item.id,
-          label: `${item.firstName} ${item?.lastName || ''}`
-        }));
+    this.employeeList = this.employees?.map((item: any) => ({
+      value: item.id,
+      label: `${item.firstName} ${item?.lastName || ''}`
+    }));
   }
   toUppercase() {
     this.personalDetails.panNo = this.personalDetails.panNo?.toUpperCase() || '';

@@ -306,10 +306,10 @@ export class DateWiseAttendanceComponent {
     applyUpdate(item: any) {
     Swal.fire({
       title: "Are you sure?",
-      text: "Do you Want to Update this",
+      text: "Do you Want to Enable this",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, Update it!",
+      confirmButtonText: "Yes, Enable it!",
       cancelButtonText: "No, cancel!",
       reverseButtons: true
     }).then((result) => {

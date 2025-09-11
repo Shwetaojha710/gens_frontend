@@ -57,9 +57,14 @@ HolidayList: any = [];
   searchTerm = '';
   itemsPerPage = 10;
   onSearch(term: string) {
-    this.searchTerm = term.toLowerCase();
+    if(!term){
+           this.fetchHoliday();
+    }else{
+   this.searchTerm = term.toLowerCase();
     this.currentPage = 1;
     this.applyFilters();
+    }
+
   }
 
 
@@ -78,7 +83,7 @@ HolidayList: any = [];
   searchText: any = ''
 
   applyFilters() {
-    let data = [...this.HolidayList];
+
 
 
     const value = this.searchTerm || '';
@@ -92,11 +97,11 @@ HolidayList: any = [];
       );
     }
 
-
+ let data = [...this.HolidayList];
     // pagination
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
-    this.filteredDesignation = data.slice(start, end);
+    this.HolidayList = data.slice(start, end);
   }
   getStatusClass(status: any): string {
     switch (status) {

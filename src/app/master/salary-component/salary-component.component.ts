@@ -21,7 +21,7 @@ import { Router } from '@angular/router';
 export class SalaryComponentComponent {
   obj: any = {}
   notyf: Notyf;
-  valueType: any = [{ value: 'fixed', label: 'Fixed' }, { value: 'percentage', label: 'Percentage' }, { value: 'basic_dependent', label: 'Basic Dependent' }]
+  valueType: any = [{ value: 'fixed', label: 'Fixed' }, { value: 'percentage', label: 'Percentage' }, { value: 'basic_dependent', label: 'Basic Dependent' }, { value: 'is_special', label: 'Is Special' }]
   componentType: any = [{ value: 'payable', label: 'Earning' }, { value: 'deductible', label: 'Deduction' }]
   back() {
     this.obj = {}
@@ -56,9 +56,18 @@ export class SalaryComponentComponent {
     await this.getcomponentname()
 
   }
-  getLabel(list: any[], value: string): string {
+ getLabel(list: any[], value: string | string[]): string {
+  if (Array.isArray(value)) {
+    // map each id to label
+    return value
+      .map(v => list.find(x => x.value === v)?.label || v)
+      .join(", ");
+  } else {
+    // single value
     return list.find(x => x.value === value)?.label || value;
   }
+}
+
   dependentComp: any = []
   async getcomponentname() {
 
@@ -68,7 +77,7 @@ export class SalaryComponentComponent {
       if (response.status == true) {
 
         this.dependentComp = response.data.map((item: any) => {
-          return { value: item.id, label: item.component_name }
+          return { value: item.id, label: item.component_name,listLabel: `${item.component_name}- (${item.component_type})` }
         })
       } else if (response.status == "expired") {
         this.router.navigate(["login"]);

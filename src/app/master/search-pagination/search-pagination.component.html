@@ -4,21 +4,16 @@
     <div
       class="d-md-flex justify-content-between align-items-center dt-layout-start col-md-auto me-auto"
     >
-      <div class="dt-length">
-        <label>
-          Show
-          <select
-            class="form-select form-select-sm"
-            (change)="onPageSizeChange($event)"
-            [value]="pageSize"
-          >
-            <option *ngFor="let size of pageSizeOptions" [value]="size">
-              {{ size }}
-            </option>
-          </select>
-          entries
-        </label>
-      </div>
+     <div class="dt-length">
+  <label>
+    Show
+    <select [(ngModel)]="pageSize" (change)="onPageSizeChange($event)" class="form-select form-select-sm">
+      <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+    </select>
+    entries
+  </label>
+</div>
+
     </div>
 
     <div

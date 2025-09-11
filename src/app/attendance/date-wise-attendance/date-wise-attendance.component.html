@@ -240,20 +240,21 @@
                     </span>
                   </td>
                   <td>
-                    <button
+                    <button *ngIf="!item.editable"
                       type="button"
                       class="btn btn-outline-primary btn-sm"
                       (click)="applyUpdate(item)"
                     >
-                      <i class="ri ri-refresh-line"></i>
+                       <i class="fas fa-edit"></i>
                     </button>
                     &nbsp;
-                    <button
+                    <button *ngIf="item.editable"
                       type="button"
                       class="btn btn-outline-success btn-sm"
                       (click)="update(item)"
                     >
-                      <i class="fas fa-edit"></i>
+                    <i class="ri ri-refresh-line"></i>
+
                     </button>
                     &nbsp;
                     <button

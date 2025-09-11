@@ -678,8 +678,10 @@
                     </div>
                   </div>
                   <div class="flex-grow-1">
-                    <h6 class="mb-0 small">John Doe</h6>
-                    <small class="text-body-secondary">Admin</small>
+                    <h6 class="mb-0 small">{{personalDetail['name']}}</h6>
+                    <small class="text-body-secondary">{{personalDetail['role']}}</small>
+                    <br>
+                      <small class="text-body-secondary">{{personalDetail['email']}}</small>
                   </div>
                 </div>
               </a>
@@ -688,7 +690,7 @@
               <div class="dropdown-divider"></div>
             </li>
             <li>
-              <a class="dropdown-item" href="pages-profile-user.html">
+              <a class="dropdown-item" >
                 <i class="icon-base ri ri-user-3-line icon-22px me-3"></i
                 ><span class="align-middle">My Profile</span>
               </a>

@@ -20,6 +20,10 @@ toggleshow() {
     dropdownMenu.classList.toggle("show");
   }
 }
+ personalDetail:any={}
+ngOnInit() {
+this.personalDetail = JSON.parse(localStorage.getItem('user') || '{}');
+}
 
 logout(){
   console.log("hello logout api called")

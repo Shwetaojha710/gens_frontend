@@ -12,7 +12,7 @@ export class EmployeeService {
 baseUrl=environment.apiUrl
 
   constructor(private http: HttpClient) {}
- newUrl='http://192.168.23.13:8000'
+//  newUrl='http://192.168.23.17:3002/api/'
   createEmp(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}createEmp`, data);
   }
@@ -38,12 +38,15 @@ baseUrl=environment.apiUrl
   updateEmp(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}updateEmp`, data);
   }
+  //   updateEmp(data: any): Observable<any> {
+  //   return this.http.post(`http://192.168.23.17:3002/api/updateEmp`, data);
+  // }
 
   uploadImage(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}uploadImage`, data);
   }
 pythonregister(data: any): Observable<any> {
-  return this.http.post(`${this.newUrl}/register`, data);
+  return this.http.post(`${this.baseUrl}/register`, data);
 }
 
 getUploadImage(data: any): Observable<any> {
