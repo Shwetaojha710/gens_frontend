@@ -32,7 +32,7 @@
               <label for="defaultFormControlInput" class="form-label"
                 >Upload Excel</label
               >
-              <input type="file" (change)="onFileSelected($event)" accept=".xlsx,.xls" class="form-control mb-2" />
+              <input #fileInput  type="file" (change)="onFileSelected($event)" accept=".xlsx,.xls" class="form-control mb-2" />
 
             </div>
             &nbsp;

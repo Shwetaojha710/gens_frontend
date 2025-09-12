@@ -253,7 +253,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-6">
+          <div class="col-md-3">
             <div class="list-group mb-3">
               <div class="list-group-item bg-light p-2 border-bottom-0">
                 <h6 class="mb-0">Deductions</h6>
@@ -261,6 +261,22 @@
               <div
                 class="list-group-item"
                 *ngFor="let item1 of DedArr; let i = index"
+              >
+                <div class="d-flex align-items-center justify-content-between">
+                  <p class="mb-0">{{ item1?.name }}</p>
+                  <h6 class="fw-medium">{{ item1?.pay_amount }}</h6>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <div class="list-group mb-3">
+              <div class="list-group-item bg-light p-2 border-bottom-0">
+                <h6 class="mb-0">Employer Deductions</h6>
+              </div>
+              <div
+                class="list-group-item"
+                *ngFor="let item1 of EmployerDedArr; let i = index"
               >
                 <div class="d-flex align-items-center justify-content-between">
                   <p class="mb-0">{{ item1?.name }}</p>

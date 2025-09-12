@@ -204,14 +204,14 @@
                 <div class="col-4">
                   <label for="defaultFormControlInput" class="form-label">Effective Date</label>
                   <input type="date" class="form-control" id="defaultFormControlInput" placeholder="Enter Date"
-                    [(ngModel)]="obj['startDate']" aria-describedby="defaultFormControlHelp"
-                   />
+                    [(ngModel)]="obj['startDate']" aria-describedby="defaultFormControlHelp" />
                 </div>
                 <div class="col-4">
 
-                  <button type="button" class="btn btn-sm btn-primary waves-effect waves-light mt-7" (click)="calculateSalary()">
-                Get Salary Data
-              </button>
+                  <button type="button" class="btn btn-sm btn-primary waves-effect waves-light mt-7"
+                    (click)="calculateSalary()">
+                    Get Salary Data
+                  </button>
                 </div>
               </div>
             </div>
@@ -246,8 +246,16 @@
                       </th>
                     </tr>
                     <tr>
-                      <th style="text-align: center;" *ngFor="let item of PayArr">{{ item?.component_name.split(' ')[0]
-                        }}<br>{{ item?.component_name.split(' ')[1] }}
+                      <th style="text-align: center;" *ngFor="let item of PayArr">
+                        {{ item?.component_name.split(' ')[0] }}
+                        <br>
+                        {{ item?.component_name.split(' ')[1] || '' }}
+                        <span *ngIf="item.value">
+                          ({{ item?.value }}%)
+                        </span>
+                        <span *ngIf="!item.value" style="font-style: italic;">
+                          (fixed)
+                        </span>
                         <br>
                         <label class="switch">
                           <input type="checkbox" class="switch-input is-valid" [(ngModel)]="item.isSelected"
@@ -258,8 +266,8 @@
                           </span>
                           <span class="switch-label"></span>
                         </label>
-
                       </th>
+
                     </tr>
 
 
@@ -267,7 +275,8 @@
 
                   <tbody>
                     <tr>
-                      <td style="text-align: center;" *ngFor="let item of PayArr">{{ item?.calculated_amount || '-' }}
+                      <td style="text-align: center;" *ngFor="let item of PayArr">{{currency?.name}} {{
+                        item?.calculated_amount || 0 }}
                       </td>
                     </tr>
                     <tr>
@@ -277,7 +286,7 @@
                       </td>
 
                       <td style="text-align: center;">
-                        <b style="font-size: 14px;">{{FinalRecord?.gross}}/-</b>
+                        <b style="font-size: 14px;">{{currency?.name}} {{FinalRecord?.gross}}/-</b>
                       </td>
                     </tr>
 
@@ -309,6 +318,13 @@
                       <th style="text-align: center;" *ngFor="let item of DedArr">{{ item?.component_name
                         }}
                         <br>
+                        <span *ngIf="item.value">
+                          ({{ item?.value }}%)
+                        </span>
+                        <span *ngIf="!item.value" style="font-style: italic;" >
+                          (fixed)
+                        </span>
+                        <br>
                         <label class="switch">
                           <input type="checkbox" class="switch-input is-valid" [(ngModel)]="item.isSelected"
                             (change)="isDeductionAllSelected()" />
@@ -325,7 +341,7 @@
                   </thead>
                   <tbody *ngIf="DedArr.length>0 || PayArr.length>0">
                     <tr>
-                      <td *ngFor="let item of DedArr">{{ item?.calculated_amount || '-' }}</td>
+                      <td *ngFor="let item of DedArr">{{currency?.name}} {{ item?.calculated_amount || 0 }}</td>
                     </tr>
                     <tr>
 
@@ -334,8 +350,7 @@
                       </td>
 
                       <td style="text-align: center;">
-                        <b style="font-size: 14px;">{{FinalRecord?.totalDeductions +
-                          FinalRecord?.employerContribution}}/-</b>
+                        <b style="font-size: 14px;">{{currency?.name}} {{FinalRecord?.FinalDeduction }}/-</b>
 
                       </td>
 
@@ -346,7 +361,7 @@
                       </td>
 
                       <td style="text-align: center;">
-                        <b style="font-size: 14px;">{{FinalRecord?.netPayableSalary}}/-</b>
+                        <b style="font-size: 14px;">{{currency?.name}} {{FinalRecord?.netPayableSalary}}/-</b>
                       </td>
                     </tr>
                     <tr>
@@ -356,7 +371,7 @@
                       </td>
 
                       <td style="text-align: center;">
-                        <b style="font-size: 14px;">{{FinalRecord?.netCTC}}/-</b>
+                        <b style="font-size: 14px;">{{currency?.name}} {{FinalRecord?.netCTC}}/-</b>
                       </td>
                     </tr>
                   </tbody>
@@ -681,12 +696,33 @@
       </div>
       <hr />
       <div class="row">
-        <div class="col-md-9"></div>
-        <div class="col-md-3 text-end">
+        <div class="col-md-9">
+
+        </div>
+
+        <div class="col-md-3 ">
+           <div class="d-flex">
+              <ng-select
+              [items]="status"
+              bindLabel="label"
+              bindValue="value"
+              [(ngModel)]="obj['status']"
+              [multiple]="false"
+              placeholder="Select Status"
+              name="state"
+              id="select2Danger"
+              class="w-100 mx-2"
+              required
+              #enCashableRef="ngModel"
+              (change)="getSalarySetUpList()"
+            >
+            </ng-select>
           <button *ngIf="createFlag==false" type="button" class="btn btn-xs btn-block btn-primary" (click)="update()">
             &nbsp;Update
           </button>
         </div>
+        </div>
+
 
       </div>
       <div class="table-responsive text-nowrap mt-2">
@@ -725,7 +761,7 @@
                 {{item?.startDate}}
               </td>
               <td>
-                {{ item.finalAmount }}
+                {{currency?.name}} {{ item.finalAmount }}
               </td>
 
             </tr>

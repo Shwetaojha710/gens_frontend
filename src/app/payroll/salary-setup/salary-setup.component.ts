@@ -28,15 +28,18 @@ export class SalarySetupComponent {
   ComponentList: any = []
   ComponentDD: any = []
   personalDetails: any = []
+  currency: any;
   constructor(public payrollService: PayrollService, private router: Router, public statusService: StatusService, public dataService: DataService) {
     this.notyf = new Notyf();
 
     this.personalDetails = JSON.parse(localStorage.getItem('employeeId') || '{}');
+    this.currency = JSON.parse(localStorage.getItem('currency') || '{}');
   }
   type: any = [{ value: 'fixed', label: 'Fixed' }, { value: 'percentage', label: 'Percentage' }]
   endDateDD: any = [{ value: 'all_period', label: 'ALL Period' }, { value: 'custom', label: 'Custom' }]
   departmentDD: any = []
   async ngOnInit() {
+    this.obj['status']='active'
     this.getSalarySetUpList()
     this.ComponentDropdown()
   }
@@ -181,6 +184,8 @@ export class SalarySetupComponent {
           this.updateMasterSelected();
         }
         else if (status === "expired") {
+          localStorage.clear()
+
           this.router.navigate(["login"]);
         }
 
@@ -350,10 +355,14 @@ export class SalarySetupComponent {
 
         }
         else if (status === "expired") {
+          localStorage.clear()
           this.router.navigate(["login"]);
         }
 
         else {
+          this.ComponentList = []
+          this.PayArr = []
+          this.DedArr = []
           this.notyf.error(message)
         }
 
@@ -404,34 +413,32 @@ export class SalarySetupComponent {
   masterSelected: any = false;
   DeductionMasterSelected: boolean = false;
   EarningCheckUncheckAll() {
-    // update earnings only
     this.PayArr.forEach((item: any) => {
       item.isSelected = this.EarningMasterSelected;
+
+
+      if (item.original_amount === undefined) {
+        item.original_amount = item.calculated_amount;
+      }
+
+
+      item.calculated_amount = item.isSelected ? item.original_amount : 0;
+      item.status = item.isSelected ? 'active' : 'inactive';
     });
 
-    // reflect in ComponentList also
+
     this.ComponentList.forEach((item: any) => {
-      if (this.PayArr.some((p: any) => p.componentId == item.componentId)) {
+      if (this.PayArr.some((d: any) => d.componentId == item.componentId)) {
         item.isSelected = this.EarningMasterSelected;
+        item.status = this.EarningMasterSelected ? 'active' : 'inactive';
       }
     });
+
+    // 🔹 Recalculate totals
+    this.recalculateFinalRecord();
+
   }
 
-  //  checkUncheckAll() {
-  //  const allActive = this.SalArr.every((item: any) => item.status == 'active');
-  // const allInactive = this.SalArr.every((item: any) => item.status == 'inactive');
-
-  // if (allActive) {
-  //   this.masterSelected = true;        // master = checked
-  // } else if (allInactive) {
-  //   this.masterSelected = false;       // master = unchecked
-  // }
-  //   // update earnings only
-  //   this.SalArr.forEach((item: any) => {
-  //     item.status = this.masterSelected==false?'inactive':'active';
-  //   });
-
-  // }
   onStatusChange(event: Event, item: any): void {
     const checked = (event.target as HTMLInputElement).checked;
     item.status = checked ? 'active' : 'inactive';
@@ -458,49 +465,128 @@ export class SalarySetupComponent {
       this.masterSelected = null; // supports indeterminate
     }
   }
+
+  recalculateFinalRecord() {
+    const totalEarnings = this.PayArr
+      .filter((item: any) => item.isSelected)
+      .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0);
+
+    const totalDeductions = this.DedArr
+      .filter((item: any) => item.isSelected)
+      .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0);
+
+       const totalEmployeeDeductions = this.DedArr
+      .filter((item: any) => item.isSelected  && !item.component_name.toLowerCase().includes("employer"))
+      .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0);
+
+    // If you have employer contribution separately, calculate here
+    const employerContribution = this.DedArr
+      .filter((item: any) => item.isSelected && item.component_name.toLowerCase().includes("employer"))
+      .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0);
+    const FinalDeduction=employerContribution+totalEmployeeDeductions
+    this.FinalRecord = {
+      totalEarnings,
+      totalDeductions,
+      employerContribution,
+      FinalDeduction,
+      gross: totalEarnings, // or whatever your definition of gross is
+      netPayableSalary: totalEarnings - totalEmployeeDeductions,
+      netCTC: totalEarnings + employerContribution,
+    };
+  }
+
   DeductionCheckUncheckAll() {
-    // update deductions only
+
     this.DedArr.forEach((item: any) => {
       item.isSelected = this.DeductionMasterSelected;
+
+
+      if (item.original_amount === undefined) {
+        item.original_amount = item.calculated_amount;
+      }
+
+
+      item.calculated_amount = item.isSelected ? item.original_amount : 0;
+      item.status = item.isSelected ? 'active' : 'inactive';
     });
 
-    // reflect in ComponentList also
+
     this.ComponentList.forEach((item: any) => {
       if (this.DedArr.some((d: any) => d.componentId == item.componentId)) {
         item.isSelected = this.DeductionMasterSelected;
+        item.status = this.DeductionMasterSelected ? 'active' : 'inactive';
       }
     });
+
+    this.recalculateFinalRecord();
   }
+
 
 
 
   isEarningAllSelected() {
     this.EarningMasterSelected = this.ComponentList.every((item: any) => item.isSelected);
-    this.ComponentList = this.ComponentList.map((item: any) => ({
-      ...item,
-      status: item.isSelected == false ? item.status = 'inactive' : item.status = 'active'
-    }));
-    this.PayArr = this.PayArr.map((item: any) => ({
-      ...item,
-      status: item.isSelected == false ? item.status = 'inactive' : item.status = 'active'
-    }));
 
+    this.ComponentList = this.ComponentList.map((item: any) => {
+      // preserve original amount if not already saved
+      if (item.original_amount === undefined) {
+        item.original_amount = item.calculated_amount;
+      }
 
+      return {
+        ...item,
+        calculated_amount: item.isSelected == false ? 0 : item.original_amount,
+        status: item.isSelected == false ? 'inactive' : 'active',
+      };
+    });
+
+    this.PayArr = this.PayArr.map((item: any) => {
+      // preserve original amount if not already saved
+      if (item.original_amount === undefined) {
+        item.original_amount = item.calculated_amount;
+      }
+
+      return {
+        ...item,
+        calculated_amount: item.isSelected == false ? 0 : item.original_amount,
+        status: item.isSelected == false ? 'inactive' : 'active',
+      };
+    });
+
+    // 🔹 Recalculate totals
+    this.recalculateFinalRecord();
   }
 
 
   isDeductionAllSelected() {
     this.DeductionMasterSelected = this.DedArr.every((item: any) => item.isSelected);
-    this.ComponentList = this.ComponentList.map((item: any) => ({
-      ...item,
-      status: item.isSelected == false ? item.status = 'inactive' : item.status = 'active'
-    }));
-    this.DedArr = this.DedArr.map((item: any) => ({
-      ...item,
-      status: item.isSelected == false ? item.status = 'inactive' : item.status = 'active'
-    }));
 
+    this.ComponentList = this.ComponentList.map((item: any) => {
+      if (item.original_amount === undefined) {
+        item.original_amount = item.calculated_amount;
+      }
 
+      return {
+        ...item,
+        calculated_amount: item.isSelected == false ? 0 : item.original_amount,
+        status: item.isSelected == false ? 'inactive' : 'active',
+      };
+    });
+
+    this.DedArr = this.DedArr.map((item: any) => {
+      if (item.original_amount === undefined) {
+        item.original_amount = item.calculated_amount;
+      }
+
+      return {
+        ...item,
+        calculated_amount: item.isSelected == false ? 0 : item.original_amount,
+        status: item.isSelected == false ? 'inactive' : 'active',
+      };
+    });
+
+    // 🔹 Recalculate totals
+    this.recalculateFinalRecord();
   }
 
   getStatusClass(status: any): string {
@@ -531,7 +617,7 @@ export class SalarySetupComponent {
     this.updateFlag = false
     this.PayArr = []
     this.DedArr = []
-     this.newObj = {}
+    this.newObj = {}
   }
 
 

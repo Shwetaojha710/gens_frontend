@@ -57,12 +57,12 @@ export class JoiningComponent {
   itemsPerPage = 10;
   searchTerm = '';
   onSearch(term: string) {
-    if(!term){
+    if (!term) {
       this.loadEmployees()
-    }else{
-     this.searchTerm = term.toLowerCase();
-    this.currentPage = 1;
-    this.applyFilters();
+    } else {
+      this.searchTerm = term.toLowerCase();
+      this.currentPage = 1;
+      this.applyFilters();
     }
 
     // this.loadEmployees()

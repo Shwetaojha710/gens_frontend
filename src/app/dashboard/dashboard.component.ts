@@ -114,7 +114,7 @@ export class DashboardComponent {
 //           "HR",
 //           "Testing",
 //           "Marketing",
-         
+
 //         ]
 //       },
 //       colors: [
@@ -123,7 +123,7 @@ export class DashboardComponent {
 //       ]
 //     };
 
-
+leaveTypes:any=[]
   ngOnInit(): void {
     // this.baseurl = localStorage.getItem('base_url')?.replace(/["\\,]/g, '') || '';
     this.baseurl = this.masterService.getBaseUrl();
@@ -134,6 +134,7 @@ export class DashboardComponent {
     this.chartOptions = {}
     this.holidayList = []
     this.leaveList = []
+    this.leaveTypes=[]
     this.dashboardService.getDashboardData().subscribe((res) => {
       if (res.status == true) {
         this.notyf.success(res.message || 'Dashboard data loaded successfully')
@@ -141,6 +142,7 @@ export class DashboardComponent {
         this.chartOptions = res.data.chartOptions
         this.employeeList = res.data.employees
         this.leaveList = res.data.leaves
+        this.leaveTypes=res.data.leaveMasterList
         this.holidayList = res.data.holidays
         this.holidayList = this.holidayList.map((item: any) => {
           return {

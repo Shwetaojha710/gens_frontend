@@ -80,7 +80,7 @@ export class SalaryComponentComponent {
           return { value: item.id, label: item.component_name,listLabel: `${item.component_name}- (${item.component_type})` }
         })
       } else if (response.status == "expired") {
-        this.router.navigate(["login"]);
+          this.router.navigate(["login"]);
       } else {
         this.notyf.error(response.message)
       }
@@ -137,7 +137,7 @@ export class SalaryComponentComponent {
         this.originalList = this.SalaryComponentList
       }
       else if (data['status'] == "expired") {
-        this.router.navigate(["login"]);
+          this.router.navigate(["login"]);
       }
       else {
         this.notyf.error(data['message']);
@@ -169,7 +169,7 @@ export class SalaryComponentComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -205,7 +205,7 @@ export class SalaryComponentComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -268,7 +268,7 @@ export class SalaryComponentComponent {
           this.fetchComponentMaster();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

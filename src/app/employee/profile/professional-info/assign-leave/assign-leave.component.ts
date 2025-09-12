@@ -127,7 +127,7 @@ export class AssignLeaveComponent {
           this.back()
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -207,7 +207,7 @@ export class AssignLeaveComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -277,7 +277,7 @@ export class AssignLeaveComponent {
           this.fetchAssignLeaveList();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
