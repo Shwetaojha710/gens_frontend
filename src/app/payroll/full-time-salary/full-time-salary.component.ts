@@ -217,33 +217,51 @@ export class FullTimeSalaryComponent {
         console.log(status)
         console.log("response", response);
 
-        if (status == true) {
+   if (status === true) {
+  this.notyf.success(message);
+  this.SalaryBreakup = response.data;
 
+  // Initialize arrays to store filtered data
+  const PayArr = [];
+  const DedArr = [];
+  const EmployerDedArr = [];
 
-          this.notyf.success(message)
-          this.SalaryBreakup = response.data
-          this.PayArr = []
-          this.DedArr = []
-          this.EmployerDedArr = []
-          this.PayArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'PAY')
-          this.DedArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'DED' && item.type!='employer')
-          this.EmployerDedArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'DED' && item.type=='employer')
-          // Calculate totals
-          const totalEarning = this.PayArr.reduce((sum: number, item: any) => sum + Number(item.pay_amount || 0), 0);
-          const totalDeduction = this.DedArr.reduce((sum: number, item: any) => sum + Number(item.pay_amount || 0), 0);
-          const totalEmployerDeduction = this.EmployerDedArr.reduce((sum: number, item: any) => sum + Number(item.pay_amount || 0), 0);
-          const netPay = totalEarning - totalDeduction;
+  // Initialize totals
+  let totalEarning = 0;
+  let totalDeduction = 0;
+  let totalEmployerDeduction = 0;
 
-          // Add as new keys
-          this.PayArr = [...this.PayArr, { isSummary: true, name: 'Total Earnings', pay_amount: totalEarning }];
-          this.DedArr = [...this.DedArr, { isSummary: true, name: 'Total Deductions', pay_amount: totalDeduction }];
-          this.EmployerDedArr = [...this.EmployerDedArr, { isSummary: true, name: 'Total Employer Deductions', pay_amount: totalEmployerDeduction }];
+  // Process data in a single loop
+  for (const item of this.SalaryBreakup) {
+    const amount = Number(item.pay_amount || 0);
 
+    if (item.pay_code === 'PAY') {
+      PayArr.push(item);
+      totalEarning += amount;
+    } else if (item.pay_code === 'DED') {
+      if (item.name.toLowerCase().includes('employer')) {
+        EmployerDedArr.push(item);
+        totalEmployerDeduction += amount;
+      } else {
+        DedArr.push(item);
+        totalDeduction += amount;
+      }
+    }
+  }
 
-          const modalEl = document.getElementById('SalaryModal');
-          this.modal = new bootstrap.Modal(modalEl);
-          this.modal.show();
-        }
+  // Update component properties with filtered data and totals
+  this.PayArr = [...PayArr, { isSummary: true, name: 'Total Earnings', pay_amount: totalEarning }];
+  this.DedArr = [...DedArr, { isSummary: true, name: 'Total Deductions', pay_amount: totalDeduction }];
+  this.EmployerDedArr = [...EmployerDedArr, { isSummary: true, name: 'Total Employer Deductions', pay_amount: totalEmployerDeduction }];
+
+  // Calculate net pay
+  const netPay = totalEarning - totalDeduction;
+
+  // Show the modal
+  const modalEl = document.getElementById('SalaryModal');
+  this.modal = new bootstrap.Modal(modalEl);
+  this.modal.show();
+}
         else if (status == "expired") {
             this.router.navigate(["login"]);
         }

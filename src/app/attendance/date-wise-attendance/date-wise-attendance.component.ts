@@ -304,23 +304,23 @@ export class DateWiseAttendanceComponent {
   newObj: any = {}
   updateFlag: boolean = false;
     applyUpdate(item: any) {
-    Swal.fire({
-      title: "Are you sure?",
-      text: "Do you Want to Enable this",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, Enable it!",
-      cancelButtonText: "No, cancel!",
-      reverseButtons: true
-    }).then((result) => {
-      if (result.isConfirmed) {
-         item.editable = true // toggle enable/disable
+//     Swal.fire({
+//       title: "Are you sure?",
+//       text: "Do you Want to Enable this",
+//       icon: "warning",
+//       showCancelButton: true,
+//       confirmButtonText: "Yes, Enable it!",
+//       cancelButtonText: "No, cancel!",
+//       reverseButtons: true
+//     }).then((result) => {
+//       if (result.isConfirmed) {
+//          item.editable = true // toggle enable/disable
 
-      } else if (result.dismiss === Swal.DismissReason.cancel) {
- item.editable = false
-      }
-    });
-
+//       } else if (result.dismiss === Swal.DismissReason.cancel) {
+//  item.editable = false
+//       }
+//     });
+  item.editable = true
   }
 
   update(data: any) {
