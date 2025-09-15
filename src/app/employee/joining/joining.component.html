@@ -459,14 +459,14 @@
                 <td>{{item?.si_no}}</td>
 
                 <td>
-                  <div class="d-flex align-items-center">
+                  <div class="d-flex align-items-center"(click)="view(item)">
                     <div class="avatar avatar-sm me-4">
                       <img *ngIf="item?.['gender']=='Female'" src="../../assets/img/avatars/2.png" alt="Avatar"
                         class="rounded-circle" />
                       <img *ngIf="item?.['gender']=='Male'" src="../../assets/img/avatars/1.png" alt="Avatar"
                         class="rounded-circle" />
                     </div>
-                    <div (click)="view(item)">
+                    <div >
                       <h6 class="mb-0 text-truncate link-primary">
                         {{ item["firstName"] }} {{ item["lastName"] }}
                       </h6>

@@ -254,6 +254,7 @@ export class SalarySetupComponent {
     this.obj['data'] = this.ComponentList
     this.obj['FinalCTC'] = this.FinalRecord?.netCTC
 
+
     this.payrollService.AddSalarycomp(this.obj).subscribe({
       next: (response: any) => {
 
