@@ -211,6 +211,7 @@ export class SalarySetupComponent {
   }
   status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
 
+
   // convertNumberToWords(amount: number): string {
   //   if (amount === 0) return 'zero';
   //   const a = [
@@ -228,6 +229,9 @@ export class SalarySetupComponent {
   //   };
   //   return numToWords(Math.floor(amount));
   // }
+
+
+
 
   onSubmit() {
     console.log(this.obj)
