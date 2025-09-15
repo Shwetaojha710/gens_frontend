@@ -7303,11 +7303,11 @@ textarea.form-control-lg {
 }
 
 .link-primary {
-  color: RGBA(var(--bs-primary-rgb), var(--bs-link-opacity, 1)) !important;
+  color: #0663a9 !important;
   text-decoration-color: RGBA(var(--bs-primary-rgb), var(--bs-link-underline-opacity, 1)) !important;
 }
 .link-primary:hover, .link-primary:focus {
-  color: RGBA(92, 97, 230, var(--bs-link-opacity, 1)) !important;
+  color: #2787d1 !important;
   text-decoration-color: RGBA(92, 97, 230, var(--bs-link-underline-opacity, 1)) !important;
 }
 
