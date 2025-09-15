@@ -53,7 +53,7 @@ export class BankDetailsComponent {
   //         this.back()
   //       }
   //       else if (response.status === "expired") {
-  //         this.router.navigate(["login"]);
+  //           this.router.navigate(["login"]);
   //       }
 
   //       else {
@@ -101,7 +101,7 @@ this.obj['accountNumber']=this.obj['accountNumber'].toString()
            this.fetchBank()
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -176,7 +176,7 @@ this.obj['accountNumber']=this.obj['accountNumber'].toString()
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -247,7 +247,7 @@ this.obj['accountNumber']=this.obj['accountNumber'].toString()
           this.fetchBank();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

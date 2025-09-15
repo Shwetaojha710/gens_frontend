@@ -178,7 +178,7 @@ export class FullTimeSalaryComponent {
 
         }
         else if (status == "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -201,11 +201,13 @@ export class FullTimeSalaryComponent {
   PayArr: any = []
   DedArr: any = []
   personalDetails:any={}
+  EmployerDedArr:any = []
   view(item: any) {
     const obj = Object.assign({}, item)
     this.personalDetails={}
     this.personalDetails=obj
     this.SalaryBreakup = []
+    this.EmployerDedArr = []
     this.payroll.calculateSalaryComponent(obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
@@ -222,16 +224,20 @@ export class FullTimeSalaryComponent {
           this.SalaryBreakup = response.data
           this.PayArr = []
           this.DedArr = []
+          this.EmployerDedArr = []
           this.PayArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'PAY')
-          this.DedArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'DED')
+          this.DedArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'DED' && item.type!='employer')
+          this.EmployerDedArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'DED' && item.type=='employer')
           // Calculate totals
           const totalEarning = this.PayArr.reduce((sum: number, item: any) => sum + Number(item.pay_amount || 0), 0);
           const totalDeduction = this.DedArr.reduce((sum: number, item: any) => sum + Number(item.pay_amount || 0), 0);
+          const totalEmployerDeduction = this.EmployerDedArr.reduce((sum: number, item: any) => sum + Number(item.pay_amount || 0), 0);
           const netPay = totalEarning - totalDeduction;
 
           // Add as new keys
           this.PayArr = [...this.PayArr, { isSummary: true, name: 'Total Earnings', pay_amount: totalEarning }];
           this.DedArr = [...this.DedArr, { isSummary: true, name: 'Total Deductions', pay_amount: totalDeduction }];
+          this.EmployerDedArr = [...this.EmployerDedArr, { isSummary: true, name: 'Total Employer Deductions', pay_amount: totalEmployerDeduction }];
 
 
           const modalEl = document.getElementById('SalaryModal');
@@ -239,7 +245,7 @@ export class FullTimeSalaryComponent {
           this.modal.show();
         }
         else if (status == "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {

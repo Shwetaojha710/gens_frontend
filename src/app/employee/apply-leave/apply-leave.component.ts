@@ -135,7 +135,7 @@ export class ApplyLeaveComponent {
           this.originalList = response.data
         }
         else if (status == "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -213,7 +213,7 @@ export class ApplyLeaveComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -251,7 +251,7 @@ export class ApplyLeaveComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -314,7 +314,7 @@ export class ApplyLeaveComponent {
           this.getApplyLeaveList();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

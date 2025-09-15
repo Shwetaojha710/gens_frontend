@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { AttendanceService } from '../../services/attendance.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -27,6 +27,7 @@ export class AttendanceUploadComponent {
 async  onFileSelected(event: any) {
     this.selectedFile =await event.target.files[0];
   }
+@ViewChild('fileInput') fileInput!: ElementRef;
 
   onUpload() {
     if (!this.selectedFile) {
@@ -49,19 +50,29 @@ async  onFileSelected(event: any) {
            this.selectedFile = undefined;
            this.selectedFile = null;
           this.rows = res.rows; // parsed excel rows
+            // reset the actual file input
+         this.fileInput.nativeElement.value = '';
         }
         else if (res['status'] == 'expired') {
+          localStorage.clear()
           this.router.navigate(['login']);
+            // reset the actual file input
+        this.fileInput.nativeElement.value = '';
         }
         else {
           if (this.notyf) {
             this.notyf.error(res['message']);
+              // reset the actual file input
+    this.fileInput.nativeElement.value = '';
           }
         }
 
       },
-      error: () => {
+      error: (err) => {
         this.message = "Upload failed!";
+          if (this.notyf) {
+            this.notyf.error(err['message']);
+          }
       }
     });
   }

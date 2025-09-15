@@ -174,7 +174,7 @@ let data = [...this.leaveList];
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -210,7 +210,7 @@ let data = [...this.leaveList];
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -263,7 +263,7 @@ let data = [...this.leaveList];
           this.fetchLeaveList();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

@@ -1,27 +1,23 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
+import { Router } from '@angular/router';
 import { Notyf } from 'notyf';
 import Swal from 'sweetalert2';
-import { MasterService } from '../../../../services/master.service';
-import { StatusService } from '../../../../services/status.service';
-import { ValidationUtil } from '../../../../shared/utils/validation.util';
-import { DataService } from '../../../../services/data.service';
-import * as bootstrap from 'bootstrap';
-import { DomSanitizer } from '@angular/platform-browser';
-
+import { MasterService } from '../../services/master.service';
+import { StatusService } from '../../services/status.service';
+import { ValidationUtil } from '../../shared/utils/validation.util';
+import { SearchPaginationComponent } from '../search-pagination/search-pagination.component';
 @Component({
-  selector: 'app-qualification',
-  imports: [NgSelectModule,
-    FormsModule, CommonModule],
-  templateUrl: './qualification.component.html',
-  styleUrl: './qualification.component.css'
+  selector: 'app-currency',
+   imports: [NgSelectModule,
+    FormsModule, CommonModule,SearchPaginationComponent],
+  templateUrl: './currency.component.html',
+  styleUrl: './currency.component.css'
 })
 
-
-export class QualificationComponent {
+export class CurrencyComponent {
   obj: any = {}
   notyf: Notyf;
 
@@ -35,38 +31,77 @@ export class QualificationComponent {
   // onSubmit() {
   //    console.log(this.obj)
   // }
-  DocumentForm!: FormGroup;
-  DocumentList: any = [];
+  CurrencyForm!: FormGroup;
+  CurrencyList:any = [];
   editingId: number | null = null;
-  personalDetails: any = {}
+
   constructor(
     private fb: FormBuilder,
-    private Documentervice: MasterService,
+    private CurrencyService: MasterService,
     public statusService: StatusService,
-    private router: Router, public dataService: DataService,
-       private sanitizer: DomSanitizer,
+    private router: Router,
   ) {
+    this.CurrencyForm = this.fb.group({
+      name: ['', Validators.required],
+      status: ['', [Validators.required]]
+    });
 
-     this.personalDetails = JSON.parse(localStorage.getItem('employeeId') || '{}');
     this.notyf = new Notyf();
   }
-  baseurl: any;
+
   async ngOnInit() {
-      this.baseurl = this.Documentervice.getBaseUrl();
-    await this.fetchDocument();
-    await this.documentdd()
-  }
-  docTypeList: any = []
-  async documentdd() {
-    this.docTypeList = []
-    this.Documentervice.getDocumentDD().subscribe(data => {
-      if (data['status'] == true) {
-        // this.notyf.success(data['message']);
-        this.docTypeList = data.data;
-      } else {
-        this.notyf.error(data['message']);
-      }
+    this.CurrencyForm = this.fb.group({
+      name: ['', Validators.required],
+      description: ['']
     });
+
+    await this.fetchCurrency();
+  }
+    pageSize = 5;
+  currentPage = 1;
+  searchTerm = '';
+  itemsPerPage = 10;
+  onSearch(term: string) {
+    this.searchTerm = term.toLowerCase();
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.applyFilters();
+  }
+
+
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+  filteredDesignation: any = []
+  searchText: any = ''
+originalList:any = []
+  applyFilters() {
+    let data = [...this.CurrencyList];
+
+
+    const value = this.searchTerm || '';
+    this.searchText = value.trim();
+
+    if (this.searchText === '') {
+      this.CurrencyList = [...this.originalList];
+    } else {
+      this.CurrencyList = this.originalList.filter((item: any) =>
+        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+
+
+    // pagination
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.filteredDesignation = data.slice(start, end);
   }
   getStatusClass(status: any): string {
     switch (status) {
@@ -77,18 +112,13 @@ export class QualificationComponent {
     }
   }
 
-  async fetchDocument() {
-    this.DocumentList = []
-    let obj: any = {}
-    obj['employeeId'] = this.personalDetails.id
-    console.log(obj, "object data ")
-    this.Documentervice.getDocument(obj).subscribe(data => {
+  async fetchCurrency() {
+    this.CurrencyList = []
+    this.CurrencyService.getCurrency().subscribe(data => {
       if (data['status'] == true) {
         // this.notyf.success(data['message']);
-        this.DocumentList = data.data;
-        for (let i = 0; i < this.DocumentList.length; i++) {
-          this.DocumentList[i]['doc_name'] = `${this.baseurl}/${this.DocumentList[i]['doc_name']}`
-        }
+        this.CurrencyList = data.data;
+        this.originalList = data.data;
       } else {
         this.notyf.error(data['message']);
       }
@@ -98,29 +128,12 @@ export class QualificationComponent {
   }
 
   onSubmit() {
-    // if (!ValidationUtil.showRequiredError('Document name', this.obj.name, this.notyf)) {
-    //   return;
-    // }
-
-
-    const uploadData = new FormData();
-    uploadData.append('type', this.obj['type']);
-    uploadData.append('employeeId', this.personalDetails.id)
-    if (this.selectedFile) {
-      uploadData.append('doc_name', this.selectedFile, this.selectedFile.name);
-    } else {
-      Swal.fire({
-        toast: true,
-        position: "top",
-        showConfirmButton: false,
-        icon: "warning",
-        timer: 5000,
-        title: "Select a file to upload",
-      });
+    if (!ValidationUtil.showRequiredError('Currency name', this.obj.name, this.notyf)) {
       return;
     }
 
-    this.Documentervice.addDocument(uploadData).subscribe({
+
+    this.CurrencyService.addCurrency(this.obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
 
@@ -132,7 +145,7 @@ export class QualificationComponent {
         if (status === true) {
 
           this.notyf.success(message)
-          this.fetchDocument();
+          this.fetchCurrency();
           this.resetForm();
         }
         else if (status === "expired") {
@@ -146,7 +159,7 @@ export class QualificationComponent {
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err?.error?.message)
+        this.notyf.error(err?.message)
       }
     });
 
@@ -157,22 +170,9 @@ export class QualificationComponent {
     this.editingId = this.obj.id;
     this.createFlag = true
     this.updateFlag = true
-    this.sanitizedImage=this.obj['doc_name']
-    this.documentdd()
   }
   updatedata() {
-
-     const uploadData = new FormData();
-    uploadData.append('type', this.obj['type']);
-    uploadData.append('employeeId', this.personalDetails.id)
-    uploadData.append('id', this.obj.id)
-    uploadData.append('status', this.personalDetails.status)
-    uploadData.append('typeName', this.personalDetails.typeName)
-    if (this.selectedFile) {
-      uploadData.append('doc_name', this.selectedFile, this.selectedFile.name);
-    }
-
-    this.Documentervice.updateDocument(uploadData).subscribe({
+    this.CurrencyService.updateCurrency(this.editingId, this.obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
         let message = response.message ? response.message : 'Data found Successfully';
@@ -181,7 +181,7 @@ export class QualificationComponent {
         console.log("response", response);
         if (status === true) {
           this.notyf.success(message)
-          this.fetchDocument();
+          this.fetchCurrency();
           this.resetForm();
         }
         else if (status === "expired") {
@@ -193,7 +193,7 @@ export class QualificationComponent {
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err?.error?.message)
+        this.notyf.error(err?.message)
       }
 
 
@@ -204,7 +204,7 @@ export class QualificationComponent {
 
   delete(data: number) {
 
-    Swal.fire({
+     Swal.fire({
       title: "Are you sure?",
       text: "Do you Want to Delete this",
       icon: "warning",
@@ -214,7 +214,7 @@ export class QualificationComponent {
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
-        this.deleteDocument(data)
+        this.deleteCurrency(data)
         // Swal.fire({
         //   title: "Deleted!",
         //   text: "Your file has been deleted.",
@@ -235,8 +235,8 @@ export class QualificationComponent {
 
 
   }
-  deleteDocument(data: any) {
-    this.Documentervice.deleteDocument(data).subscribe({
+  deleteCurrency(data:any){
+       this.CurrencyService.deleteCurrency(data).subscribe({
       next: (response: any) => {
         console.log('response', response);
         let message = response.message ? response.message : 'Data found Successfully';
@@ -245,7 +245,7 @@ export class QualificationComponent {
         console.log("response", response);
         if (status === true) {
           this.notyf.success(message)
-          this.fetchDocument();
+          this.fetchCurrency();
         }
         else if (status === "expired") {
             this.router.navigate(["login"]);
@@ -256,7 +256,7 @@ export class QualificationComponent {
       },
       error: (err) => {
         console.error('Error:', err);
-         this.notyf.error(err?.error?.message)
+        this.notyf.error(err.message)
       }
 
     })
@@ -268,7 +268,7 @@ export class QualificationComponent {
     this.editingId = null;
   }
   isInvalid(field: string): boolean {
-    const control = this.DocumentForm.get(field);
+    const control = this.CurrencyForm.get(field);
     return !!(control && control.touched && control.invalid);
   }
 
@@ -280,45 +280,8 @@ export class QualificationComponent {
     this.createFlag = true
     this.listflag = false
     this.updateFlag = false
-     this.sanitizedImage=null
   }
 
-  isFileInvalid: boolean = false;
-  selectedFile: File | null = null;
-sanitizedImage: any;
-  onFileChange(event: any) {
-    const file = event.target.files[0];
 
-    if (!file) {
-      this.isFileInvalid = true;
-    } else {
-      this.isFileInvalid = false;
-      this.selectedFile = event.target.files[0]
-      // Save the file to a model or FormData here
-    }
-
-    const reader = new FileReader();
-  reader.onload = () => {
-    const imageUrl = reader.result as string;
-    this.sanitizedImage = this.sanitizer.bypassSecurityTrustUrl(imageUrl);
-  };
-  reader.readAsDataURL(file);
-  }
-  close(){
-  this.sanitizedImage = null;
-  this.selectedFile = null;
-  this.isFileInvalid = false;
-}
-imageUrls:any;
-openModal1(imageUrl: any) {
-  this.imageUrls = imageUrl;
-  setTimeout(() => {
-    const modalElement = document.getElementById('imageModal1');
-    if (modalElement) {
-      const modal = new bootstrap.Modal(modalElement);
-      modal.show();
-    }
-  }, 0);
-}
 
 }

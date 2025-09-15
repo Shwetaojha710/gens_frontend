@@ -51,6 +51,7 @@ import { PreffixComponent } from './master/preffix/preffix.component';
 import { AttendanceUploadComponent } from './attendance/attendance-upload/attendance-upload.component';
 import { SalaryComponentComponent } from './master/salary-component/salary-component.component';
 import { SalarySetupComponent } from './payroll/salary-setup/salary-setup.component';
+import { CurrencyComponent } from './master/currency/currency.component';
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '', redirectTo: '/Home', pathMatch: 'full'},
@@ -125,6 +126,7 @@ export const routes: Routes = [
           { path: 'holiday-type', component: HolidayTypeComponent },
           { path: 'prefix', component: PreffixComponent },
           { path: 'salary-component', component: SalaryComponentComponent },
+          { path: 'currency', component: CurrencyComponent },
 
         ]
       },

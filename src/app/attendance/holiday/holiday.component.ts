@@ -250,7 +250,7 @@ close(){
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -310,7 +310,7 @@ close(){
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -373,7 +373,7 @@ close(){
           this.fetchHoliday();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

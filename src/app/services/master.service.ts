@@ -232,6 +232,21 @@ addSalaryMaster(dept: any): Observable<any> {
     updateSalaryComponent(id: any, dept: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}update-component`, dept);
   }
+   addCurrency(dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}add-Currency`, dept);
+  }
+
+  updateCurrency(id: any, dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}update-Currency`, dept);
+  }
+
+  deleteCurrency(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}delete-Currency`, data);
+  }
+  getCurrency(): Observable<any> {
+     return this.http.post(`${this.baseUrl}get-Currency`, {});
+  }
+
 
 //    getAttendanceSetting(): Observable<any> {
 //     return this.http.post(`${this.baseUrl}get-attendance-setting`, {});

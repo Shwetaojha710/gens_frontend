@@ -120,7 +120,7 @@ export class AddComponent {
 
         }
         else if (response.status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -150,7 +150,7 @@ export class AddComponent {
 
         }
         else if (response.status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -251,7 +251,7 @@ export class AddComponent {
           // this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -281,7 +281,7 @@ export class AddComponent {
     //       // this.resetForm();
     //     }
     //     else if (status === "expired") {
-    //       this.router.navigate(["login"]);
+    //         this.router.navigate(["login"]);
     //     }
 
     //     else {
