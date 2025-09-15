@@ -5,6 +5,15 @@
         height: 44px !important;
         border-radius: 22px !important;
     } */
+
+:root,
+[data-bs-theme=light] {
+    
+--bs-success: #198754;
+
+}
+
+
 .form-control{
   height: 38px;
 }
@@ -73,3 +82,5 @@ div.dt-container div.dt-search input {
   background-color: #408e0b !important;
   border-color: #408e0b !important;
 }
+
+

@@ -30,7 +30,7 @@
   --bs-gray-900: #3b4055;
   --bs-primary: #0663a9;
   --bs-secondary: #6d788d;
-  --bs-success: #72e128;
+  --bs-success: #198754;
   --bs-info: #26c6f9;
   --bs-warning: #fdb528;
   --bs-danger: #ff4d49;
@@ -18036,7 +18036,7 @@ form .form-floating:has(.select2.is-invalid) label {
 
 .text-success {
   --bs-text-opacity: 1;
-  color: rgba(var(--bs-success-rgb), var(--bs-text-opacity)) !important;
+  color: #198754 !important;
 }
 
 .text-info {
