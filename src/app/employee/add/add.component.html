@@ -1,5 +1,39 @@
 <div class="container-xxl mt-5">
-  <div class="nav-align-top nav-tabs-shadow">
+<div class="col-xxl">
+<div class="card ">
+   <h5 class="card-header d-flex justify-content-between align-items-center ">
+          <span>  Employee Details</span>
+         <button type="button" class="btn btn-xs btn-primary float-end" (click)="back()">
+              <i class="fa-solid fa-arrow-left"></i>&nbsp;Go To Home
+            </button>
+        </h5>
+          <hr style="margin: -1rem 0 !important" />
+      <div class="card-body">
+
+
+
+      <div class="row">
+        <div class="col-md-3">
+        <label class="col-form-label fw-bold">Employee Name: </label>
+         {{personalDetails?.firstName}} {{personalDetails?.lastName}}
+        </div>
+        <div class="col-md-3">
+           <label class="col-form-label fw-bold">Employee Code: </label>
+         {{personalDetails?.empCode}}
+        </div>
+        <!-- <div class="col-3">
+              <label class="col-form-label fw-bold">Designation: </label>
+         {{personalDetails['designationId']}}
+        </div> -->
+
+      </div>
+      </div>
+    </div>
+</div>
+
+
+  <div class="nav-align-top nav-tabs-shadow mt-2">
+
     <ul class="nav nav-tabs" role="tablist">
       <li class="nav-item" role="presentation">
         <button type="button" class="nav-link waves-effect active" role="tab" data-bs-toggle="tab"
@@ -35,9 +69,9 @@
             <h5>General Info</h5>
           </div>
           <div class="col-md-6">
-            <button type="button" class="btn btn-xs btn-primary float-end" (click)="back()">
+            <!-- <button type="button" class="btn btn-xs btn-primary float-end" (click)="back()">
               <i class="fa-solid fa-arrow-left"></i>&nbsp;Go To Home
-            </button>
+            </button> -->
           </div>
         </div>
         <hr />

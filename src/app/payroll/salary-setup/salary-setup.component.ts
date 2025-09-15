@@ -257,8 +257,8 @@ export class SalarySetupComponent {
     this.obj['employeeId'] = this.personalDetails.id
     this.obj['data'] = this.ComponentList
     this.obj['FinalCTC'] = this.FinalRecord?.netCTC
-
-
+    this.obj['empType']=this.personalDetails?.empType
+    this.obj['CTC']=this.FinalRecord?.netPayableSalary
     this.payrollService.AddSalarycomp(this.obj).subscribe({
       next: (response: any) => {
 
@@ -304,7 +304,6 @@ export class SalarySetupComponent {
     this.totalDeductible = 0
     this.ComponentList = []
     this.obj['employeeId'] = this.personalDetails.id
-
     this.payrollService.SetUpsalary(this.obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
@@ -327,34 +326,6 @@ export class SalarySetupComponent {
           this.mergedArray = []
           this.DedArr = this.ComponentList.filter((item: any) => item.component_type === 'deductible');
 
-
-          console.log(this.SalArr);
-          // this.totalPayable = this.ComponentList
-          //   .filter((item: any) => item.component_type === 'payable')
-          //   .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0);
-
-          // console.log('Total Payable:', this.totalPayable);
-          // this.totalDeductible = this.ComponentList
-          //   .filter((item: any) => item.component_type === 'deductible')
-          //   .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0);
-
-          // console.log('Total Payable:', this.totalDeductible);
-          // const netPayable = this.totalPayable-this.totalDeductible
-          // this.ComponentList = this.ComponentList.map((item: any) => {
-          //   if (item.component_name == "Miscellaneous") {
-          //     return {
-          //       ...item,
-          //       calculated_amount: this.obj['CTC']-netPayable
-          //     };
-          //   }
-          //   return item; // return unchanged item
-          // });
-          // this.totalPayable = this.ComponentList
-          //   .filter((item: any) => item.component_type === 'payable')
-          //   .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0);
-
-          // check if all items are active
-          // this.masterSelected = this.ComponentList.every((item: any) => item.isSelected === true);
           this.EarningMasterSelected = this.PayArr.every((item: any) => item.isSelected === true);
           this.DeductionMasterSelected = this.DedArr.every((item: any) => item.isSelected === true);
 
@@ -467,7 +438,7 @@ export class SalarySetupComponent {
     } else if (allInactive) {
       this.masterSelected = false;
     } else {
-      this.masterSelected = null; // supports indeterminate
+      this.masterSelected = null;
     }
   }
 
@@ -484,7 +455,6 @@ export class SalarySetupComponent {
       .filter((item: any) => item.isSelected  && !item.component_name.toLowerCase().includes("employer"))
       .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0);
 
-    // If you have employer contribution separately, calculate here
     const employerContribution = this.DedArr
       .filter((item: any) => item.isSelected && item.component_name.toLowerCase().includes("employer"))
       .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0);
@@ -494,7 +464,7 @@ export class SalarySetupComponent {
       totalDeductions,
       employerContribution,
       FinalDeduction,
-      gross: totalEarnings, // or whatever your definition of gross is
+      gross: totalEarnings,
       netPayableSalary: totalEarnings - totalEmployeeDeductions,
       netCTC: totalEarnings + employerContribution,
     };
