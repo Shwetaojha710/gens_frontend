@@ -125,7 +125,7 @@
                  <input
                   type="radio"
                   name="leaveFreqFullDay"
-                  value="full_day"
+                  value="full"
                   class="btn-check"
                   id="btnradio3"
                   [(ngModel)]="obj['duration_type']"
@@ -136,7 +136,7 @@
 
 
             </div>
-            <div class="col-2" *ngIf="obj['duration_type']=='first_half'  || obj['duration_type']=='full_day' ">
+            <div class="col-2" *ngIf="obj['duration_type']=='first_half'  || obj['duration_type']=='full' ">
               <label for="defaultFormControlInput" class="form-label"
                 >Leave From</label
               >
@@ -156,7 +156,7 @@
                 >Leave From Is Required
               </small>
             </div>
-            <div class="col-2" *ngIf="obj['duration_type']=='second_half'  || obj['duration_type']=='full_day' ">
+            <div class="col-2" *ngIf="obj['duration_type']=='second_half'  || obj['duration_type']=='full' ">
               <label for="defaultFormControlInput" class="form-label"
                 >Leave To</label
               >

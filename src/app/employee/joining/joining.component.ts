@@ -44,12 +44,14 @@ export class JoiningComponent {
     { value: 'Other', label: 'Other' }
   ]
   createFlag: boolean = false;
+  baseurl:any;
   async ngOnInit() {
     await this.countrydd();
     await this.loadEmployees();
     await this.getEmploymentTypes();
     await this.DepartmentDD()
     await this.applyFilters()
+    this.baseurl = this.master.getBaseUrl();
   }
 
   pageSize = 10;
@@ -261,7 +263,8 @@ export class JoiningComponent {
       },
       (error) => {
         console.error('Error adding employee:', error);
-        this.notyf.error(error?.error?.message);
+        let errorMessage=error?.error?.message?error?.error?.message:error?.message
+        this.notyf.error(errorMessage);
         // alert('Failed to add employee. Please try again.');
       }
 
@@ -357,7 +360,8 @@ export class JoiningComponent {
         this.employees = this.employees.map((item: any, index: any) => {
           return {
             ...item,
-            si_no: index + 1
+            si_no: index + 1,
+            profileImage:  item.profileImage ? `${this.baseurl}${item?.profileImage}` : item.gender =='Female'?"../../assets/img/avatars/2.png":'../../assets/img/avatars/1.png'
           }
         })
         this.originalList = this.originalList.map((item: any, index: any) => {

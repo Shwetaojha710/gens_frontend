@@ -146,7 +146,7 @@ export class FullTimeSalaryComponent {
   SalaryArr: any = []
   isLoading: boolean = false;
   onSubmit() {
-    if(this.obj['year']==undefined||this.obj['year']==null||this.obj['year']==''){
+    if (this.obj['year'] == undefined || this.obj['year'] == null || this.obj['year'] == '') {
       this.notyf.error("year is Required");
       return
     }
@@ -178,7 +178,7 @@ export class FullTimeSalaryComponent {
 
         }
         else if (status == "expired") {
-            this.router.navigate(["login"]);
+          this.router.navigate(["login"]);
         }
 
         else {
@@ -200,12 +200,12 @@ export class FullTimeSalaryComponent {
   modal: any;
   PayArr: any = []
   DedArr: any = []
-  personalDetails:any={}
-  EmployerDedArr:any = []
+  personalDetails: any = {}
+  EmployerDedArr: any = []
   view(item: any) {
     const obj = Object.assign({}, item)
-    this.personalDetails={}
-    this.personalDetails=obj
+    this.personalDetails = {}
+    this.personalDetails = obj
     this.SalaryBreakup = []
     this.EmployerDedArr = []
     this.payroll.calculateSalaryComponent(obj).subscribe({
@@ -217,53 +217,53 @@ export class FullTimeSalaryComponent {
         console.log(status)
         console.log("response", response);
 
-   if (status === true) {
-  this.notyf.success(message);
-  this.SalaryBreakup = response.data;
+        if (status === true) {
+          this.notyf.success(message);
+          this.SalaryBreakup = response.data;
 
-  // Initialize arrays to store filtered data
-  const PayArr = [];
-  const DedArr = [];
-  const EmployerDedArr = [];
+          // Initialize arrays to store filtered data
+          const PayArr = [];
+          const DedArr = [];
+          const EmployerDedArr = [];
 
-  // Initialize totals
-  let totalEarning = 0;
-  let totalDeduction = 0;
-  let totalEmployerDeduction = 0;
+          // Initialize totals
+          let totalEarning = 0;
+          let totalDeduction = 0;
+          let totalEmployerDeduction = 0;
 
-  // Process data in a single loop
-  for (const item of this.SalaryBreakup) {
-    const amount = Number(item.pay_amount || 0);
+          // Process data in a single loop
+          for (const item of this.SalaryBreakup) {
+            const amount = Number(item.pay_amount || 0);
 
-    if (item.pay_code === 'PAY') {
-      PayArr.push(item);
-      totalEarning += amount;
-    } else if (item.pay_code === 'DED') {
-      if (item.name.toLowerCase().includes('employer')) {
-        EmployerDedArr.push(item);
-        totalEmployerDeduction += amount;
-      } else {
-        DedArr.push(item);
-        totalDeduction += amount;
-      }
-    }
-  }
+            if (item.pay_code === 'PAY') {
+              PayArr.push(item);
+              totalEarning += amount;
+            } else if (item.pay_code === 'DED') {
+              if (item.name.toLowerCase().includes('employer')) {
+                EmployerDedArr.push(item);
+                totalEmployerDeduction += amount;
+              } else {
+                DedArr.push(item);
+                totalDeduction += amount;
+              }
+            }
+          }
 
-  // Update component properties with filtered data and totals
-  this.PayArr = [...PayArr, { isSummary: true, name: 'Total Earnings', pay_amount: totalEarning }];
-  this.DedArr = [...DedArr, { isSummary: true, name: 'Total Deductions', pay_amount: totalDeduction }];
-  this.EmployerDedArr = [...EmployerDedArr, { isSummary: true, name: 'Total Employer Deductions', pay_amount: totalEmployerDeduction }];
+          // Update component properties with filtered data and totals
+          this.PayArr = [...PayArr, { isSummary: true, name: 'Total Earnings', pay_amount: Math.round(totalEarning) }];
+          this.DedArr = [...DedArr, { isSummary: true, name: 'Total Deductions', pay_amount: Math.round(totalDeduction) }];
+          this.EmployerDedArr = [...EmployerDedArr, { isSummary: true, name: 'Total Employer Deductions', pay_amount: Math.round(totalEmployerDeduction) }];
 
-  // Calculate net pay
-  const netPay = totalEarning - totalDeduction;
+          // Calculate net pay
+          const netPay = totalEarning - totalDeduction;
 
-  // Show the modal
-  const modalEl = document.getElementById('SalaryModal');
-  this.modal = new bootstrap.Modal(modalEl);
-  this.modal.show();
-}
+          // Show the modal
+          const modalEl = document.getElementById('SalaryModal');
+          this.modal = new bootstrap.Modal(modalEl);
+          this.modal.show();
+        }
         else if (status == "expired") {
-            this.router.navigate(["login"]);
+          this.router.navigate(["login"]);
         }
 
         else {

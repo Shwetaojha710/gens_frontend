@@ -103,9 +103,9 @@ export class DocumentTypeComponent {
   }
   getStatusClass(status: any): string {
     switch (status) {
-      case 'pending': return 'bg-light-warning';
-      case 'cancelled': return 'bg-light-danger';
-      case 'completed': return 'bg-light-success';
+      // case 'active': return 'bg-light-warning';
+      case 'inactive': return 'badge-outline-danger';
+      case 'active': return 'badge-outline-success ';
       default: return 'bg-light-secondary';
     }
   }

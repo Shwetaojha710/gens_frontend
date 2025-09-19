@@ -93,4 +93,7 @@ baseUrl=environment.apiUrl
     getSalarySetupList(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}get-active-salary-component`, data);
   }
+    getBillDetails(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}getBillDetails`, data);
+  }
 }
