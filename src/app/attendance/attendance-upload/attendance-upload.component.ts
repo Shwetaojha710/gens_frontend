@@ -19,22 +19,40 @@ export class AttendanceUploadComponent {
   message = "";
   createFlag = true;
 
- notyf: Notyf | undefined;
+  notyf: Notyf | undefined;
   constructor(private attendanceService: AttendanceService, private router: Router) {
     this.notyf = new Notyf();
   }
 
-async  onFileSelected(event: any) {
-    this.selectedFile =await event.target.files[0];
+async onFileSelected(event: any) {
+  const file = event.target.files[0];
+
+  if (file) {
+    const allowedTypes = [
+      'application/vnd.ms-excel',
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      this.notyf?.error('Only Excel files (.xls, .xlsx) are allowed!');
+      this.selectedFile = null;
+      event.target.value = ''; // clear input
+      return;
+    }
+
+    this.selectedFile = file;
+    console.log('Excel file selected:', this.selectedFile);
   }
-@ViewChild('fileInput') fileInput!: ElementRef;
+}
+
+  @ViewChild('fileInput') fileInput!: ElementRef;
 
   onUpload() {
     if (!this.selectedFile) {
       this.message = "Please select an Excel file!";
-          if (this.notyf) {
-            this.notyf.error(this.message);
-          }
+      if (this.notyf) {
+        this.notyf.error(this.message);
+      }
       return;
     }
 
@@ -47,32 +65,34 @@ async  onFileSelected(event: any) {
           if (this.notyf) {
             this.notyf.success(res['message']);
           }
-           this.selectedFile = undefined;
-           this.selectedFile = null;
+          this.selectedFile = undefined;
+          this.selectedFile = null;
           this.rows = res.rows; // parsed excel rows
-            // reset the actual file input
-         this.fileInput.nativeElement.value = '';
+          // reset the actual file input
+          this.fileInput.nativeElement.value = '';
         }
         else if (res['status'] == 'expired') {
           localStorage.clear()
           this.router.navigate(['login']);
-            // reset the actual file input
-        this.fileInput.nativeElement.value = '';
+          // reset the actual file input
+          this.fileInput.nativeElement.value = '';
         }
         else {
           if (this.notyf) {
             this.notyf.error(res['message']);
-              // reset the actual file input
-    this.fileInput.nativeElement.value = '';
+            // reset the actual file input
+            this.fileInput.nativeElement.value = '';
           }
         }
 
       },
       error: (err) => {
         this.message = "Upload failed!";
-          if (this.notyf) {
-            this.notyf.error(err['message']);
-          }
+        let errorMessage = err?.error?.message ? err?.error?.message : err?.message
+        if (this.notyf) {
+            this.fileInput.nativeElement.value = '';
+          this.notyf.error(errorMessage);
+        }
       }
     });
   }

@@ -85,7 +85,7 @@
               <small *ngIf="accNum.errors?.['pattern']"
                 >Only numbers are allowed.</small
               >
-            </div>  
+            </div>
           </div>
           <div class="col-4">
             <label for="defaultFormControlInput" class="form-label"
@@ -211,7 +211,7 @@
                   </span>
                 </td> -->
 
-                <td>{{ item["createdAt"] }}</td>
+                <td>{{ item["createdAt"] | date : "M/d/yy h:mm a" }}</td>
                 <td>
                   <button
                     type="button"

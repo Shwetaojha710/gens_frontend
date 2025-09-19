@@ -35,7 +35,7 @@
                 Enter valid Last Name
               </small>
             </div>
-            
+
             <div class="col-md-3">
               <label class="col-form-label fw-bold">Phone Number
                 <span style="color: red"> *</span>
@@ -197,7 +197,7 @@
               </label>
               <ng-select [items]="shift" bindLabel="label" bindValue="value" [(ngModel)]="personalDetails['shift_id']"
                 [multiple]="false" placeholder="Select shift" name="country" id="select2Danger" #shiftRef="ngModel"
-                (change)="getDesignation($event)">
+               >
               </ng-select>
               <small class="text-danger" *ngIf="shiftRef.invalid && shiftRef.touched">
                 Select shift
@@ -462,10 +462,12 @@
                 <td>
                   <div class="d-flex align-items-center"(click)="view(item)">
                     <div class="avatar avatar-sm me-4">
-                      <img *ngIf="item?.['gender']=='Female'" src="../../assets/img/avatars/2.png" alt="Avatar"
+                                  <!-- <img [src]="item?.profileImage" alt="Document" width="100" height="auto" (click)="openModal()" /> -->
+
+                      <img [src]="item?.profileImage" width="100" height="auto"  alt="Avatar"
                         class="rounded-circle" />
-                      <img *ngIf="item?.['gender']=='Male'" src="../../assets/img/avatars/1.png" alt="Avatar"
-                        class="rounded-circle" />
+                      <!-- <img *ngIf="item?.['gender']=='Male'" [src]="item?.profileImage" width="100" height="auto"  alt="Avatar"
+                        class="rounded-circle" /> -->
                     </div>
                     <div >
                       <h6 class="mb-0 text-truncate link-primary">

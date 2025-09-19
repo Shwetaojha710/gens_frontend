@@ -86,8 +86,8 @@ export class DepartmentComponent {
   }
   getStatusClass(status: any): string {
     switch (status) {
-      case 'pending': return 'bg-light-warning';
-      case 'cancelled': return 'bg-light-danger';
+      case 'active': return 'badge-outline-success';
+      case 'inactive': return 'badge-outline-danger';
       case 'completed': return 'bg-light-success';
       default: return 'bg-light-secondary';
     }
@@ -179,7 +179,8 @@ export class DepartmentComponent {
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err)
+        let ErrorMessage= err?.error?.message?err?.error?.message:err?.message
+        this.notyf.error(ErrorMessage)
       }
 
 

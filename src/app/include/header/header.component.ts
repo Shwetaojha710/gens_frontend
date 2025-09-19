@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, HostListener } from '@angular/core';
 import { AuthService } from '../../services/auth.service';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
@@ -11,15 +11,30 @@ import { Router } from '@angular/router';
 })
 export class HeaderComponent {
     notyf: Notyf | undefined;
-  constructor(    private auth: AuthService,  private router: Router){
+  constructor(    private auth: AuthService,  private router: Router,private eRef: ElementRef){
 
   }
-toggleshow() {
-  const dropdownMenu = document.querySelector(".dropdown-menu.dropdown-menu-end.mt-3.py-2");
-  if (dropdownMenu) {
-    dropdownMenu.classList.toggle("show");
+   isDropdownOpen = false;
+
+
+
+  toggleshow() {
+    this.isDropdownOpen = !this.isDropdownOpen;
   }
-}
+
+  // listen for clicks anywhere in the document
+  @HostListener('document:click', ['$event'])
+  clickOutside(event: Event) {
+    if (!this.eRef.nativeElement.contains(event.target)) {
+      this.isDropdownOpen = false; // close if clicked outside
+    }
+  }
+// toggleshow() {
+//   const dropdownMenu = document.querySelector(".dropdown-menu.dropdown-menu-end.mt-3.py-2");
+//   if (dropdownMenu) {
+//     dropdownMenu.classList.toggle("show");
+//   }
+// }
  personalDetail:any={}
 ngOnInit() {
 this.personalDetail = JSON.parse(localStorage.getItem('user') || '{}');

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { FormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -24,7 +24,7 @@ import { DomSanitizer } from '@angular/platform-browser';
 export class QualificationComponent {
   obj: any = {}
   notyf: Notyf;
-
+  @ViewChild('fileInput') fileInput!: ElementRef;
   back() {
     this.obj = {}
     this.createFlag = false
@@ -44,15 +44,15 @@ export class QualificationComponent {
     private Documentervice: MasterService,
     public statusService: StatusService,
     private router: Router, public dataService: DataService,
-       private sanitizer: DomSanitizer,
+    private sanitizer: DomSanitizer,
   ) {
 
-     this.personalDetails = JSON.parse(localStorage.getItem('employeeId') || '{}');
+    this.personalDetails = JSON.parse(localStorage.getItem('employeeId') || '{}');
     this.notyf = new Notyf();
   }
   baseurl: any;
   async ngOnInit() {
-      this.baseurl = this.Documentervice.getBaseUrl();
+    this.baseurl = this.Documentervice.getBaseUrl();
     await this.fetchDocument();
     await this.documentdd()
   }
@@ -130,16 +130,17 @@ export class QualificationComponent {
         console.log("response", response);
 
         if (status === true) {
-
+            this.fileInput.nativeElement.value = '';
           this.notyf.success(message)
           this.fetchDocument();
           this.resetForm();
         }
         else if (status === "expired") {
-            this.router.navigate(["login"]);
+          this.router.navigate(["login"]);
         }
 
         else {
+            this.fileInput.nativeElement.value = '';
           this.notyf.error(message)
         }
 
@@ -157,12 +158,12 @@ export class QualificationComponent {
     this.editingId = this.obj.id;
     this.createFlag = true
     this.updateFlag = true
-    this.sanitizedImage=this.obj['doc_name']
+    this.sanitizedImage = this.obj['doc_name']
     this.documentdd()
   }
   updatedata() {
 
-     const uploadData = new FormData();
+    const uploadData = new FormData();
     uploadData.append('type', this.obj['type']);
     uploadData.append('employeeId', this.personalDetails.id)
     uploadData.append('id', this.obj.id)
@@ -185,7 +186,7 @@ export class QualificationComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-            this.router.navigate(["login"]);
+          this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -248,7 +249,7 @@ export class QualificationComponent {
           this.fetchDocument();
         }
         else if (status === "expired") {
-            this.router.navigate(["login"]);
+          this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -256,7 +257,7 @@ export class QualificationComponent {
       },
       error: (err) => {
         console.error('Error:', err);
-         this.notyf.error(err?.error?.message)
+        this.notyf.error(err?.error?.message)
       }
 
     })
@@ -280,45 +281,59 @@ export class QualificationComponent {
     this.createFlag = true
     this.listflag = false
     this.updateFlag = false
-     this.sanitizedImage=null
+    this.sanitizedImage = null
   }
 
   isFileInvalid: boolean = false;
   selectedFile: File | null = null;
-sanitizedImage: any;
+  sanitizedImage: any;
+  fileType:any;
   onFileChange(event: any) {
     const file = event.target.files[0];
 
     if (!file) {
       this.isFileInvalid = true;
     } else {
+
+      const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
+
+      if (!allowedTypes.includes(file.type)) {
+        this.isFileInvalid = true;
+        this.selectedFile = null;
+       this.fileInput.nativeElement.value = '';
+        this.notyf.error('Only PDF and image files are allowed.');
+        return;
+      }
+
       this.isFileInvalid = false;
       this.selectedFile = event.target.files[0]
       // Save the file to a model or FormData here
     }
 
     const reader = new FileReader();
-  reader.onload = () => {
-    const imageUrl = reader.result as string;
-    this.sanitizedImage = this.sanitizer.bypassSecurityTrustUrl(imageUrl);
-  };
-  reader.readAsDataURL(file);
+    reader.onload = () => {
+      const imageUrl = reader.result as string;
+      this.sanitizedImage = this.sanitizer.bypassSecurityTrustUrl(imageUrl);
+         this.fileType = file.type; // store type for template
+    };
+    reader.readAsDataURL(file);
   }
-  close(){
-  this.sanitizedImage = null;
-  this.selectedFile = null;
-  this.isFileInvalid = false;
-}
-imageUrls:any;
-openModal1(imageUrl: any) {
-  this.imageUrls = imageUrl;
-  setTimeout(() => {
-    const modalElement = document.getElementById('imageModal1');
-    if (modalElement) {
-      const modal = new bootstrap.Modal(modalElement);
-      modal.show();
-    }
-  }, 0);
-}
+  close() {
+    this.sanitizedImage = null;
+    this.selectedFile = null;
+    this.isFileInvalid = false;
+    this.fileInput.nativeElement.value = '';
+  }
+  imageUrls: any;
+  openModal1(imageUrl: any) {
+    this.imageUrls = imageUrl;
+    setTimeout(() => {
+      const modalElement = document.getElementById('imageModal1');
+      if (modalElement) {
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+      }
+    }, 0);
+  }
 
 }

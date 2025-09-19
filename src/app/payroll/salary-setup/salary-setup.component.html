@@ -162,7 +162,7 @@
                 <div class="col-3" *ngIf="newObj['time_period']=='custom'">
                   <label for="defaultFormControlInput" class="form-label">End Date</label>
                   <input type="date" class="form-control" id="defaultFormControlInput" placeholder="Enter End Date"
-                    [(ngModel)]="newObj['endDate']" aria-describedby="defaultFormControlHelp" />
+                    [(ngModel)]="newObj['endDate']" aria-describedby="defaultFormControlHelp" [min]="getToDateMin()" />
                 </div>
               </div>
             </div>
@@ -250,11 +250,15 @@
                         {{ item?.component_name.split(' ')[0] }}
                         <br>
                         {{ item?.component_name.split(' ')[1] || '' }}
-                        <span *ngIf="item.value">
+                        <span *ngIf="item.value && item.value!='special_allowance'">
                           ({{ item?.value }}%)
                         </span>
                         <span *ngIf="!item.value" style="font-style: italic;">
                           (fixed)
+                        </span>
+                        <span *ngIf="item.value=='special_allowance'"
+                          style="font-style: italic; background-color: red;">
+
                         </span>
                         <br>
                         <label class="switch">
@@ -321,7 +325,7 @@
                         <span *ngIf="item.value">
                           ({{ item?.value }}%)
                         </span>
-                        <span *ngIf="!item.value" style="font-style: italic;" >
+                        <span *ngIf="!item.value" style="font-style: italic;">
                           (fixed)
                         </span>
                         <br>
@@ -350,7 +354,7 @@
                       </td>
 
                       <td style="text-align: center;">
-                        <b style="font-size: 14px;">{{currency?.name}} {{FinalRecord?.FinalDeduction }}/-</b>
+                        <b style="font-size: 14px;">{{currency?.name}} {{ FinalRecord?.FinalDeduction }}/-</b>
 
                       </td>
 
@@ -701,26 +705,15 @@
         </div>
 
         <div class="col-md-3 ">
-           <div class="d-flex">
-              <ng-select
-              [items]="status"
-              bindLabel="label"
-              bindValue="value"
-              [(ngModel)]="obj['status']"
-              [multiple]="false"
-              placeholder="Select Status"
-              name="state"
-              id="select2Danger"
-              class="w-100 mx-2"
-              required
-              #enCashableRef="ngModel"
-              (change)="getSalarySetUpList()"
-            >
+          <div class="d-flex">
+            <ng-select [items]="status" bindLabel="label" bindValue="value" [(ngModel)]="obj['status']"
+              [multiple]="false" placeholder="Select Status" name="state" id="select2Danger" class="w-100 mx-2" required
+              #enCashableRef="ngModel" (change)="getSalarySetUpList()">
             </ng-select>
-          <button *ngIf="createFlag==false" type="button" class="btn btn-xs btn-block btn-primary" (click)="update()">
+            <!-- <button *ngIf="createFlag==false" type="button" class="btn btn-xs btn-block btn-primary" (click)="update()">
             &nbsp;Update
-          </button>
-        </div>
+          </button> -->
+          </div>
         </div>
 
 
@@ -729,9 +722,9 @@
         <table style="width: 100%" class="table table-hover">
           <thead>
             <tr>
-              <th>
+              <!-- <th>
                 <input type="checkbox" [checked]="masterSelected == true" (change)="checkUncheckAll($event)" />
-              </th>
+              </th> -->
               <th>SI.No</th>
               <th>Component Name</th>
               <th>Type</th>
@@ -743,10 +736,10 @@
           </thead>
           <tbody class="table-border-bottom-0">
             <tr *ngFor="let item of SalArr; let i = index">
-              <td>
+              <!-- <td>
                 <input type="checkbox" [checked]="item.status == 'active'" (change)="onStatusChange($event, item)" />
 
-              </td>
+              </td> -->
               <td scope="row">{{ i + 1 }}</td>
               <td>{{ item["name"] }}</td>
               <td>

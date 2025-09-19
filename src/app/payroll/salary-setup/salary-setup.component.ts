@@ -29,9 +29,12 @@ export class SalarySetupComponent {
   ComponentDD: any = []
   personalDetails: any = []
   currency: any;
+  minDate: any
   constructor(public payrollService: PayrollService, private router: Router, public statusService: StatusService, public dataService: DataService) {
     this.notyf = new Notyf();
-
+    const today = new Date();
+    this.minDate = today.toISOString().split('T')[0]; // today
+    this.notyf = new Notyf();
     this.personalDetails = JSON.parse(localStorage.getItem('employeeId') || '{}');
     this.currency = JSON.parse(localStorage.getItem('currency') || '{}');
   }
@@ -39,10 +42,15 @@ export class SalarySetupComponent {
   endDateDD: any = [{ value: 'all_period', label: 'ALL Period' }, { value: 'custom', label: 'Custom' }]
   departmentDD: any = []
   async ngOnInit() {
-    this.obj['status']='active'
+    this.obj['status'] = 'active'
     this.getSalarySetUpList()
     this.ComponentDropdown()
   }
+
+  getToDateMin(): string {
+    return this.newObj['startDate'] || this.minDate;
+  }
+
   createVariablePay() {
 
 
@@ -94,7 +102,8 @@ export class SalarySetupComponent {
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err?.error?.message)
+        let errorMessage = err?.error?.message ? err?.error?.message : err?.message
+        this.notyf.error(errorMessage)
       }
     });
 
@@ -257,8 +266,8 @@ export class SalarySetupComponent {
     this.obj['employeeId'] = this.personalDetails.id
     this.obj['data'] = this.ComponentList
     this.obj['FinalCTC'] = this.FinalRecord?.netCTC
-    this.obj['empType']=this.personalDetails?.empType
-    this.obj['CTC']=this.FinalRecord?.netPayableSalary
+    this.obj['empType'] = this.personalDetails?.empType
+    this.obj['CTC'] = this.FinalRecord?.netPayableSalary
     this.payrollService.AddSalarycomp(this.obj).subscribe({
       next: (response: any) => {
 
@@ -271,6 +280,7 @@ export class SalarySetupComponent {
           this.totalPayable = 0
           this.totalDeductible = 0
           this.obj = {}
+          this.obj['status'] = 'active'
           this.back()
           this.getSalarySetUpList()
         }
@@ -317,15 +327,16 @@ export class SalarySetupComponent {
           this.DedArr = []
           this.ComponentList = response.data.records.map((item: any) => ({
             ...item,
-            calculated_amount: Math.round(item?.calculated_amount).toFixed(0) || 0,
+            calculated_amount: item?.calculated_amount || 0,
             isSelected: item?.status == 'active'
 
           }));
           this.FinalRecord = response.data.FinalRecord
           this.PayArr = this.ComponentList.filter((item: any) => item.component_type === 'payable');
+          this.PayArr = this.PayArr.sort((a: any, b: any) => a.component_name.localeCompare(b.component_name))
           this.mergedArray = []
           this.DedArr = this.ComponentList.filter((item: any) => item.component_type === 'deductible');
-
+          this.DedArr = this.DedArr.sort((a: any, b: any) => a.component_name.localeCompare(b.component_name))
           this.EarningMasterSelected = this.PayArr.every((item: any) => item.isSelected === true);
           this.DeductionMasterSelected = this.DedArr.every((item: any) => item.isSelected === true);
 
@@ -378,7 +389,7 @@ export class SalarySetupComponent {
       this.isCTCReached = true
       this.notyf.error("Net CTC cannot exceed Total CTC");
       return; // stop execution here
-      return; // stop execution here
+
     }
 
 
@@ -443,22 +454,22 @@ export class SalarySetupComponent {
   }
 
   recalculateFinalRecord() {
-    const totalEarnings = this.PayArr
+    const totalEarnings = Math.round(this.PayArr
       .filter((item: any) => item.isSelected)
-      .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0);
+      .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0));
 
-    const totalDeductions = this.DedArr
+    const totalDeductions = Math.round(this.DedArr
       .filter((item: any) => item.isSelected)
-      .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0);
+      .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0));
 
-       const totalEmployeeDeductions = this.DedArr
-      .filter((item: any) => item.isSelected  && !item.component_name.toLowerCase().includes("employer"))
-      .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0);
+    const totalEmployeeDeductions = Math.round(this.DedArr
+      .filter((item: any) => item.isSelected && !item.component_name.toLowerCase().includes("employer"))
+      .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0));
 
-    const employerContribution = this.DedArr
+    const employerContribution = Math.round(this.DedArr
       .filter((item: any) => item.isSelected && item.component_name.toLowerCase().includes("employer"))
-      .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0);
-    const FinalDeduction=employerContribution+totalEmployeeDeductions
+      .reduce((sum: number, item: any) => sum + (Number(item.calculated_amount) || 0), 0));
+    const FinalDeduction = employerContribution + totalEmployeeDeductions
     this.FinalRecord = {
       totalEarnings,
       totalDeductions,
@@ -500,7 +511,7 @@ export class SalarySetupComponent {
 
 
   isEarningAllSelected() {
-    this.EarningMasterSelected = this.ComponentList.every((item: any) => item.isSelected);
+    this.EarningMasterSelected = this.PayArr.every((item: any) => item.isSelected);
 
     this.ComponentList = this.ComponentList.map((item: any) => {
       // preserve original amount if not already saved
@@ -637,22 +648,22 @@ export class SalarySetupComponent {
 
   }
   convertNumberToWords(amount: number): string {
-  if (amount === 0) return 'zero';
-  const a = [
-    '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
-    'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'
-  ];
-  const b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
-  const numToWords = (n: number): string => {
-    if (n < 20) return a[n];
-    if (n < 100) return b[Math.floor(n / 10)] + (n % 10 ? ' ' + a[n % 10] : '');
-    if (n < 1000) return a[Math.floor(n / 100)] + ' hundred' + (n % 100 ? ' and ' + numToWords(n % 100) : '');
-    if (n < 100000) return numToWords(Math.floor(n / 1000)) + ' thousand' + (n % 1000 ? ' ' + numToWords(n % 1000) : '');
-    if (n < 10000000) return numToWords(Math.floor(n / 100000)) + ' lakh' + (n % 100000 ? ' ' + numToWords(n % 100000) : '');
-    return numToWords(Math.floor(n / 10000000)) + ' crore' + (n % 10000000 ? ' ' + numToWords(n % 10000000) : '');
-  };
-  return numToWords(Math.floor(amount));
-}
+    if (amount === 0) return 'zero';
+    const a = [
+      '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+      'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'
+    ];
+    const b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+    const numToWords = (n: number): string => {
+      if (n < 20) return a[n];
+      if (n < 100) return b[Math.floor(n / 10)] + (n % 10 ? ' ' + a[n % 10] : '');
+      if (n < 1000) return a[Math.floor(n / 100)] + ' hundred' + (n % 100 ? ' and ' + numToWords(n % 100) : '');
+      if (n < 100000) return numToWords(Math.floor(n / 1000)) + ' thousand' + (n % 1000 ? ' ' + numToWords(n % 1000) : '');
+      if (n < 10000000) return numToWords(Math.floor(n / 100000)) + ' lakh' + (n % 100000 ? ' ' + numToWords(n % 100000) : '');
+      return numToWords(Math.floor(n / 10000000)) + ' crore' + (n % 10000000 ? ' ' + numToWords(n % 10000000) : '');
+    };
+    return numToWords(Math.floor(amount));
+  }
 
 }
 
