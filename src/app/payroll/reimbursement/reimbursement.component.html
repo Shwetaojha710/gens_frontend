@@ -144,13 +144,13 @@
                 <td>
                   <!-- Show image preview if doc_type starts with 'image/' -->
                   <ng-container *ngIf="item.doc_type.startsWith('image/'); else pdfBlock">
-                    <img [src]="item.image1" alt="Document" width="100" height="auto" style="cursor: pointer"
-                      (click)="openModal1(item.image1)" />
+                    <img [src]="item.image" alt="Document" width="100" height="auto" style="cursor: pointer"
+                      (click)="openModal1(item.image)" />
                   </ng-container>
 
                   <!-- Show download link if it's PDF -->
                   <ng-template #pdfBlock>
-                    <a [href]="item.image1" target="_blank" download
+                    <a [href]="item.image" target="_blank" download
                       style="text-decoration: none;  cursor: pointer;" class="btn btn-sm btn-primary">
                       Download PDF
                     </a>

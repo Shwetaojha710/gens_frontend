@@ -340,6 +340,7 @@ export class QualificationComponent {
     this.selectedFile = null;
     this.isFileInvalid = false;
     this.fileInput.nativeElement.value = '';
+    this.obj.doc_name=null
   }
   imageUrls: any;
   openModal1(imageUrl: any) {

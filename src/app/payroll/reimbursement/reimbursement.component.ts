@@ -112,6 +112,7 @@ export class ReimbursementComponent {
     this.selectedFile = null;
     this.isFileInvalid = false;
      this.fileInput.nativeElement.value = '';
+     this.obj.image=null
   }
   pageSize = 5;
   currentPage = 1;
@@ -209,7 +210,7 @@ export class ReimbursementComponent {
         data.data=data.data.map((item:any)=>{
           return{
             ...item,
-            image1:`${this.baseurl}${item['image']}`
+            image:`${this.baseurl}${item['image']}`
           }
         })
         this.ReimbursementList = data.data;
@@ -293,8 +294,8 @@ export class ReimbursementComponent {
     this.editingId = this.obj.id;
     this.createFlag = true
     this.updateFlag = true
-     if (this.obj?.image1) {
-    const fileUrl = `${this.obj.image1}`; // ✅ adjust your API file path
+     if (this.obj?.image) {
+    const fileUrl = `${this.obj.image}`; // ✅ adjust your API file path
     this.sanitizedImage = this.sanitizer.bypassSecurityTrustResourceUrl(fileUrl);
     this.fileType = this.obj.doc_type;
   } else {
