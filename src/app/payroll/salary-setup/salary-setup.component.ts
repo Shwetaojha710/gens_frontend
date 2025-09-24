@@ -199,7 +199,7 @@ export class SalarySetupComponent {
         }
 
         else {
-          this.notyf.error(message)
+          // this.notyf.error(message)
         }
 
       },
@@ -246,7 +246,7 @@ export class SalarySetupComponent {
     console.log(this.obj)
     this.ComponentList = this.ComponentList.map((item: any) => ({
       ...item,
-      status: item.isSelected == false ? item.status = 'inactive' : item.status = 'active',
+      status: item.isSelected == false ? item.status = 'active' : item.status = 'active',
       calculated_amount: item.calculated_amount === undefined ? 0 : Number(item.calculated_amount)
     }));
     console.log(this.ComponentList)
@@ -280,9 +280,11 @@ export class SalarySetupComponent {
           this.totalPayable = 0
           this.totalDeductible = 0
           this.obj = {}
-          this.obj['status'] = 'active'
+
           this.back()
+          this.obj['status'] = 'active'
           this.getSalarySetUpList()
+
         }
         else if (status === "expired") {
           this.router.navigate(["login"]);

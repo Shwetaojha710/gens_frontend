@@ -96,4 +96,16 @@ baseUrl=environment.apiUrl
     getBillDetails(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}getBillDetails`, data);
   }
+   addReimbursement(obj: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}add-reimbursement`, obj);
+  }
+   fetchReimbursementList(): Observable<any> {
+    return this.http.post(`${this.baseUrl}fetchReimbursement`, {});
+  }
+    updateReimbursement(obj: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}update-reimbursement`, obj);
+  }
+    deleteReimbursement(obj: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}delete-reimbursement`, obj);
+  }
 }

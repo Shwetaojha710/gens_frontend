@@ -68,6 +68,7 @@ export class NavbarComponent {
       children: [
         { title: 'Generate Salary', icon: 'ri-money-rupee-circle-line', link: '/layout/payroll/full-time' },
         { title: 'Generated Salary List', icon: 'ri-suitcase-line', link: '/layout/payroll/generated-salary' },
+        { title: 'Reimbursement', icon: 'ri-suitcase-line', link: '/layout/payroll/reimbursement' },
         // { title: 'Part Time Salary Master', icon: 'ri-time-line', link: '/layout/payroll/part-time' },
         // // { title: 'Allowances Master', icon: 'ri-gift-line', link: '/layout/payroll/allowances' },
         // { title: 'Deductions', icon: 'ri-subtract-line', link: '/layout/payroll/deductions' }
@@ -94,6 +95,7 @@ export class NavbarComponent {
         { title: 'Company Prefix', icon: 'ri-info-card-line', link: '/layout/master/prefix' },
         { title: 'Salary Component', icon: 'ri-wallet-2-line', link: '/layout/master/salary-component' },
         { title: 'Currency', icon: 'ri-copper-coin-line', link: '/layout/master/currency' },
+        { title: 'Pay Slip Setup', icon: 'ri-copper-coin-line', link: '/layout/master/pay-slip' },
         // {title: 'Attendance Master', icon: 'ri-file-line', link: '/layout/master/salary-master'}
 
       ]

@@ -52,6 +52,8 @@ import { AttendanceUploadComponent } from './attendance/attendance-upload/attend
 import { SalaryComponentComponent } from './master/salary-component/salary-component.component';
 import { SalarySetupComponent } from './payroll/salary-setup/salary-setup.component';
 import { CurrencyComponent } from './master/currency/currency.component';
+import { PayslipOrderComponent } from './master/payslip-order/payslip-order.component';
+import { ReimbursementComponent } from './payroll/reimbursement/reimbursement.component';
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '', redirectTo: '/Home', pathMatch: 'full'},
@@ -113,6 +115,7 @@ export const routes: Routes = [
           { path: 'allowances', component: AllowancesComponent },
           { path: 'deductions', component: DeductionsComponent },
           { path: 'total-salary', component: TotalSalaryComponentComponent },
+          { path: 'reimbursement', component: ReimbursementComponent },
 
         ]
       },
@@ -127,6 +130,7 @@ export const routes: Routes = [
           { path: 'prefix', component: PreffixComponent },
           { path: 'salary-component', component: SalaryComponentComponent },
           { path: 'currency', component: CurrencyComponent },
+          { path: 'pay-slip', component: PayslipOrderComponent },
 
         ]
       },

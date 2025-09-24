@@ -60,6 +60,7 @@ export class JoiningComponent {
   searchTerm = '';
   onSearch(term: string) {
     if (!term) {
+      this.searchText=''
       this.loadEmployees()
     } else {
       this.searchTerm = term.toLowerCase();
@@ -367,10 +368,11 @@ export class JoiningComponent {
         this.originalList = this.originalList.map((item: any, index: any) => {
           return {
             ...item,
-            si_no: index + 1
+            si_no: index + 1,
+           profileImage:  item.profileImage ? `${this.baseurl}${item?.profileImage}` : item.gender =='Female'?"../../assets/img/avatars/2.png":'../../assets/img/avatars/1.png'
+
           }
         })
-        console.log(this.employees, "this.employees");
 
         // pagination
         const start = (this.currentPage - 1) * this.pageSize;

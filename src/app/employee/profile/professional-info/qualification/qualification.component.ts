@@ -158,7 +158,14 @@ export class QualificationComponent {
     this.editingId = this.obj.id;
     this.createFlag = true
     this.updateFlag = true
-    this.sanitizedImage = this.obj['doc_name']
+       if (this.obj?.doc_name) {
+    const fileUrl = `${this.obj.doc_name}`; // ✅ adjust your API file path
+    this.sanitizedImage = this.sanitizer.bypassSecurityTrustResourceUrl(fileUrl);
+    this.fileType = this.obj.doc_type;
+  } else {
+    this.sanitizedImage = null;
+    this.fileType = null;
+  }
     this.documentdd()
   }
   updatedata() {
@@ -171,7 +178,17 @@ export class QualificationComponent {
     uploadData.append('typeName', this.personalDetails.typeName)
     if (this.selectedFile) {
       uploadData.append('doc_name', this.selectedFile, this.selectedFile.name);
+    }else{
+
+          if (this.obj.doc_name) {
+      uploadData.append('doc_name', this.obj.doc_name);
+      uploadData.append('doc_type', this.obj.doc_type);
+    }else{
+  this.notyf.error('Select a file to upload')
+    return;
     }
+  }
+
 
     this.Documentervice.updateDocument(uploadData).subscribe({
       next: (response: any) => {

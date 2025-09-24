@@ -11,15 +11,16 @@ import { StatusService } from '../../services/status.service';
 declare let bootstrap: any;
 import * as pdfMake from "pdfmake/build/pdfmake";
 import * as pdfFonts from "pdfmake/build/vfs_fonts";
-
-
+import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
+import * as XLSX from 'xlsx';
+import FileSaver from 'file-saver';
 // Tell TS/ESBuild that pdfMake is dynamic
 const pdfMakeX: any = pdfMake;
 pdfMakeX.vfs = (pdfFonts as any).vfs;
 @Component({
   selector: 'app-generated-salary',
   imports: [NgSelectModule,
-    FormsModule, CommonModule],
+    FormsModule, CommonModule, SearchPaginationComponent],
   templateUrl: './generated-salary.component.html',
   styleUrl: './generated-salary.component.css'
 })
@@ -38,6 +39,10 @@ export class GeneratedSalaryComponent {
     { value: '11', label: 'November' },
     { value: '12', label: 'December' }
   ];
+  monthObj: any = {
+    '1': 'January', '02': 'February', '03': 'March', '04': 'April', '05': 'May', '06': 'June',
+    '07': 'July', '08': 'August', '09': 'September', '10': 'October', '11': 'November', '12': 'December'
+  }
   yearList: any = [];
   notyf: Notyf;
   obj: any = {}
@@ -50,7 +55,113 @@ export class GeneratedSalaryComponent {
     await this.getYear();
     this.currency = JSON.parse(localStorage.getItem('currency') || '{}');
   }
+  pageSize = 10;
+  currentPage = 1;
+  searchTerm: any;;
+  itemsPerPage = 10;
+  onSearch(term: string) {
+    if (!term) {
+      this.onSubmit();
+    } else {
+      this.searchTerm = term.toLowerCase();
+      this.currentPage = 1;
+      this.applyFilters();
+    }
 
+  }
+
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.applyFilters();
+  }
+
+
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+  filteredSalary: any = []
+  searchText: any = ''
+
+  export(): void {
+    const exportData: any[] = [];
+
+    this.SalaryArr.forEach((employee: any) => {
+      const row: any = {};
+      row['Employee'] = employee.employeeName;
+      row['empCode'] = employee?.empCode;
+      row['email'] = employee?.email;
+      row['phone'] = employee?.phone;
+      row['department'] = employee?.department;
+      row['designation'] = employee?.designation;
+      row['Account Number'] = employee?.bankAccount;
+      row['IFSC Code'] = employee?.ifscCode;
+      row['Net Amount'] = employee?.net_amount;
+
+      exportData.push(row);
+    });
+
+
+    const worksheet: XLSX.WorkSheet = {};
+
+
+    // const monthYear = `${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`;
+    const monthYear = `${this.monthObj[this.obj['month']]}-${this.obj['year']}`;
+    XLSX.utils.sheet_add_aoa(worksheet, [[`Salary Sheet - ${monthYear}`]], { origin: "A1" });
+
+
+    XLSX.utils.sheet_add_json(worksheet, exportData, { origin: "A2", skipHeader: false });
+
+
+    const totalCols = Object.keys(exportData[0]).length;
+    worksheet['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: totalCols - 1 } }
+    ];
+
+
+    worksheet['A1'].s = {
+      font: { bold: true, sz: 14 },
+      alignment: { horizontal: 'center', vertical: 'center' }
+    };
+
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Salary': worksheet },
+      SheetNames: ['Salary']
+    };
+
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    });
+
+    FileSaver.saveAs(blob, `Salary_${monthYear}.xlsx`);
+  }
+
+
+
+  applyFilters() {
+
+
+
+    const value = this.searchTerm || '';
+    this.searchText = value.trim();
+
+    if (this.searchText === '') {
+      this.SalaryArr = [...this.originalList];
+    } else {
+      this.SalaryArr = this.originalList.filter((item: any) =>
+        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+
+    let data = [...this.SalaryArr];
+    // pagination
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.filteredSalary = data.slice(start, end);
+  }
   checkUncheckAll() {
     this.SalaryArr.forEach((item: any) => item.isSelected = this.masterSelected);
   }
@@ -111,9 +222,11 @@ export class GeneratedSalaryComponent {
   }
   SalaryArr: any = []
   isLoading: boolean = false;
+  originalList: any = []
   onSubmit() {
     this.isLoading = true;
     this.SalaryArr = []
+    this.originalList = []
     let newObj = Object.assign({}, this.obj)
     if (newObj['employeeId'] === 'All') {
       newObj['employeeId'] = this.EmpList
@@ -136,8 +249,12 @@ export class GeneratedSalaryComponent {
 
           this.notyf.success(message)
           this.SalaryArr = response.data
+          this.originalList = response.data
           console.log(this.SalaryArr, "salary Array");
-
+          // pagination
+          const start = (this.currentPage - 1) * this.pageSize;
+          const end = start + this.pageSize;
+          this.filteredSalary = this.SalaryArr.slice(start, end);
         }
         else if (status == "expired") {
           this.router.navigate(["login"]);
@@ -189,8 +306,8 @@ export class GeneratedSalaryComponent {
           const netPay = totalEarning - totalDeduction;
 
           // Add as new keys
-          this.PayArr = [...this.PayArr, { isSummary: true, name: 'Total Earnings', finalAmount: totalEarning }];
-          this.DedArr = [...this.DedArr, { isSummary: true, name: 'Total Deductions', finalAmount: totalDeduction }];
+          this.PayArr = [...this.PayArr, { isSummary: true, name: 'Total Earnings', finalAmount: totalEarning.toFixed(0) }];
+          this.DedArr = [...this.DedArr, { isSummary: true, name: 'Total Deductions', finalAmount: totalDeduction.toFixed(0) }];
 
 
           const modalEl = document.getElementById('SalaryModal');
@@ -273,19 +390,6 @@ export class GeneratedSalaryComponent {
 
           // this.notyf.success(message)
           this.SalaryBreakup = response.data
-          this.PayArr = []
-          this.DedArr = []
-          this.PayArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'PAY')
-          this.DedArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'DED')
-          // Calculate totals
-          const totalEarning = this.PayArr.reduce((sum: number, item: any) => sum + Number(item.finalAmount || 0), 0);
-          const totalDeduction = this.DedArr.reduce((sum: number, item: any) => sum + Number(item.finalAmount || 0), 0);
-          const netPay = totalEarning - totalDeduction;
-
-          // Add as new keys
-          this.PayArr = [...this.PayArr, { isSummary: true, name: 'Total Earnings', finalAmount: totalEarning }];
-          this.DedArr = [...this.DedArr, { isSummary: true, name: 'Total Deductions', finalAmount: totalDeduction }];
-
           this.generatePayslip(this.SalaryBreakup, item);
 
 
@@ -398,10 +502,10 @@ export class GeneratedSalaryComponent {
             { text: `Employee Code : ${employee?.empCode || 'NA'}` },
             { text: `E-mail ID : ${employee?.email || 'NA'}` }
           ],
-          [
-            { text: `IFSC Code : ${employee?.ifscCode || 'NA'}` },
-            { text: `Bank Account No. : ${employee?.bankAccount || 'NA'}` }
-          ],
+          // [
+          //   { text: `IFSC Code : ${employee?.ifscCode || 'NA'}` },
+          //   { text: `Bank Account No. : ${employee?.bankAccount || 'NA'}` }
+          // ],
 
           [
             { text: `Contact No : ${employee?.phone || 'NA'}` },
@@ -540,12 +644,12 @@ export class GeneratedSalaryComponent {
           }
         },
 
-        {
-          columns: [
-            { text: 'Employee Signature', alignment: 'left', margin: [40, 60, 0, 0] },
-            { text: 'Employer Signature', alignment: 'right', margin: [0, 60, 40, 0] }
-          ]
-        }
+        // {
+        //   columns: [
+        //     { text: 'Employee Signature', alignment: 'left', margin: [40, 60, 0, 0] },
+        //     { text: 'Employer Signature', alignment: 'right', margin: [0, 60, 40, 0] }
+        //   ]
+        // }
       ],
       styles: {
         header: { fontSize: 10, fontWeight: 500, alignment: 'left', margin: [0, 0, 0, 0] },
