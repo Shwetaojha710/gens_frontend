@@ -87,4 +87,9 @@ div.dt-container div.dt-search input {
     color: #0663a9!important;
 }
 
+table.table {
+    font-size: 12px;
+    text-transform: capitalize;
+}
+
 
