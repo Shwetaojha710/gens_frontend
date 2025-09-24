@@ -114,7 +114,7 @@ originalList :any = []
     this.master.getAttendanceSetting().subscribe(data => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.AttendanceMasterList = data.data;
         this.originalList = data.data;
         console.log(this.AttendanceMasterList,"attendance master list");
@@ -160,7 +160,7 @@ originalList :any = []
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -196,7 +196,7 @@ originalList :any = []
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -259,7 +259,7 @@ originalList :any = []
           this.fetchSalaryMaster();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

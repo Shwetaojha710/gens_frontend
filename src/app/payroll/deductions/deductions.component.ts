@@ -91,7 +91,7 @@ console.log(this.obj['amount'],"amount valueee")
           this.back()
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -118,7 +118,7 @@ console.log(this.obj['amount'],"amount valueee")
 
       if (status == true) {
         this.desigantionList = []
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.desigantionList = data.data;
       } else {
         this.notyf.error(data['message']);
@@ -166,7 +166,7 @@ console.log(this.obj['amount'],"amount valueee")
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -236,7 +236,7 @@ console.log(this.obj['amount'],"amount valueee")
           this.getallowances();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

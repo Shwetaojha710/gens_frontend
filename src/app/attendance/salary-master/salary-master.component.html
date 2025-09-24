@@ -1,4 +1,4 @@
- <div class="container-xxl  mt-5">
+<div class="container-xxl mt-5">
   <div class="row mb-6" *ngIf="createFlag">
     <div class="col-md">
       <div class="card">
@@ -35,13 +35,12 @@
               <small>
                 (e.g., Allow check-in up to 10 mins late without penalty)
               </small>
-
             </div>
 
             <div class="col-3">
               <label for="defaultFormControlInput" class="form-label"
-                >Monthly Late Allowance </label
-              >
+                >Monthly Late Allowance
+              </label>
               <input
                 type="number"
                 class="form-control"
@@ -51,15 +50,15 @@
                 aria-describedby="defaultFormControlHelp"
                 required
               />
-           <small>
-            (e.g., Total allowed late minutes before penalty applies)
-           </small>
-
+              <small>
+                (e.g., Total allowed late minutes before penalty applies)
+              </small>
             </div>
 
             <div class="col-3">
               <label for="defaultFormControlInput" class="form-label"
-                >Late Threshold for Half-Day </label>
+                >Late Threshold for Half-Day
+              </label>
               <input
                 type="number"
                 class="form-control"
@@ -70,16 +69,15 @@
                 required
               />
 
-           <small>
- (e.g., If late by 30 mins or more, mark as Half-Day)
-           </small>
-
-
-
+              <small>
+                (e.g., If late by 30 mins or more, mark as Half-Day)
+              </small>
             </div>
 
             <div class="col-3">
-              <label for="defaultFormControlInput" class="form-label">Late Threshold for Full-Day Absent</label>
+              <label for="defaultFormControlInput" class="form-label"
+                >Late Threshold for Full-Day Absent</label
+              >
               <input
                 type="number"
                 class="form-control"
@@ -90,9 +88,7 @@
                 required
               />
 
-
-                <small> (e.g., If late by hours, mark as Absent)</small>
-
+              <small> (e.g., If late by hours, mark as Absent)</small>
             </div>
             <div class="col-3" *ngIf="updateFlag">
               <label for="defaultFormControlInput" class="form-label"
@@ -152,8 +148,7 @@
           </button>
         </h5>
 
-
-             <app-search-pagination
+        <app-search-pagination
           [totalItems]="AttendanceMasterList.length"
           [pageSize]="itemsPerPage"
           [currentPage]="currentPage"
@@ -162,7 +157,7 @@
           (pageSizeChange)="onPageSizeChange($event)"
         >
           <table class="table table-striped dataTable">
-          <thead>
+            <thead>
               <tr>
                 <th>SI.No</th>
                 <th>Grace Period</th>
@@ -180,7 +175,7 @@
                 <td>{{ item["graceMinutes"] }}</td>
                 <td>{{ item["lateAllowanceMin"] }}</td>
                 <td>{{ item["halfDayThreshold"] }}</td>
-                <td>{{ item["halfdayToAbsentMin"]}}</td>
+                <td>{{ item["halfdayToAbsentMin"] }}</td>
                 <!-- <td>
                   <span
                     class="badge rounded overflow-hidden px-2"
@@ -212,9 +207,6 @@
             </tbody>
           </table>
         </app-search-pagination>
-
-
-
       </div>
     </div>
   </div>

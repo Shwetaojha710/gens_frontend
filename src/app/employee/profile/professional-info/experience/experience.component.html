@@ -17,7 +17,7 @@
         <!-- <hr style="margin: 0rem 0 !important" /> -->
         <div class="card-body mt-5">
           <div class="row g-2">
-            <div class="col-6">
+            <div class="col-3">
               <label for="defaultFormControlInput" class="form-label"
                 >Company Name</label
               >
@@ -30,7 +30,7 @@
                 aria-describedby="defaultFormControlHelp"
               />
             </div>
-             <div class="col-6">
+             <div class="col-3">
               <label for="defaultFormControlInput" class="form-label"
                 >From</label
               >
@@ -38,12 +38,12 @@
                 type="date"
                 class="form-control"
                 id="defaultFormControlInput"
-                placeholder="Enter company Name"
+                placeholder="Select From Date"
                 [(ngModel)]="obj['from']"
                 aria-describedby="defaultFormControlHelp"
               />
             </div>
-             <div class="col-6">
+             <div class="col-3">
               <label for="defaultFormControlInput" class="form-label"
                 >To</label
               >
@@ -51,13 +51,13 @@
                 type="date"
                 class="form-control"
                 id="defaultFormControlInput"
-                placeholder="Enter company Name"
+                placeholder="Enter To Date"
                 [(ngModel)]="obj['to']"
                 aria-describedby="defaultFormControlHelp"
               />
             </div>
 
-            <div class="col-6" *ngIf="updateFlag">
+            <div class="col-3" *ngIf="updateFlag">
               <label for="defaultFormControlInput" class="form-label"
                 >Status</label
               >
@@ -73,17 +73,17 @@
               >
               </ng-select>
             </div>
-             <div class="col-6">
+             <div class="col-3">
               <label for="defaultFormControlInput" class="form-label"
                 >Designation</label
               >
-             <textarea
+             <input
                 class="form-control"
                 rows="4"
                 placeholder="Enter designation"
                 [(ngModel)]="obj.designation"
                 name="address"
-              ></textarea>
+              >
             </div>
               <div class="col-12">
               <label for="defaultFormControlInput" class="form-label"
@@ -112,7 +112,7 @@
                 *ngIf="updateFlag == true"
                 type="button"
                 class="btn btn-sm btn-primary waves-effect waves-light"
-                (click)="updatedata()"
+                (click)="UpdateData()"
               >
                 Update
               </button>

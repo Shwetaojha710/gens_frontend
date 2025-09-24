@@ -86,8 +86,8 @@ export class DepartmentComponent {
   }
   getStatusClass(status: any): string {
     switch (status) {
-      case 'pending': return 'bg-light-warning';
-      case 'cancelled': return 'bg-light-danger';
+      case 'active': return 'badge-outline-success';
+      case 'inactive': return 'badge-outline-danger';
       case 'completed': return 'bg-light-success';
       default: return 'bg-light-secondary';
     }
@@ -102,7 +102,7 @@ export class DepartmentComponent {
     this.originalList = []
     this.departmentService.getDepartments().subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.departmentList = data.data;
         this.originalList = this.departmentList
       } else {
@@ -135,7 +135,7 @@ export class DepartmentComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -171,7 +171,7 @@ export class DepartmentComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -179,7 +179,8 @@ export class DepartmentComponent {
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err)
+        let ErrorMessage= err?.error?.message?err?.error?.message:err?.message
+        this.notyf.error(ErrorMessage)
       }
 
 
@@ -234,7 +235,7 @@ export class DepartmentComponent {
           this.fetchDepartments();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

@@ -106,8 +106,8 @@ export class EmploymentTypeComponent {
 
   getStatusClass(status: any): string {
     switch (status) {
-      case 'pending': return 'bg-light-warning';
-      case 'cancelled': return 'bg-light-danger';
+      case 'active': return 'badge-outline-success';
+      case 'inactive': return 'badge-outline-danger';
       case 'completed': return 'bg-light-success';
       default: return 'bg-light-secondary';
     }
@@ -118,10 +118,14 @@ originalList:any = []
     this.originalList = []
     this.master.getEmployee().subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.EmployeeList = data.data;
         this.originalList = data.data;
-      } else {
+      }
+      else if(data['status']=='expired'){
+        this.router.navigate(['login'])
+      }
+      else {
         this.notyf.error(data['message']);
       }
     });
@@ -151,7 +155,7 @@ originalList:any = []
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -187,7 +191,7 @@ originalList:any = []
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -250,7 +254,7 @@ originalList:any = []
           this.fetchEmployee();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

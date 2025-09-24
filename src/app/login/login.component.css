@@ -12,6 +12,10 @@
 .authentication-wrapper .authentication-bg {
   background-color: var(--bs-paper-bg);
 }
+.authentication-wrapper[_ngcontent-ng-c2242060599] .auth-cover-illustration[_ngcontent-ng-c2242060599] {
+    z-index: 1;
+    max-inline-size: 44rem!important;
+}
 .authentication-wrapper .authentication-inner {
   inline-size: 100%;
 }

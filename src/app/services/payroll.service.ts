@@ -23,6 +23,15 @@ baseUrl=environment.apiUrl
     updateBasic(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}updateBasic`, data);
   }
+    updateSalarySetUp(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}updateSalarySetUp`, data);
+  }
+    getComponentDd(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}getComponentDD`, data);
+  }
+    createVariable(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}createVariable`, data);
+  }
 
 
 
@@ -60,6 +69,9 @@ baseUrl=environment.apiUrl
   calculateAttendance(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}calculate-attendance`, data);
   }
+  // calculateAttendance(data: any): Observable<any> {
+  //   return this.http.post(`http://192.168.23.17:3002/api/calculate-attendance`, data);
+  // }
   calculateSalaryComponent(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}calculate-salary-component`, data);
   }
@@ -72,5 +84,28 @@ baseUrl=environment.apiUrl
   revertSalary(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}revert-Salary`, data);
   }
-
+  AddSalarycomp(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}update-salary`, data);
+  }
+    SetUpsalary(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}setup-salary`, data);
+  }
+    getSalarySetupList(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}get-active-salary-component`, data);
+  }
+    getBillDetails(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}getBillDetails`, data);
+  }
+   addReimbursement(obj: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}add-reimbursement`, obj);
+  }
+   fetchReimbursementList(): Observable<any> {
+    return this.http.post(`${this.baseUrl}fetchReimbursement`, {});
+  }
+    updateReimbursement(obj: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}update-reimbursement`, obj);
+  }
+    deleteReimbursement(obj: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}delete-reimbursement`, obj);
+  }
 }

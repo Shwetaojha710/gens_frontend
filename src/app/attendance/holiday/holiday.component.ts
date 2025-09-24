@@ -57,9 +57,14 @@ HolidayList: any = [];
   searchTerm = '';
   itemsPerPage = 10;
   onSearch(term: string) {
-    this.searchTerm = term.toLowerCase();
+    if(!term){
+           this.fetchHoliday();
+    }else{
+   this.searchTerm = term.toLowerCase();
     this.currentPage = 1;
     this.applyFilters();
+    }
+
   }
 
 
@@ -78,7 +83,7 @@ HolidayList: any = [];
   searchText: any = ''
 
   applyFilters() {
-    let data = [...this.HolidayList];
+
 
 
     const value = this.searchTerm || '';
@@ -92,11 +97,11 @@ HolidayList: any = [];
       );
     }
 
-
+ let data = [...this.HolidayList];
     // pagination
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
-    this.filteredDesignation = data.slice(start, end);
+    this.HolidayList = data.slice(start, end);
   }
   getStatusClass(status: any): string {
     switch (status) {
@@ -112,7 +117,7 @@ HolidayList: any = [];
      this.originalList =[]
     this.attendanceService.getHolidayList().subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
 
         this.HolidayList = data.data;
            for (let i = 0; i < this.HolidayList.length; i++) {
@@ -135,7 +140,7 @@ HolidayList: any = [];
     this.HolidayList = []
     this.master.getHolidayTypeDD().subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
 
         this.HolidayTypeList = data.data;
 
@@ -245,7 +250,7 @@ close(){
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -305,7 +310,7 @@ close(){
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -313,7 +318,7 @@ close(){
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err)
+        this.notyf.error(err?.error?.message || 'An error occurred')
       }
 
 
@@ -368,7 +373,7 @@ close(){
           this.fetchHoliday();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

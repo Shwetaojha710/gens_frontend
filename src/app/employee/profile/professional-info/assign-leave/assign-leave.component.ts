@@ -47,6 +47,8 @@ export class AssignLeaveComponent {
     await this.fetchAssignLeaveList()
     await this.getYear()
     await this.getLeaveTypeList()
+    const year = new Date().getFullYear()
+   this.NewObj['year'] = this.yearList.find((item: any) => item.value == year);
   }
   leaveTypeList: any = [];
   async getLeaveTypeList() {
@@ -54,7 +56,7 @@ export class AssignLeaveComponent {
     this.master.getLeaveTypeList().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.leaveTypeList = data.data;
 
       }
@@ -73,7 +75,7 @@ export class AssignLeaveComponent {
     this.master.getAttendanceYear().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.yearList = data.data;
 
       }
@@ -125,7 +127,7 @@ export class AssignLeaveComponent {
           this.back()
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -154,7 +156,7 @@ export class AssignLeaveComponent {
 
       if (status == true) {
         this.LeaveList = []
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
 
         this.LeaveList = data.data;
         this.originalList = this.LeaveList
@@ -205,7 +207,7 @@ export class AssignLeaveComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -275,7 +277,7 @@ export class AssignLeaveComponent {
           this.fetchAssignLeaveList();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

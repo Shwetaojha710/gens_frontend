@@ -15,7 +15,7 @@
       <!-- <hr style="margin: 0rem 0 !important" /> -->
       <div class="card-body mt-2">
         <div class="row g-2">
-          <div class="col-6">
+          <div class="col-4">
             <label for="defaultFormControlInput" class="form-label"
               >Account Holder Name</label
             >
@@ -28,7 +28,7 @@
               aria-describedby="defaultFormControlHelp"
             />
           </div>
-          <div class="col-6">
+          <div class="col-4">
             <label for="defaultFormControlInput" class="form-label"
               >Bank Name</label
             >
@@ -41,7 +41,7 @@
               aria-describedby="defaultFormControlHelp"
             />
           </div>
-          <div class="col-6">
+          <div class="col-4">
             <label for="defaultFormControlInput" class="form-label"
               >Branch Name</label
             >
@@ -54,31 +54,65 @@
               aria-describedby="defaultFormControlHelp"
             />
           </div>
-          <div class="col-6">
+          <div class="col-4">
             <label for="defaultFormControlInput" class="form-label"
               >Account Number</label
             >
             <input
-              type="number"
+              type="text"
               class="form-control"
-              id="defaultFormControlInput"
-              placeholder="Enter Account Number"
+              id="accountNumber"
+              placeholder="Enter 14-digit Account Number"
               [(ngModel)]="obj['accountNumber']"
-              aria-describedby="defaultFormControlHelp"
+              name="accountNumber"
+              required
+              minlength="14"
+              maxlength="14"
+              pattern="^[0-9]{14}$"
+              #accNum="ngModel"
             />
+
+            <!-- Error messages -->
+            <div *ngIf="accNum.invalid && accNum.touched" class="text-danger">
+              <small *ngIf="accNum.errors?.['required']"
+                >Account number is required.</small
+              >
+              <small
+                *ngIf="accNum.errors?.['minlength'] || accNum.errors?.['maxlength']"
+              >
+                Account number must be exactly 14 digits.
+              </small>
+              <small *ngIf="accNum.errors?.['pattern']"
+                >Only numbers are allowed.</small
+              >
+            </div>
           </div>
-          <div class="col-6">
+          <div class="col-4">
             <label for="defaultFormControlInput" class="form-label"
               >IFSC Code
             </label>
             <input
               type="text"
-              class="form-control"
-              id="defaultFormControlInput"
-              placeholder="Enter IFSC Code "
+              class="form-control mb-2"
+              id="ifscCode"
+              placeholder="Enter IFSC Code"
               [(ngModel)]="obj['ifscCode']"
-              aria-describedby="defaultFormControlHelp"
+              name="ifscCode"
+              required
+              minlength="11"
+              maxlength="11"
+              pattern="^[A-Z]{4}0[A-Z0-9]{6}$"
+              #ifsc="ngModel"
             />
+
+            <div *ngIf="ifsc.invalid && ifsc.touched" class="text-danger">
+              <small *ngIf="ifsc.errors?.['required']"
+                >IFSC code is required.</small
+              >
+              <small *ngIf="ifsc.errors?.['pattern']"
+                >Enter a valid IFSC code (e.g., SBIN0001234).</small
+              >
+            </div>
           </div>
 
           <div class="col-6" *ngIf="updateFlag">
@@ -177,7 +211,7 @@
                   </span>
                 </td> -->
 
-                <td>{{ item["createdAt"] }}</td>
+                <td>{{ item["createdAt"] | date : "M/d/yy h:mm a" }}</td>
                 <td>
                   <button
                     type="button"

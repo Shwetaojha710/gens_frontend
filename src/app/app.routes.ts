@@ -48,6 +48,12 @@ import { LandingPageComponent } from './landing-page/landing-page.component';
 import { CheckoutComponent } from './checkout/checkout.component';
 import { GeneratedSalaryComponent } from './payroll/generated-salary/generated-salary.component';
 import { PreffixComponent } from './master/preffix/preffix.component';
+import { AttendanceUploadComponent } from './attendance/attendance-upload/attendance-upload.component';
+import { SalaryComponentComponent } from './master/salary-component/salary-component.component';
+import { SalarySetupComponent } from './payroll/salary-setup/salary-setup.component';
+import { CurrencyComponent } from './master/currency/currency.component';
+import { PayslipOrderComponent } from './master/payslip-order/payslip-order.component';
+import { ReimbursementComponent } from './payroll/reimbursement/reimbursement.component';
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '', redirectTo: '/Home', pathMatch: 'full'},
@@ -75,7 +81,8 @@ export const routes: Routes = [
         { path: 'profile/professional-info/salary', component: SalaryStructureComponent },
         { path: 'profile/professional-info/documents', component: DocumentsComponent },
         { path: 'profile/professional-info/bank-details', component: BankDetailsComponent },
-        { path: 'profile/professional-info/assign-leave', component: AssignLeaveComponent }
+        { path: 'profile/professional-info/assign-leave', component: AssignLeaveComponent },
+           { path: 'profile/professional-info/salary-setup', component: SalarySetupComponent }
       ]
 
            },
@@ -96,6 +103,7 @@ export const routes: Routes = [
           { path: 'leaves', component: LeavesComponent },
            { path: 'salary-master', component: SalaryMasterComponent },
            { path: 'holiday', component: HolidayComponent },
+           { path: 'upload-attendance', component: AttendanceUploadComponent },
         ]
       },
       {
@@ -106,7 +114,9 @@ export const routes: Routes = [
           { path: 'part-time', component: PartTimeSalaryComponent },
           { path: 'allowances', component: AllowancesComponent },
           { path: 'deductions', component: DeductionsComponent },
-          { path: 'total-salary', component: TotalSalaryComponentComponent }
+          { path: 'total-salary', component: TotalSalaryComponentComponent },
+          { path: 'reimbursement', component: ReimbursementComponent },
+
         ]
       },
       {
@@ -118,6 +128,10 @@ export const routes: Routes = [
           { path: 'documents', component: DocumentTypeComponent },
           { path: 'holiday-type', component: HolidayTypeComponent },
           { path: 'prefix', component: PreffixComponent },
+          { path: 'salary-component', component: SalaryComponentComponent },
+          { path: 'currency', component: CurrencyComponent },
+          { path: 'pay-slip', component: PayslipOrderComponent },
+
         ]
       },
       {

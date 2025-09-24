@@ -108,8 +108,8 @@ export class HolidayTypeComponent {
 
   getStatusClass(status: any): string {
     switch (status) {
-      case 'pending': return 'bg-light-warning';
-      case 'cancelled': return 'bg-light-danger';
+      case 'active': return 'badge-outline-success';
+      case 'inactive': return 'badge-outline-danger';
       case 'completed': return 'bg-light-success';
       default: return 'bg-light-secondary';
     }
@@ -153,7 +153,7 @@ export class HolidayTypeComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -189,7 +189,7 @@ export class HolidayTypeComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -252,7 +252,7 @@ export class HolidayTypeComponent {
           this.fetchHolidayType();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

@@ -34,7 +34,42 @@
 
               <div class="invalid-feedback">Enter a valid email address.</div>
             </div>
-            &nbsp;
+            <div class="col-4">
+               <label class="form-label d-block">Salary Type</label>
+                     <div class="btn-group w-100" role="group" aria-label="Basic radio toggle button group">
+                <input
+                  type="radio"
+                  name="leaveFreqTo"
+                  value="full_paid"
+                  class="btn-check"
+                  id="btnradio1"
+                  [(ngModel)]="obj['duration_type']"
+                />
+                <label class="btn btn-outline-primary waves-effect" for="btnradio1">Full Paid</label>
+
+                <input
+                  type="radio"
+                  name="leaveFreqFrom"
+                  value="half_paid"
+                  class="btn-check"
+                  id="btnradio2"
+                  [(ngModel)]="obj['duration_type']"
+                />
+                <label class="btn btn-outline-primary waves-effect" for="btnradio2">Half Paid</label>
+
+                 <input
+                  type="radio"
+                  name="leaveFreqFullDay"
+                  value="full_day"
+                  class="btn-check"
+                  id="btnradio3"
+                  [(ngModel)]="obj['duration_type']"
+                />
+
+              </div>
+
+            </div>
+
                <div class="col-4" *ngIf="updateFlag">
               <label for="defaultFormControlInput" class="form-label"
                 >Status</label
@@ -81,7 +116,7 @@
         <h5
           class="card-header d-flex justify-content-between align-items-center"
         >
-          <span>Employee List</span>
+          <span>Employment Type List</span>
           <button
             *ngIf="createFlag == false"
             type="button"
@@ -162,7 +197,7 @@
                 <td>{{ item["name"] }}</td>
                 <td>
                   <span
-                    class="badge rounded overflow-hidden px-2"
+                    class="badge badge-outline-success overflow-hidden px-2"
                     [ngClass]="getStatusClass(item['status'])"
                   >
                     {{ item["status"] }}

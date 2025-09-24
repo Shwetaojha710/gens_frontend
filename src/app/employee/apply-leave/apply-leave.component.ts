@@ -13,13 +13,13 @@ import { SearchPaginationComponent } from '../../master/search-pagination/search
 @Component({
   selector: 'app-apply-leave',
   imports: [NgSelectModule,
-    FormsModule, CommonModule,SearchPaginationComponent],
+    FormsModule, CommonModule, SearchPaginationComponent],
   templateUrl: './apply-leave.component.html',
   styleUrl: './apply-leave.component.css'
 })
 
 export class ApplyLeaveComponent {
- obj: any = {}
+  obj: any = {}
   notyf: Notyf;
 
   back() {
@@ -35,7 +35,7 @@ export class ApplyLeaveComponent {
   EmployeeForm!: FormGroup;
   EmployeeList = [];
   editingId: number | null = null;
-
+  minDate: any
   constructor(
     private fb: FormBuilder,
     private master: MasterService,
@@ -46,10 +46,14 @@ export class ApplyLeaveComponent {
       name: ['', Validators.required],
       status: ['', [Validators.required]]
     });
-
+    const today = new Date();
+    this.minDate = today.toISOString().split('T')[0]; // today
     this.notyf = new Notyf();
   }
-
+  // This will return either today (for "from date") or selected fromDate (for "to date")
+  getToDateMin(): string {
+    return this.obj['fromDate'] || this.minDate;
+  }
   async ngOnInit() {
     this.EmployeeForm = this.fb.group({
       name: ['', Validators.required],
@@ -59,14 +63,19 @@ export class ApplyLeaveComponent {
     await this.getLeaveTypeList()
     await this.empList()
   }
-    pageSize = 5;
+  pageSize = 5;
   currentPage = 1;
   searchTerm = '';
   itemsPerPage = 10;
   onSearch(term: string) {
-    this.searchTerm = term.toLowerCase();
-    this.currentPage = 1;
-    this.applyFilters();
+    if (!term) {
+      this.getApplyLeaveList()
+    } else {
+      this.searchTerm = term.toLowerCase();
+      this.currentPage = 1;
+      this.applyFilters();
+    }
+
   }
 
 
@@ -85,7 +94,7 @@ export class ApplyLeaveComponent {
   searchText: any = ''
 
   applyFilters() {
-    let data = [...this.applyLeaveList];
+
 
 
     const value = this.searchTerm || '';
@@ -99,18 +108,18 @@ export class ApplyLeaveComponent {
       );
     }
 
-
+    let data = [...this.applyLeaveList];
     // pagination
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
-    this.filteredDesignation = data.slice(start, end);
+    this.applyLeaveList = data.slice(start, end);
   }
-  applyLeaveList:any=[]
-  originalList:any=[]
-  async getApplyLeaveList(){
-    this.applyLeaveList=[]
-    this.originalList=[]
-        this.master.getapplyLeaveList().subscribe({
+  applyLeaveList: any = []
+  originalList: any = []
+  async getApplyLeaveList() {
+    this.applyLeaveList = []
+    this.originalList = []
+    this.master.getapplyLeaveList().subscribe({
       next: (response: any) => {
         console.log('response', response);
 
@@ -121,12 +130,12 @@ export class ApplyLeaveComponent {
 
         if (status == true) {
 
-          this.notyf.success(message)
-          this.applyLeaveList=response.data
-          this.originalList=response.data
+          // this.notyf.success(message)
+          this.applyLeaveList = response.data
+          this.originalList = response.data
         }
         else if (status == "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -140,13 +149,13 @@ export class ApplyLeaveComponent {
       }
     });
   }
-    leaveTypeList: any = [];
+  leaveTypeList: any = [];
   async getLeaveTypeList() {
     this.leaveTypeList = []
     this.master.getLeaveTypeList().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.leaveTypeList = data.data;
 
       }
@@ -162,15 +171,14 @@ export class ApplyLeaveComponent {
 
 
 
-  EmpList:any = []
-    async empList() {
+  EmpList: any = []
+  async empList() {
     this.EmpList = []
     this.master.getemployeeList().subscribe((data: { [x: string]: any; data: any; }) => {
-      console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
+        data.data.shift();
         this.EmpList = data.data;
-        console.log(this.EmpList, "attendance master list");
 
       }
       else if (data['status'] == 'expired') {
@@ -205,7 +213,7 @@ export class ApplyLeaveComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -220,14 +228,14 @@ export class ApplyLeaveComponent {
     });
 
   }
- statuschange(item:any,status:any){
-      let newObj :any={}
-      newObj=Object.assign({},item)
-      // newObj['id']=item.id
-      newObj['status']=status
-      // newObj['employeeId']=item.employeeId
+  statuschange(item: any, status: any) {
+    let newObj: any = {}
+    newObj = Object.assign({}, item)
+    // newObj['id']=item.id
+    newObj['status'] = status
+    // newObj['employeeId']=item.employeeId
 
-      this.master.UpdateApplyLeaveStatus(newObj).subscribe({
+    this.master.UpdateApplyLeaveStatus(newObj).subscribe({
       next: (response: any) => {
         console.log('response', response);
 
@@ -243,7 +251,7 @@ export class ApplyLeaveComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -256,13 +264,13 @@ export class ApplyLeaveComponent {
         this.notyf.error(err.error?.message)
       }
     });
- }
+  }
 
 
 
   delete(data: number) {
 
-     Swal.fire({
+    Swal.fire({
       title: "Are you sure?",
       text: "Do you Want to Delete this",
       icon: "warning",
@@ -293,8 +301,8 @@ export class ApplyLeaveComponent {
 
 
   }
-  deleteemployee(data:any){
-       this.master.deleteEmployee(data).subscribe({
+  deleteemployee(data: any) {
+    this.master.deleteEmployee(data).subscribe({
       next: (response: any) => {
         console.log('response', response);
         let message = response.message ? response.message : 'Data found Successfully';
@@ -306,7 +314,7 @@ export class ApplyLeaveComponent {
           this.getApplyLeaveList();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

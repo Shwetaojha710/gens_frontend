@@ -30,7 +30,7 @@
   --bs-gray-900: #3b4055;
   --bs-primary: #0663a9;
   --bs-secondary: #6d788d;
-  --bs-success: #72e128;
+  --bs-success: #198754;
   --bs-info: #26c6f9;
   --bs-warning: #fdb528;
   --bs-danger: #ff4d49;
@@ -7303,11 +7303,11 @@ textarea.form-control-lg {
 }
 
 .link-primary {
-  color: RGBA(var(--bs-primary-rgb), var(--bs-link-opacity, 1)) !important;
+  color: #0663a9 !important;
   text-decoration-color: RGBA(var(--bs-primary-rgb), var(--bs-link-underline-opacity, 1)) !important;
 }
 .link-primary:hover, .link-primary:focus {
-  color: RGBA(92, 97, 230, var(--bs-link-opacity, 1)) !important;
+  color: #2787d1 !important;
   text-decoration-color: RGBA(92, 97, 230, var(--bs-link-underline-opacity, 1)) !important;
 }
 
@@ -18036,7 +18036,7 @@ form .form-floating:has(.select2.is-invalid) label {
 
 .text-success {
   --bs-text-opacity: 1;
-  color: rgba(var(--bs-success-rgb), var(--bs-text-opacity)) !important;
+  color: #198754 !important;
 }
 
 .text-info {

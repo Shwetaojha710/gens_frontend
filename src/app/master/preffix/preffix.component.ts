@@ -56,7 +56,7 @@ export class PreffixComponent {
       description: ['']
     });
 
-    await this.fetchprefix();
+    // await this.fetchprefix();
   }
     pageSize = 5;
   currentPage = 1;
@@ -104,10 +104,10 @@ originalList:any = []
     const end = start + this.pageSize;
     this.filteredDesignation = data.slice(start, end);
   }
-  getStatusClass(status: any): string {
+   getStatusClass(status: any): string {
     switch (status) {
-      case 'pending': return 'bg-light-warning';
-      case 'cancelled': return 'bg-light-danger';
+      case 'active': return 'badge-outline-success';
+      case 'inactive': return 'badge-outline-danger';
       case 'completed': return 'bg-light-success';
       default: return 'bg-light-secondary';
     }
@@ -119,6 +119,7 @@ originalList:any = []
       if (data['status'] == true) {
         this.notyf.success(data['message']);
         this.PrefixList = data.data;
+        this.originalList = data.data;
       } else {
         this.notyf.error(data['message']);
       }
@@ -149,7 +150,7 @@ originalList:any = []
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -185,7 +186,7 @@ originalList:any = []
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -248,7 +249,7 @@ originalList:any = []
           this.fetchprefix();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

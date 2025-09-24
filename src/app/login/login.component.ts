@@ -51,6 +51,8 @@ export class LoginComponent {
           localStorage.setItem('token', data.data.token);
            localStorage.setItem("base_url", data.data.baseUrl);
            localStorage.setItem("PORT", data.data.PORT);
+           localStorage.setItem('user', JSON.stringify(data.data.user));
+           localStorage.setItem('currency', JSON.stringify(data.data.currencyList));
           this.notyf.success(data.message);
           this.router.navigate(['layout/dashboard']);
         } else {

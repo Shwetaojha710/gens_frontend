@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild } from '@angular/core';
 import { EmployeeService } from '../../services/employee.service';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
@@ -17,10 +17,12 @@ import { BasicComponent } from "../../payroll/basic/basic.component";
 import { AllowancesComponent } from "../../payroll/allowances/allowances.component";
 import { TotalSalaryComponentComponent } from "../../payroll/total-salary-component/total-salary-component.component";
 import { DeductionsComponent } from "../../payroll/deductions/deductions.component";
+import { AssignLeaveComponent } from "../profile/professional-info/assign-leave/assign-leave.component";
+
 @Component({
   selector: 'app-add',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgSelectModule, RouterModule, QualificationComponent, ExperienceComponent, BankDetailsComponent, BasicComponent, AllowancesComponent, TotalSalaryComponentComponent, DeductionsComponent],
+  imports: [CommonModule, FormsModule, AssignLeaveComponent, NgSelectModule, RouterModule, QualificationComponent, ExperienceComponent, BankDetailsComponent, BasicComponent, AllowancesComponent, TotalSalaryComponentComponent, DeductionsComponent, AssignLeaveComponent],
   templateUrl: './add.component.html',
   styleUrls: ['./add.component.css']
 })
@@ -31,10 +33,10 @@ export class AddComponent {
     private router: Router,
     private employeeService: EmployeeService, public dataService: DataService, public statusService: StatusService) {
 
-     this.personalDetails = JSON.parse(localStorage.getItem('employeeId') || '{}');
+    this.personalDetails = JSON.parse(localStorage.getItem('employeeId') || '{}');
 
     this.notyf = new Notyf();
-    console.log(this.personalDetails,"personaldetails");
+    console.log(this.personalDetails, "personaldetails");
 
   }
   maritalStatusList = [
@@ -49,14 +51,118 @@ export class AddComponent {
     { value: 'Female', label: 'Female' },
     { value: 'Other', label: 'Other' }
   ]
+  shift: any = [{ value: 'Day', label: 'Day' }, { value: 'Afternoon', label: 'Afternoon' }, { value: 'Night', label: 'Night' }]
+
   baseurl: any;
   async ngOnInit() {
     // this.baseurl = localStorage.getItem('base_url')?.replace(/["\\,]/g, '') || '';
-      this.baseurl = this.Documentervice.getBaseUrl();
+    this.baseurl = this.Documentervice.getBaseUrl();
     await this.fetchDocument()
     await this.countrydd()
     await this.getstates(this.personalDetails.country)
     await this.getcity(this.personalDetails.state)
+    await this.navigateToLeave()
+    await this.DepartmentDD()
+    await this.getEmploymentTypes();
+    await this.loadEmployees()
+    await this.getDesignation(this.personalDetails.departmentId)
+  }
+  async getEmploymentTypes() {
+    this.employmentTypes = [];
+    this.Documentervice.getEmploymentTypes().subscribe(data => {
+      this.employmentTypes = data.data || [];
+    });
+  }
+  employeeList: any = []
+  cardData: any = {}
+  async loadEmployees() {
+
+    this.employeeList = []
+
+
+    this.employeeService.getEmp().subscribe((response: any) => {
+      if (response && response.data && response.status === true) {
+
+        this.employeeList = response.data?.formattedEmps?.map((item: any) => ({
+          value: item.id,
+          label: `${item?.empCode}-${item.firstName} ${item?.lastName || ''}`
+        }));
+
+
+
+
+      } else if (response.status === false) {
+        this.notyf.error(response.message)
+      }
+      else if (response.status == 'expired') {
+        this.router.navigate(['login'])
+      }
+    },
+      (error: any) => {
+        console.error('Error loading employees:', error);
+        this.notyf.error(error?.error?.message)
+        // alert('Failed to load employees. Please try again.');
+      }
+    );
+
+  }
+  departmentDD: any = []
+  async DepartmentDD() {
+    this.departmentDD = []
+
+
+    this.Documentervice.Departmentsdd().subscribe({
+      next: (response: any) => {
+        let message = response.message ? response.message : 'Data found Successfully';
+
+        if (response.status === true) {
+          this.departmentDD = response.data;
+
+        }
+        else if (response.status === "expired") {
+            this.router.navigate(["login"]);
+        }
+
+        else {
+          this.notyf.error(message)
+        }
+
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.notyf.error(err)
+      }
+    });
+  }
+  designationDD: any = []
+  getDesignation(departmentId: any) {
+    this.designationDD = []
+    let obj: any = {}
+    obj['department'] = departmentId?.value || departmentId
+    this.Documentervice.designationDD(obj).subscribe({
+      next: (response: any) => {
+        console.log('response', response);
+
+        let message = response.message ? response.message : 'Data found Successfully';
+
+        if (response.status === true) {
+          this.designationDD = response.data;
+
+        }
+        else if (response.status === "expired") {
+            this.router.navigate(["login"]);
+        }
+
+        else {
+          this.notyf.error(message)
+        }
+
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.notyf.error(err)
+      }
+    });
   }
   countryList: any = [];
   employmentTypes: any[] = [];
@@ -104,6 +210,7 @@ export class AddComponent {
   toUppercase() {
 
   }
+  @ViewChild('fileInput') fileInput!: ElementRef;
   addPhoto() {
     console.log("apii callled")
     const uploadData = new FormData();
@@ -113,7 +220,8 @@ export class AddComponent {
 
     if (this.selectedFile) {
       uploadData.append('profileImage', this.selectedFile, this.selectedFile.name);
-      uploadData.append('file', this.selectedFile, this.selectedFile.name);
+      // uploadData.append('image', this.selectedFile, this.selectedFile.name);
+      // uploadData.append('file', this.selectedFile, this.selectedFile.name);
     } else {
       Swal.fire({
         toast: true,
@@ -126,37 +234,7 @@ export class AddComponent {
       return;
     }
 
-  //  this.employeeService.pythonregister(uploadData).subscribe({
-  //     next: (response: any) => {
-  //       console.log('response', response);
-
-  //       let message = response.message ? response.message : 'Data found Successfully';
-  //       let status = this.statusService.handleResponseStatus(response.status, message);
-  //       console.log(status)
-  //       console.log("response", response);
-
-  //       if (status === true) {
-
-  //         this.notyf.success(message)
-  //         this.fetchDocument();
-  //         // this.resetForm();
-  //       }
-  //       else if (status === "expired") {
-  //         this.router.navigate(["login"]);
-  //       }
-
-  //       else {
-  //         this.notyf.error(message)
-  //       }
-
-  //     },
-  //     error: (err:any) => {
-  //       console.error('Error:', err);
-  //       this.notyf.error(err)
-  //     }
-  //   });
-
-    this.employeeService.pythonregister(uploadData).subscribe({
+    this.employeeService.uploadImage(uploadData).subscribe({
       next: (response: any) => {
         console.log('response', response);
 
@@ -166,13 +244,14 @@ export class AddComponent {
         console.log("response", response);
 
         if (status === true) {
-
           this.notyf.success(message)
+          this.selectedFile = null;
+          this.fileInput.nativeElement.value = '';
           this.fetchDocument();
           // this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -185,6 +264,36 @@ export class AddComponent {
         this.notyf.error(err)
       }
     });
+
+    // this.employeeService.pythonregister(uploadData).subscribe({
+    //   next: (response: any) => {
+    //     console.log('response', response);
+
+    //     let message = response.message ? response.message : 'Data found Successfully';
+    //     let status = this.statusService.handleResponseStatus(response.status, message);
+    //     console.log(status)
+    //     console.log("response", response);
+
+    //     if (status === true) {
+
+    //       this.notyf.success(message)
+    //       this.fetchDocument();
+    //       // this.resetForm();
+    //     }
+    //     else if (status === "expired") {
+    //         this.router.navigate(["login"]);
+    //     }
+
+    //     else {
+    //       this.notyf.error(message)
+    //     }
+
+    //   },
+    //   error: (err) => {
+    //     console.error('Error:', err);
+    //     this.notyf.error(err)
+    //   }
+    // });
 
   }
   isFileInvalid: boolean = false;
@@ -226,92 +335,92 @@ export class AddComponent {
     this.selectedFile = file;
   }
 
-//   onFileChange(event: any) {
-//   const file = event.target.files[0];
+  //   onFileChange(event: any) {
+  //   const file = event.target.files[0];
 
-//   if (file && file.type.startsWith('image/')) {
-//     const img = new Image();
-//     const reader = new FileReader();
+  //   if (file && file.type.startsWith('image/')) {
+  //     const img = new Image();
+  //     const reader = new FileReader();
 
-//     reader.onload = (e: any) => {
-//       img.src = e.target.result;
+  //     reader.onload = (e: any) => {
+  //       img.src = e.target.result;
 
-//       img.onload = async () => {
-//         const originalWidth = img.width;
-//         const originalHeight = img.height;
+  //       img.onload = async () => {
+  //         const originalWidth = img.width;
+  //         const originalHeight = img.height;
 
-//         const minWidth = 100;
-//         const minHeight = 100;
-//         const maxWidth = 1000;
-//         const maxHeight = 1000;
+  //         const minWidth = 100;
+  //         const minHeight = 100;
+  //         const maxWidth = 1000;
+  //         const maxHeight = 1000;
 
-//         if (
-//           originalWidth < minWidth ||
-//           originalHeight < minHeight ||
-//           originalWidth > maxWidth ||
-//           originalHeight > maxHeight
-//         ) {
-//           this.notyf.error(
-//             `Image dimensions should be between ${minWidth}x${minHeight} and ${maxWidth}x${maxHeight}px.`
-//           );
-//           event.target.value = '';
-//           return;
-//         }
+  //         if (
+  //           originalWidth < minWidth ||
+  //           originalHeight < minHeight ||
+  //           originalWidth > maxWidth ||
+  //           originalHeight > maxHeight
+  //         ) {
+  //           this.notyf.error(
+  //             `Image dimensions should be between ${minWidth}x${minHeight} and ${maxWidth}x${maxHeight}px.`
+  //           );
+  //           event.target.value = '';
+  //           return;
+  //         }
 
-//         // Resize and compress to target dimensions
-//         const targetWidth = 200;
-//         const targetHeight = 200;
-//         const quality = 0.6; // 60% quality
+  //         // Resize and compress to target dimensions
+  //         const targetWidth = 200;
+  //         const targetHeight = 200;
+  //         const quality = 0.6; // 60% quality
 
-//         const compressedFile = await this.resizeAndCompressImage(
-//           img,
-//           targetWidth,
-//           targetHeight,
-//           quality
-//         );
+  //         const compressedFile = await this.resizeAndCompressImage(
+  //           img,
+  //           targetWidth,
+  //           targetHeight,
+  //           quality
+  //         );
 
-//         console.log('Compressed file:', compressedFile);
+  //         console.log('Compressed file:', compressedFile);
 
-//         // You can patch to a form or upload:
-//         // this.form.patchValue({ profileImage: compressedFile });
-//       };
-//     };
+  //         // You can patch to a form or upload:
+  //         // this.form.patchValue({ profileImage: compressedFile });
+  //       };
+  //     };
 
-//     reader.readAsDataURL(file);
-//   } else {
-//     this.notyf.error('Only image files are allowed.');
-//   }
-// }
+  //     reader.readAsDataURL(file);
+  //   } else {
+  //     this.notyf.error('Only image files are allowed.');
+  //   }
+  // }
 
-resizeAndCompressImage(
-  img: HTMLImageElement,
-  targetWidth: number,
-  targetHeight: number,
-  quality: number
-): Promise<File> {
-  return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = targetWidth;
-    canvas.height = targetHeight;
+  resizeAndCompressImage(
+    img: HTMLImageElement,
+    targetWidth: number,
+    targetHeight: number,
+    quality: number
+  ): Promise<File> {
+    return new Promise((resolve) => {
+      const canvas = document.createElement('canvas');
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
 
-    const ctx = canvas.getContext('2d')!;
-    ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0, targetWidth, targetHeight);
 
-    canvas.toBlob(
-      (blob) => {
-        if (blob) {
-          const compressedFile = new File([blob], 'resized-image.jpg', {
-            type: 'image/jpeg',
-            lastModified: Date.now(),
-          });
-          resolve(compressedFile);
-        }
-      },
-      'image/jpeg',
-      quality
-    );
-  });
-}
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            const compressedFile = new File([blob], 'resized-image.jpg', {
+              type: 'image/jpeg',
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          }
+        },
+        'image/jpeg',
+        quality
+      );
+    });
+  }
 
 
   DocumentList: any
@@ -322,7 +431,7 @@ resizeAndCompressImage(
     console.log(obj, "object data ")
     this.employeeService.getUploadImage(obj).subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.DocumentList = data.data;
         console.log(this.DocumentList);
 
@@ -340,37 +449,17 @@ resizeAndCompressImage(
     const modal = new bootstrap.Modal(modalElement!);
     modal.show();
   }
-  back(){
-       this.router.navigate(["/layout/employee/joining"]);
+  back() {
+    this.router.navigate(["/layout/employee/joining"]);
   }
 
-  navigateToQualification() {
-    this.router.navigate(['layout/employee/profile/qualification']);
-  }
 
-  // navigateToPersonal() {
-  //   this.router.navigate(['layout/employee/add/profile/personal']);
-  // }
-
-  navigateToBankAccount(){
-      this.router.navigate(['/layout/employee/add/profile/professional-info/bank-details']);
-  }
-  navigateToExperience() {
-    this.router.navigate(['/layout/employee/add/profile/professional-info/experience']);
-  }
-
-  navigateToSkills() {
-    this.router.navigate(['/layout/employee/add/profile/professional-info/skills']);
-  }
-
-  navigateToSalary() {
-    this.router.navigate(['/layout/employee/add/profile/professional-info/salary']);
-  }
-
-  navigateToDocuments() {
-    this.router.navigate(['/layout/employee/add/profile/professional-info/documents']);
-  }
-    navigateToLeave() {
+  navigateToLeave() {
     this.router.navigate(['/layout/employee/add/profile/professional-info/assign-leave']);
   }
+  navigateToSalarySetup() {
+    this.router.navigate(['/layout/employee/add/profile/professional-info/salary-setup'])
+
+  }
+
 }

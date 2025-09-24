@@ -103,9 +103,9 @@ export class DocumentTypeComponent {
   }
   getStatusClass(status: any): string {
     switch (status) {
-      case 'pending': return 'bg-light-warning';
-      case 'cancelled': return 'bg-light-danger';
-      case 'completed': return 'bg-light-success';
+      // case 'active': return 'bg-light-warning';
+      case 'inactive': return 'badge-outline-danger';
+      case 'active': return 'badge-outline-success ';
       default: return 'bg-light-secondary';
     }
   }
@@ -115,7 +115,7 @@ originalList:any = []
     this.originalList = []
     this.master.getDocumentType().subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.DocumentList = data.data;
         this.originalList = data.data;
       } else {
@@ -148,7 +148,7 @@ this.obj={}
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -184,7 +184,7 @@ this.obj={}
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -247,7 +247,7 @@ this.obj={}
           this.fetchDocument();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

@@ -69,7 +69,7 @@ export class BasicComponent {
           this.back()
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -96,7 +96,7 @@ export class BasicComponent {
 
       if (status == true) {
            this.desigantionList = []
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.desigantionList = data.data;
       } else {
         this.notyf.error(data['message']);
@@ -143,7 +143,7 @@ export class BasicComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -213,7 +213,7 @@ export class BasicComponent {
           this.fetchBasic();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

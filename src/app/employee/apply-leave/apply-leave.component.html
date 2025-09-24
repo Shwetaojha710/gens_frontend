@@ -18,7 +18,7 @@
         <hr style="margin: 0rem 0 !important" />
         <div class="card-body">
           <div class="row g-3">
-            <div class="col-3">
+            <div class="col-2">
               <label for="defaultFormControlInput" class="form-label"
                 >Select Employee</label
               >
@@ -43,7 +43,7 @@
               </small>
             </div>
 
-            <div class="col-3">
+            <div class="col-2">
               <label for="defaultFormControlInput" class="form-label"
                 >Leave Type</label
               >
@@ -67,7 +67,76 @@
                 Leave Type Is required
               </small>
             </div>
-            <div class="col-2">
+               <div class="col-4">
+              <label class="form-label d-block">Duration Type</label>
+             <!-- <label class="form-check-label me-3 mt-2">
+                <input
+                  type="radio"
+                  name="leaveFreqTo"
+                  value="first_half"
+                  class="form-check-input me-1"
+                  [(ngModel)]="obj['duration_type']"
+                />
+                First Half
+              </label>
+              <label class="form-check-label me-3 mt-2">
+                <input
+                  type="radio"
+                  name="leaveFreqFrom"
+                  value="second_half"
+                  class="form-check-input me-1"
+                  [(ngModel)]="obj['duration_type']"
+                />
+                Second Half
+              </label>
+
+               <label class="form-check-label me-3 mt-2">
+                <input
+                  type="radio"
+                  name="leaveFreqFullDay"
+                  value="full_day"
+                  class="form-check-input me-1"
+                  [(ngModel)]="obj['duration_type']"
+                />
+                Full Day
+              </label> -->
+
+              <div class="btn-group w-100" role="group" aria-label="Basic radio toggle button group">
+                <input
+                  type="radio"
+                  name="leaveFreqTo"
+                  value="first_half"
+                  class="btn-check"
+                  id="btnradio1"
+                  [(ngModel)]="obj['duration_type']"
+                />
+                <label class="btn btn-outline-primary waves-effect" for="btnradio1">First Half</label>
+
+                <input
+                  type="radio"
+                  name="leaveFreqFrom"
+                  value="second_half"
+                  class="btn-check"
+                  id="btnradio2"
+                  [(ngModel)]="obj['duration_type']"
+                />
+                <label class="btn btn-outline-primary waves-effect" for="btnradio2">Second Half</label>
+
+                 <input
+                  type="radio"
+                  name="leaveFreqFullDay"
+                  value="full"
+                  class="btn-check"
+                  id="btnradio3"
+                  [(ngModel)]="obj['duration_type']"
+                />
+                <label class="btn btn-outline-primary waves-effect" for="btnradio3">Full Day</label>
+              </div>
+
+
+
+            </div>
+            <div class="col-2" *ngIf="obj['duration_type']=='first_half'  || obj['duration_type']=='full' ">
               <label for="defaultFormControlInput" class="form-label"
                 >Leave From</label
               >
@@ -77,6 +146,7 @@
                 id="defaultFormControlInput"
                 placeholder="Select Leave From"
                 [(ngModel)]="obj['fromDate']"
+                  [min]="minDate"
                 aria-describedby="defaultFormControlHelp"
                 #startDateRef="ngModel"
               />
@@ -86,7 +156,7 @@
                 >Leave From Is Required
               </small>
             </div>
-            <div class="col-2">
+            <div class="col-2" *ngIf="obj['duration_type']=='second_half'  || obj['duration_type']=='full' ">
               <label for="defaultFormControlInput" class="form-label"
                 >Leave To</label
               >
@@ -98,6 +168,7 @@
                 [(ngModel)]="obj['toDate']"
                 aria-describedby="defaultFormControlHelp"
                 #startDateRef="ngModel"
+                  [min]="getToDateMin()"
               />
               <small
                 class="text-danger"
@@ -107,31 +178,7 @@
               </small>
             </div>
 
-            <div class="col-2">
-              <label class="form-label d-block">Duration Type</label>
 
-              <label class="form-check-label me-3 mt-2">
-                <input
-                  type="radio"
-                  name="leaveFreqfrom"
-                  value="second_half"
-                  class="form-check-input me-1"
-                  [(ngModel)]="obj['duration_type']"
-                />
-                Second Half
-              </label>
-
-              <label class="form-check-label">
-                <input
-                  type="radio"
-                  name="leavefreqto"
-                  value="first_half"
-                  class="form-check-input me-1"
-                  [(ngModel)]="obj['duration_type']"
-                />
-                First Half
-              </label>
-            </div>
 
             <div class="col-12">
               <label for="defaultFormControlInput" class="form-label"
