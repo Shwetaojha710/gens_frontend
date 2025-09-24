@@ -18,33 +18,33 @@
             [multiple]="false" placeholder="Select Doc type" name="doc_type" id="select2Danger">
           </ng-select>
         </div>
-        &nbsp;
+
 
         <div class="col-4">
           <label for="formFile" class="form-label">Document</label>
-          <input  #fileInput  class="form-control" type="file" id="formFile" type="file" (change)="onFileChange($event)"
-            accept="image/*"/>
+          <input #fileInput class="form-control" type="file" id="formFile" type="file" (change)="onFileChange($event)"
+            accept="image/*" />
           <div *ngIf="sanitizedImage">
             <button style="position: absolute; right: 356px" (click)="close()" type="button" class="btn-close"
               data-dismiss="modal" aria-label="Close"></button>
-          <!-- If image, show thumbnail -->
-<div *ngIf="fileType?.startsWith('image')">
-  <img [src]="sanitizedImage" alt="Uploaded Image"
-       class="img-thumbnail"
-       style="max-width: 80px; max-height: 80px; margin-top: 8px; object-fit: cover; border: 1px solid #cfd0d6; border-radius: 5px;" />
-</div>
+            <!-- If image, show thumbnail -->
+            <div *ngIf="fileType?.startsWith('image')">
+              <img [src]="sanitizedImage" alt="Uploaded Image" class="img-thumbnail"
+                style="max-width: 80px; max-height: 80px; margin-top: 8px; object-fit: cover; border: 1px solid #cfd0d6; border-radius: 5px;" />
+            </div>
 
-<!-- If PDF, show preview + download -->
-<div *ngIf="fileType == 'application/pdf'" style="margin-top: -10px;">
-  <!-- <iframe [src]="sanitizedImage" width="200" height="80" style="border: 1px solid #cfd0d6; border-radius: 5px;"></iframe> -->
+            <!-- If PDF, show preview + download -->
+            <div *ngIf="fileType == 'application/pdf'" style="margin-top: -10px;">
+              <!-- <iframe [src]="sanitizedImage" width="200" height="80" style="border: 1px solid #cfd0d6; border-radius: 5px;"></iframe> -->
 
-  <br />
-  <a [href]="sanitizedImage" download="uploaded-file.pdf" class="btn btn-sm btn-success" style="margin-top: -10px;">
-    Download PDF
-  </a>
-</div>
+              <br />
+              <a [href]="sanitizedImage" download="uploaded-file.pdf" class="btn btn-sm btn-success"
+                style="margin-top: -10px;">
+                Download PDF
+              </a>
+            </div>
 
-              <!-- <img [src]="sanitizedImage" alt="Uploaded Image" class="img-thumbnail" style="
+            <!-- <img [src]="sanitizedImage" alt="Uploaded Image" class="img-thumbnail" style="
                     max-width: 80px;
                     max-height: 80px;
                     margin-top: 8px;
@@ -53,7 +53,7 @@
                     border-radius: 5px;" /> -->
           </div>
         </div>
-        &nbsp;
+
         <div class="col-4" *ngIf="updateFlag">
           <label for="defaultFormControlInput" class="form-label">Status</label>
           <ng-select [items]="status" bindLabel="label" bindValue="value" [(ngModel)]="obj['status']" [multiple]="false"
@@ -105,9 +105,24 @@
             <tr *ngFor="let item of DocumentList; let i = index">
               <th scope="row">{{ i + 1 }}</th>
               <td>{{ item["typeName"] }}</td>
-              <td>
+              <!-- <td>
                 <img [src]="item['doc_name']" alt="Document" width="100" height="auto" style="cursor: pointer"
                   (click)="openModal1(item['doc_name'])" />
+
+              </td> -->
+              <td>
+                <!-- Show image preview if doc_type starts with 'image/' -->
+                <ng-container *ngIf="item.doc_type.startsWith('image/'); else pdfBlock">
+                  <img [src]="item.doc_name" alt="Document" width="100" height="auto" style="cursor: pointer" />
+                </ng-container>
+
+                <!-- Show download link if it's PDF -->
+                <ng-template #pdfBlock>
+                  <a [href]="item.doc_name" target="_blank" download style="text-decoration: none;  cursor: pointer;"
+                    class="btn btn-sm btn-primary">
+                    Download PDF
+                  </a>
+                </ng-template>
               </td>
               <!-- <td>
                 <span

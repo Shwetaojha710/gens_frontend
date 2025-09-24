@@ -247,6 +247,21 @@ addSalaryMaster(dept: any): Observable<any> {
      return this.http.post(`${this.baseUrl}get-Currency`, {});
   }
 
+     getSalaryOrder(): Observable<any> {
+    return this.http.post(`${this.baseUrl}getSalaryOrder`, {});
+  }
+
+  addSalaryOrder(dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}createSalaryOrder`, dept);
+  }
+
+  updateSalaryOrder(id: any, dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}editSalaryOrder`, dept);
+  }
+
+  deleteSalaryOrder(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}deleteSalaryOrder`, data);
+  }
 
 //    getAttendanceSetting(): Observable<any> {
 //     return this.http.post(`${this.baseUrl}get-attendance-setting`, {});
