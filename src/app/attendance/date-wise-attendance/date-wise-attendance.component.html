@@ -242,7 +242,7 @@
                   <td>
                     <button *ngIf="!item.editable"
                       type="button"
-                      class="btn btn-outline-primary btn-sm"
+                      class="badge badge-center bg-label-success m-2"
                       (click)="applyUpdate(item)"
                     >
                        <i class="ri ri-pencil-line"></i>
@@ -250,7 +250,7 @@
 
                     <button *ngIf="item.editable"
                       type="button"
-                      class="btn btn-outline-success btn-sm"
+                      class="badge badge-center bg-label-success m-2"
                       (click)="update(item)"
                     >
                     <i class="ri ri-send-plane-line"></i>
@@ -259,7 +259,7 @@
 
                     <button
                       type="button"
-                      class="btn btn-outline-danger btn-sm mx-2"
+                      class="badge badge-center bg-label-danger"
                       (click)="delete(item)"
                     >
                       <i class="fas fa-trash-alt"></i>

@@ -52,13 +52,18 @@ import { AttendanceUploadComponent } from './attendance/attendance-upload/attend
 import { SalaryComponentComponent } from './master/salary-component/salary-component.component';
 import { SalarySetupComponent } from './payroll/salary-setup/salary-setup.component';
 import { CurrencyComponent } from './master/currency/currency.component';
+
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+
 import { PayslipOrderComponent } from './master/payslip-order/payslip-order.component';
 import { ReimbursementComponent } from './payroll/reimbursement/reimbursement.component';
+
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '', redirectTo: '/Home', pathMatch: 'full'},
   { path: 'Home', component: LandingPageComponent},
   { path: 'login', component: LoginComponent },
+  
  { path: 'check-out', component: CheckoutComponent},
   {
     path: 'layout',
@@ -143,5 +148,6 @@ export const routes: Routes = [
         ]
       }
     ]
-  }
+  },
+  {path:'**',component:PageNotFoundComponent},
 ];
