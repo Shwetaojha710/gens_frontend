@@ -11,7 +11,7 @@
 
         <hr style="margin: 0rem 0 !important" />
         <div class="card-body">
-          <div class="row">
+          <div class="row g-2">
             <div class="col-3">
               <label for="defaultFormControlInput" class="form-label">Select Employee</label>
               <ng-select [items]="EmpList" bindLabel="label" bindValue="value" [(ngModel)]="obj['employeeId']"
@@ -44,22 +44,15 @@
               <label for="formFile" class="form-label">Document</label>
               <!-- <input #fileInput class="form-control" type="file" id="formFile" type="file"
                 (change)="onFileChange($event)" accept="image/*" /> -->
-                  <input
-                  #fileInput
-                type="file"
-                accept="image/*"
-                class="form-control"
-                id="file"
-                name="file"
-                (change)="onFileChange($event)"
-              />
+              <input #fileInput type="file" accept="image/*" class="form-control" id="file" name="file"
+                (change)="onFileChange($event)" />
               <div *ngIf="sanitizedImage">
-                <button style="position: absolute; right: 200px" (click)="close()" type="button" class="btn-close"
+                <button style="position: static; right: 200px" (click)="close()" type="button" class="btn-close"
                   data-dismiss="modal" aria-label="Close"></button>
                 <!-- If image, show thumbnail -->
                 <div *ngIf="fileType?.startsWith('image')">
                   <img [src]="sanitizedImage" alt="Uploaded Image" class="img-thumbnail"
-                    style="max-width: 80px; max-height: 80px; margin-top: 8px; object-fit: cover; border: 1px solid #cfd0d6; border-radius: 5px;" />
+                    style="max-width: 80px; max-height: 80px; margin-top: 0px; object-fit: cover; border: 1px solid #cfd0d6; border-radius: 5px;" />
                 </div>
 
                 <!-- If PDF, show preview + download -->
@@ -150,8 +143,8 @@
 
                   <!-- Show download link if it's PDF -->
                   <ng-template #pdfBlock>
-                    <a [href]="item.image1" target="_blank" download
-                      style="text-decoration: none;  cursor: pointer;" class="btn btn-sm btn-primary">
+                    <a [href]="item.image1" target="_blank" download style="text-decoration: none;  cursor: pointer;"
+                      class="btn btn-sm btn-primary">
                       Download PDF
                     </a>
                   </ng-template>
