@@ -78,7 +78,7 @@
               placeholder="Enter Total Assigned"
               [(ngModel)]="obj['totalAssigned']"
               aria-describedby="defaultFormControlHelp"
-              disabled="true"
+
             />
 
           </div>
@@ -240,7 +240,7 @@
               <tr *ngFor="let item of LeaveList; let i = index">
                 <th scope="row">{{ i + 1 }}</th>
                 <td>{{ item["year"] }}</td>
-                <td>{{ item["leaveTypeId"] }}</td>
+                <td>{{ item["leaveTypeName"] }}</td>
                 <td>
                   {{ item["totalAssigned"] }}
                 </td>

@@ -29,7 +29,7 @@
             <div class="col-3">
               <label for="defaultFormControlInput" class="form-label">To Date</label>
               <input type="date" class="form-control" id="defaultFormControlInput" placeholder="Select To Date"
-                [(ngModel)]="obj['toDate']" aria-describedby="defaultFormControlHelp" required />
+                [(ngModel)]="obj['toDate']" aria-describedby="defaultFormControlHelp" required [min]="getToDateMin()" />
 
 
             </div>
@@ -44,15 +44,8 @@
               <label for="formFile" class="form-label">Document</label>
               <!-- <input #fileInput class="form-control" type="file" id="formFile" type="file"
                 (change)="onFileChange($event)" accept="image/*" /> -->
-                  <input
-                  #fileInput
-                type="file"
-                accept="image/*"
-                class="form-control"
-                id="file"
-                name="file"
-                (change)="onFileChange($event)"
-              />
+              <input #fileInput type="file" accept="image/*" class="form-control" id="file" multiple="true" name="file"
+                (change)="onFileChange($event)" />
               <div *ngIf="sanitizedImage">
                 <button style="position: absolute; right: 200px" (click)="close()" type="button" class="btn-close"
                   data-dismiss="modal" aria-label="Close"></button>
@@ -128,59 +121,59 @@
               <tr>
                 <th>SI.No</th>
                 <th>Name</th>
-                <th>Document</th>
+
                 <th>From Date</th>
                 <th>To Date</th>
+                <th>Amount</th>
                 <th>Description</th>
                 <th>Status</th>
                 <th>createdAt</th>
+                <th>Document</th>
                 <th>Actions</th>
               </tr>
             </thead>
             <tbody class="table-border-bottom-0">
               <tr *ngFor="let item of ReimbursementList; let i = index">
-                <th scope="row">{{ i + 1 }}</th>
-                <td>{{ item["employee_name"] }}</td>
-                <td>
-                  <!-- Show image preview if doc_type starts with 'image/' -->
-                  <ng-container *ngIf="item.doc_type.startsWith('image/'); else pdfBlock">
-                    <img [src]="item.image" alt="Document" width="100" height="auto" style="cursor: pointer"
-                      (click)="openModal1(item.image)" />
-                  </ng-container>
-
-                  <!-- Show download link if it's PDF -->
-                  <ng-template #pdfBlock>
-                    <a [href]="item.image" target="_blank" download
-                      style="text-decoration: none;  cursor: pointer;" class="btn btn-sm btn-primary">
-                      Download PDF
-                    </a>
-                  </ng-template>
-                </td>
+                <th>{{ i + 1 }}</th>
+                <td>{{ item.employee_name }}</td>
 
 
+                <td>{{ item.fromDate }}</td>
+                <td>{{ item.toDate }}</td>
+                <td>{{ item.amount }}</td>
+                <td>{{ item.remark }}</td>
                 <td>
-                  {{item?.fromDate}}
-                </td>
-                <td>
-                  {{item?.toDate}}
-                </td>
-                <td>{{item?.remark}}</td>
-                <td>
-                  <span class="badge badge-outline-success overflow-hidden px-2"
-                    [ngClass]="getStatusClass(item['status'])">
-                    {{ item["status"] }}
+                  <span class="badge badge-outline-success" [ngClass]="getStatusClass(item.status)">
+                    {{ item.status }}
                   </span>
                 </td>
-                <td>{{ item["createdAt"] }}</td>
-
+                <td>{{ item.createdAt | date: 'short' }}</td>
                 <td>
-                  <button type="button" class="badge badge-center bg-label-success" (click)="update(item)">
+                  <ng-container *ngFor="let f of item.files">
+                    <ng-container *ngIf="f.doc_type.startsWith('image/'); else pdfBlock">
+                      <img [src]="f.image" width="80" height="auto" class="m-1 rounded" (click)="openModal1(f.image)" />
+                    </ng-container>
+
+                    <ng-template #pdfBlock>
+                      <a [href]="f.image" class="btn btn-sm btn-primary" target="_blank">Download PDF</a>
+                    </ng-template>
+                  </ng-container>
+                </td>
+                <td>
+
+                  <button type="button" class="badge badge-center bg-label-success" *ngIf="item.status=='pending'"
+                    (click)="statuschange(item,'approved')">
                     <i class="fas fa-edit"></i>
                   </button>
                   &nbsp;
-                  <button type="button" class="badge badge-center bg-label-danger" (click)="delete(item)">
+                  <button *ngIf="item.status=='pending'" type="button" class="badge badge-center bg-label-danger"
+                    (click)="statuschange(item,'rejected')">
                     <i class="fas fa-trash-alt"></i>
                   </button>
+
+                  <!-- <button type="button" class="badge bg-label-danger" (click)="delete(item)">
+                    <i class="fas fa-trash-alt"></i>
+                  </button> -->
                 </td>
               </tr>
             </tbody>

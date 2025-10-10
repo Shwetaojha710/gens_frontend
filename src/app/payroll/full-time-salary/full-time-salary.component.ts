@@ -74,6 +74,9 @@ export class FullTimeSalaryComponent {
     });
 
   }
+  delete(data:any){
+    this.SalaryArr=this.SalaryArr.filter((item:any)=>item.employeeId != data.employeeId)
+  }
   employeeSalaryData: any[] = [];
 
   async generate_Salary() {
@@ -250,9 +253,9 @@ export class FullTimeSalaryComponent {
           }
 
           // Update component properties with filtered data and totals
-          this.PayArr = [...PayArr, { isSummary: true, name: 'Total Earnings', pay_amount: Math.round(totalEarning) }];
-          this.DedArr = [...DedArr, { isSummary: true, name: 'Total Deductions', pay_amount: Math.round(totalDeduction) }];
-          this.EmployerDedArr = [...EmployerDedArr, { isSummary: true, name: 'Total Employer Deductions', pay_amount: Math.round(totalEmployerDeduction) }];
+          this.PayArr = [...PayArr, { isSummary: true, name: 'Total Earnings', pay_amount: (totalEarning).toFixed(2) }];
+          this.DedArr = [...DedArr, { isSummary: true, name: 'Total Deductions', pay_amount: (totalDeduction).toFixed(2) }];
+          this.EmployerDedArr = [...EmployerDedArr, { isSummary: true, name: 'Total Employer Deductions', pay_amount: (totalEmployerDeduction).toFixed(2) }];
 
           // Calculate net pay
           const netPay = totalEarning - totalDeduction;

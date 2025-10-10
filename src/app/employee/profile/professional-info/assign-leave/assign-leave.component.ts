@@ -89,8 +89,8 @@ export class AssignLeaveComponent {
 
   }
   onLeaveTypeChange(id: any) {
-    this.leaveTypeList = this.leaveTypeList.filter((item: any) => item.value == id)
-    this.obj['totalAssigned'] = this.leaveTypeList[0]?.['allowedPerYear']
+    let newLeave = this.leaveTypeList.filter((item: any) => item.value == id)
+    this.obj['totalAssigned'] = newLeave[0]?.['allowedPerYear']
   }
   async back() {
     this.obj = {}
@@ -185,16 +185,20 @@ export class AssignLeaveComponent {
     this.updateFlag = false
   }
 
-  update(dept: any) {
+ async  update(dept: any) {
+    await this.getYear()
+    await this.getLeaveTypeList()
     this.obj = Object.assign({}, dept)
     this.editingId = this.obj.id;
+    this.obj.year=this.obj.year.toString()
     this.createFlag = true
     this.updateFlag = true
+
   }
   updatedata() {
     this.obj['id'] = this.editingId
     this.obj['employeeId'] = this.personalDetails.id
-    this.empService.updateexperience(this.editingId, this.obj).subscribe({
+    this.empService.updateAssignedLeave(this.editingId, this.obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
         let message = response.message ? response.message : 'Data found Successfully';

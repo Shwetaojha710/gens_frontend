@@ -57,7 +57,7 @@ export class NavbarComponent {
         { title: 'Holiday', icon: 'ri-barricade-fill', link: '/layout/attendance/holiday' },
         { title: 'Attendance Logs', icon: 'ri-calendar-line', link: '/layout/attendance/logs' },
         { title: 'Leaves', icon: 'ri-leaf-line', link: '/layout/attendance/leaves' },
-        { title: 'Attendance Master', icon: 'ri-calendar-line', link: '/layout/attendance/salary-master' },
+
         { title: 'Upload Attendance', icon: 'ri-upload-cloud-line', link: '/layout/attendance/upload-attendance' }
 
       ]
@@ -68,7 +68,7 @@ export class NavbarComponent {
       children: [
         { title: 'Generate Salary', icon: 'ri-money-rupee-circle-line', link: '/layout/payroll/full-time' },
         { title: 'Generated Salary List', icon: 'ri-suitcase-line', link: '/layout/payroll/generated-salary' },
-        { title: 'Reimbursement', icon: 'ri-suitcase-line', link: '/layout/payroll/reimbursement' },
+        { title: 'Reimbursement', icon: 'ri-refund-line', link: '/layout/payroll/reimbursement' },
         // { title: 'Part Time Salary Master', icon: 'ri-time-line', link: '/layout/payroll/part-time' },
         // // { title: 'Allowances Master', icon: 'ri-gift-line', link: '/layout/payroll/allowances' },
         // { title: 'Deductions', icon: 'ri-subtract-line', link: '/layout/payroll/deductions' }
@@ -92,11 +92,27 @@ export class NavbarComponent {
         { title: 'Employment Type', icon: 'ri-briefcase-4-line', link: '/layout/master/employment-type' },
         { title: 'Documents', icon: 'ri-file-text-line', link: '/layout/master/documents' },
         { title: 'Holiday Types', icon: 'ri-suitcase-line', link: '/layout/master/holiday-type' },
-        { title: 'Company Prefix', icon: 'ri-info-card-line', link: '/layout/master/prefix' },
+        // { title: 'Company Prefix', icon: 'ri-info-card-line', link: '/layout/master/prefix' },
         { title: 'Salary Component', icon: 'ri-wallet-2-line', link: '/layout/master/salary-component' },
-        { title: 'Currency', icon: 'ri-copper-coin-line', link: '/layout/master/currency' },
-        { title: 'Pay Slip Setup', icon: 'ri-copper-coin-line', link: '/layout/master/pay-slip' },
+        // { title: 'Currency', icon: 'ri-copper-coin-line', link: '/layout/master/currency' },
+        { title: 'Pay Slip Setup', icon: 'ri-file-pdf-2-line', link: '/layout/master/pay-slip' },
+
         // {title: 'Attendance Master', icon: 'ri-file-line', link: '/layout/master/salary-master'}
+
+      ]
+    },
+    {
+      title: 'Setting',
+      icon: 'ri-settings-3-line',
+      children: [
+        { title: 'Attendance Master', icon: 'ri-calendar-line', link: '/layout/attendance/salary-master' },
+        { title: 'Currency', icon: 'ri-copper-coin-line', link: '/layout/master/currency' },
+        { title: 'Company Prefix', icon: 'ri-info-card-line', link: '/layout/master/prefix' },
+        { title: 'Date Format', icon: 'ri-building-4-line', link: '/layout/master/date-format' },
+        { title: 'Time Zone', icon: 'ri-briefcase-4-line', link: '/layout/master/time-zone' },
+        { title: 'SMS', icon: 'ri-file-text-line', link: '/layout/master/SMS' },
+        { title: 'EMAIL', icon: 'ri-suitcase-line', link: '/layout/master/email' },
+
 
       ]
     }

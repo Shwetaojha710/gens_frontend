@@ -56,7 +56,7 @@ export class PreffixComponent {
       description: ['']
     });
 
-    // await this.fetchprefix();
+    await this.fetchprefix();
   }
     pageSize = 5;
   currentPage = 1;
@@ -117,7 +117,7 @@ originalList:any = []
     this.PrefixList = []
     this.prefixService.getPrefix().subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.PrefixList = data.data;
         this.originalList = data.data;
       } else {
@@ -160,7 +160,8 @@ originalList:any = []
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err)
+        let errMessage = err?.error?.message ? err?.error?.message :err.message ;
+        this.notyf.error(errMessage )
       }
     });
 

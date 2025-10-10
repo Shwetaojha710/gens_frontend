@@ -40,6 +40,7 @@ export class SalarySetupComponent {
   }
   type: any = [{ value: 'fixed', label: 'Fixed' }, { value: 'percentage', label: 'Percentage' }]
   endDateDD: any = [{ value: 'all_period', label: 'ALL Period' }, { value: 'custom', label: 'Custom' }]
+  salaryBreakDown: any = [{ value: 'year', label: 'Yearly' }, { value: 'monthly', label: 'Monthly' }]
   departmentDD: any = []
   async ngOnInit() {
     this.obj['status'] = 'active'
@@ -154,6 +155,7 @@ export class SalarySetupComponent {
   PayArr: any = []
   deductionArr: any = []
   EarningArr: any = []
+  ctc:any=0
   getSalarySetUpList() {
     this.SalArr = []
     this.totalPayable = 0
@@ -179,9 +181,11 @@ export class SalarySetupComponent {
           //   calculated_amount: Math.round(item?.calculated_amount).toFixed(0) || 0,
           //   isSelected: item?.status === 'active'
           // }));
+          this.ctc = response.data.basics[0]?.finalCTC || 0
+
           this.SalArr = [
-            ...response.data.basics.map((item: any) => ({ ...item, component_type: "payable", status: item.status || 'inactive' })),
-            ...response.data.allowances.map((item: any) => ({ ...item, component_type: "payable", status: item.status || 'inactive' })),
+            ...response.data.basics.map((item: any) => ({ ...item, component_type: "Earning", status: item.status || 'inactive' })),
+            ...response.data.allowances.map((item: any) => ({ ...item, component_type: "Earning", status: item.status || 'inactive' })),
             ...response.data.deductions.map((item: any) => ({
               ...item,
               component_name: item?.name,
@@ -189,6 +193,15 @@ export class SalarySetupComponent {
               status: item.status || 'inactive'
             }))
           ];
+          if(this.obj['salaryBreakDown'] == 'monthly'){
+
+            this.SalArr = this.SalArr.map((item: any) => ({
+              ...item,
+              finalAmount:(Number(item?.finalAmount) / 12).toFixed(2) || 0,
+              isSelected: item?.status == 'active'
+            }));
+             this.ctc=  (this.ctc/12).toFixed(2)
+          }
 
           this.updateMasterSelected();
         }
@@ -215,6 +228,7 @@ export class SalarySetupComponent {
   }
   back() {
     this.obj = {}
+    this.obj['status'] = 'active'
     this.createFlag = false
     this.variableFlag = false
   }

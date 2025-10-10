@@ -57,13 +57,15 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 
 import { PayslipOrderComponent } from './master/payslip-order/payslip-order.component';
 import { ReimbursementComponent } from './payroll/reimbursement/reimbursement.component';
+import { EmpProfileComponent } from './emp-profile/emp-profile.component';
 
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '', redirectTo: '/Home', pathMatch: 'full'},
   { path: 'Home', component: LandingPageComponent},
   { path: 'login', component: LoginComponent },
-  
+    { path: 'emp-profile', component: EmpProfileComponent },
+
  { path: 'check-out', component: CheckoutComponent},
   {
     path: 'layout',
@@ -121,6 +123,7 @@ export const routes: Routes = [
           { path: 'deductions', component: DeductionsComponent },
           { path: 'total-salary', component: TotalSalaryComponentComponent },
           { path: 'reimbursement', component: ReimbursementComponent },
+
 
         ]
       },

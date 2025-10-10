@@ -9,6 +9,7 @@ import { MasterService } from '../../services/master.service';
 import { StatusService } from '../../services/status.service';
 import { ValidationUtil } from '../../shared/utils/validation.util';
 import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
+import { MessagingService } from '../../services/messaging.service';
 
 @Component({
   selector: 'app-apply-leave',
@@ -41,6 +42,7 @@ export class ApplyLeaveComponent {
     private master: MasterService,
     public statusService: StatusService,
     private router: Router,
+    public messagingService :MessagingService
   ) {
     this.EmployeeForm = this.fb.group({
       name: ['', Validators.required],
@@ -62,7 +64,22 @@ export class ApplyLeaveComponent {
     await this.getApplyLeaveList()
     await this.getLeaveTypeList()
     await this.empList()
+
+       await this.messagingService.initMessaging();
+  const token = await this.messagingService.requestPermission();
+  console.log('FCM Token after init:', token);
   }
+  //   async enableNotifications() {
+  //       await  this.messagingService.listen();
+  //   const token = await this.messagingService.requestPermission();
+  //   if (token) {
+  //     console.log('✅ Send this token to backend:', token);
+
+  //     // Call your backend API to save this token
+  //     // Example using HttpClient:
+  //     // this.http.post(`${environment.apiUrl}/saveDeviceToken`, { token, userId }).subscribe();
+  //   }
+  // }
   pageSize = 5;
   currentPage = 1;
   searchTerm = '';

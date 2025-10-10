@@ -120,7 +120,7 @@ export class AddComponent {
 
         }
         else if (response.status === "expired") {
-            this.router.navigate(["login"]);
+          this.router.navigate(["login"]);
         }
 
         else {
@@ -150,7 +150,7 @@ export class AddComponent {
 
         }
         else if (response.status === "expired") {
-            this.router.navigate(["login"]);
+          this.router.navigate(["login"]);
         }
 
         else {
@@ -251,7 +251,7 @@ export class AddComponent {
           // this.resetForm();
         }
         else if (status === "expired") {
-            this.router.navigate(["login"]);
+          this.router.navigate(["login"]);
         }
 
         else {
@@ -298,7 +298,7 @@ export class AddComponent {
   }
   isFileInvalid: boolean = false;
   selectedFile: File | null = null;
-
+  previewUrl: string | null = null;
   onFileChange(event: any): void {
     const file: File = event.target.files[0];
 
@@ -322,17 +322,24 @@ export class AddComponent {
     }
 
     if (file.size > maxSize) {
-      Swal.fire({
-        icon: 'error',
-        title: 'File Too Large',
-        text: 'Maximum allowed file size is 2MB.',
-      });
+      // Swal.fire({
+      //   icon: 'error',
+      //   title: 'File Too Large',
+      //   text: 'Maximum allowed file size is 2MB.',
+      // });
+      this.notyf.error('Maximum allowed file size is 2MB.');
       event.target.value = ''; // Clear the file input
       this.selectedFile = null;
       return;
     }
 
     this.selectedFile = file;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      this.previewUrl = reader.result as string;
+    };
+    reader.readAsDataURL(file);
   }
 
   //   onFileChange(event: any) {

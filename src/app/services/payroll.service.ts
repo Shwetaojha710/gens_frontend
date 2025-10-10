@@ -105,6 +105,9 @@ baseUrl=environment.apiUrl
     updateReimbursement(obj: any): Observable<any> {
     return this.http.post(`${this.baseUrl}update-reimbursement`, obj);
   }
+    updateReimbursementStatus(obj: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}update-reimbursement-status`, obj);
+  }
     deleteReimbursement(obj: any): Observable<any> {
     return this.http.post(`${this.baseUrl}delete-reimbursement`, obj);
   }

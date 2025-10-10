@@ -34,9 +34,13 @@ export class AttendanceService {
   updateAttendance(obj: any): Observable<any> {
     return this.http.post(`${this.baseUrl}update-attendance`, obj);
   }
-   uploadFile(file: File): Observable<any> {
-        const formData = new FormData();
-    formData.append('file', file);
-    return this.http.post(`${this.baseUrl}upload-attendance`, formData);
+   uploadFile(data:any): Observable<any> {
+    //     const formData = new FormData();
+    // formData.append('file', file);
+    return this.http.post(`${this.baseUrl}upload-attendance`, data);
+  }
+
+    downloadAttendance(obj:any): Observable<Blob> {
+    return this.http.post(`${this.baseUrl}download`, obj, { responseType: 'blob' });
   }
 }

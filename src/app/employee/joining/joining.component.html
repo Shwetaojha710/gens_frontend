@@ -25,6 +25,7 @@
               </div>
             </div>
 
+
             <div class="col-md-3">
               <label class="col-form-label fw-bold">Last Name
                 <span style="color: red"> *</span>
@@ -196,8 +197,7 @@
                 <span style="color: red"> *</span>
               </label>
               <ng-select [items]="shift" bindLabel="label" bindValue="value" [(ngModel)]="personalDetails['shift_id']"
-                [multiple]="false" placeholder="Select shift" name="country" id="select2Danger" #shiftRef="ngModel"
-               >
+                [multiple]="false" placeholder="Select shift" name="country" id="select2Danger" #shiftRef="ngModel">
               </ng-select>
               <small class="text-danger" *ngIf="shiftRef.invalid && shiftRef.touched">
                 Select shift
@@ -234,6 +234,14 @@
               <ng-select [items]="employmentTypes" bindLabel="label" bindValue="value"
                 [(ngModel)]="personalDetails['empType']" [multiple]="false" placeholder="Select Employment Types"
                 name="country" id="select2Danger">
+              </ng-select>
+            </div>
+                <div class="col-md-3">
+              <label class="col-form-label fw-bold">Role
+                <span style="color: red"> *</span>
+              </label>
+              <ng-select [items]="role" bindLabel="label" bindValue="value" [(ngModel)]="personalDetails['role']"
+                [multiple]="false" placeholder="Select Role" name="role" id="select2Danger">
               </ng-select>
             </div>
             <div class="col-md-3">
@@ -284,6 +292,18 @@
               </ng-select>
             </div>
 
+            <div class="col-md-3">
+              <div class="form-group">
+                <label class="col-form-label fw-bold">Employee Code
+                  <span style="color: red">*</span>
+                </label>
+                <input type="text" class="form-control" placeholder="Enter Employee Code"
+                  [(ngModel)]="personalDetails.empCode" name="firstName" required #firstNameRef="ngModel" />
+                <small class="text-danger" *ngIf="firstNameRef.invalid && firstNameRef.touched">
+                  Enter valid First Name
+                </small>
+              </div>
+            </div>
             <div class="col-md-6">
               <label class="col-form-label fw-bold">Permanent Address
                 <span style="color: red"> *</span>
@@ -460,16 +480,15 @@
                 <td>{{item?.si_no}}</td>
 
                 <td>
-                  <div class="d-flex align-items-center"(click)="view(item)">
+                  <div class="d-flex align-items-center" (click)="view(item)">
                     <div class="avatar avatar-sm me-4">
-                                  <!-- <img [src]="item?.profileImage" alt="Document" width="100" height="auto" (click)="openModal()" /> -->
+                      <!-- <img [src]="item?.profileImage" alt="Document" width="100" height="auto" (click)="openModal()" /> -->
 
-                      <img [src]="item?.profileImage" width="100" height="auto"  alt="Avatar"
-                        class="rounded-circle" />
+                      <img [src]="item?.profileImage" width="100" height="auto" alt="Avatar" class="rounded-circle" />
                       <!-- <img *ngIf="item?.['gender']=='Male'" [src]="item?.profileImage" width="100" height="auto"  alt="Avatar"
                         class="rounded-circle" /> -->
                     </div>
-                    <div >
+                    <div>
                       <h6 class="mb-0 text-truncate link-primary">
                         {{ item["firstName"] }} {{ item["lastName"] }}
                       </h6>

@@ -1,35 +1,32 @@
 <div class="container-xxl mt-5">
-<div class="col-xxl">
-<div class="card ">
-   <h5 class="card-header d-flex justify-content-between align-items-center ">
-          <span>  Employee Details</span>
-         <button type="button" class="btn btn-xs btn-primary float-end" (click)="back()">
-              <i class="fa-solid fa-arrow-left"></i>&nbsp;Go To Home
-            </button>
-        </h5>
-          <hr style="margin: -1rem 0 !important" />
+  <div class="col-xxl">
+    <div class="card ">
+      <h5 class="card-header d-flex justify-content-between align-items-center ">
+        <span> Employee Details</span>
+        <button type="button" class="btn btn-xs btn-primary float-end" (click)="back()">
+          <i class="fa-solid fa-arrow-left"></i>&nbsp;Go To Home
+        </button>
+      </h5>
+      <hr style="margin: -1rem 0 !important" />
       <div class="card-body">
-
-
-
-      <div class="row">
-        <div class="col-md-3">
-        <label class="col-form-label fw-bold">Employee Name: </label>
-         {{personalDetails?.firstName}} {{personalDetails?.lastName}}
-        </div>
-        <div class="col-md-3">
-           <label class="col-form-label fw-bold">Employee Code: </label>
-         {{personalDetails?.empCode}}
-        </div>
-        <!-- <div class="col-3">
+        <div class="row">
+          <div class="col-md-3">
+            <label class="col-form-label fw-bold">Employee Name: </label>
+            {{personalDetails?.firstName}} {{personalDetails?.lastName}}
+          </div>
+          <div class="col-md-3">
+            <label class="col-form-label fw-bold">Employee Code: </label>
+            {{personalDetails?.empCode}}
+          </div>
+          <!-- <div class="col-3">
               <label class="col-form-label fw-bold">Designation: </label>
          {{personalDetails['designationId']}}
         </div> -->
 
-      </div>
+        </div>
       </div>
     </div>
-</div>
+  </div>
 
 
   <div class="nav-align-top nav-tabs-shadow mt-2">
@@ -61,6 +58,13 @@
           Salary
         </button>
       </li>
+      <!-- <li class="nav-item" role="presentation">
+        <button type="button" class="nav-link waves-effect" role="tab" data-bs-toggle="tab"
+          data-bs-target="#navs-top-messages-new-salary" aria-controls="navs-top-messages-new-salary"
+          aria-selected="true" (click)="navigateToSalarySetup()">
+          Add Monthly Salary
+        </button>
+      </li> -->
     </ul>
     <div class="tab-content">
       <div class="tab-pane fade active show" id="navs-top-home" role="tabpanel">
@@ -368,7 +372,10 @@
         <hr />
         <div class="row mb-4" id="employee_profile_photo">
           <div>
-            <img [src]="DocumentList" alt="Document" width="100" height="auto" (click)="openModal()" />
+            <!-- Show preview only if an image is selected -->
+            <img *ngIf="previewUrl" [src]="previewUrl" alt="Preview" width="100" height="auto" />
+            <img *ngIf="!previewUrl" [src]="DocumentList" alt="Document" width="100" height="auto"
+              (click)="openModal()" />
           </div>
         </div>
         <div class="row">

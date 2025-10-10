@@ -30,6 +30,7 @@ export class JoiningComponent {
     this.maxDate = `${year}-${month}-${day}`;
   }
   shift: any = [{ value: 'Day', label: 'Day' }, { value: 'Afternoon', label: 'Afternoon' }, { value: 'Night', label: 'Night' }]
+  role: any = [{ value: 'manager', label: 'Manager' }, { value: 'teamLeader', label: 'Team Leader' }, { value: 'employee', label: 'employee' }]
 
   maritalStatusList = [
     { value: 'Single', label: 'Single' },

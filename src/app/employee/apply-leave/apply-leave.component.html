@@ -167,12 +167,12 @@
                 placeholder="Select Leave To"
                 [(ngModel)]="obj['toDate']"
                 aria-describedby="defaultFormControlHelp"
-                #startDateRef="ngModel"
+                #toDateRef="ngModel"
                   [min]="getToDateMin()"
               />
               <small
                 class="text-danger"
-                *ngIf="startDateRef.invalid && startDateRef.touched"
+                *ngIf="toDateRef.invalid && toDateRef.touched"
               >
                 Leave To Is Required
               </small>

@@ -685,7 +685,7 @@
     <div class="col-md">
       <div class="row mb-2 align-items-center">
         <div class="col-md-9">
-          <h5 class="mb-0">Yearly Salary BreakUp</h5>
+          <h5 class="mb-0">Salary Break Down</h5>
         </div>
         <div class="col-md-3 text-end">
           <button *ngIf="createFlag == false" type="button" class="btn btn-xs btn-block btn-primary"
@@ -700,13 +700,14 @@
       </div>
       <hr />
       <div class="row">
-        <div class="col-md-9">
+        <div class="col-md-3">
+   <div class="d-flex">
 
-        </div>
-
-        <div class="col-md-3 ">
-          <div class="d-flex">
-            <ng-select [items]="status" bindLabel="label" bindValue="value" [(ngModel)]="obj['status']"
+             <ng-select [items]="status" bindLabel="label" bindValue="value" [(ngModel)]="obj['status']"
+              [multiple]="false" placeholder="Select Status" name="state" id="select2Danger" class="w-100 mx-2" required
+              #enCashableRef="ngModel" (change)="getSalarySetUpList()">
+            </ng-select>
+            <ng-select [items]="salaryBreakDown" bindLabel="label" bindValue="value" [(ngModel)]="obj['salaryBreakDown']"
               [multiple]="false" placeholder="Select Status" name="state" id="select2Danger" class="w-100 mx-2" required
               #enCashableRef="ngModel" (change)="getSalarySetUpList()">
             </ng-select>
@@ -714,6 +715,12 @@
             &nbsp;Update
           </button> -->
           </div>
+        </div>
+
+        <div class="col-md-9 d-flex justify-content-end ">
+          CTC : &nbsp;<span style="float: right; font-weight: bold; font-size: 16px; ">
+                {{currency?.name}} {{ctc}}
+         </span>
         </div>
 
 

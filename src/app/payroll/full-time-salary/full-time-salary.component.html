@@ -112,10 +112,15 @@
                 <td>{{ item["allowedLeave"] }}</td> -->
 
                 <td>
-                  <button type="button" class="btn btn-outline-success btn-sm" (click)="view(item)">
+                   <button type="button" class="btn btn-outline-success btn-sm" (click)="view(item)">
                     <i class="fas fa-eye"></i>
                   </button>
                   &nbsp;
+                   <button type="button"
+                  class="btn btn-sm btn-outline-danger" (click)="delete(item)">
+                     <i class="fas fa-trash-alt"></i>
+                  </button> &nbsp;
+
                 </td>
               </tr>
             </tbody>
