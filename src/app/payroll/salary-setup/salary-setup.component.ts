@@ -526,70 +526,145 @@ export class SalarySetupComponent {
 
 
 
-  isEarningAllSelected() {
-    this.EarningMasterSelected = this.PayArr.every((item: any) => item.isSelected);
+  // isEarningAllSelected() {
+  //   this.EarningMasterSelected = this.PayArr.every((item: any) => item.isSelected);
 
-    this.ComponentList = this.ComponentList.map((item: any) => {
-      // preserve original amount if not already saved
-      if (item.original_amount === undefined) {
-        item.original_amount = item.calculated_amount;
-      }
+  //   this.ComponentList = this.ComponentList.map((item: any) => {
+  //     // preserve original amount if not already saved
+  //     if (item.original_amount === undefined) {
+  //       item.original_amount = item.calculated_amount;
+  //     }
 
-      return {
-        ...item,
-        calculated_amount: item.isSelected == false ? 0 : item.original_amount,
-        status: item.isSelected == false ? 'inactive' : 'active',
-      };
-    });
+  //     return {
+  //       ...item,
+  //       calculated_amount: item.isSelected == false ? 0 : item.original_amount,
+  //       status: item.isSelected == false ? 'inactive' : 'active',
+  //     };
+  //   });
 
-    this.PayArr = this.PayArr.map((item: any) => {
-      // preserve original amount if not already saved
-      if (item.original_amount === undefined) {
-        item.original_amount = item.calculated_amount;
-      }
+  //   this.PayArr = this.PayArr.map((item: any) => {
+  //     // preserve original amount if not already saved
+  //     if (item.original_amount === undefined) {
+  //       item.original_amount = item.calculated_amount;
+  //     }
 
-      return {
-        ...item,
-        calculated_amount: item.isSelected == false ? 0 : item.original_amount,
-        status: item.isSelected == false ? 'inactive' : 'active',
-      };
-    });
-
-    // 🔹 Recalculate totals
-    this.recalculateFinalRecord();
-  }
+  //     return {
+  //       ...item,
+  //       calculated_amount: item.isSelected == false ? 0 : item.original_amount,
+  //       status: item.isSelected == false ? 'inactive' : 'active',
+  //     };
+  //   });
 
 
+  //   this.recalculateFinalRecord();
+  // }
+isEarningAllSelected() {
+  this.EarningMasterSelected = this.PayArr.every((item: any) => item.isSelected);
+
+  this.PayArr = this.PayArr.map((item: any) => {
+    if (item.original_amount === undefined) {
+      item.original_amount = item.calculated_amount;
+    }
+
+    const isSelected = !!item.isSelected;
+
+    return {
+      ...item,
+      calculated_amount: isSelected ? item.original_amount : 0,
+      status: isSelected ? 'active' : 'inactive',
+    };
+  });
+
+
+  this.ComponentList = this.ComponentList.map((comp: any) => {
+    const payItem = this.PayArr.find((p: any) => p.componentId == comp.componentId);
+    if (!payItem) return comp;
+
+    if (comp.original_amount === undefined) {
+      comp.original_amount = comp.calculated_amount;
+    }
+
+    const isSelected = !!payItem.isSelected;
+
+    return {
+      ...comp,
+      calculated_amount: isSelected ? comp.original_amount : 0,
+      status: isSelected ? 'active' : 'inactive',
+    };
+  });
+
+  this.recalculateFinalRecord();
+}
+
+
+  // isDeductionAllSelected() {
+  //   this.DeductionMasterSelected = this.DedArr.every((item: any) => item.isSelected);
+
+  //   this.ComponentList = this.ComponentList.map((item: any) => {
+  //     if (item.original_amount === undefined) {
+  //       item.original_amount = item.calculated_amount;
+  //     }
+
+  //     return {
+  //       ...item,
+  //       calculated_amount: item.isSelected == false ? 0 : item.original_amount,
+  //       status: item.isSelected == false ? 'inactive' : 'active',
+  //     };
+  //   });
+
+  //   this.DedArr = this.DedArr.map((item: any) => {
+  //     if (item.original_amount === undefined) {
+  //       item.original_amount = item.calculated_amount;
+  //     }
+
+  //     return {
+  //       ...item,
+  //       calculated_amount: item.isSelected == false ? 0 : item.original_amount,
+  //       status: item.isSelected == false ? 'inactive' : 'active',
+  //     };
+  //   });
+
+
+  //   this.recalculateFinalRecord();
+  // }
   isDeductionAllSelected() {
-    this.DeductionMasterSelected = this.DedArr.every((item: any) => item.isSelected);
+  this.DeductionMasterSelected = this.DedArr.every((item: any) => item.isSelected);
 
-    this.ComponentList = this.ComponentList.map((item: any) => {
-      if (item.original_amount === undefined) {
-        item.original_amount = item.calculated_amount;
-      }
+  this.DedArr = this.DedArr.map((item: any) => {
+    if (item.original_amount === undefined) {
+      item.original_amount = item.calculated_amount;
+    }
 
-      return {
-        ...item,
-        calculated_amount: item.isSelected == false ? 0 : item.original_amount,
-        status: item.isSelected == false ? 'inactive' : 'active',
-      };
-    });
+    const isSelected = !!item.isSelected;
 
-    this.DedArr = this.DedArr.map((item: any) => {
-      if (item.original_amount === undefined) {
-        item.original_amount = item.calculated_amount;
-      }
+    return {
+      ...item,
+      calculated_amount: isSelected ? item.original_amount : 0,
+      status: isSelected ? 'active' : 'inactive',
+    };
+  });
 
-      return {
-        ...item,
-        calculated_amount: item.isSelected == false ? 0 : item.original_amount,
-        status: item.isSelected == false ? 'inactive' : 'active',
-      };
-    });
+  this.ComponentList = this.ComponentList.map((comp: any) => {
+    const dedItem = this.DedArr.find((d: any) => d.componentId === comp.componentId); // replace `id` if you use another key
 
-    // 🔹 Recalculate totals
-    this.recalculateFinalRecord();
-  }
+    if (!dedItem) return comp;
+
+    if (comp.original_amount === undefined) {
+      comp.original_amount = comp.calculated_amount;
+    }
+
+    const isSelected = !!dedItem.isSelected;
+
+    return {
+      ...comp,
+      calculated_amount: isSelected ? comp.original_amount : 0,
+      status: isSelected ? 'active' : 'inactive',
+    };
+  });
+
+  this.recalculateFinalRecord();
+}
+
 
   getStatusClass(status: any): string {
     switch (status) {

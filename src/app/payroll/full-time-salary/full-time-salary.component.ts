@@ -79,7 +79,7 @@ export class FullTimeSalaryComponent {
   }
   employeeSalaryData: any[] = [];
 
-  async generate_Salary() {
+  async generate_Salary() { 
 
 
     this.employeeSalaryData = [];

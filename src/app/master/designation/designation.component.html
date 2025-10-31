@@ -189,8 +189,8 @@
               </tr>
             </thead>
             <tbody class="table-border-bottom-0">
-              <tr *ngFor="let item of desigantionList; let i = index">
-                <td>{{ i + 1 }}</td>
+              <tr *ngFor="let item of filteredDesignation; let i = index">
+                <td>{{ item.si_no }}</td>
                 <td>{{ item.name }}</td>
                 <td>{{ item.departmentName }}</td>
                 <td>

@@ -139,7 +139,7 @@ originalList :any = []
       !this.validateField( this.obj.graceMinutes, 'Grace Minute') ||
       !this.validateField(this.obj.lateAllowanceMin, 'Allowed late') ||
       !this.validateField(this.obj.halfDayThreshold, 'final late timing') ||
-      !this.validateField(this.obj.halfdayToAbsentMin, 'Half Day to Absent Minute')
+      !this.validateField(this.obj.halfdayToAbsentMin, ' Full Day to Absent Minute')
     ) {
       return;
     }

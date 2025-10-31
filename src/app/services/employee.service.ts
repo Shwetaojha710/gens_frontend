@@ -108,6 +108,9 @@ getAssignLeaveList(obj: any): Observable<any> {
 updateAssignedLeave(id: any, dept: any): Observable<any> {
   return this.http.post<any>(`${this.baseUrl}update-assign-leave`, dept);
 }
+deleteAssignLeave( dept: any): Observable<any> {
+  return this.http.post<any>(`${this.baseUrl}delete-assign-leave`, dept);
+}
 
 
 }

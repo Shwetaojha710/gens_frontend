@@ -36,6 +36,22 @@ export class AssignLeaveComponent {
   currentPage = 1;
   itemsPerPage = 10;
   totalPages = 0;
+   monthList = [
+    { value: '1', label: 'January' },
+    { value: '2', label: 'February' },
+    { value: '3', label: 'March' },
+    { value: '4', label: 'April' },
+    { value: '5', label: 'May' },
+    { value: '6', label: 'June' },
+    { value: '7', label: 'July' },
+    { value: '8', label: 'August' },
+    { value: '9', label: 'September' },
+    { value: '10', label: 'October' },
+    { value: '11', label: 'November' },
+    { value: '12', label: 'December' }
+  ];
+
+  MonthObj:any={'1':'January','2':'February','3':'March','4':'April','5':'May','6':'June','7':'July','8':'August','9':'September','10':'October','11':'November','12':'December'}
   updateDisplayedList() {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
@@ -269,7 +285,7 @@ export class AssignLeaveComponent {
     let obj: any = {}
     obj['id'] = id
 
-    this.empService.deleteexperience(obj).subscribe({
+    this.empService.deleteAssignLeave(obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
         let message = response.message ? response.message : 'Data found Successfully';

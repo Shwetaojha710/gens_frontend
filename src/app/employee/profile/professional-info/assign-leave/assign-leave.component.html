@@ -43,6 +43,34 @@
                   Year Is required
                 </small>
           </div>
+
+               <div class="col-3">
+            <label for="defaultFormControlInput" class="form-label">Select Month
+              <span style="color: red"> * </span>
+            </label>
+            <ng-select
+              [items]="monthList"
+              bindLabel="label"
+              bindValue="value"
+              [(ngModel)]="obj['month']"
+              [multiple]="false"
+              placeholder="Select Month"
+              name="state"
+              id="select2Danger"
+              required
+              #monthRef="ngModel"
+            >
+            </ng-select>
+
+
+                <small
+                  class="text-danger"
+                  *ngIf="monthRef.invalid && monthRef.touched"
+                >
+                  Month Is required
+                </small>
+          </div>
+
           <div class="col-3">
             <label for="defaultFormControlInput" class="form-label"
               >Leave Type</label
@@ -226,8 +254,8 @@
               <tr>
                 <th>SI.No</th>
                 <th>Year</th>
+                <th>Month</th>
                 <th>Leave Name</th>
-
                 <th>Assigned Leave</th>
                 <th>Carry Forwarded</th>
                 <th>remainingLeaves</th>
@@ -240,6 +268,7 @@
               <tr *ngFor="let item of LeaveList; let i = index">
                 <th scope="row">{{ i + 1 }}</th>
                 <td>{{ item["year"] }}</td>
+                <td>{{ MonthObj[item["month"]] }}</td>
                 <td>{{ item["leaveTypeName"] }}</td>
                 <td>
                   {{ item["totalAssigned"] }}
@@ -264,13 +293,13 @@
 
                 <td>{{ item["createdAt"] }}</td>
                 <td>
-                  <button
+                  <!-- <button
                     type="button"
                     class="btn btn-outline-success btn-sm"
                     (click)="update(item)"
                   >
                     <i class="fas fa-edit"></i>
-                  </button>
+                  </button> -->
                   &nbsp;
                   <button
                     type="button"
