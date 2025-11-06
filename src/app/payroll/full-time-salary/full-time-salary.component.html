@@ -69,7 +69,9 @@
           </button>
         </h5>
 
-        <div class="table-responsive text-nowrap">
+
+           <app-search-pagination [totalItems]="SalaryArr.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
+          (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
           <table class="table table-hover">
             <thead>
               <tr>
@@ -92,7 +94,7 @@
               </tr>
             </thead>
             <tbody class="table-border-bottom-0">
-              <tr *ngFor="let item of SalaryArr; let i = index">
+              <tr *ngFor="let item of filteredSalary; let i = index">
                 <td>
                   <input type="checkbox" [(ngModel)]="item.isSelected" (change)="isAllSelected()" />
                 </td>
@@ -125,7 +127,65 @@
               </tr>
             </tbody>
           </table>
-        </div>
+           </app-search-pagination>
+
+        <!-- <div class="table-responsive text-nowrap">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>
+                  <input type="checkbox" [(ngModel)]="masterSelected" (change)="checkUncheckAll()" />
+                </th>
+                <th>SI.No</th>
+                <th>Employee Id</th>
+                <th>Monthly Salary</th>
+                <th>Monthly Deduction</th>
+                <th>Bonus</th>
+                <th>Net Pay</th>
+
+                <th>Total Leave Days</th>
+                <th>Total Working Days</th>
+                <th>Full Days</th>
+                <th>Absent Days</th>
+                <th>Allowed Leave</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+              <tr *ngFor="let item of SalaryArr; let i = index">
+                <td>
+                  <input type="checkbox" [(ngModel)]="item.isSelected" (change)="isAllSelected()" />
+                </td>
+                <th scope="row">{{ i + 1 }}</th>
+                <td>
+                  {{ item["empCode"] }}
+                  {{ item["employeeName"] }}
+                </td>
+                <td>{{ item["TotalSalary"] }}</td>
+                <td>{{ item["totalDeduction"] }}</td>
+                <td>{{ item["bonusamount"] ||0 }}</td>
+                <td>{{ item["basePay"] }}</td>
+                <td>{{ item["totalLeaveDays"] }}</td>
+                <td>{{ item["totalWorkingDays"] }}</td>
+                <td>{{ item["fullDays"] }}</td>
+                <td>{{ item["absentDays"] }}</td>
+                <td>{{ item["allowedLeave"] }}</td>
+
+                <td>
+                   <button type="button" class="btn btn-outline-success btn-sm" (click)="view(item)">
+                    <i class="fas fa-eye"></i>
+                  </button>
+                  &nbsp;
+                   <button type="button"
+                  class="btn btn-sm btn-outline-danger" (click)="delete(item)">
+                     <i class="fas fa-trash-alt"></i>
+                  </button> &nbsp;
+
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div> -->
       </div>
     </div>
   </div>

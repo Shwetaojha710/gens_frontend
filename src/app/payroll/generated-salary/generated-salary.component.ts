@@ -248,6 +248,12 @@ export class GeneratedSalaryComponent {
         if (status == true) {
 
           this.notyf.success(message)
+          response.data=response.data.map((item:any, index: any)=>{
+            return{
+              ...item,
+          si_no: index + 1,
+            }
+          })
           this.SalaryArr = response.data
           this.originalList = response.data
           console.log(this.SalaryArr, "salary Array");
