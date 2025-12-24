@@ -5,8 +5,8 @@ export const environment = {
   //  apiUrl:  'http://192.168.23.13:3001/api/' //ABHISHEK sir
   //  apiUrl:  'http://192.168.23.13:3001/api/' //ABHISHEK sir
   //  apiUrl:   'https://gens.demoquaeretech.in/api/api/', //self
-    firebase: {
-   apiKey: "AIzaSyCBII2E72DiTXfMWyRLoQ2JGtz9EZ1TXks",
+  firebase: {
+  apiKey: "AIzaSyCBII2E72DiTXfMWyRLoQ2JGtz9EZ1TXks",
   authDomain: "gens-7d05d.firebaseapp.com",
   projectId: "gens-7d05d",
   storageBucket: "gens-7d05d.firebasestorage.app",

@@ -58,7 +58,8 @@ export class NavbarComponent {
         { title: 'Attendance Logs', icon: 'ri-calendar-line', link: '/layout/attendance/logs' },
         { title: 'Leaves', icon: 'ri-leaf-line', link: '/layout/attendance/leaves' },
 
-        { title: 'Upload Attendance', icon: 'ri-upload-cloud-line', link: '/layout/attendance/upload-attendance' }
+        { title: 'Upload Attendance', icon: 'ri-upload-cloud-line', link: '/layout/attendance/upload-attendance' },
+        { title: 'Regularize', icon: 'ri-upload-cloud-line', link: '/layout/attendance/regularize' }
 
       ]
     },
@@ -96,6 +97,7 @@ export class NavbarComponent {
         { title: 'Salary Component', icon: 'ri-wallet-2-line', link: '/layout/master/salary-component' },
         // { title: 'Currency', icon: 'ri-copper-coin-line', link: '/layout/master/currency' },
         { title: 'Pay Slip Setup', icon: 'ri-file-pdf-2-line', link: '/layout/master/pay-slip' },
+        { title: 'Branch', icon: 'ri-file-pdf-2-line', link: '/layout/master/branch' },
 
         // {title: 'Attendance Master', icon: 'ri-file-line', link: '/layout/master/salary-master'}
 

@@ -29,7 +29,7 @@ export class MessagingService {
         console.log(' FCM Token:', currentToken);
         return currentToken;
       } else {
-        console.warn(' No registration token available.');
+        console.warn('No registration token available.');
         return null;
       }
     } catch (err) {

@@ -353,12 +353,23 @@ export class JoiningComponent {
         // this.notyf.success(response.message || 'Employees loaded successfully');
         this.employees = [];
         this.cardData = response.data.cardData
+        if(this.activeFlag==true){
         this.employees = response.data.formattedEmps || [];
         this.originalList = response.data.formattedEmps || [];
         this.employeeList = response.data?.formattedEmps?.map((item: any) => ({
           value: item.id,
           label: `${item?.empCode}-${item.firstName} ${item?.lastName || ''}`
         }));
+        }
+        else if(this.inActiveFlag==true){
+           this.employees = response.data.formattedInactivemps || [];
+        this.originalList = response.data.formattedInactivemps || [];
+        this.employeeList = response.data?.formattedInactivemps?.map((item: any) => ({
+          value: item.id,
+          label: `${item?.empCode}-${item.firstName} ${item?.lastName || ''}`
+        }));
+        }
+
         this.employees = this.employees.map((item: any, index: any) => {
           return {
             ...item,
@@ -394,6 +405,8 @@ export class JoiningComponent {
     );
 
   }
+    status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
+
   async update(data: any) {
 
     this.personalDetails = Object.assign({}, data);
@@ -409,6 +422,20 @@ export class JoiningComponent {
     this.employeeList = this.employeeList.filter((item: any) => item.value != this.personalDetails.id);
     this.createFlag = true;
     this.updateFlag = true;
+  }
+
+  inActiveFlag:any=false
+  activeFlag:any=true
+
+  async checkStatus(){
+   this.inActiveFlag=true
+   this.activeFlag=false
+   await this.loadEmployees()
+  }
+  async checkActiveStatus(){
+   this.inActiveFlag=false
+   this.activeFlag=true
+   await this.loadEmployees()
   }
   updateform() {
     this.createFlag = false;

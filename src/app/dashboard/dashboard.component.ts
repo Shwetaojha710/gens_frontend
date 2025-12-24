@@ -17,6 +17,9 @@ import {
 import { DashboardService } from '../services/dashboard.service';
 import { Notyf } from 'notyf';
 import { MasterService } from '../services/master.service';
+import { NgSelectModule } from '@ng-select/ng-select';
+import { BrowserModule } from '@angular/platform-browser';
+import { FormsModule } from '@angular/forms';
 export type ChartOptions = {
   series: ApexAxisChartSeries;
   chart: ApexChart;
@@ -28,7 +31,7 @@ export type ChartOptions = {
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterModule, NgApexchartsModule, CommonModule],
+  imports: [RouterModule, NgApexchartsModule, CommonModule, NgSelectModule, FormsModule],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -36,47 +39,11 @@ export class DashboardComponent {
   @ViewChild("chart") chart: ChartComponent | undefined;
   notyf: Notyf = new Notyf();
   public chartOptions!: Partial<ChartOptions>;
+  branchList: any
+  obj: any = {};
 
-  constructor(private dashboardService: DashboardService, private router: Router,public masterService:MasterService) {
-    // this.chartOptions = {
-    //   series: [
-    //     {
-    //       name: "basic",
-    //       data: [2, 5, 4, 3, 1, 2, 3, 11, 12, 10]
-    //     }
-    //   ],
-    //   chart: {
-    //     type: "bar",
-    //     height: 300
-    //   },
-    //   plotOptions: {
-    //     bar: {
-    //       horizontal: true,
-    //       distributed: true  // ✅ Each bar gets its own color
-    //     }
-    //   },
-    //   dataLabels: {
-    //     enabled: false
-    //   },
-    //   xaxis: {
-    //     categories: [
-    //       "UI/UX Designer",
-    //       "React Developer",
-    //       "Dot Net Developer",
-    //       "AI/ML Developer",
-    //       "Application Tester",
-    //       "Sales",
-    //       "HR Management",
-    //       "BDE",
-    //       "Frontend Developer",
-    //       "Trainee"
-    //     ]
-    //   },
-    //   colors: [
-    //     "#FF5733", "#33FF57", "#3357FF", "#F39C12", "#8E44AD",
-    //     "#2ECC71", "#E74C3C", "#3498DB", "#9B59B6", "#34495E"
-    //   ]
-    // };
+  constructor(private dashboardService: DashboardService, private router: Router, public masterService: MasterService) {
+     this.getBranchDD()
   }
   stats: any = []
   employeeList: any = []
@@ -85,46 +52,11 @@ export class DashboardComponent {
   baseurl: any;
   Event: any = []
 
-//   constructor() {
-//     this.chartOptions = {
-//       series: [
-//         {
-//           name: "basic",
-//           data: [2, 5, 4, 3, 1, 2, 3, 11, 12, 10]
-//         }
-//       ],
-//       chart: {
-//         type: "bar",
-//         height: 320
-//       },
-//       plotOptions: {
-//         bar: {
-//           horizontal: true,
-//           distributed: true  // ✅ Each bar gets its own color
-//         }
-//       },
-//       dataLabels: {
-//         enabled: false
-//       },
-//       xaxis: {
-//         categories: [
-//           "UI/UX",
-//           "Development",
-//           "Management",
-//           "HR",
-//           "Testing",
-//           "Marketing",
 
-//         ]
-//       },
-//       colors: [
-//         "#154D71", "#005890", "#3357FF", "#1c6ea4",
-//         "#33a1e0","#3498DB",
-//       ]
-//     };
+  leaveTypes: any = []
 
-leaveTypes:any=[]
   ngOnInit(): void {
+
     // this.baseurl = localStorage.getItem('base_url')?.replace(/["\\,]/g, '') || '';
     this.baseurl = this.masterService.getBaseUrl();
 
@@ -134,7 +66,7 @@ leaveTypes:any=[]
     this.chartOptions = {}
     this.holidayList = []
     this.leaveList = []
-    this.leaveTypes=[]
+    this.leaveTypes = []
     this.dashboardService.getDashboardData().subscribe((res) => {
       if (res.status == true) {
         this.notyf.success(res.message || 'Dashboard data loaded successfully')
@@ -142,7 +74,7 @@ leaveTypes:any=[]
         this.chartOptions = res.data.chartOptions
         this.employeeList = res.data.employees
         this.leaveList = res.data.leaves
-        this.leaveTypes=res.data.leaveMasterList
+        this.leaveTypes = res.data.leaveMasterList
         this.holidayList = res.data.holidays
         this.holidayList = this.holidayList.map((item: any) => {
           return {
@@ -167,4 +99,26 @@ leaveTypes:any=[]
 
   }
 
+  // branch(){
+  //  localStorage.setItem('branchId', JSON.stringify(this.obj['branchId']));
+  // }
+  onBranchChange(branchId: any) {
+  console.log('Selected Branch ID:', branchId);
+  localStorage.setItem('branchId', JSON.stringify(branchId));
+}
+
+  getBranchDD(){
+    this.branchList=[]
+    this.masterService.BranchDD().subscribe((res) => {
+      if (res.status == true) {
+        this.notyf.success(res.message || 'Dashboard data loaded successfully')
+        this.stats = res.data.stats;
+        this.branchList = res.data
+      } else if (res.status == 'expired') {
+        this.router.navigate(['login'])
+      } else {
+        this.notyf.error(res.message || 'Something went wrong')
+      }
+    });
+  }
 }

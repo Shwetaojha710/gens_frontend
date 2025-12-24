@@ -92,7 +92,7 @@ export class DateWiseAttendanceComponent {
       // Check if we came from the dashboard, e.g., via a query param
    this.fromDashboard = this.route.snapshot.queryParamMap.get('fromDashboard');
     const today1 = new Date();
-  if (this.fromDashboard === 'true') {
+  if (this.fromDashboard == 'true') {
     this.obj['emp_id'] = 'All';
 
     const today = new Date();

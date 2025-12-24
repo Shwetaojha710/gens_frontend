@@ -1,4 +1,20 @@
 <div class="container-xxl mt-5">
+  <div class="row">
+      <div class="col-4">
+              <label for="defaultFormControlInput" class="form-label">Select Branch</label>
+                <ng-select
+      [items]="branchList"
+      bindLabel="label"
+      bindValue="value"
+      placeholder="Select Branch"
+      name="branch"
+      [(ngModel)]="obj['branchId']"
+      (ngModelChange)="onBranchChange($event)"
+      #branchIdRef="ngModel">
+    </ng-select>
+            </div>
+  </div>
+  <br>
   <div class="row g-6">
     <div class="col-sm-6 col-lg-3" *ngFor="let item of stats">
       <div class="card h-100" [style.background-color]="item.color" style="border-width: 2px; border-style: solid">
@@ -19,6 +35,19 @@
         </div>
       </div>
     </div>
+
+       <!-- <div class="col-md-6 col-xxl-4  order-xxl-1">
+      <div class="card h-100">
+        <div class="card-header d-flex justify-content-between">
+          <div class="card-title mb-0">
+            <h5 class="m-0 me-2">Select Branch</h5>
+          </div>
+
+        </div>
+
+      </div>
+    </div> -->
+
     <div class="col-md-6 col-xxl-4  order-xxl-1">
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between">
