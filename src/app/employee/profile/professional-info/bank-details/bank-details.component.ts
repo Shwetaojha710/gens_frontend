@@ -162,7 +162,7 @@ this.obj['accountNumber']=this.obj['accountNumber'].toString()
   }
   updatedata() {
     this.obj['id']=this.editingId
-      this.obj['employeeId']=this.personalDetails.id
+    this.obj['employeeId']=this.personalDetails.id
     this.empService.updateBank(this.editingId, this.obj).subscribe({
       next: (response: any) => {
         console.log('response', response);

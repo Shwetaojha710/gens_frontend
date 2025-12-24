@@ -21,12 +21,16 @@ import { DataService } from '../../../../services/data.service';
 export class ExperienceComponent {
   obj: any = {}
   notyf: Notyf;
+   minDate: any
   desigantionList: any = []
   personalDetails: any = []
   constructor(public empService: EmployeeService, private router: Router, public statusService: StatusService, public dataService: DataService) {
     this.notyf = new Notyf();
 
     this.personalDetails = JSON.parse(localStorage.getItem('employeeId') || '{}');
+
+
+
   }
   departmentDD: any = []
   async ngOnInit() {
@@ -34,40 +38,16 @@ export class ExperienceComponent {
     await this.fetchexperience()
 
   }
-  // async experiencedd() {
-  //   this.departmentDD = []
+setMinToDate(){
+  if (this.obj?.from) {
+  const fromDate = new Date(this.obj.from);
 
+  if (!isNaN(fromDate.getTime())) {  // ✅ valid date check
+    this.minDate = fromDate.toISOString().split('T')[0]; // YYYY-MM-DD
+  }
+}
 
-  //   this.empService.Departmentsdd().subscribe({
-  //     next: (response: any) => {
-  //       console.log('response', response);
-
-  //       let message = response.message ? response.message : 'Data found Successfully';
-  //       // let status = this.statusService.handleResponseStatus(response.status, message);
-  //       // console.log(status)
-  //       // console.log("response", response);
-
-  //       if (response.status === true) {
-  //         this.departmentDD = response.data;
-  //         // this.notyf.success(message)
-
-  //         this.back()
-  //       }
-  //       else if (response.status === "expired") {
-  //           this.router.navigate(["login"]);
-  //       }
-
-  //       else {
-  //         this.notyf.error(message)
-  //       }
-
-  //     },
-  //     error: (err) => {
-  //       console.error('Error:', err);
-  //       this.notyf.error(err)
-  //     }
-  //   });
-  // }
+}
 
 
   async back() {
@@ -161,6 +141,7 @@ export class ExperienceComponent {
     this.editingId = this.obj.id;
     this.createFlag = true
     this.updateFlag = true
+    this.setMinToDate()
   }
   UpdateData() {
     this.obj['id'] = this.editingId
@@ -231,6 +212,9 @@ export class ExperienceComponent {
     });
 
 
+  }
+   getToDateMin(): string {
+    return this.obj['fromDate'] || this.minDate;
   }
   deleteexperience(id: any) {
     let obj: any = {}

@@ -131,6 +131,7 @@
                 id="select2Danger"
                 required
                 #carryForwardRef="ngModel"
+                (change)="changePaidLeave()"
               >
               </ng-select>
 
@@ -141,7 +142,7 @@
                 (select Carry Forward Allowed )
               </small>
             </div>
-            <div class="col-3">
+            <div class="col-3" *ngIf="cr_flag">
               <label for="defaultFormControlInput" class="form-label">
                 Max Carry Forward Days
                 <span style="color: red">*</span>

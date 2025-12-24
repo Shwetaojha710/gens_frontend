@@ -98,9 +98,9 @@ export class QualificationComponent {
   }
 
   onSubmit() {
-    // if (!ValidationUtil.showRequiredError('Document name', this.obj.name, this.notyf)) {
-    //   return;
-    // }
+    if (!ValidationUtil.showRequiredError('Document type', this.obj.type, this.notyf)) {
+      return;
+    }
 
 
     const uploadData = new FormData();
@@ -109,14 +109,16 @@ export class QualificationComponent {
     if (this.selectedFile) {
       uploadData.append('doc_name', this.selectedFile, this.selectedFile.name);
     } else {
-      Swal.fire({
-        toast: true,
-        position: "top",
-        showConfirmButton: false,
-        icon: "warning",
-        timer: 5000,
-        title: "Select a file to upload",
-      });
+
+      this.notyf.error("Select a file to upload")
+      // Swal.fire({
+      //   toast: true,
+      //   position: "top",
+      //   showConfirmButton: false,
+      //   icon: "warning",
+      //   timer: 5000,
+      //   title: "Select a file to upload",
+      // });
       return;
     }
 
@@ -130,7 +132,7 @@ export class QualificationComponent {
         console.log("response", response);
 
         if (status === true) {
-            this.fileInput.nativeElement.value = '';
+          this.fileInput.nativeElement.value = '';
           this.notyf.success(message)
           this.fetchDocument();
           this.resetForm();
@@ -140,7 +142,7 @@ export class QualificationComponent {
         }
 
         else {
-            this.fileInput.nativeElement.value = '';
+          this.fileInput.nativeElement.value = '';
           this.notyf.error(message)
         }
 
@@ -158,14 +160,14 @@ export class QualificationComponent {
     this.editingId = this.obj.id;
     this.createFlag = true
     this.updateFlag = true
-       if (this.obj?.doc_name) {
-    const fileUrl = `${this.obj.doc_name}`; // ✅ adjust your API file path
-    this.sanitizedImage = this.sanitizer.bypassSecurityTrustResourceUrl(fileUrl);
-    this.fileType = this.obj.doc_type;
-  } else {
-    this.sanitizedImage = null;
-    this.fileType = null;
-  }
+    if (this.obj?.doc_name) {
+      const fileUrl = `${this.obj.doc_name}`; // ✅ adjust your API file path
+      this.sanitizedImage = this.sanitizer.bypassSecurityTrustResourceUrl(fileUrl);
+      this.fileType = this.obj.doc_type;
+    } else {
+      this.sanitizedImage = null;
+      this.fileType = null;
+    }
     this.documentdd()
   }
   updatedata() {
@@ -178,16 +180,16 @@ export class QualificationComponent {
     uploadData.append('typeName', this.personalDetails.typeName)
     if (this.selectedFile) {
       uploadData.append('doc_name', this.selectedFile, this.selectedFile.name);
-    }else{
+    } else {
 
-          if (this.obj.doc_name) {
-      uploadData.append('doc_name', this.obj.doc_name);
-      uploadData.append('doc_type', this.obj.doc_type);
-    }else{
-  this.notyf.error('Select a file to upload')
-    return;
+      if (this.obj.doc_name) {
+        uploadData.append('doc_name', this.obj.doc_name);
+        uploadData.append('doc_type', this.obj.doc_type);
+      } else {
+        this.notyf.error('Select a file to upload')
+        return;
+      }
     }
-  }
 
 
     this.Documentervice.updateDocument(uploadData).subscribe({
@@ -304,7 +306,7 @@ export class QualificationComponent {
   isFileInvalid: boolean = false;
   selectedFile: File | null = null;
   sanitizedImage: any;
-  fileType:any;
+  fileType: any;
   onFileChange(event: any) {
     const file = event.target.files[0];
 
@@ -317,7 +319,7 @@ export class QualificationComponent {
       if (!allowedTypes.includes(file.type)) {
         this.isFileInvalid = true;
         this.selectedFile = null;
-       this.fileInput.nativeElement.value = '';
+        this.fileInput.nativeElement.value = '';
         this.notyf.error('Only PDF and image files are allowed.');
         return;
       }
@@ -331,7 +333,7 @@ export class QualificationComponent {
     reader.onload = () => {
       const imageUrl = reader.result as string;
       this.sanitizedImage = this.sanitizer.bypassSecurityTrustUrl(imageUrl);
-         this.fileType = file.type; // store type for template
+      this.fileType = file.type; // store type for template
     };
     reader.readAsDataURL(file);
   }
@@ -340,6 +342,7 @@ export class QualificationComponent {
     this.selectedFile = null;
     this.isFileInvalid = false;
     this.fileInput.nativeElement.value = '';
+    this.obj.doc_name = null
   }
   imageUrls: any;
   openModal1(imageUrl: any) {

@@ -51,18 +51,25 @@ export class LeavesComponent {
 
     await this.fetchLeaveList();
   }
-
+  cr_flag: any = false
+  changePaidLeave() {
+    if (this.obj['carryForward'] == true) {
+      this.cr_flag = true
+    } else {
+      this.cr_flag = false
+    }
+  }
   pageSize = 5;
   currentPage = 1;
   searchTerm = '';
   itemsPerPage = 10;
   onSearch(term: string) {
-    if(!term){
+    if (!term) {
       this.fetchLeaveList()
-    }else{
-this.searchTerm = term.toLowerCase();
-    this.currentPage = 1;
-    this.applyFilters();
+    } else {
+      this.searchTerm = term.toLowerCase();
+      this.currentPage = 1;
+      this.applyFilters();
     }
 
   }
@@ -97,7 +104,7 @@ this.searchTerm = term.toLowerCase();
       );
     }
 
-let data = [...this.leaveList];
+    let data = [...this.leaveList];
     // pagination
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
@@ -152,7 +159,7 @@ let data = [...this.leaveList];
       !this.validateField(this.obj.isPaid, 'isPaid') ||
       !this.validateField(this.obj.leaveCode, 'Leave Code') ||
       !this.validateField(this.obj.leaveName, 'Leave Name') ||
-      !this.validateField(this.obj.maxCarryForward, 'Max Carry Forward Days') ||
+
       !this.validateField(this.obj.requiresApproval, 'Requires Approval ')
     ) {
       return;
@@ -174,7 +181,7 @@ let data = [...this.leaveList];
           this.resetForm();
         }
         else if (status === "expired") {
-            this.router.navigate(["login"]);
+          this.router.navigate(["login"]);
         }
 
         else {
@@ -210,7 +217,7 @@ let data = [...this.leaveList];
           this.resetForm();
         }
         else if (status === "expired") {
-            this.router.navigate(["login"]);
+          this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -263,7 +270,7 @@ let data = [...this.leaveList];
           this.fetchLeaveList();
         }
         else if (status === "expired") {
-            this.router.navigate(["login"]);
+          this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

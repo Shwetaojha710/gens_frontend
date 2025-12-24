@@ -57,40 +57,45 @@ import { PageNotFoundComponent } from './page-not-found/page-not-found.component
 
 import { PayslipOrderComponent } from './master/payslip-order/payslip-order.component';
 import { ReimbursementComponent } from './payroll/reimbursement/reimbursement.component';
+import { EmpProfileComponent } from './emp-profile/emp-profile.component';
+import { RegularizeComponent } from './attendance/regularize/regularize.component';
+import { BranchComponent } from './master/branch/branch.component';
 
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
-  { path: '', redirectTo: '/Home', pathMatch: 'full'},
-  { path: 'Home', component: LandingPageComponent},
+  { path: '', redirectTo: '/Home', pathMatch: 'full' },
+  { path: 'Home', component: LandingPageComponent },
   { path: 'login', component: LoginComponent },
-  
- { path: 'check-out', component: CheckoutComponent},
+  { path: 'emp-profile', component: EmpProfileComponent },
+
+  { path: 'check-out', component: CheckoutComponent },
   {
     path: 'layout',
     component: LayoutComponent,
     canActivate: [AuthGuard],
     children: [
-       { path: 'dashboard', component: DashboardComponent },
+      { path: 'dashboard', component: DashboardComponent },
       {
         path: 'employee',
         children: [
           { path: 'list', component: ListComponent },
           { path: 'joining', component: JoiningComponent },
-             { path: 'apply-leave', component: ApplyLeaveComponent },
-          { path: 'add', component: AddComponent,
-             children: [
-        { path: 'profile/professional-info/qualification', component: QualificationComponent },
-        { path: 'profile/professional-info/personal', component: PersonalDetailsComponent },
-        { path: 'profile/professional-info/experience', component: ExperienceComponent },
-        { path: 'profile/professional-info/skills', component: SkillsComponent },
-        { path: 'profile/professional-info/salary', component: SalaryStructureComponent },
-        { path: 'profile/professional-info/documents', component: DocumentsComponent },
-        { path: 'profile/professional-info/bank-details', component: BankDetailsComponent },
-        { path: 'profile/professional-info/assign-leave', component: AssignLeaveComponent },
-           { path: 'profile/professional-info/salary-setup', component: SalarySetupComponent }
-      ]
+          { path: 'apply-leave', component: ApplyLeaveComponent },
+          {
+            path: 'add', component: AddComponent,
+            children: [
+              { path: 'profile/professional-info/qualification', component: QualificationComponent },
+              { path: 'profile/professional-info/personal', component: PersonalDetailsComponent },
+              { path: 'profile/professional-info/experience', component: ExperienceComponent },
+              { path: 'profile/professional-info/skills', component: SkillsComponent },
+              { path: 'profile/professional-info/salary', component: SalaryStructureComponent },
+              { path: 'profile/professional-info/documents', component: DocumentsComponent },
+              { path: 'profile/professional-info/bank-details', component: BankDetailsComponent },
+              { path: 'profile/professional-info/assign-leave', component: AssignLeaveComponent },
+              { path: 'profile/professional-info/salary-setup', component: SalarySetupComponent }
+            ]
 
-           },
+          },
           // { path: 'profile/personal', component: PersonalDetailsComponent },
 
           // { path: 'profile/experience', component: ExperienceComponent },
@@ -106,9 +111,10 @@ export const routes: Routes = [
           { path: 'date-wise-attendance', component: DateWiseAttendanceComponent },
           { path: 'logs', component: LogsComponent },
           { path: 'leaves', component: LeavesComponent },
-           { path: 'salary-master', component: SalaryMasterComponent },
-           { path: 'holiday', component: HolidayComponent },
-           { path: 'upload-attendance', component: AttendanceUploadComponent },
+          { path: 'salary-master', component: SalaryMasterComponent },
+          { path: 'holiday', component: HolidayComponent },
+          { path: 'upload-attendance', component: AttendanceUploadComponent },
+          { path: 'regularize', component: RegularizeComponent },
         ]
       },
       {
@@ -121,6 +127,7 @@ export const routes: Routes = [
           { path: 'deductions', component: DeductionsComponent },
           { path: 'total-salary', component: TotalSalaryComponentComponent },
           { path: 'reimbursement', component: ReimbursementComponent },
+
 
         ]
       },
@@ -136,6 +143,7 @@ export const routes: Routes = [
           { path: 'salary-component', component: SalaryComponentComponent },
           { path: 'currency', component: CurrencyComponent },
           { path: 'pay-slip', component: PayslipOrderComponent },
+          { path: 'branch', component: BranchComponent },
 
         ]
       },
@@ -149,5 +157,5 @@ export const routes: Routes = [
       }
     ]
   },
-  {path:'**',component:PageNotFoundComponent},
+  { path: '**', component: PageNotFoundComponent },
 ];

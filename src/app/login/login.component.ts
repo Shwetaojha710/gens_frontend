@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
-
+import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -35,6 +35,8 @@ export class LoginComponent {
 
     this.notyf = new Notyf();
   }
+passwordVisible: boolean = false;
+
 
   login() {
     if (this.form.invalid) {
@@ -66,8 +68,15 @@ export class LoginComponent {
     });
   }
 
-  isInvalid(field: string): boolean {
-    const control = this.form.get(field);
-    return !!(control && control.touched && control.invalid);
+  // isInvalid(field: string): boolean {
+  //   const control = this.form.get(field);
+  //   return !!(control && control.touched && control.invalid);
+  // }
+  goToEmpProfile(){
+    this.router.navigate(['emp-profile']);
   }
+  isInvalid(controlName: string): boolean {
+  const control = this.form.get(controlName);
+  return control ? control.invalid && (control.dirty || control.touched) : false;
+}
 }

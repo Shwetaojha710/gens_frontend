@@ -73,5 +73,9 @@ logout(){
     });
 
 }
+profilePage(){
 
+  // this.router.navigate(['login']);
+
+}
 }

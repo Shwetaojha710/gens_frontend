@@ -25,6 +25,7 @@
               </div>
             </div>
 
+
             <div class="col-md-3">
               <label class="col-form-label fw-bold">Last Name
                 <span style="color: red"> *</span>
@@ -196,8 +197,7 @@
                 <span style="color: red"> *</span>
               </label>
               <ng-select [items]="shift" bindLabel="label" bindValue="value" [(ngModel)]="personalDetails['shift_id']"
-                [multiple]="false" placeholder="Select shift" name="country" id="select2Danger" #shiftRef="ngModel"
-               >
+                [multiple]="false" placeholder="Select shift" name="country" id="select2Danger" #shiftRef="ngModel">
               </ng-select>
               <small class="text-danger" *ngIf="shiftRef.invalid && shiftRef.touched">
                 Select shift
@@ -234,6 +234,14 @@
               <ng-select [items]="employmentTypes" bindLabel="label" bindValue="value"
                 [(ngModel)]="personalDetails['empType']" [multiple]="false" placeholder="Select Employment Types"
                 name="country" id="select2Danger">
+              </ng-select>
+            </div>
+                <div class="col-md-3">
+              <label class="col-form-label fw-bold">Role
+                <span style="color: red"> *</span>
+              </label>
+              <ng-select [items]="role" bindLabel="label" bindValue="value" [(ngModel)]="personalDetails['role']"
+                [multiple]="false" placeholder="Select Role" name="role" id="select2Danger">
               </ng-select>
             </div>
             <div class="col-md-3">
@@ -284,6 +292,18 @@
               </ng-select>
             </div>
 
+            <div class="col-md-3">
+              <div class="form-group">
+                <label class="col-form-label fw-bold">Employee Code
+                  <span style="color: red">*</span>
+                </label>
+                <input type="text" class="form-control" placeholder="Enter Employee Code"
+                  [(ngModel)]="personalDetails.empCode" name="firstName" required #firstNameRef="ngModel" />
+                <small class="text-danger" *ngIf="firstNameRef.invalid && firstNameRef.touched">
+                  Enter valid First Name
+                </small>
+              </div>
+            </div>
             <div class="col-md-6">
               <label class="col-form-label fw-bold">Permanent Address
                 <span style="color: red"> *</span>
@@ -297,6 +317,22 @@
               </label>
               <textarea class="form-control" rows="4" placeholder="Enter Current Address"
                 [(ngModel)]="personalDetails.currentAddress" name="address"></textarea>
+            </div>
+             <div class="col-4" *ngIf="updateFlag">
+              <label for="defaultFormControlInput" class="form-label"
+                >Status</label
+              >
+              <ng-select
+                [items]="status"
+                bindLabel="label"
+                bindValue="value"
+                [(ngModel)]="personalDetails['status']"
+                [multiple]="false"
+                placeholder="Select Status"
+                name="status"
+                id="select2Danger"
+              >
+              </ng-select>
             </div>
           </div>
           <br />
@@ -362,7 +398,7 @@
         </div>
       </div>
     </div>
-    <div class="col-lg-3 col-sm-6">
+    <div class="col-lg-3 col-sm-6"(click)="checkActiveStatus()">
       <div class="card">
         <div class="card-body">
           <div class="d-flex align-items-center flex-wrap">
@@ -381,7 +417,7 @@
         </div>
       </div>
     </div>
-    <div class="col-lg-3 col-sm-6">
+    <div class="col-lg-3 col-sm-6" (click)="checkStatus()">
       <div class="card">
         <div class="card-body">
           <div class="d-flex align-items-center flex-wrap">
@@ -432,7 +468,7 @@
           </button>
         </div>
 
-        <app-search-pagination [totalItems]="employees.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
+        <app-search-pagination  [totalItems]="employees.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
           (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
           <table class="table table-striped dataTable">
             <thead>
@@ -447,29 +483,20 @@
                 <th>Gender</th>
                 <th>Actions</th>
               </tr>
-              <!-- <tr>
-                  <th>SI.No</th>
-                  <th>Basic Information</th>
-                  <th>Contact Info rmation</th>
-                  <th>createdAt</th>
-                  <th>Actions</th>
-                </tr> -->
+
             </thead>
             <tbody class="table-border-bottom-0">
               <tr *ngFor="let item of filteredDesignation; let i = index">
                 <td>{{item?.si_no}}</td>
 
                 <td>
-                  <div class="d-flex align-items-center"(click)="view(item)">
+                  <div class="d-flex align-items-center" (click)="view(item)">
                     <div class="avatar avatar-sm me-4">
-                                  <!-- <img [src]="item?.profileImage" alt="Document" width="100" height="auto" (click)="openModal()" /> -->
 
-                      <img [src]="item?.profileImage" width="100" height="auto"  alt="Avatar"
-                        class="rounded-circle" />
-                      <!-- <img *ngIf="item?.['gender']=='Male'" [src]="item?.profileImage" width="100" height="auto"  alt="Avatar"
-                        class="rounded-circle" /> -->
+                      <img [src]="item?.profileImage" width="100" height="auto" alt="Avatar" class="rounded-circle" />
+
                     </div>
-                    <div >
+                    <div>
                       <h6 class="mb-0 text-truncate link-primary">
                         {{ item["firstName"] }} {{ item["lastName"] }}
                       </h6>
@@ -505,59 +532,78 @@
                   </button>
                 </td>
               </tr>
-
-              <!-- <tr *ngFor="let item of employees; let i = index">
-                  <th scope="row">{{ i + 1 }}</th>
-                  <td>
-                    <span style="font-weight: bold"> Name: </span>
-                    {{ item["firstName"] }} {{ item["lastName"] }}
-
-                    <br />
-                    <span style="font-weight: bold"> DOB: </span>
-                    {{ item["dateOfBirth"] | date : "dd-MM-yyyy" }}
-                    <br />
-
-                    <span style="font-weight: bold">Gender: </span>
-                    {{ item["gender"] }}
-                    <br />
-                    <span style="font-weight: bold">Marital Status :</span>
-                    {{ item["martialStatus"] }}
-
-                  </td>
-                  <td>
-                    <span style="font-weight: bold">Mobile :</span>
-                    {{ item["mobile"] }}
-                    <br />
-                    <span style="font-weight: bold">Email :</span>
-                    {{ item["email"] }}
-                    <br />
-                    <span style="font-weight: bold">Pan No :</span>
-                    {{ item["panNo"] }}
-                    <br />
-                    <span style="font-weight: bold">Aadhaar Number :</span>
-                    {{ item["adhaarNo"] }}
-                    <br />
-                    <span style="font-weight: bold">Employment Type:</span>
-                    {{ item["emptypename"] }}
-                  </td>
-
-                  <td>{{ item["createdAt"] | date : "M/d/yyyy, h:mm a" }}</td>
-
-                  <td>
-                    <button type="button" class="btn btn-sm btn-outline-secondary" (click)="view(item)">
-                      <i class="far fa-eye"></i></button>&nbsp;
-                    <button type="button" class="btn btn-outline-success btn-sm" (click)="update(item)">
-                      <i class="fas fa-edit"></i>
-                    </button>
-                    &nbsp;
-                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="delete(item)">
-                      <i class="fas fa-trash-alt"></i>
-                    </button>
-                  </td>
-                </tr> -->
             </tbody>
           </table>
         </app-search-pagination>
+
+        <!-- <app-search-pagination *ngIf="inActiveFlag" [totalItems]="employees.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
+          (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
+          <table class="table table-striped dataTable">
+            <thead>
+              <tr>
+                <th>SI.NO </th>
+
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Aadhaar Number</th>
+                <th>Date of Birth</th>
+                <th>Gender</th>
+                <th>Actions</th>
+              </tr>
+
+            </thead>
+            <tbody class="table-border-bottom-0">
+              <tr *ngFor="let item of filteredDesignation; let i = index">
+                <td>{{item?.si_no}}</td>
+
+                <td>
+                  <div class="d-flex align-items-center" (click)="view(item)">
+                    <div class="avatar avatar-sm me-4">
+
+                      <img [src]="item?.profileImage" width="100" height="auto" alt="Avatar" class="rounded-circle" />
+
+                    </div>
+                    <div>
+                      <h6 class="mb-0 text-truncate link-primary">
+                        {{ item["firstName"] }} {{ item["lastName"] }}
+                      </h6>
+                      <small class="text-truncate">{{item?.['designation']}}</small>
+                      <small class="text-truncate">{{item?.empCode}}</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  {{ item["email"] }}
+                </td>
+                <td>
+                  {{ item["mobile"] }}
+                </td>
+                <td>
+                  {{ item["adhaarNo"] }}
+                </td>
+                <td>
+                  {{ item["dateOfBirth"] | date : "dd-MM-yyyy" }}
+                </td>
+                <td>
+                  {{ item["gender"] }}
+                </td>
+                <td>
+                  <button type="button" class="badge badge-center bg-label-secondary" (click)="view(item)">
+                    <i class="far fa-eye"></i></button>&nbsp;
+                  <button type="button" class="badge badge-center bg-label-primary" (click)="update(item)">
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  &nbsp;
+                  <button type="button" class="badge badge-center bg-label-danger" (click)="delete(item)">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </app-search-pagination> -->
+
       </div>
     </div>
   </div>

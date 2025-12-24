@@ -38,6 +38,7 @@ export class ReimbursementComponent {
   // onSubmit() {
   //    console.log(this.obj)
   // }
+  minDate: any
   ReimbursementForm!: FormGroup;
   ReimbursementList: any = [];
   editingId: number | null = null;
@@ -54,12 +55,13 @@ export class ReimbursementComponent {
       name: ['', Validators.required],
       status: ['', [Validators.required]]
     });
-
+    const today = new Date();
+    this.minDate = today.toISOString().split('T')[0]; // today
     this.notyf = new Notyf();
   }
- baseurl: any;
+  baseurl: any;
   async ngOnInit() {
- this.baseurl = this.master.getBaseUrl();
+    this.baseurl = this.master.getBaseUrl();
     await this.empList();
     await this.fetchReimbursement();
   }
@@ -84,8 +86,8 @@ export class ReimbursementComponent {
 
   }
   isFileInvalid: boolean = false;
-  selectedFile: File | null = null;
-
+  selectedFiles: File[] = [];
+  previewFiles: { url: any; type: string; name: string }[] = [];
   sanitizedImage: any;
 
 
@@ -107,11 +109,15 @@ export class ReimbursementComponent {
   //   };
   //   reader.readAsDataURL(file);
   // }
+  getToDateMin(): string {
+    return this.obj['fromDate'] || this.minDate;
+  }
   close() {
     this.sanitizedImage = null;
-    this.selectedFile = null;
+    this.selectedFiles = [];
     this.isFileInvalid = false;
-     this.fileInput.nativeElement.value = '';
+    this.fileInput.nativeElement.value = '';
+    this.obj.image = null
   }
   pageSize = 5;
   currentPage = 1;
@@ -168,59 +174,89 @@ export class ReimbursementComponent {
       default: return 'bg-light-secondary';
     }
   }
-    onFileChange(event: any) {
-    const file = event.target.files[0];
+  onFileChange(event: any) {
+    const files = event.target.files as FileList;
 
-    if (!file) {
+    if (!files || files.length === 0) {
       this.isFileInvalid = true;
-    } else {
+      this.selectedFiles = [];
+      return;
+    }
 
-      const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
+    const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
 
+    this.selectedFiles = [];
+    this.previewFiles = []; // store previews (images or PDF icons)
+
+    for (let i = 0; i < files.length; i++) {
+      const file = files[i];
+
+      // check type
       if (!allowedTypes.includes(file.type)) {
         this.isFileInvalid = true;
-        this.selectedFile = null;
-       this.fileInput.nativeElement.value = '';
+        this.selectedFiles = [];
+        this.fileInput.nativeElement.value = '';
         this.notyf.error('Only PDF and image files are allowed.');
         return;
       }
 
-      this.isFileInvalid = false;
-      this.selectedFile = event.target.files[0]
-      // Save the file to a model or FormData here
+      this.selectedFiles.push(file);
+
+      // preview only for images
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          this.previewFiles.push({
+            url: this.sanitizer.bypassSecurityTrustUrl(reader.result as string),
+            type: file.type,
+            name: file.name
+          });
+        };
+        reader.readAsDataURL(file);
+      } else if (file.type === 'application/pdf') {
+        // push a placeholder for PDFs
+        this.previewFiles.push({
+          url: 'assets/pdf-icon.png', // use your own PDF icon asset
+          type: file.type,
+          name: file.name
+        });
+      }
     }
 
-    const reader = new FileReader();
-    reader.onload = () => {
-      const imageUrl = reader.result as string;
-      this.sanitizedImage = this.sanitizer.bypassSecurityTrustUrl(imageUrl);
-         this.fileType = file.type; // store type for template
-    };
-    reader.readAsDataURL(file);
+    this.isFileInvalid = false;
   }
-    fileType:any;
+
+  fileType: any;
   originalList: any = []
   async fetchReimbursement() {
-    this.ReimbursementList = []
-    this.originalList = []
-    this.payroll.fetchReimbursementList().subscribe(data => {
-      if (data['status'] == true) {
-        // this.notyf.success(data['message']);
-        data.data=data.data.map((item:any)=>{
-          return{
+    this.ReimbursementList = [];
+    this.originalList = [];
+
+    this.payroll.fetchReimbursementList().subscribe({
+      next: (data) => {
+        if (data['status'] === true) {
+          // Map the reimbursement list and fix the image URL path
+          this.ReimbursementList = data.data.map((item: any) => ({
             ...item,
-            image1:`${this.baseurl}${item['image']}`
-          }
-        })
-        this.ReimbursementList = data.data;
-        this.originalList = data.data;
-      } else {
-        this.notyf.error(data['message']);
-      }
+            files: item.files.map((f: any) => ({
+              ...f,
+              image: `${this.baseurl}${f.image}`
+            }))
+          }));
+
+
+          this.originalList = [...this.ReimbursementList];
+        } else {
+          this.notyf.error(data['message']);
+        }
+      },
+      error: (err) => {
+        console.error('Error fetching reimbursement list:', err);
+        this.notyf.error('Failed to fetch reimbursement list.');
+      },
     });
-
-
   }
+
 
   onSubmit() {
     if (!ValidationUtil.showRequiredError('toDate', this.obj.toDate, this.notyf)) {
@@ -241,8 +277,10 @@ export class ReimbursementComponent {
     formData.append('fromDate', this.obj.fromDate);
     formData.append('employeeId', this.obj.employeeId);
     formData.append('remark', this.obj.remark);
-    if (this.selectedFile) {
-      formData.append('image', this.selectedFile, this.selectedFile.name);
+    if (this.selectedFiles && this.selectedFiles.length > 0) {
+      this.selectedFiles.forEach(file => {
+        formData.append('images', file, file.name); // note 'images' as field name
+      });
     } else {
       Swal.fire({
         toast: true,
@@ -250,7 +288,7 @@ export class ReimbursementComponent {
         showConfirmButton: false,
         icon: "warning",
         timer: 5000,
-        title: "Select a file to upload",
+        title: "Select at least one file to upload",
       });
       return;
     }
@@ -293,33 +331,35 @@ export class ReimbursementComponent {
     this.editingId = this.obj.id;
     this.createFlag = true
     this.updateFlag = true
-     if (this.obj?.image1) {
-    const fileUrl = `${this.obj.image1}`; // ✅ adjust your API file path
-    this.sanitizedImage = this.sanitizer.bypassSecurityTrustResourceUrl(fileUrl);
-    this.fileType = this.obj.doc_type;
-  } else {
-    this.sanitizedImage = null;
-    this.fileType = null;
-  }
+    if (this.obj?.image) {
+      const fileUrl = `${this.obj.image}`; // ✅ adjust your API file path
+      this.sanitizedImage = this.sanitizer.bypassSecurityTrustResourceUrl(fileUrl);
+      this.fileType = this.obj.doc_type;
+    } else {
+      this.sanitizedImage = null;
+      this.fileType = null;
+    }
   }
   updatedata() {
-      const formData = new FormData();
+    const formData = new FormData();
     formData.append('amount', this.obj.amount);
     formData.append('toDate', this.obj.toDate);
     formData.append('fromDate', this.obj.fromDate);
     formData.append('employeeId', this.obj.employeeId);
     formData.append('remark', this.obj.remark);
     formData.append('id', this.obj.id);
-    if (this.selectedFile) {
-      formData.append('image', this.selectedFile, this.selectedFile.name);
+    if (this.selectedFiles && this.selectedFiles.length > 0) {
+      this.selectedFiles.forEach(file => {
+        formData.append('images', file, file.name); // use 'images' as field name
+      });
     } else {
-          if (this.obj.image) {
-      formData.append('image', this.obj.image);
-      formData.append('doc_type', this.obj.doc_type);
-    }else{
-  this.notyf.error('Select a file to upload')
-    return;
-    }
+      if (this.obj.image) {
+        formData.append('image', this.obj.image);
+        formData.append('doc_type', this.obj.doc_type);
+      } else {
+        this.notyf.error('Select a file to upload')
+        return;
+      }
 
       // Swal.fire({
       //   toast: true,
@@ -453,6 +493,42 @@ export class ReimbursementComponent {
       }
     }, 0);
   }
+  statuschange(item: any, status: any) {
+    let newObj: any = {}
+    newObj = Object.assign({}, item)
+    // newObj['id']=item.id
+    newObj['status'] = status
+    // newObj['employeeId']=item.employeeId
 
+    this.payroll.updateReimbursementStatus(newObj).subscribe({
+      next: (response: any) => {
+        console.log('response', response);
+
+        let message = response.message ? response.message : 'Data found Successfully';
+        let status = this.statusService.handleResponseStatus(response.status, message);
+        console.log(status)
+        console.log("response", response);
+
+        if (status === true) {
+
+          this.notyf.success(message)
+          this.fetchReimbursement();
+          this.resetForm();
+        }
+        else if (status === "expired") {
+            this.router.navigate(["login"]);
+        }
+
+        else {
+          this.notyf.error(message)
+        }
+
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.notyf.error(err.error?.message)
+      }
+    });
+  }
 
 }

@@ -40,6 +40,7 @@ export class SalarySetupComponent {
   }
   type: any = [{ value: 'fixed', label: 'Fixed' }, { value: 'percentage', label: 'Percentage' }]
   endDateDD: any = [{ value: 'all_period', label: 'ALL Period' }, { value: 'custom', label: 'Custom' }]
+  salaryBreakDown: any = [{ value: 'year', label: 'Yearly' }, { value: 'monthly', label: 'Monthly' }]
   departmentDD: any = []
   async ngOnInit() {
     this.obj['status'] = 'active'
@@ -154,6 +155,7 @@ export class SalarySetupComponent {
   PayArr: any = []
   deductionArr: any = []
   EarningArr: any = []
+  ctc:any=0
   getSalarySetUpList() {
     this.SalArr = []
     this.totalPayable = 0
@@ -179,9 +181,11 @@ export class SalarySetupComponent {
           //   calculated_amount: Math.round(item?.calculated_amount).toFixed(0) || 0,
           //   isSelected: item?.status === 'active'
           // }));
+          this.ctc = response.data.basics[0]?.finalCTC || 0
+
           this.SalArr = [
-            ...response.data.basics.map((item: any) => ({ ...item, component_type: "payable", status: item.status || 'inactive' })),
-            ...response.data.allowances.map((item: any) => ({ ...item, component_type: "payable", status: item.status || 'inactive' })),
+            ...response.data.basics.map((item: any) => ({ ...item, component_type: "Earning", status: item.status || 'inactive' })),
+            ...response.data.allowances.map((item: any) => ({ ...item, component_type: "Earning", status: item.status || 'inactive' })),
             ...response.data.deductions.map((item: any) => ({
               ...item,
               component_name: item?.name,
@@ -189,6 +193,15 @@ export class SalarySetupComponent {
               status: item.status || 'inactive'
             }))
           ];
+          if(this.obj['salaryBreakDown'] == 'monthly'){
+
+            this.SalArr = this.SalArr.map((item: any) => ({
+              ...item,
+              finalAmount:(Number(item?.finalAmount) / 12).toFixed(2) || 0,
+              isSelected: item?.status == 'active'
+            }));
+             this.ctc=  (this.ctc/12).toFixed(2)
+          }
 
           this.updateMasterSelected();
         }
@@ -215,6 +228,7 @@ export class SalarySetupComponent {
   }
   back() {
     this.obj = {}
+    this.obj['status'] = 'active'
     this.createFlag = false
     this.variableFlag = false
   }
@@ -512,70 +526,145 @@ export class SalarySetupComponent {
 
 
 
-  isEarningAllSelected() {
-    this.EarningMasterSelected = this.PayArr.every((item: any) => item.isSelected);
+  // isEarningAllSelected() {
+  //   this.EarningMasterSelected = this.PayArr.every((item: any) => item.isSelected);
 
-    this.ComponentList = this.ComponentList.map((item: any) => {
-      // preserve original amount if not already saved
-      if (item.original_amount === undefined) {
-        item.original_amount = item.calculated_amount;
-      }
+  //   this.ComponentList = this.ComponentList.map((item: any) => {
+  //     // preserve original amount if not already saved
+  //     if (item.original_amount === undefined) {
+  //       item.original_amount = item.calculated_amount;
+  //     }
 
-      return {
-        ...item,
-        calculated_amount: item.isSelected == false ? 0 : item.original_amount,
-        status: item.isSelected == false ? 'inactive' : 'active',
-      };
-    });
+  //     return {
+  //       ...item,
+  //       calculated_amount: item.isSelected == false ? 0 : item.original_amount,
+  //       status: item.isSelected == false ? 'inactive' : 'active',
+  //     };
+  //   });
 
-    this.PayArr = this.PayArr.map((item: any) => {
-      // preserve original amount if not already saved
-      if (item.original_amount === undefined) {
-        item.original_amount = item.calculated_amount;
-      }
+  //   this.PayArr = this.PayArr.map((item: any) => {
+  //     // preserve original amount if not already saved
+  //     if (item.original_amount === undefined) {
+  //       item.original_amount = item.calculated_amount;
+  //     }
 
-      return {
-        ...item,
-        calculated_amount: item.isSelected == false ? 0 : item.original_amount,
-        status: item.isSelected == false ? 'inactive' : 'active',
-      };
-    });
-
-    // 🔹 Recalculate totals
-    this.recalculateFinalRecord();
-  }
+  //     return {
+  //       ...item,
+  //       calculated_amount: item.isSelected == false ? 0 : item.original_amount,
+  //       status: item.isSelected == false ? 'inactive' : 'active',
+  //     };
+  //   });
 
 
+  //   this.recalculateFinalRecord();
+  // }
+isEarningAllSelected() {
+  this.EarningMasterSelected = this.PayArr.every((item: any) => item.isSelected);
+
+  this.PayArr = this.PayArr.map((item: any) => {
+    if (item.original_amount === undefined) {
+      item.original_amount = item.calculated_amount;
+    }
+
+    const isSelected = !!item.isSelected;
+
+    return {
+      ...item,
+      calculated_amount: isSelected ? item.original_amount : 0,
+      status: isSelected ? 'active' : 'inactive',
+    };
+  });
+
+
+  this.ComponentList = this.ComponentList.map((comp: any) => {
+    const payItem = this.PayArr.find((p: any) => p.componentId == comp.componentId);
+    if (!payItem) return comp;
+
+    if (comp.original_amount === undefined) {
+      comp.original_amount = comp.calculated_amount;
+    }
+
+    const isSelected = !!payItem.isSelected;
+
+    return {
+      ...comp,
+      calculated_amount: isSelected ? comp.original_amount : 0,
+      status: isSelected ? 'active' : 'inactive',
+    };
+  });
+
+  this.recalculateFinalRecord();
+}
+
+
+  // isDeductionAllSelected() {
+  //   this.DeductionMasterSelected = this.DedArr.every((item: any) => item.isSelected);
+
+  //   this.ComponentList = this.ComponentList.map((item: any) => {
+  //     if (item.original_amount === undefined) {
+  //       item.original_amount = item.calculated_amount;
+  //     }
+
+  //     return {
+  //       ...item,
+  //       calculated_amount: item.isSelected == false ? 0 : item.original_amount,
+  //       status: item.isSelected == false ? 'inactive' : 'active',
+  //     };
+  //   });
+
+  //   this.DedArr = this.DedArr.map((item: any) => {
+  //     if (item.original_amount === undefined) {
+  //       item.original_amount = item.calculated_amount;
+  //     }
+
+  //     return {
+  //       ...item,
+  //       calculated_amount: item.isSelected == false ? 0 : item.original_amount,
+  //       status: item.isSelected == false ? 'inactive' : 'active',
+  //     };
+  //   });
+
+
+  //   this.recalculateFinalRecord();
+  // }
   isDeductionAllSelected() {
-    this.DeductionMasterSelected = this.DedArr.every((item: any) => item.isSelected);
+  this.DeductionMasterSelected = this.DedArr.every((item: any) => item.isSelected);
 
-    this.ComponentList = this.ComponentList.map((item: any) => {
-      if (item.original_amount === undefined) {
-        item.original_amount = item.calculated_amount;
-      }
+  this.DedArr = this.DedArr.map((item: any) => {
+    if (item.original_amount === undefined) {
+      item.original_amount = item.calculated_amount;
+    }
 
-      return {
-        ...item,
-        calculated_amount: item.isSelected == false ? 0 : item.original_amount,
-        status: item.isSelected == false ? 'inactive' : 'active',
-      };
-    });
+    const isSelected = !!item.isSelected;
 
-    this.DedArr = this.DedArr.map((item: any) => {
-      if (item.original_amount === undefined) {
-        item.original_amount = item.calculated_amount;
-      }
+    return {
+      ...item,
+      calculated_amount: isSelected ? item.original_amount : 0,
+      status: isSelected ? 'active' : 'inactive',
+    };
+  });
 
-      return {
-        ...item,
-        calculated_amount: item.isSelected == false ? 0 : item.original_amount,
-        status: item.isSelected == false ? 'inactive' : 'active',
-      };
-    });
+  this.ComponentList = this.ComponentList.map((comp: any) => {
+    const dedItem = this.DedArr.find((d: any) => d.componentId === comp.componentId); // replace `id` if you use another key
 
-    // 🔹 Recalculate totals
-    this.recalculateFinalRecord();
-  }
+    if (!dedItem) return comp;
+
+    if (comp.original_amount === undefined) {
+      comp.original_amount = comp.calculated_amount;
+    }
+
+    const isSelected = !!dedItem.isSelected;
+
+    return {
+      ...comp,
+      calculated_amount: isSelected ? comp.original_amount : 0,
+      status: isSelected ? 'active' : 'inactive',
+    };
+  });
+
+  this.recalculateFinalRecord();
+}
+
 
   getStatusClass(status: any): string {
     switch (status) {

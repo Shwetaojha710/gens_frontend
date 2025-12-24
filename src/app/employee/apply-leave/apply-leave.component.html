@@ -167,12 +167,12 @@
                 placeholder="Select Leave To"
                 [(ngModel)]="obj['toDate']"
                 aria-describedby="defaultFormControlHelp"
-                #startDateRef="ngModel"
+                #toDateRef="ngModel"
                   [min]="getToDateMin()"
               />
               <small
                 class="text-danger"
-                *ngIf="startDateRef.invalid && startDateRef.touched"
+                *ngIf="toDateRef.invalid && toDateRef.touched"
               >
                 Leave To Is Required
               </small>
@@ -232,14 +232,18 @@
           </button>
         </h5>
 
-           <app-search-pagination
+           <!-- <app-search-pagination
           [totalItems]="applyLeaveList.length"
           [pageSize]="itemsPerPage"
           [currentPage]="currentPage"
           (search)="onSearch($event)"
           (pageChange)="onPageChange($event)"
           (pageSizeChange)="onPageSizeChange($event)"
-        >
+        > -->
+
+          <app-search-pagination [totalItems]="applyLeaveList.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
+          (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
+
           <table class="table table-striped dataTable">
             <thead>
               <tr>
@@ -257,7 +261,7 @@
               </tr>
             </thead>
             <tbody class="table-border-bottom-0">
-              <tr *ngFor="let item of applyLeaveList; let i = index">
+              <tr *ngFor="let item of filteredDesignation; let i = index">
                 <th scope="row">{{ i + 1 }}</th>
                 <td>{{ item["employeeName"] }}
                     <br />
@@ -281,7 +285,7 @@
                 <td>{{ item["createdAt"] }}</td>
 
                 <td>
-                  <button type="button" class="badge badge-center bg-label-success" *ngIf="item.status=='pending'" (click)="statuschange(item,'approved')" >
+                  <button type="button" class="badge badge-center bg-label-success" *ngIf="item.status!='rejected'" (click)="statuschange(item,'approved')" >
                     <i class="fas fa-check"></i>
                   </button>
                   &nbsp;
@@ -290,7 +294,7 @@
                     class="badge badge-center bg-label-danger"
                     (click)="statuschange(item,'rejected')"
                   >
-                    <i class="fas fa-trash-alt"></i>
+                 <i class="fa-solid fa-xmark"></i>
                   </button>
                 </td>
               </tr>

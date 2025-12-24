@@ -92,13 +92,13 @@ export class GeneratedSalaryComponent {
       const row: any = {};
       row['Employee'] = employee.employeeName;
       row['empCode'] = employee?.empCode;
-      row['email'] = employee?.email;
-      row['phone'] = employee?.phone;
-      row['department'] = employee?.department;
-      row['designation'] = employee?.designation;
+      // row['email'] = employee?.email;
+      // row['phone'] = employee?.phone;
+      // row['department'] = employee?.department;
+      // row['designation'] = employee?.designation;
       row['Account Number'] = employee?.bankAccount;
       row['IFSC Code'] = employee?.ifscCode;
-      row['Net Amount'] = employee?.net_amount;
+      row['Net Amount'] = Math.round(employee?.net_amount).toFixed(0);
 
       exportData.push(row);
     });
@@ -248,6 +248,12 @@ export class GeneratedSalaryComponent {
         if (status == true) {
 
           this.notyf.success(message)
+          response.data=response.data.map((item:any, index: any)=>{
+            return{
+              ...item,
+          si_no: index + 1,
+            }
+          })
           this.SalaryArr = response.data
           this.originalList = response.data
           console.log(this.SalaryArr, "salary Array");
@@ -279,8 +285,17 @@ export class GeneratedSalaryComponent {
   modal: any;
   PayArr: any = []
   DedArr: any = []
+  personalDetails:any;
+    EmployerDedArr: any = []
+   getDaysInMonth(year: number, month: number): number {
+  return new Date(year, month, 0).getDate();
+}
   view(item: any) {
     const obj = Object.assign({}, item)
+    this.personalDetails=obj
+
+    this.personalDetails['totalWorkingDays']= this.getDaysInMonth(this.personalDetails.year, this.personalDetails.month)
+ console.log(this.personalDetails,"personal detailss");
     this.SalaryBreakup = []
     this.payroll.getBillDetails(obj).subscribe({
       next: (response: any) => {
@@ -296,18 +311,40 @@ export class GeneratedSalaryComponent {
 
           this.notyf.success(message)
           this.SalaryBreakup = response.data
+
           this.PayArr = []
           this.DedArr = []
-          this.PayArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'PAY')
-          this.DedArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'DED')
-          // Calculate totals
-          const totalEarning = this.PayArr.reduce((sum: number, item: any) => sum + Number(item.finalAmount || 0), 0);
-          const totalDeduction = this.DedArr.reduce((sum: number, item: any) => sum + Number(item.finalAmount || 0), 0);
-          const netPay = totalEarning - totalDeduction;
+          const EmployerDedArr = [];
+          this.EmployerDedArr=[]
+             // Initialize totals
+          let totalEarning = 0;
+          let totalDeduction = 0;
+          let totalEmployerDeduction = 0;
+
+          // Process data in a single loop
+          for (const item of this.SalaryBreakup) {
+            const amount = Number(item.finalAmount || 0);
+
+            if (item.pay_code == 'PAY') {
+              this.PayArr.push(item);
+              totalEarning += amount;
+            } else if (item.pay_code == 'DED') {
+              if (item.name.toLowerCase().includes('employer')) {
+                EmployerDedArr.push(item);
+                totalEmployerDeduction += amount;
+              } else {
+                this.DedArr.push(item);
+                totalDeduction += amount;
+              }
+            }
+          }
+
+
 
           // Add as new keys
           this.PayArr = [...this.PayArr, { isSummary: true, name: 'Total Earnings', finalAmount: totalEarning.toFixed(0) }];
           this.DedArr = [...this.DedArr, { isSummary: true, name: 'Total Deductions', finalAmount: totalDeduction.toFixed(0) }];
+          this.EmployerDedArr = [...EmployerDedArr, { isSummary: true, name: 'Total Employer Deductions', finalAmount: (totalEmployerDeduction).toFixed(0) }];
 
 
           const modalEl = document.getElementById('SalaryModal');

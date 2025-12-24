@@ -9,10 +9,11 @@ import { PayrollService } from '../../services/payroll.service';
 import { StatusService } from '../../services/status.service';
 declare let bootstrap: any;
 import { firstValueFrom } from 'rxjs';
+import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
 @Component({
   selector: 'app-full-time-salary',
   imports: [NgSelectModule,
-    FormsModule, CommonModule],
+    FormsModule, CommonModule,SearchPaginationComponent],
   templateUrl: './full-time-salary.component.html',
   styleUrl: './full-time-salary.component.css'
 })
@@ -43,7 +44,57 @@ export class FullTimeSalaryComponent {
     await this.empList()
     await this.getYear();
   }
+ pageSize = 10;
+  currentPage = 1;
+  searchTerm: any;;
+  itemsPerPage = 10;
+  onSearch(term: string) {
+    if (!term) {
+      // this.SalaryArr
+      this.onSubmit();
+    } else {
+      this.searchTerm = term.toLowerCase();
+      this.currentPage = 1;
+      this.applyFilters();
+    }
 
+  }
+
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.applyFilters();
+  }
+
+
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+  filteredSalary: any = []
+  searchText: any = ''
+    applyFilters() {
+
+
+
+    const value = this.searchTerm || '';
+    this.searchText = value.trim();
+
+    if (this.searchText === '') {
+      this.SalaryArr = [...this.originalList];
+    } else {
+      this.SalaryArr = this.originalList.filter((item: any) =>
+        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+
+    let data = [...this.SalaryArr];
+    // pagination
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.filteredSalary = data.slice(start, end);
+  }
   checkUncheckAll() {
     this.SalaryArr.forEach((item: any) => item.isSelected = this.masterSelected);
   }
@@ -51,9 +102,7 @@ export class FullTimeSalaryComponent {
 
   isAllSelected() {
     this.masterSelected = this.SalaryArr.every((item: any) => item.isSelected);
-    // this.SalaryArr=  this.SalaryArr.map({
 
-    // })
   }
   async getYear() {
     this.yearList = []
@@ -73,6 +122,9 @@ export class FullTimeSalaryComponent {
       }
     });
 
+  }
+  delete(data:any){
+    this.SalaryArr=this.SalaryArr.filter((item:any)=>item.employeeId != data.employeeId)
   }
   employeeSalaryData: any[] = [];
 
@@ -145,6 +197,7 @@ export class FullTimeSalaryComponent {
   }
   SalaryArr: any = []
   isLoading: boolean = false;
+  originalList:any=[]
   onSubmit() {
     if (this.obj['year'] == undefined || this.obj['year'] == null || this.obj['year'] == '') {
       this.notyf.error("year is Required");
@@ -152,6 +205,7 @@ export class FullTimeSalaryComponent {
     }
     this.isLoading = true;
     this.SalaryArr = []
+    this.originalList=[]
     let newObj = Object.assign({}, this.obj)
     if (newObj['employeeId'] === 'All') {
       newObj['employeeId'] = this.EmpList
@@ -174,8 +228,12 @@ export class FullTimeSalaryComponent {
 
           this.notyf.success(message)
           this.SalaryArr = response.data
+          this.originalList = response.data
           console.log(this.SalaryArr, "salary Array");
-
+   // pagination
+          const start = (this.currentPage - 1) * this.pageSize;
+          const end = start + this.pageSize;
+          this.filteredSalary = this.SalaryArr.slice(start, end);
         }
         else if (status == "expired") {
           this.router.navigate(["login"]);
@@ -250,9 +308,9 @@ export class FullTimeSalaryComponent {
           }
 
           // Update component properties with filtered data and totals
-          this.PayArr = [...PayArr, { isSummary: true, name: 'Total Earnings', pay_amount: Math.round(totalEarning) }];
-          this.DedArr = [...DedArr, { isSummary: true, name: 'Total Deductions', pay_amount: Math.round(totalDeduction) }];
-          this.EmployerDedArr = [...EmployerDedArr, { isSummary: true, name: 'Total Employer Deductions', pay_amount: Math.round(totalEmployerDeduction) }];
+          this.PayArr = [...PayArr, { isSummary: true, name: 'Total Earnings', pay_amount: (totalEarning).toFixed(2) }];
+          this.DedArr = [...DedArr, { isSummary: true, name: 'Total Deductions', pay_amount: (totalDeduction).toFixed(2) }];
+          this.EmployerDedArr = [...EmployerDedArr, { isSummary: true, name: 'Total Employer Deductions', pay_amount: (totalEmployerDeduction).toFixed(2) }];
 
           // Calculate net pay
           const netPay = totalEarning - totalDeduction;

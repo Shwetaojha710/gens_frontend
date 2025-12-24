@@ -22,14 +22,17 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+               "src/firebase-messaging-sw.js"
             ],
             "assets": [
               {
                 "glob": "**/*",
                 "input": "assets",
                 "output": "assets"
-              }
+
+              },
+                "src/firebase-messaging-sw.js"
             ],
             "styles": [
               "src/styles.css",
@@ -99,7 +102,8 @@
               {
                 "glob": "**/*",
                 "input": "public"
-              }
+              },
+               "src/firebase-messaging-sw.js"
             ],
             "styles": [
               "src/styles.css",

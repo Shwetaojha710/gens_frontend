@@ -13,7 +13,12 @@ import { ApplicationConfig } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { routes } from './app.routes';
-import { authInterceptor } from './aut.interceptor'; // Adjust the path
+import { authInterceptor } from './aut.interceptor';
+
+// ✅ Import Firebase functions
+import { provideFirebaseApp, initializeApp } from '@angular/fire/app';
+import { provideMessaging, getMessaging } from '@angular/fire/messaging';
+import { environment } from '../environments/environment'; // adjust path if needed
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -22,6 +27,9 @@ export const appConfig: ApplicationConfig = {
       withInterceptors([
         authInterceptor
       ])
-    )
-  ]
+    ),
+    // ✅ Initialize Firebase & Messaging here
+    provideFirebaseApp(() => initializeApp(environment.firebase)),
+    provideMessaging(() => getMessaging()),
+  ],
 };

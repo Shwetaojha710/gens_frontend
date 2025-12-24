@@ -40,7 +40,7 @@
                 id="defaultFormControlInput"
                 placeholder="Select From Date"
                 [(ngModel)]="obj['from']"
-                aria-describedby="defaultFormControlHelp"
+                aria-describedby="defaultFormControlHelp" (change)="setMinToDate()"
               />
             </div>
              <div class="col-3">
@@ -54,6 +54,7 @@
                 placeholder="Enter To Date"
                 [(ngModel)]="obj['to']"
                 aria-describedby="defaultFormControlHelp"
+                [min]="getToDateMin()"
               />
             </div>
 

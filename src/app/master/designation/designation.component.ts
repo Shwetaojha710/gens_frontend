@@ -30,7 +30,7 @@ export class DesignationComponent {
     await this.fetchdesignation()
 
   }
-  pageSize = 5;
+  pageSize = 10;
   currentPage = 1;
   searchTerm = '';
   itemsPerPage = 10;
@@ -40,13 +40,13 @@ export class DesignationComponent {
     this.applyFilters();
   }
 
-  // 🔹 pagination handler
+
   onPageChange(page: number) {
     this.currentPage = page;
     this.applyFilters();
   }
 
-  // 🔹 page size handler
+
   onPageSizeChange(size: number) {
     this.pageSize = size;
     this.currentPage = 1;
@@ -55,13 +55,31 @@ export class DesignationComponent {
   filteredDesignation: any = []
   searchText: any = ''
 
-  applyFilters() {
+  // applyFilters() {
+  //   let data = [...this.desigantionList];
+
+
+  //   const value = this.searchTerm || '';
+  //   this.searchText = value.trim();
+
+  //   if (this.searchText === '') {
+  //     this.desigantionList = [...this.originalList];
+  //   } else {
+  //     this.desigantionList = this.originalList.filter((item: any) =>
+  //       JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+  //     );
+  //   }
+
+
+  //   // pagination
+  //   const start = (this.currentPage - 1) * this.pageSize;
+  //   const end = start + this.pageSize;
+  //   this.filteredDesignation = data.slice(start, end);
+  // }
+   applyFilters() {
     let data = [...this.desigantionList];
-
-
     const value = this.searchTerm || '';
     this.searchText = value.trim();
-
     if (this.searchText === '') {
       this.desigantionList = [...this.originalList];
     } else {
@@ -69,8 +87,6 @@ export class DesignationComponent {
         JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
       );
     }
-
-
     // pagination
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
@@ -171,8 +187,19 @@ export class DesignationComponent {
       if (status == true) {
         this.desigantionList = []
         // this.notyf.success(data['message']);
+
+        data.data =data.data.map((item: any, index: any) => {
+          return {
+            ...item,
+            si_no: index + 1,
+          }
+        })
         this.desigantionList = data.data;
         this.originalList = data.data;
+         // pagination
+        const start = (this.currentPage - 1) * this.pageSize;
+        const end = start + this.pageSize;
+        this.filteredDesignation = this.desigantionList.slice(start, end);
       } else {
         this.notyf.error(data['message']);
       }

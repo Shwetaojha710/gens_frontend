@@ -75,6 +75,10 @@ export class LogsComponent {
 
 
     this.notyf = new Notyf();
+    this.obj['emp_id'] = 'All'
+    this.obj['year'] = new Date().getFullYear().toString()
+    this.obj['month'] = new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : (new Date().getMonth() + 1).toString()
+    this.fetchAttendance()
   }
   yearList: any = [];
   EmpList: any = []
@@ -98,19 +102,19 @@ export class LogsComponent {
     this.updateDisplayedList();
   }
   applyFilter(event: any) {
-  const value = event?.target?.value || '';
-  this.searchText = value.trim();
+    const value = event?.target?.value || '';
+    this.searchText = value.trim();
 
-  if (this.searchText === '') {
-    this.AttendanceMasterList = [...this.originalList];
-  } else {
-    this.AttendanceMasterList = this.originalList.filter((item: any) =>
-      JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
-    );
+    if (this.searchText === '') {
+      this.AttendanceMasterList = [...this.originalList];
+    } else {
+      this.AttendanceMasterList = this.originalList.filter((item: any) =>
+        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+
+    // this.updateDisplayedList();
   }
-
-  // this.updateDisplayedList();
-}
 
   // applyFilter(event: any) {
   //   this.searchText = event?.target.value;
@@ -143,7 +147,7 @@ export class LogsComponent {
 
   fetchAttendance() {
     this.AttendanceList = []
-    this.originalList=[]
+    this.originalList = []
     console.log(this.AttendanceMasterList, "attendace master list 111")
     this.attendanceService.getattendancelist(this.obj).subscribe((response: any) => {
       if (response && response.data && response.status === true) {
@@ -163,7 +167,7 @@ export class LogsComponent {
             status: statusMap[item1.status] || item1.status
           }))
         }));
-        this.originalList=this.AttendanceMasterList
+        this.originalList = this.AttendanceMasterList
         this.generateDayList(this.obj['month'], this.obj['year']);
         this.updateDisplayedList();
       } else if (response.status === false) {
@@ -187,7 +191,7 @@ export class LogsComponent {
   export(): void {
     const exportData: any[] = [];
 
-    this.AttendanceMasterList.forEach((employee: any) => {
+    this.originalList.forEach((employee: any) => {
       const row: any = {};
       row['Employee'] = employee.employee_name;
 

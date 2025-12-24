@@ -94,12 +94,15 @@
                 Holiday Date is Required
               </small>
             </div>
-            <div class="col-3">
+
+
+            <!-- <div class="col-3">
               <label for="file" class="form-label">
                 Upload Image <span style="color: red">*</span>
               </label>
 
               <input
+              #fileInput
                 type="file"
                 accept="image/*"
                 class="form-control"
@@ -135,7 +138,32 @@
                   (click)="openModal1(sanitizedImage)"
                 />
               </div>
+            </div> -->
+
+                    <div class="col-3">
+          <label for="formFile" class="form-label">Upload Image <span style="color: red">*</span></label>
+          <input #fileInput class="form-control" type="file" id="formFile" type="file" (change)="onFileChange($event)"
+            accept="image/*" />
+          <div *ngIf="sanitizedImage">
+            <button style="position: absolute; right: 356px" (click)="close()" type="button" class="btn-close"
+              data-dismiss="modal" aria-label="Close"></button>
+            <!-- If image, show thumbnail -->
+            <div>
+              <img [src]="sanitizedImage" alt="Uploaded Image" class="img-thumbnail"
+                style="max-width: 80px; max-height: 80px; margin-top: 8px; object-fit: cover; border: 1px solid #cfd0d6; border-radius: 5px;"     (click)="openModal1(sanitizedImage)" />
             </div>
+
+
+
+            <!-- <img [src]="sanitizedImage" alt="Uploaded Image" class="img-thumbnail" style="
+                    max-width: 80px;
+                    max-height: 80px;
+                    margin-top: 8px;
+                    object-fit: cover;
+                    border: 1px solid #cfd0d6;
+                    border-radius: 5px;" /> -->
+          </div>
+        </div>
 
             <!-- <div class="col-4" *ngIf="updateFlag">
               <label for="defaultFormControlInput" class="form-label"
@@ -222,12 +250,12 @@
                 <td>{{ item["date"] | date:'dd-MM-YYYY'}}</td>
                 <td>
                   <img
-                    [src]="item['image']"
+                    [src]="item['image1']"
                     alt="Document"
                     width="100"
                     height="auto"
                     style="cursor: pointer"
-                    (click)="openModal1(item['image'])"
+                    (click)="openModal1(item['image1'])"
                   />
                 </td>
                 <td>{{ item["createdAt"] }}</td>
