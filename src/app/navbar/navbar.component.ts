@@ -39,6 +39,12 @@ export class NavbarComponent {
       link: '/layout/dashboard'
     },
     {
+      title: 'Branchwise',
+      icon: 'ri-home-smile-line',
+      active: true,
+      link: '/layout/branchwise'
+    },
+    {
       title: 'Employee Management',
       icon: 'ri-layout-2-line',
       children: [
@@ -57,7 +63,6 @@ export class NavbarComponent {
         { title: 'Holiday', icon: 'ri-barricade-fill', link: '/layout/attendance/holiday' },
         { title: 'Attendance Logs', icon: 'ri-calendar-line', link: '/layout/attendance/logs' },
         { title: 'Leaves', icon: 'ri-leaf-line', link: '/layout/attendance/leaves' },
-
         { title: 'Upload Attendance', icon: 'ri-upload-cloud-line', link: '/layout/attendance/upload-attendance' },
         { title: 'Regularize', icon: 'ri-upload-cloud-line', link: '/layout/attendance/regularize' }
 
