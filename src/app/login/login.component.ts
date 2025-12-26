@@ -56,7 +56,7 @@ passwordVisible: boolean = false;
            localStorage.setItem('user', JSON.stringify(data.data.user));
            localStorage.setItem('currency', JSON.stringify(data.data.currencyList));
           this.notyf.success(data.message);
-          this.router.navigate(['layout/dashboard']);
+          this.router.navigate(['layout/branchwise']);
         } else {
           this.notyf.error(data.message);
         }

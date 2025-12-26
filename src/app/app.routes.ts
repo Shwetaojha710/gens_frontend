@@ -60,6 +60,7 @@ import { ReimbursementComponent } from './payroll/reimbursement/reimbursement.co
 import { EmpProfileComponent } from './emp-profile/emp-profile.component';
 import { RegularizeComponent } from './attendance/regularize/regularize.component';
 import { BranchComponent } from './master/branch/branch.component';
+import { BranchwiseComponent } from './branchwise/branchwise.component';
 
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -75,7 +76,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
-      { path: 'branchwise',component: BankDetailsComponent},
+      { path: 'branchwise',component: BranchwiseComponent},
       {
         path: 'employee',
         children: [
