@@ -104,7 +104,7 @@ export class DashboardComponent {
   // }
   onBranchChange(branchId: any) {
   console.log('Selected Branch ID:', branchId);
-  localStorage.setItem('branchId', JSON.stringify(branchId));
+  localStorage.setItem('branchId', branchId)
 }
 
   getBranchDD(){
