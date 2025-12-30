@@ -40,7 +40,7 @@ export class MessagingService {
 
  async listen() {
     if (!this.messaging) return;
-    onMessage(this.messaging, (payload) => {
+    onMessage(this.messaging, (payload:any) => {
       console.log('📩 Message received:', payload);
       alert(payload.notification?.title + '\n' + payload.notification?.body);
     });
