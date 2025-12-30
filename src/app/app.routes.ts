@@ -67,6 +67,7 @@ export const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
   { path: 'Home', component: LandingPageComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'branchwise',component: BranchwiseComponent},
   { path: 'emp-profile', component: EmpProfileComponent },
 
   { path: 'check-out', component: CheckoutComponent },
@@ -76,7 +77,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
-      { path: 'branchwise',component: BranchwiseComponent},
+
       {
         path: 'employee',
         children: [

@@ -38,12 +38,12 @@ export class NavbarComponent {
       active: true,
       link: '/layout/dashboard'
     },
-    {
-      title: 'Branchwise',
-      icon: 'ri-home-smile-line',
-      active: true,
-      link: '/layout/branchwise'
-    },
+    // {
+    //   title: 'Branchwise',
+    //   icon: 'ri-home-smile-line',
+    //   active: true,
+    //   link: '/branchwise'
+    // },
     {
       title: 'Employee Management',
       icon: 'ri-layout-2-line',
