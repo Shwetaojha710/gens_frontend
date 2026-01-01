@@ -26025,7 +26025,7 @@ form .form-floating:has(.select2.is-invalid) label {
 ****************************************************************************** */
 .menu.menu-horizontal .menu-inner > .menu-item > .menu-link {
   border-radius: 0.5rem;
-  margin-inline: 0.125rem;
+  margin-inline: 0.1rem;
 }
 .menu.menu-horizontal .menu-inner > .menu-item:first-child {
   margin-inline-start: 0;
