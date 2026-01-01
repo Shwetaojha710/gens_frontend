@@ -3,25 +3,48 @@ import { AuthService } from '../../services/auth.service';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
 import { Router } from '@angular/router';
+import { MasterService } from '../../services/master.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { NgSelectModule } from '@ng-select/ng-select';
 @Component({
   selector: 'app-header',
-  imports: [],
+  imports: [CommonModule, NgSelectModule, FormsModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css'
 })
 export class HeaderComponent {
-    notyf: Notyf | undefined;
-  constructor(    private auth: AuthService,  private router: Router,private eRef: ElementRef){
-
+     notyf: Notyf = new Notyf();
+  constructor(    private auth: AuthService,  private router: Router,private eRef: ElementRef, public masterService: MasterService){
+  this.getBranchDD()
+  this.obj.branchId = localStorage.getItem('branchId') || '';
   }
    isDropdownOpen = false;
-
-
+ branchList: any
+    obj: any = {};
+    stats:any = []
+ getBranchDD(){
+    this.branchList=[]
+    this.masterService.BranchDD().subscribe((res) => {
+      if (res.status == true) {
+        // this.notyf.success(res.message || 'Dashboard data loaded successfully')
+        this.stats = res.data.stats;
+        this.branchList = res.data
+      } else if (res.status == 'expired') {
+        this.router.navigate(['login'])
+      } else {
+        this.notyf.error(res.message || 'Something went wrong')
+      }
+    });
+  }
 
   toggleshow() {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
-
+ onBranchChange(branchId: any) {
+  console.log('Selected Branch ID:', branchId);
+  localStorage.setItem('branchId', branchId)
+}
   // listen for clicks anywhere in the document
   @HostListener('document:click', ['$event'])
   clickOutside(event: Event) {

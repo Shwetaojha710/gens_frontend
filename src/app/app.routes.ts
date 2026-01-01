@@ -61,12 +61,14 @@ import { EmpProfileComponent } from './emp-profile/emp-profile.component';
 import { RegularizeComponent } from './attendance/regularize/regularize.component';
 import { BranchComponent } from './master/branch/branch.component';
 import { BranchwiseComponent } from './branchwise/branchwise.component';
+import { TrackingComponent } from './tracking/tracking.component';
 
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
   { path: 'Home', component: LandingPageComponent },
   { path: 'login', component: LoginComponent },
+  { path: 'branchwise',component: BranchwiseComponent},
   { path: 'emp-profile', component: EmpProfileComponent },
 
   { path: 'check-out', component: CheckoutComponent },
@@ -76,7 +78,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
-      { path: 'branchwise',component: BranchwiseComponent},
+
       {
         path: 'employee',
         children: [
@@ -156,6 +158,15 @@ export const routes: Routes = [
           { path: 'payroll', component: PayrollComponent },
           { path: 'attendance', component: AttendanceComponent }
         ]
+      },
+      {
+        path: 'tracking',
+        component:TrackingComponent
+        // children: [
+        //   { path: 'employee', component: EmployeeComponent },
+        //   { path: 'payroll', component: PayrollComponent },
+        //   { path: 'attendance', component: AttendanceComponent }
+        // ]
       }
     ]
   },
