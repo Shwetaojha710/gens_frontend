@@ -113,4 +113,9 @@ deleteAssignLeave( dept: any): Observable<any> {
 }
 
 
+activeLocation(obj:any): Observable<any> {
+  return this.http.post<any>(`${this.baseUrl}update-active-location`, obj);
+}
+
+
 }

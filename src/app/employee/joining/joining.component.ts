@@ -536,6 +536,34 @@ export class JoiningComponent {
   toUppercase() {
     this.personalDetails.panNo = this.personalDetails.panNo?.toUpperCase() || '';
   }
+
+  activeLocation(data:any){
+   let obj = Object.assign({},data)
+   obj['isLocation']=true
+    this.employeeService.activeLocation(obj).subscribe(
+      (response) => {
+        console.log('Employee deleted successfully:', response);
+        if (response && response.status === true) {
+          this.loadEmployees();
+          this.notyf.success(response.message || 'Employee deleted successfully');
+        }
+        else if (response && response.status == false) {
+          this.notyf.error(response.message || 'Failed to delete employee');
+        }
+        else {
+          this.notyf.error('Failed to delete employee');
+        }
+
+      },
+      (error) => {
+        console.error('Error deleting employee:', error);
+        this.notyf.error('Failed to delete employee');
+      }
+    )
+
+
+  }
+
   view(data: any) {
     console.log(data, "objectsss")
     // Save object

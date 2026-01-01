@@ -521,6 +521,8 @@
                   {{ item["gender"] }}
                 </td>
                 <td>
+                  <button type="button" class="badge badge-center bg-label-secondary" (click)="activeLocation(item)">
+                    Active Loc</button>&nbsp;
                   <button type="button" class="badge badge-center bg-label-secondary" (click)="view(item)">
                     <i class="far fa-eye"></i></button>&nbsp;
                   <button type="button" class="badge badge-center bg-label-primary" (click)="update(item)">

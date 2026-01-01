@@ -1,0 +1,91 @@
+ <div class="container-xxl mt-5">
+
+  <div class="row mb-6" *ngIf="viewLiveTracking">
+    <div class="col-md">
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span style="font-weight: bold">Employee List</span>
+
+        </div>
+
+        <app-search-pagination  [totalItems]="activeTrackingUsers.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
+          (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
+          <table class="table table-striped dataTable">
+            <thead>
+              <tr>
+                <th>SI.NO </th>
+
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Aadhaar Number</th>
+                <th>Date of Birth</th>
+                <th>Gender</th>
+                <th>Actions</th>
+              </tr>
+
+            </thead>
+            <tbody class="table-border-bottom-0">
+              <tr *ngFor="let item of ActiveUsers; let i = index">
+                <td>{{item?.si_no}}</td>
+
+                <td>
+                  <div class="d-flex align-items-center" >
+                    <div class="avatar avatar-sm me-4">
+
+                      <img [src]="item?.profileImage" width="100" height="auto" alt="Avatar" class="rounded-circle" />
+
+                    </div>
+                    <div>
+                      <h6 class="mb-0 text-truncate link-primary">
+                        {{ item["firstName"] }} {{ item["lastName"] }}
+                      </h6>
+                      <small class="text-truncate">{{item?.['designation']}}</small>
+                      <small class="text-truncate">{{item?.empCode}}</small>
+                    </div>
+                  </div>
+                </td>
+                <td>
+                  {{ item["email"] }}
+                </td>
+                <td>
+                  {{ item["mobile"] }}
+                </td>
+                <td>
+                  {{ item["adhaarNo"] }}
+                </td>
+                <td>
+                  {{ item["dateOfBirth"] | date : "dd-MM-yyyy" }}
+                </td>
+                <td>
+                  {{ item["gender"] }}
+                </td>
+                <td>
+                  <button class="btn btn-primary btn-sm me-2" (click)="viewTrackingOnMap(item)">View on Map</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </app-search-pagination>
+
+
+
+      </div>
+    </div>
+  </div>
+
+
+<div *ngIf="!viewLiveTracking" id="map"
+  style="height: 1000px; width: 100%; border: 1px solid #ccc;">
+
+</div>
+ </div>
+
+
+<!-- Optional info -->
+<!-- <div class="mt-2">
+  <b>Legend:</b>
+  🟢 Start &nbsp;
+  🔵 Route &nbsp;
+  🔴 End
+</div> -->
