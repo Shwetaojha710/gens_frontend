@@ -14,17 +14,17 @@ import { NgSelectModule } from '@ng-select/ng-select';
   styleUrl: './header.component.css'
 })
 export class HeaderComponent {
-     notyf: Notyf = new Notyf();
-  constructor(    private auth: AuthService,  private router: Router,private eRef: ElementRef, public masterService: MasterService){
-  this.getBranchDD()
-  this.obj.branchId = localStorage.getItem('branchId') || '';
+  notyf: Notyf = new Notyf();
+  constructor(private auth: AuthService, private router: Router, private eRef: ElementRef, public masterService: MasterService) {
+    this.getBranchDD()
+    this.obj.branchId = localStorage.getItem('branchId') || '';
   }
-   isDropdownOpen = false;
- branchList: any
-    obj: any = {};
-    stats:any = []
- getBranchDD(){
-    this.branchList=[]
+  isDropdownOpen = false;
+  branchList: any
+  obj: any = {};
+  stats: any = []
+  getBranchDD() {
+    this.branchList = []
     this.masterService.BranchDD().subscribe((res) => {
       if (res.status == true) {
         // this.notyf.success(res.message || 'Dashboard data loaded successfully')
@@ -41,10 +41,11 @@ export class HeaderComponent {
   toggleshow() {
     this.isDropdownOpen = !this.isDropdownOpen;
   }
- onBranchChange(branchId: any) {
-  console.log('Selected Branch ID:', branchId);
-  localStorage.setItem('branchId', branchId)
-}
+  onBranchChange(branchId: any) {
+    console.log('Selected Branch ID:', branchId);
+    localStorage.setItem('branchId', branchId)
+    window.location.reload();
+  }
   // listen for clicks anywhere in the document
   @HostListener('document:click', ['$event'])
   clickOutside(event: Event) {
@@ -52,24 +53,24 @@ export class HeaderComponent {
       this.isDropdownOpen = false; // close if clicked outside
     }
   }
-// toggleshow() {
-//   const dropdownMenu = document.querySelector(".dropdown-menu.dropdown-menu-end.mt-3.py-2");
-//   if (dropdownMenu) {
-//     dropdownMenu.classList.toggle("show");
-//   }
-// }
- personalDetail:any={}
-ngOnInit() {
-this.personalDetail = JSON.parse(localStorage.getItem('user') || '{}');
-}
+  // toggleshow() {
+  //   const dropdownMenu = document.querySelector(".dropdown-menu.dropdown-menu-end.mt-3.py-2");
+  //   if (dropdownMenu) {
+  //     dropdownMenu.classList.toggle("show");
+  //   }
+  // }
+  personalDetail: any = {}
+  ngOnInit() {
+    this.personalDetail = JSON.parse(localStorage.getItem('user') || '{}');
+  }
 
-logout(){
-  console.log("hello logout api called")
+  logout() {
+    console.log("hello logout api called")
 
-        this.auth.logout().subscribe({
+    this.auth.logout().subscribe({
       next: (res) => {
         const data = res
-        console.log(data,"ss")
+        console.log(data, "ss")
         if (data.status === true) {
           localStorage.clear()
           if (this.notyf) {
@@ -77,7 +78,7 @@ logout(){
           }
           this.router.navigate(['login']);
         }
-        else if(data.status=='expired'){
+        else if (data.status == 'expired') {
           this.notyf?.error(data.message);
           this.router.navigate(['login']);
         }
@@ -95,10 +96,10 @@ logout(){
       }
     });
 
-}
-profilePage(){
+  }
+  profilePage() {
 
-  // this.router.navigate(['login']);
+    // this.router.navigate(['login']);
 
-}
+  }
 }

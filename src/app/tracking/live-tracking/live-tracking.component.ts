@@ -35,96 +35,101 @@ export class LiveTrackingComponent implements OnInit, OnDestroy {
   polyline!: L.Polyline;
   currentTileLayer!: L.TileLayer;
   mapType: string = 'osm';
-  
+
   employee: any = null;
   employeeName: string = '';
   employeeProfileImage: string = '';
   baseurl: string = '';
   locationHistory: LocationData[] = [];
   currentLocation: LocationData | null = null;
-  
+
   isTracking: boolean = true;
   trackingInterval: any = null;
-  refreshInterval: number = 3; 
-  
-  staticLocationData: LocationData[] = [
-    {
-      coords: {
-        latitude: 26.8687539,
-        longitude: 81.0066458,
-        altitude: 84.5,
-        accuracy: 100,
-        altitudeAccuracy: 100,
-        heading: 0,
-        speed: 0
-      },
-      timestamp: Date.now() - 60000,
-      mode: 'background',
-      Deviceid: '2df1cffc11a4dbb7',
-      deviceOs: 'A'
-    },
-    {
-      coords: {
-        latitude: 26.8688000,
-        longitude: 81.0067000,
-        altitude: 85.0,
-        accuracy: 100,
-        altitudeAccuracy: 100,
-        heading: 45,
-        speed: 5.5
-      },
-      timestamp: Date.now() - 45000,
-      mode: 'foreground',
-      Deviceid: '2df1cffc11a4dbb7',
-      deviceOs: 'A'
-    },
-    {
-      coords: {
-        latitude: 26.8688500,
-        longitude: 81.0067500,
-        altitude: 85.5,
-        accuracy: 100,
-        altitudeAccuracy: 100,
-        heading: 90,
-        speed: 8.2
-      },
-      timestamp: Date.now() - 30000,
-      mode: 'foreground',
-      Deviceid: '2df1cffc11a4dbb7',
-      deviceOs: 'A'
-    },
-    {
-      coords: {
-        latitude: 26.8689000,
-        longitude: 81.0068000,
-        altitude: 86.0,
-        accuracy: 100,
-        altitudeAccuracy: 100,
-        heading: 135,
-        speed: 12.3
-      },
-      timestamp: Date.now() - 15000,
-      mode: 'foreground',
-      Deviceid: '2df1cffc11a4dbb7',
-      deviceOs: 'A'
-    },
-    {
-      coords: {
-        latitude: 26.8689500,
-        longitude: 81.0068500,
-        altitude: 86.5,
-        accuracy: 100,
-        altitudeAccuracy: 100,
-        heading: 180,
-        speed: 15.8
-      },
-      timestamp: Date.now(),
-      mode: 'foreground',
-      Deviceid: '2df1cffc11a4dbb7',
-      deviceOs: 'A'
-    }
-  ];
-
+  refreshInterval: number = 3;
+staticLocationData:any=[]
+  // staticLocationData: LocationData[] = [
+  //   {
+  //     coords: {
+  //       latitude: 26.8687539,
+  //       longitude: 81.0066458,
+  //       altitude: 84.5,
+  //       accuracy: 100,
+  //       altitudeAccuracy: 100,
+  //       heading: 0,
+  //       speed: 0
+  //     },
+  //     timestamp: Date.now() - 60000,
+  //     mode: 'background',
+  //     Deviceid: '2df1cffc11a4dbb7',
+  //     deviceOs: 'A'
+  //   },
+  //   {
+  //     coords: {
+  //       latitude: 26.8688000,
+  //       longitude: 81.0067000,
+  //       altitude: 85.0,
+  //       accuracy: 100,
+  //       altitudeAccuracy: 100,
+  //       heading: 45,
+  //       speed: 5.5
+  //     },
+  //     timestamp: Date.now() - 45000,
+  //     mode: 'foreground',
+  //     Deviceid: '2df1cffc11a4dbb7',
+  //     deviceOs: 'A'
+  //   },
+  //   {
+  //     coords: {
+  //       latitude: 26.8688500,
+  //       longitude: 81.0067500,
+  //       altitude: 85.5,
+  //       accuracy: 100,
+  //       altitudeAccuracy: 100,
+  //       heading: 90,
+  //       speed: 8.2
+  //     },
+  //     timestamp: Date.now() - 30000,
+  //     mode: 'foreground',
+  //     Deviceid: '2df1cffc11a4dbb7',
+  //     deviceOs: 'A'
+  //   },
+  //   {
+  //     coords: {
+  //       latitude: 26.8689000,
+  //       longitude: 81.0068000,
+  //       altitude: 86.0,
+  //       accuracy: 100,
+  //       altitudeAccuracy: 100,
+  //       heading: 135,
+  //       speed: 12.3
+  //     },
+  //     timestamp: Date.now() - 15000,
+  //     mode: 'foreground',
+  //     Deviceid: '2df1cffc11a4dbb7',
+  //     deviceOs: 'A'
+  //   },
+  //   {
+  //     coords: {
+  //       latitude: 26.8689500,
+  //       longitude: 81.0068500,
+  //       altitude: 86.5,
+  //       accuracy: 100,
+  //       altitudeAccuracy: 100,
+  //       heading: 180,
+  //       speed: 15.8
+  //     },
+  //     timestamp: Date.now(),
+  //     mode: 'foreground',
+  //     Deviceid: '2df1cffc11a4dbb7',
+  //     deviceOs: 'A'
+  //   }
+  // ];
+  markers: L.Marker[] = [];
+  arrowMarkers: L.Marker[] = [];
+  isLiveTrackingEnabled: boolean = false;
+  liveTrackingInterval: any = null;
+  currentTrackingUser: any = null;
+  liveTrackingIntervalSeconds: number = 5;
   constructor(
     private locationService: LocationService,
     public statusService: StatusService,
@@ -141,14 +146,14 @@ export class LiveTrackingComponent implements OnInit, OnDestroy {
         try {
           this.employee = JSON.parse(decodeURIComponent(params['employee']));
           this.employeeName = `${this.employee.firstName || ''} ${this.employee.lastName || ''}`.trim() || 'Employee';
-          
+
           // Set profile image
           if (this.employee.profileImage) {
             this.employeeProfileImage = `${this.baseurl}${this.employee.profileImage}`;
           } else {
             // Default avatar based on gender
-            this.employeeProfileImage = this.employee.gender === 'Female' 
-              ? '../../assets/img/avatars/2.png' 
+            this.employeeProfileImage = this.employee.gender == 'Female'
+              ? '../../assets/img/avatars/2.png'
               : '../../assets/img/avatars/1.png';
           }
         } catch (e) {
@@ -161,7 +166,7 @@ export class LiveTrackingComponent implements OnInit, OnDestroy {
         this.employeeProfileImage = '../../assets/img/avatars/1.png';
       }
     });
-
+  //  this.activeTrackingUsers();
     this.locationHistory = [...this.staticLocationData];
     this.currentLocation = this.locationHistory[this.locationHistory.length - 1];
 
@@ -171,6 +176,235 @@ export class LiveTrackingComponent implements OnInit, OnDestroy {
         this.startTracking();
       }, 800);
     }, 500);
+  }
+
+   clearMap() {
+    this.markers.forEach(marker => {
+      this.map.removeLayer(marker);
+    });
+    this.markers = [];
+
+    this.arrowMarkers.forEach(marker => {
+      this.map.removeLayer(marker);
+    });
+    this.arrowMarkers = [];
+
+    if (this.polyline) {
+      this.map.removeLayer(this.polyline);
+    }
+
+    this.map.eachLayer((layer) => {
+      if (layer !== this.currentTileLayer) {
+        this.map.removeLayer(layer);
+      }
+    });
+  }
+
+  loadAndPlotData(user: any) {
+   const employeeId = user ? user.id : null;
+   const payload: any = {};
+
+   if (employeeId) {
+     payload.employeeId = employeeId;
+   }
+
+   this.locationService.getLatestLocations(payload).subscribe(res => {
+     const points: any = res?.data || [];
+     if (!points.length) return;
+
+     this.clearMap();
+
+     const polylineColor = '#2c3e50';
+     const bounds = L.latLngBounds([]);
+
+     // ✅ Sort by timestamp
+     const sortedPoints = [...points].sort(
+       (a, b) => a.timestamp - b.timestamp
+     );
+
+     // ✅ Polyline route
+     const route: L.LatLngExpression[] = sortedPoints.map(p => [
+       p.coords.latitude,
+       p.coords.longitude
+     ]);
+
+     this.polyline = L.polyline(route, {
+       color: polylineColor,
+       weight: 6,
+       opacity: 0.9,
+       smoothFactor: 1.0,
+       lineCap: 'round',
+       lineJoin: 'round'
+     }).addTo(this.map);
+
+     bounds.extend(this.polyline.getBounds());
+
+     // ✅ START marker
+     const startPoint = sortedPoints[0];
+     const startIcon = this.createCustomIcon('#28a745', 'START');
+
+     const startMarker = L.marker(
+       [startPoint.coords.latitude, startPoint.coords.longitude],
+       { icon: startIcon }
+     ).addTo(this.map);
+
+     startMarker.bindPopup(`
+       <b>START</b><br/>
+       Lat: ${startPoint.coords.latitude.toFixed(6)}<br/>
+       Lng: ${startPoint.coords.longitude.toFixed(6)}<br/>
+       Time: ${new Date(startPoint.timestamp).toLocaleString()}
+     `);
+
+     this.markers.push(startMarker);
+     bounds.extend([startPoint.coords.latitude, startPoint.coords.longitude]);
+
+     // ✅ END marker
+     if (sortedPoints.length > 1) {
+       const endPoint = sortedPoints[sortedPoints.length - 1];
+       const endIcon = this.createCustomIcon('#dc3545', 'END');
+
+       const endMarker = L.marker(
+         [endPoint.coords.latitude, endPoint.coords.longitude],
+         { icon: endIcon }
+       ).addTo(this.map);
+
+       endMarker.bindPopup(`
+         <b>END</b><br/>
+         Lat: ${endPoint.coords.latitude.toFixed(6)}<br/>
+         Lng: ${endPoint.coords.longitude.toFixed(6)}<br/>
+         Time: ${new Date(endPoint.timestamp).toLocaleString()}
+       `);
+
+       this.markers.push(endMarker);
+       bounds.extend([endPoint.coords.latitude, endPoint.coords.longitude]);
+     }
+
+     // ✅ Direction arrows
+     const totalSegments = sortedPoints.length - 1;
+     const arrowSpacing = Math.max(2, Math.floor(totalSegments / 8));
+
+     for (let i = 0; i < totalSegments; i += arrowSpacing) {
+       const curr = sortedPoints[i];
+       const next = sortedPoints[i + 1];
+
+       const bearing = this.calculateBearing(
+         curr.coords.latitude,
+         curr.coords.longitude,
+         next.coords.latitude,
+         next.coords.longitude
+       );
+
+       const ratio = 0.6;
+       const arrowLat =
+         curr.coords.latitude +
+         (next.coords.latitude - curr.coords.latitude) * ratio;
+       const arrowLng =
+         curr.coords.longitude +
+         (next.coords.longitude - curr.coords.longitude) * ratio;
+
+       const arrowIcon = this.createArrowIcon(bearing);
+       const arrowMarker = L.marker([arrowLat, arrowLng], {
+         icon: arrowIcon
+       }).addTo(this.map);
+
+       this.arrowMarkers.push(arrowMarker);
+     }
+
+     if (bounds.isValid()) {
+       this.map.fitBounds(bounds, { padding: [50, 50] });
+     }
+   });
+ }
+ createArrowIcon(bearing: number): L.DivIcon {
+    const rotation = bearing - 90;
+
+    const uniqueId = 'arrowGlow' + Math.random().toString(36).substr(2, 9);
+
+    const arrowSvg = `
+      <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="${uniqueId}">
+            <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
+            <feMerge>
+              <feMergeNode in="coloredBlur"/>
+              <feMergeNode in="SourceGraphic"/>
+            </feMerge>
+          </filter>
+        </defs>
+        <g transform="rotate(${rotation} 9 9)">
+          <path d="M 3 9 L 15 9 M 9 3 L 15 9 L 9 15"
+                stroke="#ff4500"
+                stroke-width="2.5"
+                fill="none"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                filter="url(#${uniqueId})"/>
+        </g>
+      </svg>
+    `;
+
+    return L.divIcon({
+      className: 'arrow-marker',
+      html: `
+        <div style="
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          filter: drop-shadow(0 0 2px rgba(255,255,255,0.9));
+        ">${arrowSvg}</div>
+      `,
+      iconSize: [18, 18],
+      iconAnchor: [9, 9]
+    });
+  }
+
+ calculateBearing(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const lat1Rad = lat1 * Math.PI / 180;
+    const lat2Rad = lat2 * Math.PI / 180;
+
+    const y = Math.sin(dLon) * Math.cos(lat2Rad);
+    const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) -
+              Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+
+    let bearing = Math.atan2(y, x) * 180 / Math.PI;
+    bearing = (bearing + 360) % 360;
+
+    return bearing;
+  }
+
+ createCustomIcon(color: string, label: string): L.DivIcon {
+    const size = label === 'START' ? 30 : 30;
+    const bgColor = color;
+    const textColor = 'white';
+
+    return L.divIcon({
+      className: 'custom-marker',
+      html: `
+        <div style="
+          background-color: ${bgColor};
+          width: ${size}px;
+          height: ${size}px;
+          border-radius: 50% 50% 50% 0;
+          transform: rotate(-45deg);
+          border: 3px solid white;
+          box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        ">
+          <div style="
+            transform: rotate(45deg);
+            color: ${textColor};
+            font-weight: bold;
+            font-size: 12px;
+            text-align: center;
+          ">${label === 'START' ? 'S' : 'E'}</div>
+        </div>
+      `,
+      iconSize: [size, size],
+      iconAnchor: [size / 2, size]
+    });
   }
 
   initMap() {
@@ -267,14 +501,14 @@ export class LiveTrackingComponent implements OnInit, OnDestroy {
   createVehicleIcon(heading: number, speed: number): L.DivIcon {
     const rotation = heading - 90;
     const speedColor = speed > 10 ? '#28a745' : speed > 5 ? '#ffc107' : '#dc3545';
-    
+
     const userIconSvg = `
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <circle cx="12" cy="8" r="4" fill="${speedColor}"/>
         <path d="M6 21c0-3.314 2.686-6 6-6s6 2.686 6 6" stroke="${speedColor}" stroke-width="2" fill="none"/>
       </svg>
     `;
-    
+
     return L.divIcon({
       className: 'vehicle-marker',
       html: `
@@ -301,8 +535,8 @@ export class LiveTrackingComponent implements OnInit, OnDestroy {
             overflow: hidden;
             z-index: 3;
           ">
-            <img 
-              src="${this.employeeProfileImage}" 
+            <img
+              src="${this.employeeProfileImage}"
               alt="${this.employeeName}"
               style="
                 width: 100%;
@@ -322,7 +556,7 @@ export class LiveTrackingComponent implements OnInit, OnDestroy {
               ${userIconSvg}
             </div>
           </div>
-          
+
           <!-- Direction arrow - Visible and prominent -->
           <div style="
             position: absolute;
@@ -339,7 +573,7 @@ export class LiveTrackingComponent implements OnInit, OnDestroy {
             opacity: 1;
             margin-top: 16px;
           "></div>
-          
+
           <!-- Arrow shadow for better visibility -->
           <div style="
             position: absolute;
@@ -355,7 +589,7 @@ export class LiveTrackingComponent implements OnInit, OnDestroy {
             margin-top: 17px;
             margin-left: 1px;
           "></div>
-          
+
           <!-- Pulse animation ring -->
           <div style="
             position: absolute;
@@ -370,7 +604,7 @@ export class LiveTrackingComponent implements OnInit, OnDestroy {
             animation: pulse-ring 2s infinite;
             z-index: 0;
           "></div>
-          
+
           <!-- Outer pulse ring -->
           <div style="
             position: absolute;
@@ -428,9 +662,9 @@ export class LiveTrackingComponent implements OnInit, OnDestroy {
     }
 
     const { latitude, longitude, heading, speed } = this.currentLocation.coords;
-    
+
     const vehicleIcon = this.createVehicleIcon(heading, speed);
-    
+
     this.currentMarker = L.marker([latitude, longitude], {
       icon: vehicleIcon,
       zIndexOffset: 1000
@@ -503,48 +737,36 @@ export class LiveTrackingComponent implements OnInit, OnDestroy {
     };
   }
 
-  addNewLocation() {
-    if (this.employee?.id) {
-      const obj: any = { employeeId: this.employee.id };
-      this.locationService.getLatestLocations(obj).subscribe({
-        next: (res) => {
-          if (res?.data && Object.keys(res.data).length > 0) {
-            const employeeId = Object.keys(res.data)[0];
-            const points = res.data[employeeId];
-            if (points && points.length > 0) {
-              const latestPoint = points[points.length - 1];
-              const newLocation: LocationData = {
-                coords: {
-                  latitude: latestPoint.latitude,
-                  longitude: latestPoint.longitude,
-                  altitude: latestPoint.altitude || 0,
-                  accuracy: latestPoint.accuracy || 100,
-                  altitudeAccuracy: latestPoint.altitudeAccuracy || 100,
-                  heading: latestPoint.heading || 0,
-                  speed: latestPoint.speed || 0
-                },
-                timestamp: new Date(latestPoint.tracked_at).getTime(),
-                mode: latestPoint.mode || 'foreground',
-                Deviceid: latestPoint.Deviceid || 'unknown',
-                deviceOs: latestPoint.deviceOs || 'A'
-              };
-              this.locationHistory.push(newLocation);
-              this.currentLocation = newLocation;
-              this.plotLocationHistory();
-              this.updateCurrentLocation();
-              return;
-            }
-          }
-          this.addGeneratedLocation();
-        },
-        error: () => {
-          this.addGeneratedLocation();
-        }
-      });
-    } else {
+ addNewLocation() {
+  if (!this.employee?.id) {
+    this.addGeneratedLocation();
+    return;
+  }
+
+  const payload = { employeeId: this.employee.id };
+
+  this.locationService.getLatestLocations(payload).subscribe({
+    next: (res) => {
+      const points: LocationData[] = res?.data || [];
+
+      if (points.length > 0) {
+        const latestPoint = points[points.length - 1];
+
+        //  Directly use API data (NO conversion needed)
+        this.locationHistory.push(latestPoint);
+        this.currentLocation = latestPoint;
+
+        this.plotLocationHistory();
+        this.updateCurrentLocation();
+      } else {
+        this.addGeneratedLocation();
+      }
+    },
+    error: () => {
       this.addGeneratedLocation();
     }
-  }
+  });
+}
 
   addGeneratedLocation() {
     const newLocation = this.generateNewLocation();
