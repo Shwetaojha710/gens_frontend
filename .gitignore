@@ -43,3 +43,8 @@ Thumbs.db
 .angular
 gens.zip
 
+*.zip
+*.json
+/src_old
+*.css
+/dist_31_12_2025

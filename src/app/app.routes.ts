@@ -62,6 +62,7 @@ import { RegularizeComponent } from './attendance/regularize/regularize.componen
 import { BranchComponent } from './master/branch/branch.component';
 import { BranchwiseComponent } from './branchwise/branchwise.component';
 import { TrackingComponent } from './tracking/tracking.component';
+import { LiveTrackingComponent } from './tracking/live-tracking/live-tracking.component';
 
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -161,12 +162,11 @@ export const routes: Routes = [
       },
       {
         path: 'tracking',
-        component:TrackingComponent
-        // children: [
-        //   { path: 'employee', component: EmployeeComponent },
-        //   { path: 'payroll', component: PayrollComponent },
-        //   { path: 'attendance', component: AttendanceComponent }
-        // ]
+        component: TrackingComponent
+      },
+      {
+        path: 'tracking/live',
+        component: LiveTrackingComponent
       }
     ]
   },

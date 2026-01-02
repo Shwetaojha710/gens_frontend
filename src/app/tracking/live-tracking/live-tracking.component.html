@@ -1,0 +1,180 @@
+<div class="container-xxl mt-4">
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <button class="btn btn-sm btn-outline-secondary" (click)="goBack()">
+            ← Back
+          </button>
+          <div class="d-flex align-items-center gap-2">
+            <div class="avatar-container">
+              <img 
+                [src]="employeeProfileImage" 
+                [alt]="employeeName"
+                class="employee-avatar"
+                onerror="this.src='../../assets/img/avatars/1.png'"
+              />
+            </div>
+            <div>
+              <h5 class="mb-0">
+                <i class="fas fa-map-marker-alt text-danger me-2"></i>
+                Live Tracking: <span class="text-primary">{{ employeeName }}</span>
+              </h5>
+              <small class="text-muted">
+                <span *ngIf="isTracking" class="text-success">
+                  <i class="fas fa-circle" style="font-size: 8px; animation: pulse 2s infinite;"></i> Live
+                </span>
+                <span *ngIf="!isTracking" class="text-muted">
+                  <i class="fas fa-circle"></i> Paused
+                </span>
+                <span class="ms-2">
+                  Last Update: {{ currentLocation ? (currentLocation.timestamp | date:'HH:mm:ss') : 'N/A' }}
+                </span>
+              </small>
+            </div>
+          </div>
+        </div>
+        
+        <div class="d-flex align-items-center gap-2">
+          <button 
+            type="button" 
+            class="btn btn-sm"
+            [class.btn-success]="isTracking"
+            [class.btn-outline-success]="!isTracking"
+            (click)="toggleTracking()">
+            <i class="fas" [class.fa-pause]="isTracking" [class.fa-play]="!isTracking"></i>
+            {{ isTracking ? 'Pause' : 'Resume' }}
+          </button>
+          
+          <div class="btn-group" role="group">
+            <button 
+              type="button" 
+              class="btn btn-sm" 
+              [class.btn-primary]="mapType === 'osm'"
+              [class.btn-outline-primary]="mapType !== 'osm'"
+              (click)="changeMapType('osm')">
+              Standard
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-sm" 
+              [class.btn-primary]="mapType === 'satellite'"
+              [class.btn-outline-primary]="mapType !== 'satellite'"
+              (click)="changeMapType('satellite')">
+              Satellite
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-sm" 
+              [class.btn-primary]="mapType === 'terrain'"
+              [class.btn-outline-primary]="mapType !== 'terrain'"
+              (click)="changeMapType('terrain')">
+              Terrain
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-sm" 
+              [class.btn-primary]="mapType === 'dark'"
+              [class.btn-outline-primary]="mapType !== 'dark'"
+              (click)="changeMapType('dark')">
+              Dark
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-sm" 
+              [class.btn-primary]="mapType === 'streets'"
+              [class.btn-outline-primary]="mapType !== 'streets'"
+              (click)="changeMapType('streets')">
+              Streets
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-md-9">
+      <div class="card">
+        <div id="liveMap" style="height: 700px; width: 100%; border-radius: 8px; position: relative;"></div>
+      </div>
+    </div>
+    
+    <div class="col-md-3">
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0">Location Details</h6>
+        </div>
+        <div class="card-body">
+          <div *ngIf="currentLocation" class="location-info">
+            <div class="info-item mb-3">
+              <label class="text-muted small">Coordinates</label>
+              <div class="fw-bold">
+                {{ currentLocation.coords.latitude.toFixed(6) }}, {{ currentLocation.coords.longitude.toFixed(6) }}
+              </div>
+            </div>
+            
+            <div class="info-item mb-3">
+              <label class="text-muted small">Speed</label>
+              <div class="fw-bold">
+                <span [class.text-success]="currentLocation.coords.speed > 10"
+                      [class.text-warning]="currentLocation.coords.speed > 5 && currentLocation.coords.speed <= 10"
+                      [class.text-danger]="currentLocation.coords.speed <= 5">
+                  {{ currentLocation.coords.speed.toFixed(1) }} m/s
+                </span>
+              </div>
+            </div>
+            
+            <div class="info-item mb-3">
+              <label class="text-muted small">Heading</label>
+              <div class="fw-bold">{{ currentLocation.coords.heading.toFixed(0) }}°</div>
+            </div>
+            
+            <div class="info-item mb-3">
+              <label class="text-muted small">Altitude</label>
+              <div class="fw-bold">{{ currentLocation.coords.altitude.toFixed(1) }} m</div>
+            </div>
+            
+            <div class="info-item mb-3">
+              <label class="text-muted small">Accuracy</label>
+              <div class="fw-bold">{{ currentLocation.coords.accuracy }} m</div>
+            </div>
+            
+            <div class="info-item mb-3">
+              <label class="text-muted small">Mode</label>
+              <div class="fw-bold">
+                <span class="badge" 
+                      [class.bg-success]="currentLocation.mode === 'foreground'"
+                      [class.bg-secondary]="currentLocation.mode === 'background'">
+                  {{ currentLocation.mode }}
+                </span>
+              </div>
+            </div>
+            
+            <div class="info-item mb-3">
+              <label class="text-muted small">Device ID</label>
+              <div class="fw-bold small">{{ currentLocation.Deviceid }}</div>
+            </div>
+            
+            <div class="info-item mb-3">
+              <label class="text-muted small">Device OS</label>
+              <div class="fw-bold">
+                <span class="badge bg-info">{{ currentLocation.deviceOs === 'A' ? 'Android' : 'iOS' }}</span>
+              </div>
+            </div>
+            
+            <div class="info-item">
+              <label class="text-muted small">Timestamp</label>
+              <div class="fw-bold small">{{ currentLocation.timestamp | date:'medium' }}</div>
+            </div>
+          </div>
+          
+          <div *ngIf="!currentLocation" class="text-center text-muted py-4">
+            <i class="fas fa-map-marker-alt fa-2x mb-2"></i>
+            <p>No location data available</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

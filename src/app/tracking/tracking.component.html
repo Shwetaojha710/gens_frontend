@@ -75,9 +75,72 @@
   </div>
 
 
-<div *ngIf="!viewLiveTracking" id="map"
-  style="height: 1000px; width: 100%; border: 1px solid #ccc;">
-
+<div *ngIf="!viewLiveTracking">
+  <div class="card mb-3">
+    <div class="card-body">
+      <div class="d-flex justify-content-between align-items-center">
+        <div class="d-flex align-items-center gap-3">
+          <button class="btn btn-sm btn-outline-secondary" (click)="viewLiveTracking = true; stopLiveTracking()">
+            ← Back to List
+          </button>
+          <h5 class="mb-0">Map View</h5>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          <button 
+            type="button" 
+            class="btn btn-sm btn-success"
+            (click)="toggleLiveTracking()"
+            [disabled]="!currentTrackingUser">
+            <i class="fas fa-satellite-dish me-1"></i>
+            Live Tracking
+          </button>
+          <div class="btn-group" role="group">
+          <button 
+            type="button" 
+            class="btn btn-sm" 
+            [class.btn-primary]="mapType === 'osm'"
+            [class.btn-outline-primary]="mapType !== 'osm'"
+            (click)="changeMapType('osm')">
+            Standard
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-sm" 
+            [class.btn-primary]="mapType === 'satellite'"
+            [class.btn-outline-primary]="mapType !== 'satellite'"
+            (click)="changeMapType('satellite')">
+            Satellite
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-sm" 
+            [class.btn-primary]="mapType === 'terrain'"
+            [class.btn-outline-primary]="mapType !== 'terrain'"
+            (click)="changeMapType('terrain')">
+            Terrain
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-sm" 
+            [class.btn-primary]="mapType === 'dark'"
+            [class.btn-outline-primary]="mapType !== 'dark'"
+            (click)="changeMapType('dark')">
+            Dark
+          </button>
+          <button 
+            type="button" 
+            class="btn btn-sm" 
+            [class.btn-primary]="mapType === 'streets'"
+            [class.btn-outline-primary]="mapType !== 'streets'"
+            (click)="changeMapType('streets')">
+            Streets
+          </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="map" style="height: 1000px; width: 100%; border: 1px solid #ccc;"></div>
 </div>
  </div>
 

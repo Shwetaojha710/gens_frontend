@@ -1,0 +1,17 @@
+/* Custom marker styles */
+.custom-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
+.arrow-marker {
+  background: transparent !important;
+  border: none !important;
+  pointer-events: none;
+  z-index: 1000 !important;
+}
+
+.arrow-marker div {
+  display: inline-block;
+  will-change: transform;
+}
