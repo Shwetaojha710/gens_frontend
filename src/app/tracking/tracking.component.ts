@@ -8,6 +8,7 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import { SearchPaginationComponent } from '../master/search-pagination/search-pagination.component';
 import { CommonModule } from '@angular/common';
 import { MasterService } from '../services/master.service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-tracking',
@@ -22,11 +23,17 @@ export class TrackingComponent implements OnInit, OnDestroy {
   arrowMarkers: L.Marker[] = [];
   polyline!: L.Polyline;
   currentTileLayer!: L.TileLayer;
+  trafficLayer: L.TileLayer | null = null;
   mapType: string = 'osm';
+  isTrafficEnabled: boolean = false;
   isLiveTrackingEnabled: boolean = false;
   liveTrackingInterval: any = null;
   currentTrackingUser: any = null;
   liveTrackingIntervalSeconds: number = 5;
+  isFullScreen: boolean = false;
+  fullScreenControl: any = null;
+  trafficControl: any = null;
+  zoomControl: any = null;
   constructor(private locationService: LocationService, public statusService: StatusService, private router: Router, private master: MasterService,) {
   }
 
@@ -62,13 +69,34 @@ export class TrackingComponent implements OnInit, OnDestroy {
     this.stopLiveTracking();
 
     setTimeout(() => {
+      const mapElement = document.getElementById('map');
+      if (!mapElement) {
+        console.error('Map container not found');
+        return;
+      }
+
       if (!this.map) {
         this.initMap();
+        setTimeout(() => {
+          this.loadAndPlotData(user);
+        }, 200);
       } else {
         this.clearMap();
+        if (!this.fullScreenControl) {
+          this.addFullScreenControl();
+        }
+        if (!this.trafficControl) {
+          this.addTrafficControl();
+        }
+        if (!this.zoomControl) {
+          this.addCustomZoomControl();
+        }
+        this.map.invalidateSize();
+        setTimeout(() => {
+          this.loadAndPlotData(user);
+        }, 100);
       }
-      this.loadAndPlotData(user);
-    });
+    }, 100);
   }
 
   clearMap() {
@@ -87,7 +115,7 @@ export class TrackingComponent implements OnInit, OnDestroy {
     }
 
     this.map.eachLayer((layer) => {
-      if (layer !== this.currentTileLayer) {
+      if (layer !== this.currentTileLayer && layer !== this.trafficLayer) {
         this.map.removeLayer(layer);
       }
     });
@@ -210,7 +238,6 @@ export class TrackingComponent implements OnInit, OnDestroy {
         JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
       );
     }
-    // pagination
     const start = (this.currentPage - 1) * this.pageSize;
     const end = start + this.pageSize;
     this.filteredDesignation = data.slice(start, end);
@@ -218,6 +245,24 @@ export class TrackingComponent implements OnInit, OnDestroy {
   baseurl: any;
   ActiveUsers: any = [];
   viewLiveTracking: boolean = true;
+
+  maskAadhaarNumber(aadhaar: string): string {
+    if (!aadhaar || aadhaar.length < 4) {
+      return aadhaar || '';
+    }
+    
+    const cleaned = aadhaar.replace(/\s+/g, '');
+    
+    if (cleaned.length <= 4) {
+      return 'XXXX XXXX ' + cleaned;
+    }
+    
+    const first4 = cleaned.substring(0, 4);
+    const last4 = cleaned.substring(cleaned.length - 4);
+    const middle = 'XXXX';
+    
+    return `${first4} ${middle} ${last4}`;
+  }
   activeTrackingUsers() {
     this.ActiveUsers = [];
     this.locationService.getActiveTrackingUsers().subscribe({
@@ -236,6 +281,7 @@ export class TrackingComponent implements OnInit, OnDestroy {
           }
           );
           this.ActiveUsers = response.data;
+          this.originalList = [...response.data];
           console.log(this.ActiveUsers);
         }
         else if (status === "expired") {
@@ -253,15 +299,175 @@ export class TrackingComponent implements OnInit, OnDestroy {
   }
 
   initMap() {
+    const mapElement = document.getElementById('map');
+    if (!mapElement) {
+      console.error('Map container not found');
+      return;
+    }
+
+    if (this.map) {
+      this.map.remove();
+    }
 
     this.map = L.map('map', {
       minZoom: 2,
       maxZoom: 30,
-      zoomControl: true
+      zoomControl: false,
+      preferCanvas: false,
+      fadeAnimation: true,
+      zoomAnimation: true,
+      zoomAnimationThreshold: 4
     }).setView([26.8687564, 81.006653], 5);
 
     this.addTileLayer(this.mapType);
+    this.addFullScreenControl();
+    this.addTrafficControl();
+    this.addCustomZoomControl();
 
+    setTimeout(() => {
+      if (this.map) {
+        this.map.invalidateSize();
+      }
+    }, 100);
+  }
+
+  addFullScreenControl() {
+    if (this.fullScreenControl) {
+      this.map.removeControl(this.fullScreenControl);
+    }
+
+    const self = this;
+    const FullScreenControl = L.Control.extend({
+      onAdd: (map: L.Map) => {
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+        const link = L.DomUtil.create('a', 'leaflet-control-fullscreen', container);
+        link.href = '#';
+        link.title = 'Toggle Full Screen';
+        link.setAttribute('role', 'button');
+        link.setAttribute('aria-label', 'Toggle Full Screen');
+        
+        const icon = L.DomUtil.create('i', 'fas', link);
+        icon.className = `fas ${self.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
+        
+        const updateIcon = () => {
+          icon.className = `fas ${self.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
+          link.setAttribute('title', self.isFullScreen ? 'Exit Full Screen' : 'Toggle Full Screen');
+        };
+        
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.on(link, 'click', (e) => {
+          L.DomEvent.stopPropagation(e);
+          L.DomEvent.preventDefault(e);
+          self.toggleFullScreen();
+          setTimeout(updateIcon, 100);
+        });
+
+        return container;
+      },
+      onRemove: (map: L.Map) => {
+      }
+    });
+
+    this.fullScreenControl = new FullScreenControl({ position: 'topright' });
+    this.fullScreenControl.addTo(this.map);
+  }
+
+  addTrafficControl() {
+    if (this.trafficControl) {
+      this.map.removeControl(this.trafficControl);
+    }
+
+    const self = this;
+    const TrafficControl = L.Control.extend({
+      onAdd: (map: L.Map) => {
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+        const link = L.DomUtil.create('a', 'leaflet-control-traffic', container);
+        link.href = '#';
+        link.title = 'Toggle Traffic';
+        link.setAttribute('role', 'button');
+        link.setAttribute('aria-label', 'Toggle Traffic');
+        
+        const icon = L.DomUtil.create('i', 'fas', link);
+        icon.className = `fas fa-traffic-light`;
+        if (self.isTrafficEnabled) {
+          link.style.backgroundColor = '#ffc107';
+          link.style.color = '#000';
+        }
+        
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.on(link, 'click', (e) => {
+          L.DomEvent.stopPropagation(e);
+          L.DomEvent.preventDefault(e);
+          self.toggleTraffic();
+          if (self.isTrafficEnabled) {
+            link.style.backgroundColor = '#ffc107';
+            link.style.color = '#000';
+          } else {
+            link.style.backgroundColor = '';
+            link.style.color = '';
+          }
+        });
+
+        return container;
+      },
+      onRemove: (map: L.Map) => {
+      }
+    });
+
+    this.trafficControl = new TrafficControl({ position: 'topright' });
+    this.trafficControl.addTo(this.map);
+  }
+
+  addCustomZoomControl() {
+    if (this.zoomControl) {
+      this.map.removeControl(this.zoomControl);
+    }
+
+    const self = this;
+    const CustomZoomControl = L.Control.extend({
+      onAdd: (map: L.Map) => {
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
+        
+        const zoomInLink = L.DomUtil.create('a', 'leaflet-control-zoom-in', container);
+        zoomInLink.href = '#';
+        zoomInLink.title = 'Zoom In';
+        zoomInLink.setAttribute('role', 'button');
+        zoomInLink.setAttribute('aria-label', 'Zoom In');
+        
+        const zoomInIcon = L.DomUtil.create('i', 'fas fa-plus', zoomInLink);
+        
+        L.DomEvent.disableClickPropagation(zoomInLink);
+        L.DomEvent.on(zoomInLink, 'click', (e) => {
+          L.DomEvent.stopPropagation(e);
+          L.DomEvent.preventDefault(e);
+          self.zoomIn();
+        });
+
+        const zoomOutLink = L.DomUtil.create('a', 'leaflet-control-zoom-out', container);
+        zoomOutLink.href = '#';
+        zoomOutLink.title = 'Zoom Out';
+        zoomOutLink.setAttribute('role', 'button');
+        zoomOutLink.setAttribute('aria-label', 'Zoom Out');
+        
+        const zoomOutIcon = L.DomUtil.create('i', 'fas fa-minus', zoomOutLink);
+        
+        L.DomEvent.disableClickPropagation(zoomOutLink);
+        L.DomEvent.on(zoomOutLink, 'click', (e) => {
+          L.DomEvent.stopPropagation(e);
+          L.DomEvent.preventDefault(e);
+          self.zoomOut();
+        });
+
+        return container;
+      },
+      onRemove: (map: L.Map) => {
+      }
+    });
+
+    this.zoomControl = new CustomZoomControl({ position: 'topright' });
+    this.zoomControl.addTo(this.map);
   }
 
   addTileLayer(mapType: string) {
@@ -308,7 +514,155 @@ export class TrackingComponent implements OnInit, OnDestroy {
   changeMapType(mapType: string) {
     this.mapType = mapType;
     this.addTileLayer(mapType);
+    if (this.isTrafficEnabled && this.map) {
+      this.toggleTraffic();
+      this.toggleTraffic();
+    }
   }
+
+  toggleTraffic() {
+    this.isTrafficEnabled = !this.isTrafficEnabled;
+    
+    if (!this.map) {
+      return;
+    }
+
+    if (this.isTrafficEnabled) {
+      if (this.trafficLayer) {
+        this.map.removeLayer(this.trafficLayer);
+        this.trafficLayer = null;
+      }
+
+      this.trafficLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=m@221097413,traffic&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        minZoom: 2,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: 'Traffic data &copy; Google',
+        opacity: 0.65,
+        pane: 'overlayPane',
+        zIndex: 1000
+      });
+      
+      this.trafficLayer.addTo(this.map);
+      
+      setTimeout(() => {
+        if (this.map) {
+          this.map.invalidateSize();
+        }
+      }, 100);
+    } else {
+      if (this.trafficLayer) {
+        this.map.removeLayer(this.trafficLayer);
+        this.trafficLayer = null;
+      }
+    }
+
+    const trafficButton = document.querySelector('.leaflet-control-traffic');
+    if (trafficButton) {
+      if (this.isTrafficEnabled) {
+        (trafficButton as HTMLElement).style.backgroundColor = '#ffc107';
+        (trafficButton as HTMLElement).style.color = '#000';
+      } else {
+        (trafficButton as HTMLElement).style.backgroundColor = '';
+        (trafficButton as HTMLElement).style.color = '';
+      }
+    }
+  }
+// async loadAndPlotData(user: any) {
+//   const employeeId = user ? user.id : null;
+//   const payload: any = {};
+
+//   if (employeeId) {
+//     payload.employeeId = employeeId;
+//   }
+
+//   this.locationService.getLatestLocations(payload).subscribe(async res => {
+//     const points: any[] = res?.data || [];
+//     if (!points.length) return;
+
+//     this.clearMap();
+
+//     const bounds = L.latLngBounds([]);
+//     const polylineColor = '#2c3e50';
+
+//     // ✅ Sort points
+//     const sortedPoints = [...points].sort(
+//       (a, b) => a.timestamp - b.timestamp
+//     );
+
+//     // ✅ Draw polyline
+//     const route: L.LatLngExpression[] = sortedPoints.map(p => [
+//       p.coords.latitude,
+//       p.coords.longitude
+//     ]);
+
+//     this.polyline = L.polyline(route, {
+//       color: polylineColor,
+//       weight: 6,
+//       opacity: 0.9
+//     }).addTo(this.map);
+
+//     bounds.extend(this.polyline.getBounds());
+
+//     // =====================================================
+//     // 🔥 ADD LOCATION NAME FOR EACH POLYLINE POINT (HERE)
+//     // =====================================================
+//     for (const point of sortedPoints) {
+//       const latLng: L.LatLngExpression = [
+//         point.coords.latitude,
+//         point.coords.longitude
+//       ];
+
+//       // 🔥 Reverse geocode
+//       const locationName = await this.addLocationName(point);
+
+//       const marker = L.circleMarker(latLng, {
+//         radius: 5,
+//         color: '#2c3e50',
+//         fillColor: '#3498db',
+//         fillOpacity: 1
+//       }).addTo(this.map);
+
+//       // Tooltip (hover)
+//       marker.bindTooltip(
+//         `<b>Location:</b><br>${locationName}`,
+//         { sticky: true }
+//       );
+
+//       // Popup (click)
+//       marker.bindPopup(`
+//         <b>Location</b><br/>
+//         ${locationName}<br/><br/>
+//         <b>Lat:</b> ${point.coords.latitude.toFixed(6)}<br/>
+//         <b>Lng:</b> ${point.coords.longitude.toFixed(6)}<br/>
+//         <b>Speed:</b> ${point.coords.speed} m/s<br/>
+//         <b>Time:</b> ${new Date(point.timestamp).toLocaleString()}
+//       `);
+
+//       bounds.extend(latLng);
+//     }
+
+//     // ✅ START marker
+//     const start = sortedPoints[0];
+//     const startMarker = L.marker(
+//       [start.coords.latitude, start.coords.longitude],
+//       { icon: this.createCustomIcon('#28a745', 'START') }
+//     ).addTo(this.map);
+
+//     // ✅ END marker
+//     if (sortedPoints.length > 1) {
+//       const end = sortedPoints[sortedPoints.length - 1];
+//       const endMarker = L.marker(
+//         [end.coords.latitude, end.coords.longitude],
+//         { icon: this.createCustomIcon('#dc3545', 'END') }
+//       ).addTo(this.map);
+//     }
+
+//     if (bounds.isValid()) {
+//       this.map.fitBounds(bounds, { padding: [50, 50] });
+//     }
+//   });
+// }
 
   loadAndPlotData(user: any) {
   const employeeId = user ? user.id : null;
@@ -327,12 +681,10 @@ export class TrackingComponent implements OnInit, OnDestroy {
     const polylineColor = '#2c3e50';
     const bounds = L.latLngBounds([]);
 
-    // ✅ Sort by timestamp
     const sortedPoints = [...points].sort(
       (a, b) => a.timestamp - b.timestamp
     );
 
-    // ✅ Polyline route
     const route: L.LatLngExpression[] = sortedPoints.map(p => [
       p.coords.latitude,
       p.coords.longitude
@@ -349,7 +701,6 @@ export class TrackingComponent implements OnInit, OnDestroy {
 
     bounds.extend(this.polyline.getBounds());
 
-    // ✅ START marker
     const startPoint = sortedPoints[0];
     const startIcon = this.createCustomIcon('#28a745', 'START');
 
@@ -358,17 +709,11 @@ export class TrackingComponent implements OnInit, OnDestroy {
       { icon: startIcon }
     ).addTo(this.map);
 
-    startMarker.bindPopup(`
-      <b>START</b><br/>
-      Lat: ${startPoint.coords.latitude.toFixed(6)}<br/>
-      Lng: ${startPoint.coords.longitude.toFixed(6)}<br/>
-      Time: ${new Date(startPoint.timestamp).toLocaleString()}
-    `);
+    this.bindMarkerPopupWithAddress(startMarker, 'START', startPoint.coords.latitude, startPoint.coords.longitude, startPoint.timestamp);
 
     this.markers.push(startMarker);
     bounds.extend([startPoint.coords.latitude, startPoint.coords.longitude]);
 
-    // ✅ END marker
     if (sortedPoints.length > 1) {
       const endPoint = sortedPoints[sortedPoints.length - 1];
       const endIcon = this.createCustomIcon('#dc3545', 'END');
@@ -378,18 +723,12 @@ export class TrackingComponent implements OnInit, OnDestroy {
         { icon: endIcon }
       ).addTo(this.map);
 
-      endMarker.bindPopup(`
-        <b>END</b><br/>
-        Lat: ${endPoint.coords.latitude.toFixed(6)}<br/>
-        Lng: ${endPoint.coords.longitude.toFixed(6)}<br/>
-        Time: ${new Date(endPoint.timestamp).toLocaleString()}
-      `);
+      this.bindMarkerPopupWithAddress(endMarker, 'END', endPoint.coords.latitude, endPoint.coords.longitude, endPoint.timestamp);
 
       this.markers.push(endMarker);
       bounds.extend([endPoint.coords.latitude, endPoint.coords.longitude]);
     }
 
-    // ✅ Direction arrows
     const totalSegments = sortedPoints.length - 1;
     const arrowSpacing = Math.max(2, Math.floor(totalSegments / 8));
 
@@ -425,6 +764,69 @@ export class TrackingComponent implements OnInit, OnDestroy {
     }
   });
 }
+async addLocationName(point: any): Promise<string> {
+  try {
+    const res: any = await this.locationService.getAddressFromCoords(point.coords.latitude, point.coords.longitude)
+      .toPromise();
+
+    return res?.display_name || 'Unknown Location';
+  } catch {
+    return 'Unknown Location';
+  }
+}
+
+  async getAddressFromAPI(lat: number, lng: number): Promise<string | null> {
+    try {
+      const response: any = await firstValueFrom(this.locationService.getAddressFromGlobalVTS(lat, lng));
+      
+      if (response && response.address && typeof response.address === 'string' && response.address.trim() !== '') {
+        return response.address;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error fetching address from API:', error);
+      return null;
+    }
+  }
+
+  bindMarkerPopupWithAddress(marker: L.Marker, label: string, lat: number, lng: number, timestamp: number) {
+    const initialContent = `
+      <b>${label}</b><br/>
+      <small>Loading address...</small><br/>
+      <b>Lat:</b> ${lat.toFixed(6)}<br/>
+      <b>Lng:</b> ${lng.toFixed(6)}<br/>
+      <b>Time:</b> ${new Date(timestamp).toLocaleString()}
+    `;
+    
+    marker.bindPopup(initialContent);
+    
+    this.getAddressFromAPI(lat, lng).then(address => {
+      let popupContent = `
+        <b>${label}</b><br/>
+      `;
+      
+      if (address) {
+        popupContent += `<b>Address:</b> ${address}<br/>`;
+      }
+      
+      popupContent += `
+        <b>Lat:</b> ${lat.toFixed(6)}<br/>
+        <b>Lng:</b> ${lng.toFixed(6)}<br/>
+        <b>Time:</b> ${new Date(timestamp).toLocaleString()}
+      `;
+      
+      marker.setPopupContent(popupContent);
+    }).catch(error => {
+      const fallbackContent = `
+        <b>${label}</b><br/>
+        <b>Lat:</b> ${lat.toFixed(6)}<br/>
+        <b>Lng:</b> ${lng.toFixed(6)}<br/>
+        <b>Time:</b> ${new Date(timestamp).toLocaleString()}
+      `;
+      marker.setPopupContent(fallbackContent);
+    });
+  }
 
 
   // loadAndPlotData(user: any) {
@@ -621,7 +1023,54 @@ export class TrackingComponent implements OnInit, OnDestroy {
     }
   }
 
+  toggleFullScreen() {
+    this.isFullScreen = !this.isFullScreen;
+    
+    if (this.isFullScreen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    
+    const fullscreenIcon = document.querySelector('.leaflet-control-fullscreen i');
+    if (fullscreenIcon) {
+      fullscreenIcon.className = `fas ${this.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
+    }
+    
+    const fullscreenLink = document.querySelector('.leaflet-control-fullscreen');
+    if (fullscreenLink) {
+      fullscreenLink.setAttribute('title', this.isFullScreen ? 'Exit Full Screen' : 'Toggle Full Screen');
+    }
+    
+    setTimeout(() => {
+      if (this.map) {
+        this.map.invalidateSize();
+        setTimeout(() => {
+          if (this.map) {
+            this.map.invalidateSize();
+          }
+        }, 100);
+      }
+    }, 200);
+  }
+
+  zoomIn() {
+    if (this.map) {
+      this.map.zoomIn();
+    }
+  }
+
+  zoomOut() {
+    if (this.map) {
+      this.map.zoomOut();
+    }
+  }
+
   ngOnDestroy() {
     this.stopLiveTracking();
+    if (this.trafficLayer && this.map) {
+      this.map.removeLayer(this.trafficLayer);
+      this.trafficLayer = null;
+    }
   }
 }

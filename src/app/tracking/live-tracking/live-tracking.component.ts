@@ -6,6 +6,7 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MasterService } from '../../services/master.service';
+import { firstValueFrom } from 'rxjs';
 
 interface LocationData {
   coords: {
@@ -34,7 +35,9 @@ export class LiveTrackingComponent implements OnInit, OnDestroy {
   currentMarker!: L.Marker;
   polyline!: L.Polyline;
   currentTileLayer!: L.TileLayer;
+  trafficLayer: L.TileLayer | null = null;
   mapType: string = 'osm';
+  isTrafficEnabled: boolean = false;
 
   employee: any = null;
   employeeName: string = '';
@@ -47,7 +50,7 @@ export class LiveTrackingComponent implements OnInit, OnDestroy {
   trackingInterval: any = null;
   refreshInterval: number = 3;
 staticLocationData:any=[]
-  // staticLocationData: LocationData[] = [
+ 
   //   {
   //     coords: {
   //       latitude: 26.8687539,
@@ -130,6 +133,10 @@ staticLocationData:any=[]
   liveTrackingInterval: any = null;
   currentTrackingUser: any = null;
   liveTrackingIntervalSeconds: number = 5;
+  isFullScreen: boolean = false;
+  fullScreenControl: any = null;
+  trafficControl: any = null;
+  zoomControl: any = null;
   constructor(
     private locationService: LocationService,
     public statusService: StatusService,
@@ -147,11 +154,9 @@ staticLocationData:any=[]
           this.employee = JSON.parse(decodeURIComponent(params['employee']));
           this.employeeName = `${this.employee.firstName || ''} ${this.employee.lastName || ''}`.trim() || 'Employee';
 
-          // Set profile image
           if (this.employee.profileImage) {
             this.employeeProfileImage = `${this.baseurl}${this.employee.profileImage}`;
           } else {
-            // Default avatar based on gender
             this.employeeProfileImage = this.employee.gender == 'Female'
               ? '../../assets/img/avatars/2.png'
               : '../../assets/img/avatars/1.png';
@@ -166,7 +171,6 @@ staticLocationData:any=[]
         this.employeeProfileImage = '../../assets/img/avatars/1.png';
       }
     });
-  //  this.activeTrackingUsers();
     this.locationHistory = [...this.staticLocationData];
     this.currentLocation = this.locationHistory[this.locationHistory.length - 1];
 
@@ -217,12 +221,10 @@ staticLocationData:any=[]
      const polylineColor = '#2c3e50';
      const bounds = L.latLngBounds([]);
 
-     // ✅ Sort by timestamp
      const sortedPoints = [...points].sort(
        (a, b) => a.timestamp - b.timestamp
      );
 
-     // ✅ Polyline route
      const route: L.LatLngExpression[] = sortedPoints.map(p => [
        p.coords.latitude,
        p.coords.longitude
@@ -239,47 +241,34 @@ staticLocationData:any=[]
 
      bounds.extend(this.polyline.getBounds());
 
-     // ✅ START marker
-     const startPoint = sortedPoints[0];
-     const startIcon = this.createCustomIcon('#28a745', 'START');
+    const startPoint = sortedPoints[0];
+    const startIcon = this.createCustomIcon('#28a745', 'START');
 
-     const startMarker = L.marker(
-       [startPoint.coords.latitude, startPoint.coords.longitude],
-       { icon: startIcon }
-     ).addTo(this.map);
+    const startMarker = L.marker(
+      [startPoint.coords.latitude, startPoint.coords.longitude],
+      { icon: startIcon }
+    ).addTo(this.map);
 
-     startMarker.bindPopup(`
-       <b>START</b><br/>
-       Lat: ${startPoint.coords.latitude.toFixed(6)}<br/>
-       Lng: ${startPoint.coords.longitude.toFixed(6)}<br/>
-       Time: ${new Date(startPoint.timestamp).toLocaleString()}
-     `);
+    this.bindMarkerPopupWithAddress(startMarker, 'START', startPoint.coords.latitude, startPoint.coords.longitude, startPoint.timestamp);
 
-     this.markers.push(startMarker);
-     bounds.extend([startPoint.coords.latitude, startPoint.coords.longitude]);
+    this.markers.push(startMarker);
+    bounds.extend([startPoint.coords.latitude, startPoint.coords.longitude]);
 
-     // ✅ END marker
-     if (sortedPoints.length > 1) {
-       const endPoint = sortedPoints[sortedPoints.length - 1];
-       const endIcon = this.createCustomIcon('#dc3545', 'END');
+    if (sortedPoints.length > 1) {
+      const endPoint = sortedPoints[sortedPoints.length - 1];
+      const endIcon = this.createCustomIcon('#dc3545', 'END');
 
-       const endMarker = L.marker(
-         [endPoint.coords.latitude, endPoint.coords.longitude],
-         { icon: endIcon }
-       ).addTo(this.map);
+      const endMarker = L.marker(
+        [endPoint.coords.latitude, endPoint.coords.longitude],
+        { icon: endIcon }
+      ).addTo(this.map);
 
-       endMarker.bindPopup(`
-         <b>END</b><br/>
-         Lat: ${endPoint.coords.latitude.toFixed(6)}<br/>
-         Lng: ${endPoint.coords.longitude.toFixed(6)}<br/>
-         Time: ${new Date(endPoint.timestamp).toLocaleString()}
-       `);
+      this.bindMarkerPopupWithAddress(endMarker, 'END', endPoint.coords.latitude, endPoint.coords.longitude, endPoint.timestamp);
 
-       this.markers.push(endMarker);
-       bounds.extend([endPoint.coords.latitude, endPoint.coords.longitude]);
-     }
+      this.markers.push(endMarker);
+      bounds.extend([endPoint.coords.latitude, endPoint.coords.longitude]);
+    }
 
-     // ✅ Direction arrows
      const totalSegments = sortedPoints.length - 1;
      const arrowSpacing = Math.max(2, Math.floor(totalSegments / 8));
 
@@ -422,20 +411,271 @@ staticLocationData:any=[]
       this.map = L.map('liveMap', {
         minZoom: 2,
         maxZoom: 30,
-        zoomControl: true,
-        preferCanvas: false
+        zoomControl: false,
+        preferCanvas: false,
+        fadeAnimation: true,
+        zoomAnimation: true,
+        zoomAnimationThreshold: 4
       }).setView([26.8687539, 81.0066458], 15);
 
       this.addTileLayer(this.mapType);
+      this.addFullScreenControl();
+      this.addTrafficControl();
+      this.addCustomZoomControl();
 
       setTimeout(() => {
         if (this.map) {
           this.map.invalidateSize();
-          this.plotLocationHistory();
-          this.updateCurrentLocation();
+          setTimeout(() => {
+            this.plotLocationHistory();
+            this.updateCurrentLocation();
+          }, 100);
         }
-      }, 300);
-    }, 300);
+      }, 150);
+    }, 200);
+  }
+
+  addFullScreenControl() {
+    if (this.fullScreenControl) {
+      this.map.removeControl(this.fullScreenControl);
+    }
+
+    const self = this;
+    const FullScreenControl = L.Control.extend({
+      onAdd: (map: L.Map) => {
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+        const link = L.DomUtil.create('a', 'leaflet-control-fullscreen', container);
+        link.href = '#';
+        link.title = 'Toggle Full Screen';
+        link.setAttribute('role', 'button');
+        link.setAttribute('aria-label', 'Toggle Full Screen');
+        
+        const icon = L.DomUtil.create('i', 'fas', link);
+        icon.className = `fas ${self.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
+        
+        const updateIcon = () => {
+          icon.className = `fas ${self.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
+          link.setAttribute('title', self.isFullScreen ? 'Exit Full Screen' : 'Toggle Full Screen');
+        };
+        
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.on(link, 'click', (e) => {
+          L.DomEvent.stopPropagation(e);
+          L.DomEvent.preventDefault(e);
+          self.toggleFullScreen();
+          setTimeout(updateIcon, 600);
+        });
+
+        return container;
+      },
+      onRemove: (map: L.Map) => {
+      }
+    });
+
+    this.fullScreenControl = new FullScreenControl({ position: 'topright' });
+    this.fullScreenControl.addTo(this.map);
+  }
+
+  addTrafficControl() {
+    if (this.trafficControl) {
+      this.map.removeControl(this.trafficControl);
+    }
+
+    const self = this;
+    const TrafficControl = L.Control.extend({
+      onAdd: (map: L.Map) => {
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+        const link = L.DomUtil.create('a', 'leaflet-control-traffic', container);
+        link.href = '#';
+        link.title = 'Toggle Traffic';
+        link.setAttribute('role', 'button');
+        link.setAttribute('aria-label', 'Toggle Traffic');
+        
+        const icon = L.DomUtil.create('i', 'fas', link);
+        icon.className = `fas fa-traffic-light`;
+        if (self.isTrafficEnabled) {
+          link.style.backgroundColor = '#ffc107';
+          link.style.color = '#000';
+        }
+        
+        L.DomEvent.disableClickPropagation(container);
+        L.DomEvent.on(link, 'click', (e) => {
+          L.DomEvent.stopPropagation(e);
+          L.DomEvent.preventDefault(e);
+          self.toggleTraffic();
+          if (self.isTrafficEnabled) {
+            link.style.backgroundColor = '#ffc107';
+            link.style.color = '#000';
+          } else {
+            link.style.backgroundColor = '';
+            link.style.color = '';
+          }
+        });
+
+        return container;
+      },
+      onRemove: (map: L.Map) => {
+      }
+    });
+
+    this.trafficControl = new TrafficControl({ position: 'topright' });
+    this.trafficControl.addTo(this.map);
+  }
+
+  addCustomZoomControl() {
+    if (this.zoomControl) {
+      this.map.removeControl(this.zoomControl);
+    }
+
+    const self = this;
+    const CustomZoomControl = L.Control.extend({
+      onAdd: (map: L.Map) => {
+        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+        container.style.display = 'flex';
+        container.style.flexDirection = 'column';
+        
+        const zoomInLink = L.DomUtil.create('a', 'leaflet-control-zoom-in', container);
+        zoomInLink.href = '#';
+        zoomInLink.title = 'Zoom In';
+        zoomInLink.setAttribute('role', 'button');
+        zoomInLink.setAttribute('aria-label', 'Zoom In');
+        
+        const zoomInIcon = L.DomUtil.create('i', 'fas fa-plus', zoomInLink);
+        
+        L.DomEvent.disableClickPropagation(zoomInLink);
+        L.DomEvent.on(zoomInLink, 'click', (e) => {
+          L.DomEvent.stopPropagation(e);
+          L.DomEvent.preventDefault(e);
+          self.zoomIn();
+        });
+
+        const zoomOutLink = L.DomUtil.create('a', 'leaflet-control-zoom-out', container);
+        zoomOutLink.href = '#';
+        zoomOutLink.title = 'Zoom Out';
+        zoomOutLink.setAttribute('role', 'button');
+        zoomOutLink.setAttribute('aria-label', 'Zoom Out');
+        
+        const zoomOutIcon = L.DomUtil.create('i', 'fas fa-minus', zoomOutLink);
+        
+        L.DomEvent.disableClickPropagation(zoomOutLink);
+        L.DomEvent.on(zoomOutLink, 'click', (e) => {
+          L.DomEvent.stopPropagation(e);
+          L.DomEvent.preventDefault(e);
+          self.zoomOut();
+        });
+
+        return container;
+      },
+      onRemove: (map: L.Map) => {
+      }
+    });
+
+    this.zoomControl = new CustomZoomControl({ position: 'topright' });
+    this.zoomControl.addTo(this.map);
+  }
+
+  zoomIn() {
+    if (this.map) {
+      this.map.zoomIn();
+    }
+  }
+
+  zoomOut() {
+    if (this.map) {
+      this.map.zoomOut();
+    }
+  }
+
+  toggleFullScreen() {
+    this.isFullScreen = !this.isFullScreen;
+    
+    if (this.isFullScreen) {
+      document.body.style.overflow = 'hidden';
+      
+      if (this.map) {
+        const currentView = this.map.getCenter();
+        const currentZoom = this.map.getZoom();
+        const currentLayers = this.map.eachLayer((layer) => layer);
+        
+        this.map.remove();
+        
+        setTimeout(() => {
+          const fullscreenContainer = document.getElementById('liveMapFullscreen');
+          if (fullscreenContainer) {
+            this.map = L.map('liveMapFullscreen', {
+              minZoom: 2,
+              maxZoom: 30,
+              zoomControl: false,
+              preferCanvas: false,
+              fadeAnimation: true,
+              zoomAnimation: true,
+              zoomAnimationThreshold: 4
+            }).setView(currentView || [26.8687539, 81.0066458], currentZoom || 15);
+            
+            this.addTileLayer(this.mapType);
+            this.addFullScreenControl();
+            this.addTrafficControl();
+            this.addCustomZoomControl();
+            
+            setTimeout(() => {
+              if (this.map) {
+                this.map.invalidateSize();
+                setTimeout(() => {
+                  this.plotLocationHistory();
+                  this.updateCurrentLocation();
+                }, 100);
+              }
+            }, 200);
+          }
+        }, 100);
+      }
+    } else {
+      document.body.style.overflow = '';
+      
+      if (this.map) {
+        const currentView = this.map.getCenter();
+        const currentZoom = this.map.getZoom();
+        
+        this.map.remove();
+        
+        setTimeout(() => {
+          const normalContainer = document.getElementById('liveMap');
+          if (normalContainer) {
+            this.map = L.map('liveMap', {
+              minZoom: 2,
+              maxZoom: 30,
+              zoomControl: false,
+              preferCanvas: false,
+              fadeAnimation: true,
+              zoomAnimation: true,
+              zoomAnimationThreshold: 4
+            }).setView(currentView || [26.8687539, 81.0066458], currentZoom || 15);
+            
+            this.addTileLayer(this.mapType);
+            this.addFullScreenControl();
+            this.addTrafficControl();
+            this.addCustomZoomControl();
+            
+            setTimeout(() => {
+              if (this.map) {
+                this.map.invalidateSize();
+                setTimeout(() => {
+                  this.plotLocationHistory();
+                  this.updateCurrentLocation();
+                }, 100);
+              }
+            }, 200);
+          }
+        }, 100);
+      }
+    }
+    
+    setTimeout(() => {
+      const fullscreenIcon = document.querySelector('.leaflet-control-fullscreen i');
+      if (fullscreenIcon) {
+        fullscreenIcon.className = `fas ${this.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
+      }
+    }, 500);
   }
 
   addTileLayer(mapType: string) {
@@ -495,6 +735,59 @@ staticLocationData:any=[]
     this.mapType = mapType;
     if (this.map) {
       this.addTileLayer(mapType);
+      if (this.isTrafficEnabled) {
+        this.toggleTraffic();
+        this.toggleTraffic();
+      }
+    }
+  }
+
+  toggleTraffic() {
+    this.isTrafficEnabled = !this.isTrafficEnabled;
+    
+    if (!this.map) {
+      return;
+    }
+
+    if (this.isTrafficEnabled) {
+      if (this.trafficLayer) {
+        this.map.removeLayer(this.trafficLayer);
+        this.trafficLayer = null;
+      }
+
+      this.trafficLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=m@221097413,traffic&x={x}&y={y}&z={z}', {
+        maxZoom: 20,
+        minZoom: 2,
+        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+        attribution: 'Traffic data &copy; Google',
+        opacity: 0.65,
+        pane: 'overlayPane',
+        zIndex: 1000
+      });
+      
+      this.trafficLayer.addTo(this.map);
+      
+      setTimeout(() => {
+        if (this.map) {
+          this.map.invalidateSize();
+        }
+      }, 100);
+    } else {
+      if (this.trafficLayer) {
+        this.map.removeLayer(this.trafficLayer);
+        this.trafficLayer = null;
+      }
+    }
+
+    const trafficButton = document.querySelector('.leaflet-control-traffic');
+    if (trafficButton) {
+      if (this.isTrafficEnabled) {
+        (trafficButton as HTMLElement).style.backgroundColor = '#ffc107';
+        (trafficButton as HTMLElement).style.color = '#000';
+      } else {
+        (trafficButton as HTMLElement).style.backgroundColor = '';
+        (trafficButton as HTMLElement).style.color = '';
+      }
     }
   }
 
@@ -517,7 +810,6 @@ staticLocationData:any=[]
           width: 45px;
           height: 45px;
         ">
-          <!-- User icon/profile image container - Main Focus -->
           <div style="
             position: absolute;
             top: 50%;
@@ -557,7 +849,6 @@ staticLocationData:any=[]
             </div>
           </div>
 
-          <!-- Direction arrow - Visible and prominent -->
           <div style="
             position: absolute;
             top: 50%;
@@ -574,7 +865,6 @@ staticLocationData:any=[]
             margin-top: 16px;
           "></div>
 
-          <!-- Arrow shadow for better visibility -->
           <div style="
             position: absolute;
             top: 50%;
@@ -590,7 +880,6 @@ staticLocationData:any=[]
             margin-left: 1px;
           "></div>
 
-          <!-- Pulse animation ring -->
           <div style="
             position: absolute;
             top: 50%;
@@ -605,7 +894,6 @@ staticLocationData:any=[]
             z-index: 0;
           "></div>
 
-          <!-- Outer pulse ring -->
           <div style="
             position: absolute;
             top: 50%;
@@ -715,7 +1003,7 @@ staticLocationData:any=[]
     }
 
     const lastLoc = this.currentLocation;
-    const randomLat = (Math.random() - 0.5) * 0.001; // ~100m variation
+    const randomLat = (Math.random() - 0.5) * 0.001; 
     const randomLon = (Math.random() - 0.5) * 0.001;
     const randomSpeed = Math.random() * 20;
     const randomHeading = Math.random() * 360;
@@ -752,7 +1040,6 @@ staticLocationData:any=[]
       if (points.length > 0) {
         const latestPoint = points[points.length - 1];
 
-        //  Directly use API data (NO conversion needed)
         this.locationHistory.push(latestPoint);
         this.currentLocation = latestPoint;
 
@@ -810,8 +1097,65 @@ staticLocationData:any=[]
     this.router.navigate(['/layout/tracking']);
   }
 
+  async getAddressFromAPI(lat: number, lng: number): Promise<string | null> {
+    try {
+      const response: any = await firstValueFrom(this.locationService.getAddressFromGlobalVTS(lat, lng));
+      
+      if (response && response.address && typeof response.address === 'string' && response.address.trim() !== '') {
+        return response.address;
+      }
+      
+      return null;
+    } catch (error) {
+      console.error('Error fetching address from API:', error);
+      return null;
+    }
+  }
+
+  bindMarkerPopupWithAddress(marker: L.Marker, label: string, lat: number, lng: number, timestamp: number) {
+    const initialContent = `
+      <b>${label}</b><br/>
+      <small>Loading address...</small><br/>
+      <b>Lat:</b> ${lat.toFixed(6)}<br/>
+      <b>Lng:</b> ${lng.toFixed(6)}<br/>
+      <b>Time:</b> ${new Date(timestamp).toLocaleString()}
+    `;
+    
+    marker.bindPopup(initialContent);
+    
+    this.getAddressFromAPI(lat, lng).then(address => {
+      let popupContent = `
+        <b>${label}</b><br/>
+      `;
+      
+      if (address) {
+        popupContent += `<b>Address:</b> ${address}<br/>`;
+      }
+      
+      popupContent += `
+        <b>Lat:</b> ${lat.toFixed(6)}<br/>
+        <b>Lng:</b> ${lng.toFixed(6)}<br/>
+        <b>Time:</b> ${new Date(timestamp).toLocaleString()}
+      `;
+      
+      marker.setPopupContent(popupContent);
+    }).catch(error => {
+      const fallbackContent = `
+        <b>${label}</b><br/>
+        <b>Lat:</b> ${lat.toFixed(6)}<br/>
+        <b>Lng:</b> ${lng.toFixed(6)}<br/>
+        <b>Time:</b> ${new Date(timestamp).toLocaleString()}
+      `;
+      marker.setPopupContent(fallbackContent);
+    });
+  }
+
   ngOnDestroy() {
     this.stopTracking();
+    if (this.trafficLayer && this.map) {
+      this.map.removeLayer(this.trafficLayer);
+      this.trafficLayer = null;
+    }
     if (this.map) {
       this.map.remove();
     }

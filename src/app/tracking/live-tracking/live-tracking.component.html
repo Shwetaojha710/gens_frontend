@@ -1,5 +1,5 @@
-<div class="container-xxl mt-4">
-  <div class="card mb-3">
+<div class="container-xxl mt-4" [class.fullscreen-mode]="isFullScreen">
+  <div class="card mb-3" [class.d-none]="isFullScreen">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-3">
         <div class="d-flex align-items-center gap-3">
@@ -36,16 +36,6 @@
         </div>
 
         <div class="d-flex align-items-center gap-2">
-          <button
-            type="button"
-            class="btn btn-sm"
-            [class.btn-success]="isTracking"
-            [class.btn-outline-success]="!isTracking"
-            (click)="toggleTracking()">
-            <i class="fas" [class.fa-pause]="isTracking" [class.fa-play]="!isTracking"></i>
-            {{ isTracking ? 'Pause' : 'Resume' }}
-          </button>
-
           <div class="btn-group" role="group">
             <button
               type="button"
@@ -88,14 +78,23 @@
               Streets
             </button>
           </div>
+          <button
+            type="button"
+            class="btn btn-sm ms-2"
+            [class.btn-success]="isTracking"
+            [class.btn-outline-success]="!isTracking"
+            (click)="toggleTracking()">
+            <i class="fas" [class.fa-pause]="isTracking" [class.fa-play]="!isTracking"></i>
+            {{ isTracking ? 'Pause' : 'Resume' }}
+          </button>
         </div>
       </div>
     </div>
   </div>
 
-  <div class="row">
+  <div class="row" [class.d-none]="isFullScreen">
     <div class="col-md-9">
-      <div class="card">
+      <div class="card" [class.d-none]="isFullScreen">
         <div id="liveMap" style="height: 700px; width: 100%; border-radius: 8px; position: relative;"></div>
       </div>
     </div>
@@ -176,5 +175,9 @@
         </div>
       </div>
     </div>
+  </div>
+  
+  <div *ngIf="isFullScreen" class="fullscreen-map-wrapper">
+    <div id="liveMapFullscreen" style="width: 100vw; height: 100vh; position: fixed; top: 0; left: 0; z-index: 99999; border-radius: 0;"></div>
   </div>
 </div>

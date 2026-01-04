@@ -18,4 +18,24 @@ export class LocationService {
   getActiveTrackingUsers(): Observable<any> {
     return this.http.get(`${this.baseUrl}active-location-emp`);
   }
+
+  getAddressFromCoords(lat: number, lng: number) {
+  return this.http.get<any>(
+    `https://nominatim.openstreetmap.org/reverse`,
+    {
+      params: {
+        format: 'json',
+        lat,
+        lon: lng
+      }
+    }
+  );
+}
+
+  getAddressFromGlobalVTS(lat: number, lng: number): Observable<any> {
+    return this.http.get<any>(
+      `https://s3-api.globalvts.in/api/Geocode/GetAddress/${lat}/${lng}`
+    );
+  }
+
 }

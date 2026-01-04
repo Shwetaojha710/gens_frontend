@@ -1,82 +1,121 @@
- <div class="container-xxl mt-5">
+ <div class="container-xxl">
 
   <div class="row mb-6" *ngIf="viewLiveTracking">
     <div class="col-md">
-      <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <span style="font-weight: bold">Employee List</span>
-
+      <div class="card employee-list-card">
+        <div class="card-header employee-list-header d-flex justify-content-between align-items-center">
+          <div class="d-flex align-items-center">
+            <i class="fas fa-users me-2"></i>
+            <h5 class="mb-0 fw-bold">Employee List</h5>
+            <span class="badge bg-primary ms-3" *ngIf="ActiveUsers.length > 0">{{ ActiveUsers.length }}</span>
+          </div>
         </div>
 
-        <app-search-pagination  [totalItems]="activeTrackingUsers.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
-          (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
-          <table class="table table-striped dataTable">
-            <thead>
-              <tr>
-                <th>SI.NO </th>
-
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Aadhaar Number</th>
-                <th>Date of Birth</th>
-                <th>Gender</th>
-                <th>Actions</th>
-              </tr>
-
-            </thead>
-            <tbody class="table-border-bottom-0">
-              <tr *ngFor="let item of ActiveUsers; let i = index">
-                <td>{{item?.si_no}}</td>
-
-                <td>
-                  <div class="d-flex align-items-center" >
-                    <div class="avatar avatar-sm me-4">
-
-                      <img [src]="item?.profileImage" width="100" height="auto" alt="Avatar" class="rounded-circle" />
-
-                    </div>
-                    <div>
-                      <h6 class="mb-0 text-truncate link-primary">
-                        {{ item["firstName"] }} {{ item["lastName"] }}
-                      </h6>
-                      <small class="text-truncate">{{item?.['designation']}}</small>
-                      <small class="text-truncate">{{item?.empCode}}</small>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  {{ item["email"] }}
-                </td>
-                <td>
-                  {{ item["mobile"] }}
-                </td>
-                <td>
-                  {{ item["adhaarNo"] }}
-                </td>
-                <td>
-                  {{ item["dateOfBirth"] | date : "dd-MM-yyyy" }}
-                </td>
-                <td>
-                  {{ item["gender"] }}
-                </td>
-                <td>
-                  <button class="btn btn-primary btn-sm me-2" (click)="viewTrackingOnMap(item)">View on Map</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </app-search-pagination>
-
-
-
+        <div class="card-body p-0">
+          <app-search-pagination  [totalItems]="ActiveUsers.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
+            (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
+            <div class="table-responsive">
+              <table class="table employee-table mb-0">
+                <thead>
+                  <tr>
+                    <th class="text-center">SI.NO</th>
+                    <th>Employee</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Aadhaar Number</th>
+                    <th>Date of Birth</th>
+                    <th>Gender</th>
+                    <th class="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let item of ActiveUsers; let i = index" class="employee-row">
+                    <td class="text-center fw-semibold">{{item?.si_no}}</td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="employee-avatar-wrapper me-3">
+                          <img [src]="item?.profileImage" 
+                               [alt]="item['firstName'] + ' ' + item['lastName']" 
+                               class="employee-avatar"
+                               onerror="this.src='../../assets/img/avatars/1.png'" />
+                          <span class="employee-status-badge"></span>
+                        </div>
+                        <div class="employee-info">
+                          <h6 class="mb-1 fw-semibold employee-name">
+                            {{ item["firstName"] }} {{ item["lastName"] }}
+                          </h6>
+                          <div class="employee-meta">
+                            <small class="text-muted d-block" *ngIf="item?.['designation']">
+                              <i class="fas fa-briefcase me-1"></i>{{item?.['designation']}}
+                            </small>
+                            <small class="text-muted d-block" *ngIf="item?.empCode">
+                              <i class="fas fa-id-badge me-1"></i>{{item?.empCode}}
+                            </small>
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <i class="fas fa-envelope text-muted me-2"></i>
+                        <span class="text-truncate" style="max-width: 200px;">{{ item["email"] }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <i class="fas fa-phone text-muted me-2"></i>
+                        <span>{{ item["mobile"] }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="aadhaar-number">{{ maskAadhaarNumber(item["adhaarNo"]) }}</span>
+                    </td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <i class="fas fa-calendar-alt text-muted me-2"></i>
+                        <span>{{ item["dateOfBirth"] | date : "dd-MM-yyyy" }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="badge gender-badge" 
+                            [class.bg-info]="item['gender'] === 'Male'"
+                            [class.bg-pink]="item['gender'] === 'Female'">
+                        <i class="fas" 
+                           [class.fa-mars]="item['gender'] === 'Male'"
+                           [class.fa-venus]="item['gender'] === 'Female'"
+                           [class.fa-genderless]="item['gender'] !== 'Male' && item['gender'] !== 'Female'"></i>
+                        {{ item["gender"] }}
+                      </span>
+                    </td>
+                    <td class="text-center">
+                      <button class="btn btn-primary btn-sm view-map-btn" 
+                              (click)="viewTrackingOnMap(item)"
+                              title="View on Map">
+                        <i class="fas fa-map-marker-alt me-1"></i>
+                        View on Map
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="ActiveUsers.length === 0">
+                    <td colspan="8" class="text-center py-5">
+                      <div class="empty-state">
+                        <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                        <p class="text-muted mb-0">No employees found</p>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </app-search-pagination>
+        </div>
       </div>
     </div>
   </div>
 
 
-<div *ngIf="!viewLiveTracking">
-  <div class="card mb-3">
+<div *ngIf="!viewLiveTracking" [class.fullscreen-mode]="isFullScreen">
+  <div class="card mb-3" [class.d-none]="isFullScreen">
     <div class="card-body">
       <div class="d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-3">
@@ -140,15 +179,7 @@
       </div>
     </div>
   </div>
-  <div id="map" style="height: 1000px; width: 100%; border: 1px solid #ccc;"></div>
+  <div id="map" [class.fullscreen-map]="isFullScreen" [style.height]="isFullScreen ? '100vh' : 'calc(100vh - 200px)'" style="width: 100%; border: 1px solid #ccc;"></div>
 </div>
  </div>
 
-
-<!-- Optional info -->
-<!-- <div class="mt-2">
-  <b>Legend:</b>
-  🟢 Start &nbsp;
-  🔵 Route &nbsp;
-  🔴 End
-</div> -->
