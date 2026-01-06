@@ -119,10 +119,32 @@
 
               <tbody>
                 <tr *ngFor="let item of AttendanceMasterList">
+  <td style="width: 100px; font-size: 12px">
+    {{ item.employee_name }}
+  </td>
+
+  <ng-container *ngFor="let day of dayList">
+    <td style="width: 60px; font-size: 12px; text-align: center">
+      <!-- {{item}}
+      {{day}} -->
+      {{ item.dayTime[day] || '--' }}
+      <!-- {{item}}
+      {{item.dayTime}}
+      {{day}} -->
+    </td>
+  </ng-container>
+</tr>
+
+                <!-- <tr *ngFor="let item of AttendanceMasterList">
                   <td style="width: 100px; font-size: 12px">
                     {{ item.employee_name }}
                   </td>
+
+
                   <ng-container *ngFor="let day of item.data">
+                      <td style="width: 60px; font-size: 12px; text-align: center">
+  {{ employee.dayTime[day] || '--' }}
+</td>
                     <td style="width: 50px; font-size: 12px">
                       <span [ngClass]="{
                           'text-success': day?.status == 'P',
@@ -131,9 +153,11 @@
                         }">
                         {{ day?.status }}
                       </span>
+
+
                     </td>
                   </ng-container>
-                </tr>
+                </tr> -->
               </tbody>
               <tfoot></tfoot>
             </table>

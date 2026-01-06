@@ -250,17 +250,17 @@ export class TrackingComponent implements OnInit, OnDestroy {
     if (!aadhaar || aadhaar.length < 4) {
       return aadhaar || '';
     }
-    
+
     const cleaned = aadhaar.replace(/\s+/g, '');
-    
+
     if (cleaned.length <= 4) {
       return 'XXXX XXXX ' + cleaned;
     }
-    
+
     const first4 = cleaned.substring(0, 4);
     const last4 = cleaned.substring(cleaned.length - 4);
     const middle = 'XXXX';
-    
+
     return `${first4} ${middle} ${last4}`;
   }
   activeTrackingUsers() {
@@ -345,15 +345,15 @@ export class TrackingComponent implements OnInit, OnDestroy {
         link.title = 'Toggle Full Screen';
         link.setAttribute('role', 'button');
         link.setAttribute('aria-label', 'Toggle Full Screen');
-        
+
         const icon = L.DomUtil.create('i', 'fas', link);
         icon.className = `fas ${self.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
-        
+
         const updateIcon = () => {
           icon.className = `fas ${self.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
           link.setAttribute('title', self.isFullScreen ? 'Exit Full Screen' : 'Toggle Full Screen');
         };
-        
+
         L.DomEvent.disableClickPropagation(container);
         L.DomEvent.on(link, 'click', (e) => {
           L.DomEvent.stopPropagation(e);
@@ -386,14 +386,14 @@ export class TrackingComponent implements OnInit, OnDestroy {
         link.title = 'Toggle Traffic';
         link.setAttribute('role', 'button');
         link.setAttribute('aria-label', 'Toggle Traffic');
-        
+
         const icon = L.DomUtil.create('i', 'fas', link);
         icon.className = `fas fa-traffic-light`;
         if (self.isTrafficEnabled) {
           link.style.backgroundColor = '#ffc107';
           link.style.color = '#000';
         }
-        
+
         L.DomEvent.disableClickPropagation(container);
         L.DomEvent.on(link, 'click', (e) => {
           L.DomEvent.stopPropagation(e);
@@ -429,15 +429,15 @@ export class TrackingComponent implements OnInit, OnDestroy {
         const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
         container.style.display = 'flex';
         container.style.flexDirection = 'column';
-        
+
         const zoomInLink = L.DomUtil.create('a', 'leaflet-control-zoom-in', container);
         zoomInLink.href = '#';
         zoomInLink.title = 'Zoom In';
         zoomInLink.setAttribute('role', 'button');
         zoomInLink.setAttribute('aria-label', 'Zoom In');
-        
+
         const zoomInIcon = L.DomUtil.create('i', 'fas fa-plus', zoomInLink);
-        
+
         L.DomEvent.disableClickPropagation(zoomInLink);
         L.DomEvent.on(zoomInLink, 'click', (e) => {
           L.DomEvent.stopPropagation(e);
@@ -450,9 +450,9 @@ export class TrackingComponent implements OnInit, OnDestroy {
         zoomOutLink.title = 'Zoom Out';
         zoomOutLink.setAttribute('role', 'button');
         zoomOutLink.setAttribute('aria-label', 'Zoom Out');
-        
+
         const zoomOutIcon = L.DomUtil.create('i', 'fas fa-minus', zoomOutLink);
-        
+
         L.DomEvent.disableClickPropagation(zoomOutLink);
         L.DomEvent.on(zoomOutLink, 'click', (e) => {
           L.DomEvent.stopPropagation(e);
@@ -522,7 +522,7 @@ export class TrackingComponent implements OnInit, OnDestroy {
 
   toggleTraffic() {
     this.isTrafficEnabled = !this.isTrafficEnabled;
-    
+
     if (!this.map) {
       return;
     }
@@ -542,9 +542,9 @@ export class TrackingComponent implements OnInit, OnDestroy {
         pane: 'overlayPane',
         zIndex: 1000
       });
-      
+
       this.trafficLayer.addTo(this.map);
-      
+
       setTimeout(() => {
         if (this.map) {
           this.map.invalidateSize();
@@ -778,11 +778,11 @@ async addLocationName(point: any): Promise<string> {
   async getAddressFromAPI(lat: number, lng: number): Promise<string | null> {
     try {
       const response: any = await firstValueFrom(this.locationService.getAddressFromGlobalVTS(lat, lng));
-      
+
       if (response && response.address && typeof response.address === 'string' && response.address.trim() !== '') {
         return response.address;
       }
-      
+
       return null;
     } catch (error) {
       console.error('Error fetching address from API:', error);
@@ -798,34 +798,34 @@ async addLocationName(point: any): Promise<string> {
       <b>Lng:</b> ${lng.toFixed(6)}<br/>
       <b>Time:</b> ${new Date(timestamp).toLocaleString()}
     `;
-    
+
     marker.bindPopup(initialContent);
-    
-    this.getAddressFromAPI(lat, lng).then(address => {
+
+    // this.getAddressFromAPI(lat, lng).then(address => {
       let popupContent = `
         <b>${label}</b><br/>
       `;
-      
-      if (address) {
-        popupContent += `<b>Address:</b> ${address}<br/>`;
-      }
-      
+
+      // if (address) {
+      //   popupContent += `<b>Address:</b> ${address}<br/>`;
+      // }
+
       popupContent += `
         <b>Lat:</b> ${lat.toFixed(6)}<br/>
         <b>Lng:</b> ${lng.toFixed(6)}<br/>
         <b>Time:</b> ${new Date(timestamp).toLocaleString()}
       `;
-      
+
       marker.setPopupContent(popupContent);
-    }).catch(error => {
-      const fallbackContent = `
-        <b>${label}</b><br/>
-        <b>Lat:</b> ${lat.toFixed(6)}<br/>
-        <b>Lng:</b> ${lng.toFixed(6)}<br/>
-        <b>Time:</b> ${new Date(timestamp).toLocaleString()}
-      `;
-      marker.setPopupContent(fallbackContent);
-    });
+    // }).catch(error => {
+    //   const fallbackContent = `
+    //     <b>${label}</b><br/>
+    //     <b>Lat:</b> ${lat.toFixed(6)}<br/>
+    //     <b>Lng:</b> ${lng.toFixed(6)}<br/>
+    //     <b>Time:</b> ${new Date(timestamp).toLocaleString()}
+    //   `;
+    //   marker.setPopupContent(fallbackContent);
+    // });
   }
 
 
@@ -1025,23 +1025,23 @@ async addLocationName(point: any): Promise<string> {
 
   toggleFullScreen() {
     this.isFullScreen = !this.isFullScreen;
-    
+
     if (this.isFullScreen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
-    
+
     const fullscreenIcon = document.querySelector('.leaflet-control-fullscreen i');
     if (fullscreenIcon) {
       fullscreenIcon.className = `fas ${this.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
     }
-    
+
     const fullscreenLink = document.querySelector('.leaflet-control-fullscreen');
     if (fullscreenLink) {
       fullscreenLink.setAttribute('title', this.isFullScreen ? 'Exit Full Screen' : 'Toggle Full Screen');
     }
-    
+
     setTimeout(() => {
       if (this.map) {
         this.map.invalidateSize();
