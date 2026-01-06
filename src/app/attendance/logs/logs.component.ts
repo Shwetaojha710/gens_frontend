@@ -144,16 +144,21 @@ export class LogsComponent {
     await this.getYear();
     this.updateDisplayedList();
   }
-
   fetchAttendance() {
-    this.AttendanceList = []
-    this.originalList = []
-    console.log(this.AttendanceMasterList, "attendace master list 111")
-    this.attendanceService.getattendancelist(this.obj).subscribe((response: any) => {
-      if (response && response.data && response.status === true) {
+  this.AttendanceList = [];
+  this.originalList = [];
+
+  this.attendanceService.getattendancelist(this.obj).subscribe(
+    (response: any) => {
+      if (response && response.status === true && response.data) {
+
         this.notyf.success(response.message || 'Employees loaded successfully');
-        this.AttendanceMasterList = [];
+
         this.AttendanceMasterList = response.data || [];
+
+        this.generateDayList(this.obj.month, this.obj.year);
+
+        // 3️⃣ Status mapping
         const statusMap: Record<string, string> = {
           'Week Off': 'WO',
           'Present': 'P',
@@ -167,59 +172,238 @@ export class LogsComponent {
             status: statusMap[item1.status] || item1.status
           }))
         }));
-        this.originalList = this.AttendanceMasterList
-        this.generateDayList(this.obj['month'], this.obj['year']);
+
+        this.AttendanceMasterList.forEach((employee: any) => {
+          employee.dayTime = {};
+
+          this.dayList.forEach(day => {
+            const dayNum = day.slice(0, 2);
+
+            const match = employee.data.find((entry: any) =>
+              entry.date.endsWith(`-${dayNum}`)
+            );
+
+            const checkInTime  = match?.checkIn?.split(' ')[1];
+            const checkOutTime = match?.checkOut?.split(' ')[1];
+
+            employee.dayTime[day] =
+              checkInTime && checkOutTime
+                ? `${checkInTime} - ${checkOutTime}`
+                : '';
+          });
+        });
+
+        // console.log(this.AttendanceMasterList,"attendance master list");
+
+        this.originalList = this.AttendanceMasterList;
         this.updateDisplayedList();
+
       } else if (response.status === false) {
-        this.notyf.error(response.message)
-      }
-      else if (response.status == 'expired') {
+        this.notyf.error(response.message);
+      } else if (response.status === 'expired') {
         this.AttendanceMasterList = [];
-        this.router.navigate(['login'])
+        this.router.navigate(['login']);
       }
     },
-      (error: any) => {
-        this.AttendanceMasterList = [];
-        console.error('Error loading employees:', error);
-        this.notyf.error(error)
-        // alert('Failed to load employees. Please try again.');
-      }
-    );
+    (error: any) => {
+      this.AttendanceMasterList = [];
+      console.error('Error loading employees:', error);
+      this.notyf.error(error);
+    }
+  );
+}
 
-  }
+
+//   fetchAttendance() {
+//     this.AttendanceList = []
+//     this.originalList = []
+//     console.log(this.AttendanceMasterList, "attendace master list 111")
+//     this.attendanceService.getattendancelist(this.obj).subscribe((response: any) => {
+//       if (response && response.data && response.status === true) {
+//         this.notyf.success(response.message || 'Employees loaded successfully');
+//         this.AttendanceMasterList = [];
+//         this.AttendanceMasterList = response.data || [];
+//         const statusMap: Record<string, string> = {
+//           'Week Off': 'WO',
+//           'Present': 'P',
+//           'Absent': 'A'
+//         };
+//         // 1️⃣ Map status text
+// this.AttendanceMasterList = this.AttendanceMasterList.map((item: any) => ({
+//   ...item,
+//   data: item.data.map((item1: any) => ({
+//     ...item1,
+//     status: statusMap[item1.status] || item1.status
+//   }))
+// }));
+
+// // 2️⃣ Add dayTime object
+// this.AttendanceMasterList.forEach((employee: any) => {
+//   employee.dayTime = {};
+
+//   this.dayList.forEach(day => {
+//     const dayNum = day.slice(0, 2);
+
+//     const match = employee.data.find((entry: any) =>
+//       entry.date.endsWith(`-${dayNum}`)
+//     );
+
+//     const checkInTime  = match?.checkIn?.split(' ')[1];
+//     const checkOutTime = match?.checkOut?.split(' ')[1];
+
+//     employee.dayTime[day] =
+//       checkInTime && checkOutTime
+//         ? `${checkInTime} - ${checkOutTime}`
+//         : '';
+//   });
+// });
+
+// // Optional
+// this.originalList = this.AttendanceMasterList;
+
+// console.log(this.AttendanceMasterList);
+
+// //         this.AttendanceMasterList = this.AttendanceMasterList.map((item: any) => ({
+// //           ...item,
+// //           data: item.data.map((item1: any) => ({
+// //             ...item1,
+// //             status: statusMap[item1.status] || item1.status
+// //           }))
+// //         }));
+
+// //        this.AttendanceMasterList= this.AttendanceMasterList.forEach((employee: any) => {
+// //   employee.dayTime = {};
+
+// //   this.dayList.forEach(day => {
+// //     const dayNum = day.slice(0, 2);
+
+// //     const match = employee.data.find((entry: any) =>
+// //       entry.date.endsWith(`-${dayNum}`)
+// //     );
+
+// //     const checkInTime  = match?.checkIn?.split(' ')[1];
+// //     const checkOutTime = match?.checkOut?.split(' ')[1];
+
+// //     if (checkInTime && checkOutTime) {
+// //       employee.dayTime[day] = `${checkInTime} - ${checkOutTime}`;
+// //     } else {
+// //       employee.dayTime[day] = ''; // A / WO
+// //     }
+// //   });
+// // });
+// //   this.originalList = this.AttendanceMasterList
+//         this.generateDayList(this.obj['month'], this.obj['year']);
+//         this.updateDisplayedList();
+//       } else if (response.status === false) {
+//         this.notyf.error(response.message)
+//       }
+//       else if (response.status == 'expired') {
+//         this.AttendanceMasterList = [];
+//         this.router.navigate(['login'])
+//       }
+//     },
+//       (error: any) => {
+//         this.AttendanceMasterList = [];
+//         console.error('Error loading employees:', error);
+//         this.notyf.error(error)
+//         // alert('Failed to load employees. Please try again.');
+//       }
+//     );
+
+//   }
 
   export(): void {
-    const exportData: any[] = [];
+  const exportData: any[] = [];
 
-    this.originalList.forEach((employee: any) => {
-      const row: any = {};
-      row['Employee'] = employee.employee_name;
+this.originalList.forEach((employee: any) => {
+  const row: any = {};
+  row['Employee'] = employee.employee_name;
 
-      this.dayList.forEach(day => {
-        const dayNum = day.slice(0, 2); // "01", "02", ...
-        const match = employee.data.find((entry: any) =>
-          entry.date.endsWith(`-${dayNum}`)
-        );
+  this.dayList.forEach(day => {
+    const dayNum = day.slice(0, 2);
+    const match = employee.data.find((entry: any) =>
+      entry.date.endsWith(`-${dayNum}`)
+    );
 
-        row[day] = this.mapStatus(match?.status || '');
-      });
+    const checkInTime  = match?.checkIn?.split(' ')[1] || '';
+    const checkOutTime = match?.checkOut?.split(' ')[1] || '';
 
-      exportData.push(row);
-    });
+    row[day] = checkInTime && checkOutTime
+      ? `${checkInTime} - ${checkOutTime}`
+      : '';
+  });
 
-    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
-    const workbook: XLSX.WorkBook = {
-      Sheets: { 'Attendance': worksheet },
-      SheetNames: ['Attendance']
-    };
+  exportData.push(row);
+});
 
-    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-    const blob = new Blob([excelBuffer], {
-      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
-    });
 
-    FileSaver.saveAs(blob, 'Monthly_Attendance.xlsx');
-  }
+  const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+  const workbook: XLSX.WorkBook = {
+    Sheets: { Attendance: worksheet },
+    SheetNames: ['Attendance']
+  };
+
+  const excelBuffer: any = XLSX.write(workbook, {
+    bookType: 'xlsx',
+    type: 'array'
+  });
+
+  const blob = new Blob([excelBuffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+  });
+
+  FileSaver.saveAs(blob, 'Monthly_Attendance.xlsx');
+}
+
+
+//   export(): void {
+//     const exportData: any[] = [];
+
+//     this.originalList.forEach((employee: any) => {
+//       const row: any = {};
+//       row['Employee'] = employee.employee_name;
+
+//       this.dayList.forEach(day => {
+//   const dayNum = day.slice(0, 2); // "01", "02", ...
+//   const match = employee.data.find((entry: any) =>
+//     entry.date.endsWith(`-${dayNum}`)
+//   );
+
+//   row[day] = {
+//     status: this.mapStatus(match?.status || ''),
+//     checkIn: match?.checkIn || '',
+//     checkOut: match?.checkOut || ''
+//   };
+// });
+
+
+//       // this.dayList.forEach(day => {
+//       //   const dayNum = day.slice(0, 2); // "01", "02", ...
+//       //   const match = employee.data.find((entry: any) =>
+//       //     entry.date.endsWith(`-${dayNum}`)
+//       //   );
+
+//       //   row[day] = this.mapStatus(match?.status || '');
+//       //   row[day] =match?.checkIn
+//       //   row[day] =match?.checkOut
+//       // });
+
+//       exportData.push(row);
+//     });
+
+//     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+//     const workbook: XLSX.WorkBook = {
+//       Sheets: { 'Attendance': worksheet },
+//       SheetNames: ['Attendance']
+//     };
+
+//     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+//     const blob = new Blob([excelBuffer], {
+//       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+//     });
+
+//     FileSaver.saveAs(blob, 'Monthly_Attendance.xlsx');
+//   }
 
   mapStatus(status: string): string {
     const map: any = {
