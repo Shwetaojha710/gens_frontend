@@ -12,7 +12,7 @@
         <hr style="margin: 0rem 0 !important" />
         <div class="card-body">
           <div class="row">
-            <div class="col-4">
+            <div class="col-lg-4 col-sm-12">
               <label for="defaultFormControlInput" class="form-label">Name</label>
               <!-- <ng-select [items]="dependentComp" bindLabel="listLabel" [(ngModel)]="obj['component']" [multiple]="true"
                 placeholder="Select Component" name="value_type" id="select2Danger"
@@ -33,14 +33,14 @@
 
 
             </div>
-            <div class="col-4">
+            <div class="col-lg-4 col-sm-12">
               <label for="defaultFormControlInput" class="form-label">Order</label>
               <input type="number" class="form-control" id="defaultFormControlInput" placeholder="Enter Order"
                 [(ngModel)]="obj['order']" aria-describedby="defaultFormControlHelp" required />
 
             </div>
             &nbsp;
-            <div class="col-4" *ngIf="updateFlag">
+            <div class="col-lg-4 col-sm-12" *ngIf="updateFlag">
               <label for="defaultFormControlInput" class="form-label">Status</label>
               <ng-select [items]="status" bindLabel="label" bindValue="value" [(ngModel)]="obj['status']"
                 [multiple]="false" placeholder="Select Status" name="status" id="select2Danger">
@@ -78,6 +78,7 @@
         <app-search-pagination [totalItems]="SalaryOrderList.length" [pageSize]="itemsPerPage"
           [currentPage]="currentPage" (search)="onSearch($event)" (pageChange)="onPageChange($event)"
           (pageSizeChange)="onPageSizeChange($event)">
+  <div class="table-responsive">
           <table class="table table-striped dataTable">
             <thead>
               <tr>
@@ -123,6 +124,7 @@
               </tr>
             </tbody>
           </table>
+</div>
         </app-search-pagination>
 
       </div>
