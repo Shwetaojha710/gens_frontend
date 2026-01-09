@@ -16,7 +16,7 @@
         <hr style="margin: 0rem 0 !important" />
         <div class="card-body">
           <div class="row g-3">
-            <div class="col-3">
+            <div class="col-lg-3 col-sm-12">
               <label for="defaultFormControlInput" class="form-label">Select Employee</label>
               <ng-select [items]="EmpList" bindLabel="label" bindValue="value" [(ngModel)]="obj['employeeId']"
                 [multiple]="false" placeholder="Select Employee" name="state" id="select2Danger" required
@@ -26,7 +26,7 @@
                 Employee Is required
               </small>
             </div>
-            <div class="col-3">
+            <div class="col-lg-3 col-sm-12">
               <label for="defaultFormControlInput" class="form-label">Select Month</label>
               <ng-select [items]="monthList" bindLabel="label" bindValue="value" [(ngModel)]="obj['month']"
                 [multiple]="false" placeholder="Select Month" name="state" id="select2Danger" required
@@ -36,7 +36,7 @@
                 Month Is Required
               </small>
             </div>
-            <div class="col-3">
+            <div class="col-lg-3 col-sm-12">
               <label for="defaultFormControlInput" class="form-label">Select Year</label>
               <ng-select [items]="yearList" bindLabel="label" bindValue="value" [(ngModel)]="obj['year']"
                 [multiple]="false" placeholder="Select Year" name="state" id="select2Danger" required
@@ -72,6 +72,7 @@
 
            <app-search-pagination [totalItems]="SalaryArr.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
           (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
+           <div class="table-responsive">
           <table class="table table-hover">
             <thead>
               <tr>
@@ -127,6 +128,7 @@
               </tr>
             </tbody>
           </table>
+          </div>
            </app-search-pagination>
 
         <!-- <div class="table-responsive text-nowrap">

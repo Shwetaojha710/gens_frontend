@@ -470,7 +470,8 @@
 
         <app-search-pagination  [totalItems]="employees.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
           (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
-          <table class="table table-striped dataTable">
+          <div class="table-responsive">
+            <table class="table table-striped dataTable">
             <thead>
               <tr>
                 <th>SI.NO </th>
@@ -522,7 +523,7 @@
                 </td>
                 <td>
                   <button type="button" class="badge badge-center bg-label-secondary" (click)="activeLocation(item)">
-                   <i class="far fa-eye"></i></button>&nbsp;
+                   <i class="fas fa-location"></i></button>&nbsp;
                   <button type="button" class="badge badge-center bg-label-secondary" (click)="view(item)">
                     <i class="far fa-eye"></i></button>&nbsp;
                   <button type="button" class="badge badge-center bg-label-primary" (click)="update(item)">
@@ -536,6 +537,7 @@
               </tr>
             </tbody>
           </table>
+          </div>
         </app-search-pagination>
 
         <!-- <app-search-pagination *ngIf="inActiveFlag" [totalItems]="employees.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
