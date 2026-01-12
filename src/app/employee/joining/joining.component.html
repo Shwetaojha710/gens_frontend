@@ -236,7 +236,7 @@
                 name="country" id="select2Danger">
               </ng-select>
             </div>
-                <div class="col-md-3">
+            <div class="col-md-3">
               <label class="col-form-label fw-bold">Role
                 <span style="color: red"> *</span>
               </label>
@@ -318,20 +318,10 @@
               <textarea class="form-control" rows="4" placeholder="Enter Current Address"
                 [(ngModel)]="personalDetails.currentAddress" name="address"></textarea>
             </div>
-             <div class="col-4" *ngIf="updateFlag">
-              <label for="defaultFormControlInput" class="form-label"
-                >Status</label
-              >
-              <ng-select
-                [items]="status"
-                bindLabel="label"
-                bindValue="value"
-                [(ngModel)]="personalDetails['status']"
-                [multiple]="false"
-                placeholder="Select Status"
-                name="status"
-                id="select2Danger"
-              >
+            <div class="col-4" *ngIf="updateFlag">
+              <label for="defaultFormControlInput" class="form-label">Status</label>
+              <ng-select [items]="status" bindLabel="label" bindValue="value" [(ngModel)]="personalDetails['status']"
+                [multiple]="false" placeholder="Select Status" name="status" id="select2Danger">
               </ng-select>
             </div>
           </div>
@@ -398,7 +388,7 @@
         </div>
       </div>
     </div>
-    <div class="col-lg-3 col-sm-6"(click)="checkActiveStatus()">
+    <div class="col-lg-3 col-sm-6" (click)="checkActiveStatus()">
       <div class="card">
         <div class="card-body">
           <div class="d-flex align-items-center flex-wrap">
@@ -468,75 +458,85 @@
           </button>
         </div>
 
-        <app-search-pagination  [totalItems]="employees.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
+        <app-search-pagination [totalItems]="employees.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
           (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
           <div class="table-responsive">
             <table class="table table-striped dataTable">
-            <thead>
-              <tr>
-                <th>SI.NO </th>
+              <thead>
+                <tr>
+                  <th>SI.NO </th>
 
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Aadhaar Number</th>
-                <th>Date of Birth</th>
-                <th>Gender</th>
-                <th>Actions</th>
-              </tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Phone</th>
+                  <th>Aadhaar Number</th>
+                  <th>Date of Birth</th>
+                  <th>Gender</th>
+                  <th>Location</th>
+                  <th>Actions</th>
+                </tr>
 
-            </thead>
-            <tbody class="table-border-bottom-0">
-              <tr *ngFor="let item of filteredDesignation; let i = index">
-                <td>{{item?.si_no}}</td>
+              </thead>
+              <tbody class="table-border-bottom-0">
+                <tr *ngFor="let item of filteredDesignation; let i = index">
+                  <td>{{item?.si_no}}</td>
 
-                <td>
-                  <div class="d-flex align-items-center" (click)="view(item)">
-                    <div class="avatar avatar-sm me-4">
+                  <td>
+                    <div class="d-flex align-items-center" (click)="view(item)">
+                      <div class="avatar avatar-sm me-4">
 
-                      <img [src]="item?.profileImage" width="100" height="auto" alt="Avatar" class="rounded-circle" />
+                        <img [src]="item?.profileImage" width="100" height="auto" alt="Avatar" class="rounded-circle" />
 
+                      </div>
+                      <div>
+                        <h6 class="mb-0 text-truncate link-primary">
+                          {{ item["firstName"] }} {{ item["lastName"] }}
+                        </h6>
+                        <small class="text-truncate">{{item?.['designation']}}</small>
+                        <small class="text-truncate">{{item?.empCode}}</small>
+                      </div>
                     </div>
-                    <div>
-                      <h6 class="mb-0 text-truncate link-primary">
-                        {{ item["firstName"] }} {{ item["lastName"] }}
-                      </h6>
-                      <small class="text-truncate">{{item?.['designation']}}</small>
-                      <small class="text-truncate">{{item?.empCode}}</small>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  {{ item["email"] }}
-                </td>
-                <td>
-                  {{ item["mobile"] }}
-                </td>
-                <td>
-                  {{ item["adhaarNo"] }}
-                </td>
-                <td>
-                  {{ item["dateOfBirth"] | date : "dd-MM-yyyy" }}
-                </td>
-                <td>
-                  {{ item["gender"] }}
-                </td>
-                <td>
-                  <button type="button" class="badge badge-center bg-label-secondary" (click)="activeLocation(item)">
-                   <i class="fas fa-location"></i></button>&nbsp;
-                  <button type="button" class="badge badge-center bg-label-secondary" (click)="view(item)">
-                    <i class="far fa-eye"></i></button>&nbsp;
-                  <button type="button" class="badge badge-center bg-label-primary" (click)="update(item)">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  &nbsp;
-                  <button type="button" class="badge badge-center bg-label-danger" (click)="delete(item)">
-                    <i class="fas fa-trash-alt"></i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  </td>
+                  <td>
+                    {{ item["email"] }}
+                  </td>
+                  <td>
+                    {{ item["mobile"] }}
+                  </td>
+                  <td>
+                    {{ item["adhaarNo"] }}
+                  </td>
+                  <td>
+                    {{ item["dateOfBirth"] | date : "dd-MM-yyyy" }}
+                  </td>
+                  <td>
+                    {{ item["gender"] }}
+                  </td>
+                  <td>
+                    {{ item.isLocation ? 'Active' : 'Inactive' }}
+                  </td>
+                  <td>
+                     <button type="button" class="badge badge-center bg-label-secondary"
+                      (click)="enableDisableLoc(item,'attendance')">
+                      Offline Attendance
+                      <!-- <i class="fas fa-location"></i> -->
+                    </button>&nbsp;
+                    <button type="button" class="badge badge-center bg-label-secondary"
+                      (click)="enableDisableLoc(item,'location')">
+                      <i class="fas fa-location"></i></button>&nbsp;
+                    <button type="button" class="badge badge-center bg-label-secondary" (click)="view(item)">
+                      <i class="far fa-eye"></i></button>&nbsp;
+                    <button type="button" class="badge badge-center bg-label-primary" (click)="update(item)">
+                      <i class="fas fa-edit"></i>
+                    </button>
+                    &nbsp;
+                    <button type="button" class="badge badge-center bg-label-danger" (click)="delete(item)">
+                      <i class="fas fa-trash-alt"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </app-search-pagination>
 
