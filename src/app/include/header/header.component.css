@@ -1,3 +1,8 @@
 .dropdown-box{
     margin-left: -165px !important;
 }
+
+.ng-select.ng-select-single .ng-select-container {
+    height: 36px;
+    width: 131px !important;
+}
