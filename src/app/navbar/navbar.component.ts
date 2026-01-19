@@ -102,23 +102,23 @@ export class NavbarComponent {
         { title: 'Salary Component', icon: 'ri-wallet-2-line', link: '/layout/master/salary-component' },
         // { title: 'Currency', icon: 'ri-copper-coin-line', link: '/layout/master/currency' },
         { title: 'Pay Slip Setup', icon: 'ri-file-pdf-2-line', link: '/layout/master/pay-slip' },
-        { title: 'Branch', icon: 'ri-file-pdf-2-line', link: '/layout/master/branch' },
+        { title: 'Branch', icon: 'ri ri-layout-left-line', link: '/layout/master/branch' },
 
         // {title: 'Attendance Master', icon: 'ri-file-line', link: '/layout/master/salary-master'}
 
       ]
     },
     {
-      title: 'Setting',
+      title: 'Settings',
       icon: 'ri-settings-3-line',
       children: [
         { title: 'Attendance Master', icon: 'ri-calendar-line', link: '/layout/attendance/salary-master' },
         { title: 'Currency', icon: 'ri-copper-coin-line', link: '/layout/master/currency' },
         { title: 'Company Prefix', icon: 'ri-info-card-line', link: '/layout/master/prefix' },
         { title: 'Date Format', icon: 'ri-building-4-line', link: '/layout/master/date-format' },
-        { title: 'Time Zone', icon: 'ri-briefcase-4-line', link: '/layout/master/time-zone' },
-        { title: 'SMS', icon: 'ri-file-text-line', link: '/layout/master/SMS' },
-        { title: 'EMAIL', icon: 'ri-suitcase-line', link: '/layout/master/email' },
+        { title: 'Time Zone', icon: 'ri ri-calendar-line', link: '/layout/master/time-zone' },
+        { title: 'SMS', icon: 'ri ri-wechat-line', link: '/layout/master/SMS' },
+        { title: 'EMAIL', icon: 'ri ri-mail-open-line', link: '/layout/master/email' },
 
 
       ]
