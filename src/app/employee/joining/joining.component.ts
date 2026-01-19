@@ -475,6 +475,28 @@ export class JoiningComponent {
     )
 
   }
+    enableDisableLoc(data: any,type:any) {
+    const Enable= data?.isLocation ==true ? 'Disable':'Enable'
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: `Do you Want to ${Enable} this`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: `Yes,  ${Enable}  it!`,
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.activeLocation(data,type);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+
+      }
+    });
+
+
+
+  }
   delete(data: any) {
 
     Swal.fire({
@@ -537,9 +559,14 @@ export class JoiningComponent {
     this.personalDetails.panNo = this.personalDetails.panNo?.toUpperCase() || '';
   }
 
-  activeLocation(data:any){
+  activeLocation(data:any,type:any){
    let obj = Object.assign({},data)
-   obj['isLocation']=true
+   if(type=="attendance"){
+obj['isofflineAtt']=!obj['isofflineAtt']
+   }else{
+    obj['isLocation']=!obj['isLocation']
+   }
+
     this.employeeService.activeLocation(obj).subscribe(
       (response) => {
         console.log('Employee deleted successfully:', response);

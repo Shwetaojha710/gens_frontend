@@ -52,11 +52,16 @@ passwordVisible: boolean = false;
         if (data.status === true) {
           localStorage.setItem('token', data.data.token);
            localStorage.setItem("base_url", data.data.baseUrl);
+           localStorage.setItem("tenant", JSON.stringify(data.data.tenant));
+           localStorage.setItem("branch",  JSON.stringify(data.data.branch));
            localStorage.setItem("PORT", data.data.PORT);
            localStorage.setItem('user', JSON.stringify(data.data.user));
            localStorage.setItem('currency', JSON.stringify(data.data.currencyList));
           this.notyf.success(data.message);
-          this.router.navigate(['branchwise']);
+          // if(data.data.branch.length==0){
+             this.router.navigate(['branchwise']);
+          // }
+          // this.router.navigate(['layout/dashboard']);
         } else {
           this.notyf.error(data.message);
         }
