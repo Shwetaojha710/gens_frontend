@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Notyf } from 'notyf';
 import 'notyf/notyf.min.css';
-
+import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -35,6 +35,8 @@ export class LoginComponent {
 
     this.notyf = new Notyf();
   }
+passwordVisible: boolean = false;
+
 
   login() {
     if (this.form.invalid) {
@@ -50,8 +52,16 @@ export class LoginComponent {
         if (data.status === true) {
           localStorage.setItem('token', data.data.token);
            localStorage.setItem("base_url", data.data.baseUrl);
+           localStorage.setItem("tenant", JSON.stringify(data.data.tenant));
+           localStorage.setItem("branch",  JSON.stringify(data.data.branch));
+           localStorage.setItem("PORT", data.data.PORT);
+           localStorage.setItem('user', JSON.stringify(data.data.user));
+           localStorage.setItem('currency', JSON.stringify(data.data.currencyList));
           this.notyf.success(data.message);
-          this.router.navigate(['layout/dashboard']);
+          // if(data.data.branch.length==0){
+             this.router.navigate(['branchwise']);
+          // }
+          // this.router.navigate(['layout/dashboard']);
         } else {
           this.notyf.error(data.message);
         }
@@ -63,8 +73,15 @@ export class LoginComponent {
     });
   }
 
-  isInvalid(field: string): boolean {
-    const control = this.form.get(field);
-    return !!(control && control.touched && control.invalid);
+  // isInvalid(field: string): boolean {
+  //   const control = this.form.get(field);
+  //   return !!(control && control.touched && control.invalid);
+  // }
+  goToEmpProfile(){
+    this.router.navigate(['emp-profile']);
   }
+  isInvalid(controlName: string): boolean {
+  const control = this.form.get(controlName);
+  return control ? control.invalid && (control.dirty || control.touched) : false;
+}
 }

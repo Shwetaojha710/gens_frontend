@@ -19,20 +19,20 @@ import { NgSelectModule } from '@ng-select/ng-select';
 export class ShiftMasterComponent {
   obj: any = {}
   notyf: Notyf;
-  weekArr: any = [{ day_of_week: 'Sunday', startTime: '', endTime: '' }, {  day_of_week: 'Monday', startTime: '', endTime: '' }, {  day_of_week: 'Tuesday', startTime: '', endTime: '' }, { day_of_week: 'Wednesday', startTime: '', endTime: '' }, { day_of_week: 'Thursday', startTime: '', endTime: '' }, { day_of_week: 'Friday', startTime: '', endTime: '' }, { day_of_week: 'Saturday', startTime: '', endTime: '' }]
-
+  weekArr: any = [{ day_of_week: 'Sunday', startTime: '', endTime: '' }, { day_of_week: 'Monday', startTime: '', endTime: '' }, { day_of_week: 'Tuesday', startTime: '', endTime: '' }, { day_of_week: 'Wednesday', startTime: '', endTime: '' }, { day_of_week: 'Thursday', startTime: '', endTime: '' }, { day_of_week: 'Friday', startTime: '', endTime: '' }, { day_of_week: 'Saturday', startTime: '', endTime: '' }]
+  weekDays = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
   back() {
     this.obj = {}
     this.createFlag = false
 
   }
-  status: any = [{ value: 'Day', label: 'Day' }, { value: 'Night', label: 'Night' }]
+  status: any = [{ value: 'Day', label: 'Day' }, { value: 'Afternoon', label: 'Afternoon' }, { value: 'Night', label: 'Night' }]
 
   // onSubmit() {
   //    console.log(this.obj)
   // }
   departmentForm!: FormGroup;
-  shiftList:any = [];
+  shiftList: any = [];
   editingId: number | null = null;
 
   constructor(
@@ -50,11 +50,6 @@ export class ShiftMasterComponent {
   }
 
   async ngOnInit() {
-    this.departmentForm = this.fb.group({
-      name: ['', Validators.required],
-      description: ['']
-    });
-
     await this.fetchshifts();
   }
   getStatusClass(status: any): string {
@@ -62,10 +57,10 @@ export class ShiftMasterComponent {
       case 'pending': return 'bg-light-warning';
       case 'cancelled': return 'bg-light-danger';
       case 'completed': return 'badge bg-label-success';
-      case 'Working' : return 'badge bg-label-primary';
-      case 'Week Off' : return 'badge bg-label-secondary';
-      case 'inactive' : return 'bg-label-danger';
-      case 'active' : return 'bg-label-success';
+      case 'Working': return 'badge bg-label-primary';
+      case 'Week Off': return 'badge bg-label-secondary';
+      case 'inactive': return 'bg-label-danger';
+      case 'active': return 'bg-label-success';
       default: return 'bg-light-secondary';
     }
   }
@@ -75,19 +70,19 @@ export class ShiftMasterComponent {
     this.shiftService.getshifts().subscribe(data => {
       if (data['status'] == true) {
         this.shiftList = []
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.shiftList = data.data;
-      this.shiftList = this.shiftList.map((item: any) => {
-  return {
-    ...item,
-    shifts: item.shifts.map((shiftItem: any) => {
-      return {
-        ...shiftItem,
-        is_week_off: shiftItem.is_week_off === false ? 'Working' : 'Week Off',
-      };
-    }),
-  };
-});
+        this.shiftList = this.shiftList.map((item: any) => {
+          return {
+            ...item,
+            shifts: item.shifts.map((shiftItem: any) => {
+              return {
+                ...shiftItem,
+                is_week_off: shiftItem.is_week_off == false ? 'Working' : 'Week Off',
+              };
+            }),
+          };
+        });
 
       } else {
         this.notyf.error(data['message']);
@@ -110,13 +105,13 @@ export class ShiftMasterComponent {
     //   return;
     // }
 
-    this.weekArr=this.weekArr.map((item:any)=>{
-      return{
+    this.weekArr = this.weekArr.map((item: any) => {
+      return {
 
-        day_of_week:item.day_of_week,
-        startTime:item.startTime,
-        endTime:item.endTime,
-        shift:this.obj['shift'],
+        day_of_week: item.day_of_week,
+        startTime: item.startTime,
+        endTime: item.endTime,
+        shift: this.obj['shift'],
       }
     })
     this.shiftService.createShift(this.weekArr).subscribe({
@@ -135,7 +130,7 @@ export class ShiftMasterComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -145,7 +140,7 @@ export class ShiftMasterComponent {
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err)
+        this.notyf.error(err?.error?.message)
       }
     });
 
@@ -167,30 +162,30 @@ export class ShiftMasterComponent {
   }
   update(dept: any) {
     this.obj = Object.assign({}, dept)
-    this.weekArr=dept.shifts
+    this.weekArr = dept.shifts
     console.log(this.obj)
     this.editingId = this.obj.id;
-    this.weekArr=this.weekArr.map((item:any)=>{
-      return{
+    this.weekArr = this.weekArr.map((item: any) => {
+      return {
         ...item,
-        startTime:this.convertTo24Hour(item.startTime),
-        endTime:this.convertTo24Hour(item.endTime)
+        startTime: this.convertTo24Hour(item.startTime),
+        endTime: this.convertTo24Hour(item.endTime)
       }
     })
     this.createFlag = true
     this.updateFlag = true
   }
   updatedata() {
-    this.weekArr=this.weekArr.map((item:any)=>{
-      return{
+    this.weekArr = this.weekArr.map((item: any) => {
+      return {
 
-        day_of_week:item.day_of_week,
-        startTime:item.startTime,
-        endTime:item.endTime,
-        shift:this.obj['shift'],
+        day_of_week: item.day_of_week,
+        startTime: item.startTime,
+        endTime: item.endTime,
+        shift: this.obj['shift'],
       }
     })
-    this.weekArr['id']=this.editingId
+    this.weekArr['id'] = this.editingId
     this.shiftService.updateShift(this.editingId, this.weekArr).subscribe({
       next: (response: any) => {
         console.log('response', response);
@@ -204,7 +199,7 @@ export class ShiftMasterComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -263,7 +258,7 @@ export class ShiftMasterComponent {
           this.fetchshifts();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -295,7 +290,20 @@ export class ShiftMasterComponent {
     this.createFlag = true
     this.listflag = false
     this.updateFlag = false
+     this.weekArr = this.weekArr.map((item: any) => {
+      return {
+        ...item,
+        startTime: null,
+        endTime: null
+      }
+    })
   }
-
+formatTime(time: string): string {
+  if (!time) return '';
+  let [hour, minute] = time.split(':').map(Number);
+  const ampm = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12 || 12;  // Convert 0 -> 12 for midnight
+  return `${hour}:${minute.toString().padStart(2, '0')} ${ampm}`;
+}
 
 }

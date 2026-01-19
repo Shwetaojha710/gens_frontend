@@ -16,6 +16,12 @@ export class AuthService {
       responseType: 'text',
     });
   }
+  updatePassword(object: any): Observable<any> {
+    return this.http.post(`${this.baseurl}update-password`, object, {
+      withCredentials: true,
+      responseType: 'text',
+    });
+  }
   //   logout(object: any): Observable<any> {
   //   return this.http.post(`${this.baseurl}logout`, object, {
   //     withCredentials: true,

@@ -1,4 +1,4 @@
-<div class="container-fluid mt-5">
+ <div class="container-xxl  mt-5">
   <div class="row mb-6" *ngIf="createFlag">
     <div class="col-md">
       <div class="card">
@@ -94,12 +94,15 @@
                 Holiday Date is Required
               </small>
             </div>
-            <div class="col-3">
+
+
+            <!-- <div class="col-3">
               <label for="file" class="form-label">
                 Upload Image <span style="color: red">*</span>
               </label>
 
               <input
+              #fileInput
                 type="file"
                 accept="image/*"
                 class="form-control"
@@ -135,7 +138,32 @@
                   (click)="openModal1(sanitizedImage)"
                 />
               </div>
+            </div> -->
+
+                    <div class="col-3">
+          <label for="formFile" class="form-label">Upload Image <span style="color: red">*</span></label>
+          <input #fileInput class="form-control" type="file" id="formFile" type="file" (change)="onFileChange($event)"
+            accept="image/*" />
+          <div *ngIf="sanitizedImage">
+            <button style="position: absolute; right: 356px" (click)="close()" type="button" class="btn-close"
+              data-dismiss="modal" aria-label="Close"></button>
+            <!-- If image, show thumbnail -->
+            <div>
+              <img [src]="sanitizedImage" alt="Uploaded Image" class="img-thumbnail"
+                style="max-width: 80px; max-height: 80px; margin-top: 8px; object-fit: cover; border: 1px solid #cfd0d6; border-radius: 5px;"     (click)="openModal1(sanitizedImage)" />
             </div>
+
+
+
+            <!-- <img [src]="sanitizedImage" alt="Uploaded Image" class="img-thumbnail" style="
+                    max-width: 80px;
+                    max-height: 80px;
+                    margin-top: 8px;
+                    object-fit: cover;
+                    border: 1px solid #cfd0d6;
+                    border-radius: 5px;" /> -->
+          </div>
+        </div>
 
             <!-- <div class="col-4" *ngIf="updateFlag">
               <label for="defaultFormControlInput" class="form-label"
@@ -194,8 +222,70 @@
             <i class="fa-solid fa-plus"></i>&nbsp;Add
           </button>
         </h5>
+             <app-search-pagination
+          [totalItems]="HolidayList.length"
+          [pageSize]="itemsPerPage"
+          [currentPage]="currentPage"
+          (search)="onSearch($event)"
+          (pageChange)="onPageChange($event)"
+          (pageSizeChange)="onPageSizeChange($event)"
+        >
+          <div class="table-responsive">
+          <table class="table table-striped dataTable">
+             <thead>
+              <tr>
+                <th>SI.No</th>
+                <th>Holiday Type</th>
+                <th>Holiday Name</th>
+                <th>Date</th>
+                <th>image</th>
+                <th>createdAt</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody class="table-border-bottom-0">
+              <tr *ngFor="let item of HolidayList; let i = index">
+                <th scope="row">{{ i + 1 }}</th>
+                <td>{{ item["holiday_type_name"] }}</td>
+                <td>{{ item["holiday_name"] }}</td>
+                <td>{{ item["date"] | date:'dd-MM-YYYY'}}</td>
+                <td>
+                  <img
+                    [src]="item['image1']"
+                    alt="Document"
+                    width="100"
+                    height="auto"
+                    style="cursor: pointer"
+                    (click)="openModal1(item['image1'])"
+                  />
+                </td>
+                <td>{{ item["createdAt"] }}</td>
 
-        <div class="table-responsive text-nowrap">
+                <td>
+                  <button
+                    type="button"
+                    class="badge badge-center bg-label-success"
+                    (click)="update(item)"
+                  >
+                    <i class="fas fa-edit"></i>
+                  </button>
+                  &nbsp;
+                  <button
+                    type="button"
+                    class="badge badge-center bg-label-danger"
+                    (click)="delete(item)"
+                  >
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          </div>
+        </app-search-pagination>
+
+
+        <!-- <div class="table-responsive text-nowrap">
           <table class="table table-hover">
             <thead>
               <tr>
@@ -213,7 +303,7 @@
                 <th scope="row">{{ i + 1 }}</th>
                 <td>{{ item["holiday_type_name"] }}</td>
                 <td>{{ item["holiday_name"] }}</td>
-                <td>{{ item["date"] }}</td>
+                <td>{{ item["date"] | date:'dd-MM-YYYY'}}</td>
                 <td>
                   <img
                     [src]="item['image']"
@@ -246,7 +336,7 @@
               </tr>
             </tbody>
           </table>
-        </div>
+        </div> -->
       </div>
     </div>
   </div>

@@ -32,7 +32,7 @@ export class DepartmentComponent {
   //    console.log(this.obj)
   // }
   departmentForm!: FormGroup;
-  departmentList = [];
+  departmentList: any[] = [];
   editingId: number | null = null;
 
   constructor(
@@ -48,7 +48,7 @@ export class DepartmentComponent {
 
     this.notyf = new Notyf();
   }
-
+  searchText: any = '';
   async ngOnInit() {
     this.departmentForm = this.fb.group({
       name: ['', Validators.required],
@@ -57,21 +57,54 @@ export class DepartmentComponent {
 
     await this.fetchDepartments();
   }
+  applyFilter(event: any) {
+    const value = event?.target?.value || '';
+    this.searchText = value.trim();
+
+    if (this.searchText === '') {
+      this.departmentList = [...this.originalList];
+    } else {
+      this.departmentList = this.originalList.filter((item: any) =>
+        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+
+
+  }
+  getMin(a: number, b: number): number {
+    return Math.min(a, b);
+  }
+  onItemsPerPageChange(event: any) {
+    this.itemsPerPage = +event.target.value;
+    this.currentPage = 1; // Reset to first page
+    this.fetchDepartments();
+  }
+  goToPage(page: number) {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+    this.fetchDepartments();
+  }
   getStatusClass(status: any): string {
     switch (status) {
-      case 'pending': return 'bg-light-warning';
-      case 'cancelled': return 'bg-light-danger';
+      case 'active': return 'badge-outline-success';
+      case 'inactive': return 'badge-outline-danger';
       case 'completed': return 'bg-light-success';
       default: return 'bg-light-secondary';
     }
   }
+  originalList: any[] = [];
+  currentPage = 1;
+  itemsPerPage = 10;
+  totalPages = 0;
 
   async fetchDepartments() {
     this.departmentList = []
+    this.originalList = []
     this.departmentService.getDepartments().subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.departmentList = data.data;
+        this.originalList = this.departmentList
       } else {
         this.notyf.error(data['message']);
       }
@@ -102,7 +135,7 @@ export class DepartmentComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -138,7 +171,7 @@ export class DepartmentComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -146,7 +179,8 @@ export class DepartmentComponent {
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err)
+        let ErrorMessage= err?.error?.message?err?.error?.message:err?.message
+        this.notyf.error(ErrorMessage)
       }
 
 
@@ -157,7 +191,7 @@ export class DepartmentComponent {
 
   delete(data: number) {
 
-     Swal.fire({
+    Swal.fire({
       title: "Are you sure?",
       text: "Do you Want to Delete this",
       icon: "warning",
@@ -188,8 +222,8 @@ export class DepartmentComponent {
 
 
   }
-  deletedepartment(data:any){
-       this.departmentService.deleteDepartment(data).subscribe({
+  deletedepartment(data: any) {
+    this.departmentService.deleteDepartment(data).subscribe({
       next: (response: any) => {
         console.log('response', response);
         let message = response.message ? response.message : 'Data found Successfully';
@@ -201,7 +235,7 @@ export class DepartmentComponent {
           this.fetchDepartments();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

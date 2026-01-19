@@ -12,7 +12,7 @@ import { DataService } from '../../../../services/data.service';
 
 @Component({
   selector: 'app-experience',
-   imports: [NgSelectModule,
+  imports: [NgSelectModule,
     FormsModule, CommonModule],
   templateUrl: './experience.component.html',
   styleUrl: './experience.component.css'
@@ -21,12 +21,16 @@ import { DataService } from '../../../../services/data.service';
 export class ExperienceComponent {
   obj: any = {}
   notyf: Notyf;
+   minDate: any
   desigantionList: any = []
-  personalDetails:any=[]
-  constructor(public empService: EmployeeService, private router: Router, public statusService: StatusService,public dataService:DataService) {
+  personalDetails: any = []
+  constructor(public empService: EmployeeService, private router: Router, public statusService: StatusService, public dataService: DataService) {
     this.notyf = new Notyf();
 
-   this.personalDetails = JSON.parse(localStorage.getItem('employeeId') || '{}');
+    this.personalDetails = JSON.parse(localStorage.getItem('employeeId') || '{}');
+
+
+
   }
   departmentDD: any = []
   async ngOnInit() {
@@ -34,43 +38,19 @@ export class ExperienceComponent {
     await this.fetchexperience()
 
   }
-  // async experiencedd() {
-  //   this.departmentDD = []
+setMinToDate(){
+  if (this.obj?.from) {
+  const fromDate = new Date(this.obj.from);
+
+  if (!isNaN(fromDate.getTime())) {  // ✅ valid date check
+    this.minDate = fromDate.toISOString().split('T')[0]; // YYYY-MM-DD
+  }
+}
+
+}
 
 
-  //   this.empService.Departmentsdd().subscribe({
-  //     next: (response: any) => {
-  //       console.log('response', response);
-
-  //       let message = response.message ? response.message : 'Data found Successfully';
-  //       // let status = this.statusService.handleResponseStatus(response.status, message);
-  //       // console.log(status)
-  //       // console.log("response", response);
-
-  //       if (response.status === true) {
-  //         this.departmentDD = response.data;
-  //         // this.notyf.success(message)
-
-  //         this.back()
-  //       }
-  //       else if (response.status === "expired") {
-  //         this.router.navigate(["login"]);
-  //       }
-
-  //       else {
-  //         this.notyf.error(message)
-  //       }
-
-  //     },
-  //     error: (err) => {
-  //       console.error('Error:', err);
-  //       this.notyf.error(err)
-  //     }
-  //   });
-  // }
-
-
- async back() {
+  async back() {
     this.obj = {}
     this.createFlag = false
     await this.fetchexperience()
@@ -85,7 +65,7 @@ export class ExperienceComponent {
     // if (!ValidationUtil.showRequiredError('Department', this.obj['department'], this.notyf)) {
     //   return;
     // }
-this.obj['employeeId']=this.personalDetails.id
+    this.obj['employeeId'] = this.personalDetails.id
     this.empService.addexperience(this.obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
@@ -101,7 +81,7 @@ this.obj['employeeId']=this.personalDetails.id
           this.back()
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -111,7 +91,7 @@ this.obj['employeeId']=this.personalDetails.id
       },
       error: (err) => {
         console.error('Error:', err);
-            this.notyf.error(err?.error?.message)
+        this.notyf.error(err?.error?.message)
       }
     });
 
@@ -120,16 +100,16 @@ this.obj['employeeId']=this.personalDetails.id
 
   }
   async fetchexperience() {
-    let obj :any={}
-    obj['employeeId']=this.personalDetails.id
+    let obj: any = {}
+    obj['employeeId'] = this.personalDetails.id
     this.desigantionList = []
     this.empService.getexperiences(obj).subscribe(data => {
-       let message = data.message ? data.message : 'Data found Successfully';
-        let status = this.statusService.handleResponseStatus(data.status, message);
+      let message = data.message ? data.message : 'Data found Successfully';
+      let status = this.statusService.handleResponseStatus(data.status, message);
 
       if (status == true) {
-           this.desigantionList = []
-        this.notyf.success(data['message']);
+        this.desigantionList = []
+        // this.notyf.success(data['message']);
         this.desigantionList = data.data;
       } else {
         this.notyf.error(data['message']);
@@ -156,13 +136,16 @@ this.obj['employeeId']=this.personalDetails.id
 
   update(dept: any) {
     this.obj = Object.assign({}, dept)
+    this.obj['from'] = this.obj['from']?.split(' ')[0]
+    this.obj['to'] = this.obj['to']?.split(' ')[0]
     this.editingId = this.obj.id;
     this.createFlag = true
     this.updateFlag = true
+    this.setMinToDate()
   }
-  updatedata() {
-    this.obj['id']=this.editingId
-      this.obj['employeeId']=this.personalDetails.id
+  UpdateData() {
+    this.obj['id'] = this.editingId
+    this.obj['employeeId'] = this.personalDetails.id
     this.empService.updateexperience(this.editingId, this.obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
@@ -176,7 +159,7 @@ this.obj['employeeId']=this.personalDetails.id
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -200,41 +183,44 @@ this.obj['employeeId']=this.personalDetails.id
   delete(id: any) {
 
 
-      Swal.fire({
-          title: "Are you sure?",
-          text: "Do you Want to Delete this",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Yes, delete it!",
-          cancelButtonText: "No, cancel!",
-          reverseButtons: true
-        }).then((result) => {
-          if (result.isConfirmed) {
-            this.deleteexperience(id)
-            // Swal.fire({
-            //   title: "Deleted!",
-            //   text: "Your file has been deleted.",
-            //   icon: "success"
-            // });
-          } else if (
-            /* Read more about handling dismissals below */
-            result.dismiss === Swal.DismissReason.cancel
-          ) {
-            // Swal.fire({
-            //   title: "Cancelled",
-            //   text: "Your imaginary file is safe :)",
-            //   icon: "error"
-            // });
-          }
-        });
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you Want to Delete this",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deleteexperience(id)
+        // Swal.fire({
+        //   title: "Deleted!",
+        //   text: "Your file has been deleted.",
+        //   icon: "success"
+        // });
+      } else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+        // Swal.fire({
+        //   title: "Cancelled",
+        //   text: "Your imaginary file is safe :)",
+        //   icon: "error"
+        // });
+      }
+    });
 
 
   }
-  deleteexperience(id:any){
-     let obj:any={}
-    obj['id']=id
-
- this.empService.deleteexperience(obj).subscribe({
+   getToDateMin(): string {
+    return this.obj['fromDate'] || this.minDate;
+  }
+  deleteexperience(id: any) {
+    let obj: any = {}
+    obj['id'] = id
+    obj['employeeId'] = this.personalDetails.id
+    this.empService.deleteexperience(obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
         let message = response.message ? response.message : 'Data found Successfully';
@@ -246,7 +232,7 @@ this.obj['employeeId']=this.personalDetails.id
           this.fetchexperience();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -254,7 +240,7 @@ this.obj['employeeId']=this.personalDetails.id
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err?.message)
+        this.notyf.error(err?.error?.message)
       }
 
     })

@@ -8,11 +8,11 @@ import Swal from 'sweetalert2';
 import { MasterService } from '../../services/master.service';
 import { StatusService } from '../../services/status.service';
 import { ValidationUtil } from '../../shared/utils/validation.util';
-
+import { SearchPaginationComponent } from '../search-pagination/search-pagination.component';
 @Component({
   selector: 'app-employment-type',
   imports: [NgSelectModule,
-    FormsModule, CommonModule],
+    FormsModule, CommonModule,SearchPaginationComponent],
   templateUrl: './employment-type.component.html',
   styleUrl: './employment-type.component.css'
 })
@@ -31,7 +31,7 @@ export class EmploymentTypeComponent {
   //    console.log(this.obj)
   // }
   EmployeeForm!: FormGroup;
-  EmployeeList = [];
+  EmployeeList :any= [];
   editingId: number | null = null;
 
   constructor(
@@ -56,22 +56,76 @@ export class EmploymentTypeComponent {
 
     await this.fetchEmployee();
   }
+
+    pageSize = 5;
+  currentPage = 1;
+  searchTerm = '';
+  itemsPerPage = 10;
+  onSearch(term: string) {
+    this.searchTerm = term.toLowerCase();
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.applyFilters();
+  }
+
+
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+  filteredDesignation: any = []
+  searchText: any = ''
+
+  applyFilters() {
+    let data = [...this.EmployeeList];
+
+
+    const value = this.searchTerm || '';
+    this.searchText = value.trim();
+
+    if (this.searchText === '') {
+      this.EmployeeList = [...this.originalList];
+    } else {
+      this.EmployeeList = this.originalList.filter((item: any) =>
+        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+
+
+    // pagination
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.filteredDesignation = data.slice(start, end);
+  }
+
   getStatusClass(status: any): string {
     switch (status) {
-      case 'pending': return 'bg-light-warning';
-      case 'cancelled': return 'bg-light-danger';
+      case 'active': return 'badge-outline-success';
+      case 'inactive': return 'badge-outline-danger';
       case 'completed': return 'bg-light-success';
       default: return 'bg-light-secondary';
     }
   }
-
+originalList:any = []
   async fetchEmployee() {
     this.EmployeeList = []
+    this.originalList = []
     this.master.getEmployee().subscribe(data => {
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.EmployeeList = data.data;
-      } else {
+        this.originalList = data.data;
+      }
+      else if(data['status']=='expired'){
+        this.router.navigate(['login'])
+      }
+      else {
         this.notyf.error(data['message']);
       }
     });
@@ -101,7 +155,7 @@ export class EmploymentTypeComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -137,7 +191,7 @@ export class EmploymentTypeComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -200,7 +254,7 @@ export class EmploymentTypeComponent {
           this.fetchEmployee();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

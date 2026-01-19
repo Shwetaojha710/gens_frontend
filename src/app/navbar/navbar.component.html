@@ -3,7 +3,7 @@
   <div class="content-wrapper">
     <aside
       id="layout-menu"
-      class="layout-menu-horizontal menu-horizontal menu flex-grow-0"
+      class="layout-menu-horizontal menu menu-horizontal container-fluid flex-grow-0 null"
       style="
         touch-action: none;
         user-select: none;
@@ -12,17 +12,16 @@
       "
     >
       <div class="container-fluid d-flex h-100">
-        <a href="#" class="menu-horizontal-prev d-none"></a>
+        <!-- <a href="#" class="menu-horizontal-prev"></a> -->
         <div class="menu-horizontal-wrapper">
           <ul class="menu-inner">
-            <ng-container *ngFor="let menu of menuItems">
+            <ng-container *ngFor="let menu of menuItems">                                                                                                                     
               <li
                 class="menu-item"
                 [ngClass]="{
-                  active: menu.active,
-                  open: isAnyChildActive(menu.children || [])
+                  active: menu.active
                 }"
-                (click)="toggleMenu(menu)"
+
               >
                 <a
                   href="javascript:void(0)"

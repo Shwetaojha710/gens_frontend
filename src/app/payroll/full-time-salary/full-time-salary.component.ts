@@ -9,10 +9,11 @@ import { PayrollService } from '../../services/payroll.service';
 import { StatusService } from '../../services/status.service';
 declare let bootstrap: any;
 import { firstValueFrom } from 'rxjs';
+import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
 @Component({
   selector: 'app-full-time-salary',
   imports: [NgSelectModule,
-    FormsModule, CommonModule],
+    FormsModule, CommonModule,SearchPaginationComponent],
   templateUrl: './full-time-salary.component.html',
   styleUrl: './full-time-salary.component.css'
 })
@@ -43,7 +44,57 @@ export class FullTimeSalaryComponent {
     await this.empList()
     await this.getYear();
   }
+ pageSize = 10;
+  currentPage = 1;
+  searchTerm: any;;
+  itemsPerPage = 10;
+  onSearch(term: string) {
+    if (!term) {
+      // this.SalaryArr
+      this.onSubmit();
+    } else {
+      this.searchTerm = term.toLowerCase();
+      this.currentPage = 1;
+      this.applyFilters();
+    }
 
+  }
+
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.applyFilters();
+  }
+
+
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+  filteredSalary: any = []
+  searchText: any = ''
+    applyFilters() {
+
+
+
+    const value = this.searchTerm || '';
+    this.searchText = value.trim();
+
+    if (this.searchText === '') {
+      this.SalaryArr = [...this.originalList];
+    } else {
+      this.SalaryArr = this.originalList.filter((item: any) =>
+        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+
+    let data = [...this.SalaryArr];
+    // pagination
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.filteredSalary = data.slice(start, end);
+  }
   checkUncheckAll() {
     this.SalaryArr.forEach((item: any) => item.isSelected = this.masterSelected);
   }
@@ -51,9 +102,7 @@ export class FullTimeSalaryComponent {
 
   isAllSelected() {
     this.masterSelected = this.SalaryArr.every((item: any) => item.isSelected);
-    // this.SalaryArr=  this.SalaryArr.map({
 
-    // })
   }
   async getYear() {
     this.yearList = []
@@ -74,14 +123,21 @@ export class FullTimeSalaryComponent {
     });
 
   }
+  delete(data:any){
+    this.SalaryArr=this.SalaryArr.filter((item:any)=>item.employeeId != data.employeeId)
+  }
   employeeSalaryData: any[] = [];
 
   async generate_Salary() {
 
+
     this.employeeSalaryData = [];
 
     const selectedEmployees = this.SalaryArr.filter((item: any) => item.isSelected);
-
+    if (selectedEmployees.length == 0) {
+      this.notyf.error('Please Select CheckBox');
+      return;
+    }
     this.employeeSalaryData = await Promise.all(
       selectedEmployees.map(async (item: any) => {
         const components = await this.getSalaryComponent(item);
@@ -93,11 +149,12 @@ export class FullTimeSalaryComponent {
       const response: any = await firstValueFrom(
         this.payroll.generateSalary(this.employeeSalaryData)
       );
-   this.isLoading = false
+      this.isLoading = false
       if (this.statusService.handleResponseStatus(response.status, response.message || "Success")) {
-
+        this.masterSelected = false
         this.notyf.success(response.message);
       } else {
+
         this.isLoading = false
         this.notyf.error(response.message);
       }
@@ -111,6 +168,7 @@ export class FullTimeSalaryComponent {
         this.notyf.error("Something went wrong!");
       }
     }
+    return;
   }
 
   EmpList: any = []
@@ -139,9 +197,15 @@ export class FullTimeSalaryComponent {
   }
   SalaryArr: any = []
   isLoading: boolean = false;
+  originalList:any=[]
   onSubmit() {
-    this.isLoading = true; // ✅ Show loader before API call
+    if (this.obj['year'] == undefined || this.obj['year'] == null || this.obj['year'] == '') {
+      this.notyf.error("year is Required");
+      return
+    }
+    this.isLoading = true;
     this.SalaryArr = []
+    this.originalList=[]
     let newObj = Object.assign({}, this.obj)
     if (newObj['employeeId'] === 'All') {
       newObj['employeeId'] = this.EmpList
@@ -164,8 +228,12 @@ export class FullTimeSalaryComponent {
 
           this.notyf.success(message)
           this.SalaryArr = response.data
+          this.originalList = response.data
           console.log(this.SalaryArr, "salary Array");
-
+   // pagination
+          const start = (this.currentPage - 1) * this.pageSize;
+          const end = start + this.pageSize;
+          this.filteredSalary = this.SalaryArr.slice(start, end);
         }
         else if (status == "expired") {
           this.router.navigate(["login"]);
@@ -177,7 +245,7 @@ export class FullTimeSalaryComponent {
 
       },
       error: (err) => {
-         this.isLoading = false;
+        this.isLoading = false;
         console.error('Error:', err);
         this.notyf.error(err.error?.message)
       }
@@ -190,9 +258,14 @@ export class FullTimeSalaryComponent {
   modal: any;
   PayArr: any = []
   DedArr: any = []
+  personalDetails: any = {}
+  EmployerDedArr: any = []
   view(item: any) {
     const obj = Object.assign({}, item)
+    this.personalDetails = {}
+    this.personalDetails = obj
     this.SalaryBreakup = []
+    this.EmployerDedArr = []
     this.payroll.calculateSalaryComponent(obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
@@ -202,25 +275,47 @@ export class FullTimeSalaryComponent {
         console.log(status)
         console.log("response", response);
 
-        if (status == true) {
+        if (status === true) {
+          this.notyf.success(message);
+          this.SalaryBreakup = response.data;
 
+          // Initialize arrays to store filtered data
+          const PayArr = [];
+          const DedArr = [];
+          const EmployerDedArr = [];
 
-          this.notyf.success(message)
-          this.SalaryBreakup = response.data
-          this.PayArr = []
-          this.DedArr = []
-          this.PayArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'PAY')
-          this.DedArr = this.SalaryBreakup.filter((item: any) => item.pay_code == 'DED')
-          // Calculate totals
-          const totalEarning = this.PayArr.reduce((sum: number, item: any) => sum + Number(item.pay_amount || 0), 0);
-          const totalDeduction = this.DedArr.reduce((sum: number, item: any) => sum + Number(item.pay_amount || 0), 0);
+          // Initialize totals
+          let totalEarning = 0;
+          let totalDeduction = 0;
+          let totalEmployerDeduction = 0;
+
+          // Process data in a single loop
+          for (const item of this.SalaryBreakup) {
+            const amount = Number(item.pay_amount || 0);
+
+            if (item.pay_code === 'PAY') {
+              PayArr.push(item);
+              totalEarning += amount;
+            } else if (item.pay_code === 'DED') {
+              if (item.name.toLowerCase().includes('employer')) {
+                EmployerDedArr.push(item);
+                totalEmployerDeduction += amount;
+              } else {
+                DedArr.push(item);
+                totalDeduction += amount;
+              }
+            }
+          }
+
+          // Update component properties with filtered data and totals
+          this.PayArr = [...PayArr, { isSummary: true, name: 'Total Earnings', pay_amount: (totalEarning).toFixed(2) }];
+          this.DedArr = [...DedArr, { isSummary: true, name: 'Total Deductions', pay_amount: (totalDeduction).toFixed(2) }];
+          this.EmployerDedArr = [...EmployerDedArr, { isSummary: true, name: 'Total Employer Deductions', pay_amount: (totalEmployerDeduction).toFixed(2) }];
+
+          // Calculate net pay
           const netPay = totalEarning - totalDeduction;
 
-          // Add as new keys
-          this.PayArr = [...this.PayArr, { isSummary: true, name: 'Total Earnings',pay_amount: totalEarning }];
-          this.DedArr = [...this.DedArr, { isSummary: true, name: 'Total Deductions',pay_amount: totalDeduction }];
-
-
+          // Show the modal
           const modalEl = document.getElementById('SalaryModal');
           this.modal = new bootstrap.Modal(modalEl);
           this.modal.show();
@@ -244,7 +339,7 @@ export class FullTimeSalaryComponent {
     const obj = { ...item };
     const response: any = await this.payroll.calculateSalaryComponent(obj).toPromise();
 
-    if (this.statusService.handleResponseStatus(response.status, response.message || "Success")) {
+    if (response && response.status == true) {
 
       return response.data;
     } else {
@@ -252,9 +347,6 @@ export class FullTimeSalaryComponent {
     }
   }
 
-  delete(item: any) {
-
-  }
   closeModal() {
 
     this.modal.hide();

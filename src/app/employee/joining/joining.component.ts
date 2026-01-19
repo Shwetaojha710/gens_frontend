@@ -9,10 +9,12 @@ import { Notyf } from 'notyf';
 import { Router } from '@angular/router';
 import { ValidationUtil } from '../../shared/utils/validation.util';
 import { DataService } from '../../services/data.service';
+import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-joining',
-  imports: [FormsModule, CommonModule, NgSelectModule,],
+  imports: [FormsModule, CommonModule, NgSelectModule, SearchPaginationComponent],
   templateUrl: './joining.component.html',
   styleUrl: './joining.component.css'
 })
@@ -27,6 +29,9 @@ export class JoiningComponent {
     const day = today.getDate().toString().padStart(2, '0');
     this.maxDate = `${year}-${month}-${day}`;
   }
+  shift: any = [{ value: 'Day', label: 'Day' }, { value: 'Afternoon', label: 'Afternoon' }, { value: 'Night', label: 'Night' }]
+  role: any = [{ value: 'manager', label: 'Manager' }, { value: 'teamLeader', label: 'Team Leader' }, { value: 'employee', label: 'employee' }]
+
   maritalStatusList = [
     { value: 'Single', label: 'Single' },
     { value: 'Married', label: 'Married' },
@@ -40,12 +45,63 @@ export class JoiningComponent {
     { value: 'Other', label: 'Other' }
   ]
   createFlag: boolean = false;
+  baseurl:any;
   async ngOnInit() {
     await this.countrydd();
     await this.loadEmployees();
     await this.getEmploymentTypes();
-
+    await this.DepartmentDD()
+    await this.applyFilters()
+    this.baseurl = this.master.getBaseUrl();
   }
+
+  pageSize = 10;
+  currentPage = 1;
+  itemsPerPage = 10;
+  searchTerm = '';
+  onSearch(term: string) {
+    if (!term) {
+      this.searchText=''
+      this.loadEmployees()
+    } else {
+      this.searchTerm = term.toLowerCase();
+      this.currentPage = 1;
+      this.applyFilters();
+    }
+
+    // this.loadEmployees()
+  }
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.applyFilters();
+  }
+
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+  filteredDesignation: any = []
+  searchText: any = ''
+  originalList: any = []
+  applyFilters() {
+    let data = [...this.employees];
+    const value = this.searchTerm || '';
+    this.searchText = value.trim();
+    if (this.searchText === '') {
+      this.employees = [...this.originalList];
+    } else {
+      this.employees = this.originalList.filter((item: any) =>
+        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+    // pagination
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.filteredDesignation = data.slice(start, end);
+  }
+
   async getEmploymentTypes() {
     this.employmentTypes = [];
     this.master.getEmploymentTypes().subscribe(data => {
@@ -162,7 +218,8 @@ export class JoiningComponent {
       !this.validateField(this.personalDetails.permanentAddress, 'Permanent Address') ||
       !this.validateField(this.personalDetails.city, 'City') ||
       !this.validateField(this.personalDetails.gender, 'Gender') ||
-      !this.validateField(this.personalDetails.martialStatus, 'Marital Status')
+      !this.validateField(this.personalDetails.martialStatus, 'Marital Status') ||
+      !this.validateField(this.personalDetails.shift_id, 'Shift')
     ) {
       return;
     }
@@ -208,7 +265,8 @@ export class JoiningComponent {
       },
       (error) => {
         console.error('Error adding employee:', error);
-        this.notyf.error(error?.error?.message);
+        let errorMessage=error?.error?.message?error?.error?.message:error?.message
+        this.notyf.error(errorMessage);
         // alert('Failed to add employee. Please try again.');
       }
 
@@ -217,14 +275,121 @@ export class JoiningComponent {
 
 
   }
+  departmentDD: any = []
+  async DepartmentDD() {
+    this.departmentDD = []
+
+
+    this.master.Departmentsdd().subscribe({
+      next: (response: any) => {
+
+        let message = response.message ? response.message : 'Data found Successfully';
+        // let status = this.statusService.handleResponseStatus(response.status, message);
+        // console.log(status)
+        // console.log("response", response);
+
+        if (response.status === true) {
+          this.departmentDD = response.data;
+          // this.notyf.success(message)
+
+          this.back()
+        }
+        else if (response.status === "expired") {
+          this.router.navigate(["login"]);
+        }
+
+        else {
+          this.notyf.error(message)
+        }
+
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.notyf.error(err)
+      }
+    });
+  }
+  designationDD: any = []
+  getDesignation(departmentId: any) {
+    this.designationDD = []
+    let obj: any = {}
+    obj['department'] = departmentId?.value || departmentId
+    this.master.designationDD(obj).subscribe({
+      next: (response: any) => {
+        console.log('response', response);
+
+        let message = response.message ? response.message : 'Data found Successfully';
+
+        if (response.status === true) {
+          this.designationDD = response.data;
+
+        }
+        else if (response.status === "expired") {
+          this.router.navigate(["login"]);
+        }
+
+        else {
+          this.notyf.error(message)
+        }
+
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.notyf.error(err)
+      }
+    });
+  }
   employees: any = []
+  employeeList: any = []
+  cardData: any = {}
   async loadEmployees() {
+    // this.filteredDesignation = []
     this.employees = []
+    this.employeeList = []
+    this.cardData = []
+    this.originalList = []
     this.employeeService.getEmp().subscribe((response: any) => {
       if (response && response.data && response.status === true) {
-        this.notyf.success(response.message || 'Employees loaded successfully');
+        // this.notyf.success(response.message || 'Employees loaded successfully');
         this.employees = [];
-        this.employees = response.data || [];
+        this.cardData = response.data.cardData
+        if(this.activeFlag==true){
+        this.employees = response.data.formattedEmps || [];
+        this.originalList = response.data.formattedEmps || [];
+        this.employeeList = response.data?.formattedEmps?.map((item: any) => ({
+          value: item.id,
+          label: `${item?.empCode}-${item.firstName} ${item?.lastName || ''}`
+        }));
+        }
+        else if(this.inActiveFlag==true){
+           this.employees = response.data.formattedInactivemps || [];
+        this.originalList = response.data.formattedInactivemps || [];
+        this.employeeList = response.data?.formattedInactivemps?.map((item: any) => ({
+          value: item.id,
+          label: `${item?.empCode}-${item.firstName} ${item?.lastName || ''}`
+        }));
+        }
+
+        this.employees = this.employees.map((item: any, index: any) => {
+          return {
+            ...item,
+            si_no: index + 1,
+            profileImage:  item.profileImage ? `${this.baseurl}${item?.profileImage}` : item.gender =='Female'?"../../assets/img/avatars/2.png":'../../assets/img/avatars/1.png'
+          }
+        })
+        this.originalList = this.originalList.map((item: any, index: any) => {
+          return {
+            ...item,
+            si_no: index + 1,
+           profileImage:  item.profileImage ? `${this.baseurl}${item?.profileImage}` : item.gender =='Female'?"../../assets/img/avatars/2.png":'../../assets/img/avatars/1.png'
+
+          }
+        })
+
+        // pagination
+        const start = (this.currentPage - 1) * this.pageSize;
+        const end = start + this.pageSize;
+        this.filteredDesignation = this.employees.slice(start, end);
       } else if (response.status === false) {
         this.notyf.error(response.message)
       }
@@ -234,13 +399,16 @@ export class JoiningComponent {
     },
       (error: any) => {
         console.error('Error loading employees:', error);
-        this.notyf.error(error)
+        this.notyf.error(error?.error?.message)
         // alert('Failed to load employees. Please try again.');
       }
     );
 
   }
+    status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
+
   async update(data: any) {
+
     this.personalDetails = Object.assign({}, data);
     const dob = new Date(this.personalDetails.dateOfBirth);
     const formattedDob = `${dob.getFullYear()}-${(dob.getMonth() + 1).toString().padStart(2, '0')}-${dob.getDate().toString().padStart(2, '0')}`;;
@@ -250,8 +418,24 @@ export class JoiningComponent {
     this.personalDetails.country = Number(this.personalDetails.country);
     await this.getstates(this.personalDetails.country);
     await this.getcity(this.personalDetails.state);
+    await this.getDesignation(this.personalDetails.departmentId);
+    this.employeeList = this.employeeList.filter((item: any) => item.value != this.personalDetails.id);
     this.createFlag = true;
     this.updateFlag = true;
+  }
+
+  inActiveFlag:any=false
+  activeFlag:any=true
+
+  async checkStatus(){
+   this.inActiveFlag=true
+   this.activeFlag=false
+   await this.loadEmployees()
+  }
+  async checkActiveStatus(){
+   this.inActiveFlag=false
+   this.activeFlag=true
+   await this.loadEmployees()
   }
   updateform() {
     this.createFlag = false;
@@ -291,7 +475,50 @@ export class JoiningComponent {
     )
 
   }
+    enableDisableLoc(data: any,type:any) {
+    const Enable= data?.isLocation ==true ? 'Disable':'Enable'
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: `Do you Want to ${Enable} this`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: `Yes,  ${Enable}  it!`,
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.activeLocation(data,type);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+
+      }
+    });
+
+
+
+  }
   delete(data: any) {
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you Want to Delete this",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deleteConfirm(data);
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+
+      }
+    });
+
+
+
+  }
+  deleteConfirm(data: any) {
     this.employeeService.deleteEmp(data).subscribe(
       (response) => {
         console.log('Employee deleted successfully:', response);
@@ -299,7 +526,7 @@ export class JoiningComponent {
           this.loadEmployees();
           this.notyf.success(response.message || 'Employee deleted successfully');
         }
-        else if (response && response.status === false) {
+        else if (response && response.status == false) {
           this.notyf.error(response.message || 'Failed to delete employee');
         }
         else {
@@ -309,7 +536,7 @@ export class JoiningComponent {
       },
       (error) => {
         console.error('Error deleting employee:', error);
-        alert('Failed to delete employee. Please try again.');
+        this.notyf.error('Failed to delete employee');
       }
     )
   }
@@ -323,10 +550,47 @@ export class JoiningComponent {
   back() {
     this.personalDetails = {}
     this.createFlag = false
+    this.employeeList = this.employees?.map((item: any) => ({
+      value: item.id,
+      label: `${item.firstName} ${item?.lastName || ''}`
+    }));
   }
   toUppercase() {
     this.personalDetails.panNo = this.personalDetails.panNo?.toUpperCase() || '';
   }
+
+  activeLocation(data:any,type:any){
+   let obj = Object.assign({},data)
+   if(type=="attendance"){
+obj['isofflineAtt']=!obj['isofflineAtt']
+   }else{
+    obj['isLocation']=!obj['isLocation']
+   }
+
+    this.employeeService.activeLocation(obj).subscribe(
+      (response) => {
+        console.log('Employee deleted successfully:', response);
+        if (response && response.status === true) {
+          this.loadEmployees();
+          this.notyf.success(response.message || 'Employee deleted successfully');
+        }
+        else if (response && response.status == false) {
+          this.notyf.error(response.message || 'Failed to delete employee');
+        }
+        else {
+          this.notyf.error('Failed to delete employee');
+        }
+
+      },
+      (error) => {
+        console.error('Error deleting employee:', error);
+        this.notyf.error('Failed to delete employee');
+      }
+    )
+
+
+  }
+
   view(data: any) {
     console.log(data, "objectsss")
     // Save object

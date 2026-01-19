@@ -9,10 +9,11 @@ import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { ValidationUtil } from '../../shared/utils/validation.util';
 import Swal from 'sweetalert2';
+import { SearchPaginationComponent } from '../search-pagination/search-pagination.component';
 @Component({
   selector: 'app-designation',
   imports: [NgSelectModule,
-    FormsModule, CommonModule],
+    FormsModule, CommonModule, SearchPaginationComponent],
   templateUrl: './designation.component.html',
   styleUrl: './designation.component.css'
 })
@@ -28,6 +29,68 @@ export class DesignationComponent {
     await this.designationdd()
     await this.fetchdesignation()
 
+  }
+  pageSize = 10;
+  currentPage = 1;
+  searchTerm = '';
+  itemsPerPage = 10;
+  onSearch(term: string) {
+    this.searchTerm = term.toLowerCase();
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+
+
+  onPageChange(page: number) {
+    this.currentPage = page;
+    this.applyFilters();
+  }
+
+
+  onPageSizeChange(size: number) {
+    this.pageSize = size;
+    this.currentPage = 1;
+    this.applyFilters();
+  }
+  filteredDesignation: any = []
+  searchText: any = ''
+
+  // applyFilters() {
+  //   let data = [...this.desigantionList];
+
+
+  //   const value = this.searchTerm || '';
+  //   this.searchText = value.trim();
+
+  //   if (this.searchText === '') {
+  //     this.desigantionList = [...this.originalList];
+  //   } else {
+  //     this.desigantionList = this.originalList.filter((item: any) =>
+  //       JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+  //     );
+  //   }
+
+
+  //   // pagination
+  //   const start = (this.currentPage - 1) * this.pageSize;
+  //   const end = start + this.pageSize;
+  //   this.filteredDesignation = data.slice(start, end);
+  // }
+   applyFilters() {
+    let data = [...this.desigantionList];
+    const value = this.searchTerm || '';
+    this.searchText = value.trim();
+    if (this.searchText === '') {
+      this.desigantionList = [...this.originalList];
+    } else {
+      this.desigantionList = this.originalList.filter((item: any) =>
+        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+      );
+    }
+    // pagination
+    const start = (this.currentPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.filteredDesignation = data.slice(start, end);
   }
   async designationdd() {
     this.departmentDD = []
@@ -49,7 +112,7 @@ export class DesignationComponent {
           this.back()
         }
         else if (response.status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -93,9 +156,10 @@ export class DesignationComponent {
           this.notyf.success(message)
 
           this.back()
+            this.fetchdesignation()
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -112,16 +176,30 @@ export class DesignationComponent {
 
 
   }
+  originalList: any = []
   async fetchdesignation() {
-       this.desigantionList = []
+    this.desigantionList = []
+    this.originalList = []
     this.master.getDesignations().subscribe(data => {
-       let message = data.message ? data.message : 'Data found Successfully';
-        let status = this.statusService.handleResponseStatus(data.status, message);
+      let message = data.message ? data.message : 'Data found Successfully';
+      let status = this.statusService.handleResponseStatus(data.status, message);
 
       if (status == true) {
-           this.desigantionList = []
-        this.notyf.success(data['message']);
+        this.desigantionList = []
+        // this.notyf.success(data['message']);
+
+        data.data =data.data.map((item: any, index: any) => {
+          return {
+            ...item,
+            si_no: index + 1,
+          }
+        })
         this.desigantionList = data.data;
+        this.originalList = data.data;
+         // pagination
+        const start = (this.currentPage - 1) * this.pageSize;
+        const end = start + this.pageSize;
+        this.filteredDesignation = this.desigantionList.slice(start, end);
       } else {
         this.notyf.error(data['message']);
       }
@@ -131,8 +209,8 @@ export class DesignationComponent {
   }
   getStatusClass(status: any): string {
     switch (status) {
-      case 'pending': return 'bg-light-warning';
-      case 'cancelled': return 'bg-light-danger';
+      case 'active': return 'badge-outline-success';
+      case 'inactive': return 'badge-outline-danger';
       case 'completed': return 'bg-light-success';
       default: return 'bg-light-secondary';
     }
@@ -154,7 +232,7 @@ export class DesignationComponent {
     this.updateFlag = true
   }
   updatedata() {
-    this.obj['id']=this.editingId
+    this.obj['id'] = this.editingId
     this.master.updatedesignation(this.editingId, this.obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
@@ -168,7 +246,7 @@ export class DesignationComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -192,41 +270,41 @@ export class DesignationComponent {
   delete(id: any) {
 
 
-      Swal.fire({
-          title: "Are you sure?",
-          text: "Do you Want to Delete this",
-          icon: "warning",
-          showCancelButton: true,
-          confirmButtonText: "Yes, delete it!",
-          cancelButtonText: "No, cancel!",
-          reverseButtons: true
-        }).then((result) => {
-          if (result.isConfirmed) {
-            this.deleteDesignation(id)
-            // Swal.fire({
-            //   title: "Deleted!",
-            //   text: "Your file has been deleted.",
-            //   icon: "success"
-            // });
-          } else if (
-            /* Read more about handling dismissals below */
-            result.dismiss === Swal.DismissReason.cancel
-          ) {
-            // Swal.fire({
-            //   title: "Cancelled",
-            //   text: "Your imaginary file is safe :)",
-            //   icon: "error"
-            // });
-          }
-        });
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you Want to Delete this",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.deleteDesignation(id)
+        // Swal.fire({
+        //   title: "Deleted!",
+        //   text: "Your file has been deleted.",
+        //   icon: "success"
+        // });
+      } else if (
+        /* Read more about handling dismissals below */
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+        // Swal.fire({
+        //   title: "Cancelled",
+        //   text: "Your imaginary file is safe :)",
+        //   icon: "error"
+        // });
+      }
+    });
 
 
   }
-  deleteDesignation(id:any){
-     let obj:any={}
-    obj['id']=id
+  deleteDesignation(id: any) {
+    let obj: any = {}
+    obj['id'] = id
 
- this.master.deletedesignation(obj).subscribe({
+    this.master.deletedesignation(obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
         let message = response.message ? response.message : 'Data found Successfully';
@@ -238,7 +316,7 @@ export class DesignationComponent {
           this.fetchdesignation();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

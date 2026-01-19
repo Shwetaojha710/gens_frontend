@@ -11,6 +11,7 @@ import { StatusService } from '../../services/status.service';
 import * as XLSX from 'xlsx';
 import id from '@angular/common/locales/id';
 import Swal from 'sweetalert2';
+import { ActivatedRoute } from '@angular/router';
 @Component({
   selector: 'app-date-wise-attendance',
   imports: [FormsModule, CommonModule, NgSelectModule,],
@@ -79,16 +80,49 @@ export class DateWiseAttendanceComponent {
   // }
   AttendanceMasterList: any = [];
   editingId: number | null = null;
-
+  minDate: any
+  fromDashboard:any='false'
   constructor(
     private master: MasterService,
     private attendanceService: AttendanceService,
     public statusService: StatusService,
     private router: Router,
+    private route: ActivatedRoute
   ) {
+      // Check if we came from the dashboard, e.g., via a query param
+   this.fromDashboard = this.route.snapshot.queryParamMap.get('fromDashboard');
+    const today1 = new Date();
+  if (this.fromDashboard == 'true') {
+    this.obj['emp_id'] = 'All';
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+
+    this.obj['startDate'] = `${year}-${month}-${day}`;
+    this.obj['endDate'] = `${year}-${month}-${day}`;
+    this.fetchAttendance();
 
 
+  }else{
+    this.fromDashboard='false'
+  }
+    this.minDate = today1.toISOString().split('T')[0]; // today
     this.notyf = new Notyf();
+  }
+  setMinToDate(){
+  if (this.obj['startDate']) {
+  const fromDate = new Date(this.obj['startDate']);
+
+  if (!isNaN(fromDate.getTime())) {  // ✅ valid date check
+    this.minDate = fromDate.toISOString().split('T')[0]; // YYYY-MM-DD
+  }
+}
+
+}
+  getToDateMin(): string {
+    return this.newObj['startDate'] || this.minDate;
   }
   yearList: any = [];
   EmpList: any = []
@@ -112,34 +146,38 @@ export class DateWiseAttendanceComponent {
     this.updateVisiblePages();
     this.updateDisplayedList();
   }
-  applyFilter(event: any) {
-    this.searchText = event?.target.value;
+applyFilter(event: any) {
+  this.searchText = event?.target.value;
 
-    if (!this.searchText || this.searchText.trim() === '') {
-      this.AttendanceMasterList = [...this.originalList];
-      this.updateDisplayedList();
-      return;
-    }
-
-    const search = this.searchText.toLowerCase();
-
-    this.AttendanceMasterList = this.originalList.filter((item: any) => {
-      return (
-        item.employee_name.toLowerCase().includes(search) ||
-        item.data.some((d: any) =>
-          d.date?.toLowerCase().includes(search) ||
-          d.status?.toLowerCase().includes(search)
-        )
-      );
-    });
-    this.currentPage = 1;
+  if (!this.searchText || this.searchText.trim() === '') {
+    this.AttendanceMasterList = [...this.originalList];
+    this.updateDisplayedList();
+    return;
   }
+
+  const search = this.searchText.toLowerCase();
+
+  this.AttendanceMasterList = this.originalList.filter((item: any) => {
+    return (
+      item.employee_name.toLowerCase().includes(search) ||
+      (item.date && item.date.toLowerCase().includes(search)) ||
+      (item.status && item.status.toLowerCase().includes(search)) ||
+      (item.checkIn && item.checkIn.toLowerCase().includes(search)) ||
+      (item.checkOut && item.checkOut.toLowerCase().includes(search))
+    );
+  });
+
+  this.currentPage = 1;
+  // this.updateDisplayedList();
+}
+
   async ngOnInit() {
 
     await this.empList();
     await this.getYear();
     this.updateDisplayedList();
     this.updateVisiblePages();
+
   }
 
   fetchAttendance() {
@@ -251,9 +289,9 @@ export class DateWiseAttendanceComponent {
     this.master.getemployeeList().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.EmpList = data.data;
-        console.log(this.EmpList, "attendance master list");
+        this.EmpList = this.EmpList.filter((item: any) => item.label != 'All')
 
       }
       else if (data['status'] == 'expired') {
@@ -270,7 +308,7 @@ export class DateWiseAttendanceComponent {
     this.master.getAttendanceYear().subscribe((data: { [x: string]: any; data: any; }) => {
       console.log(data)
       if (data['status'] == true) {
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.yearList = data.data;
         console.log(this.EmpList, "attendance master list");
 
@@ -301,8 +339,28 @@ export class DateWiseAttendanceComponent {
     }
     return true;
   }
-    newObj:any={}
+  newObj: any = {}
   updateFlag: boolean = false;
+  applyUpdate(item: any) {
+    //     Swal.fire({
+    //       title: "Are you sure?",
+    //       text: "Do you Want to Enable this",
+    //       icon: "warning",
+    //       showCancelButton: true,
+    //       confirmButtonText: "Yes, Enable it!",
+    //       cancelButtonText: "No, cancel!",
+    //       reverseButtons: true
+    //     }).then((result) => {
+    //       if (result.isConfirmed) {
+    //          item.editable = true // toggle enable/disable
+
+    //       } else if (result.dismiss === Swal.DismissReason.cancel) {
+    //  item.editable = false
+    //       }
+    //     });
+    item.editable = true
+  }
+
   update(data: any) {
     Swal.fire({
       title: "Are you sure?",
@@ -317,10 +375,10 @@ export class DateWiseAttendanceComponent {
 
         this.newObj = data;
         this.editingId = data.id;
-       this.newObj.checkIn=`${data?.date} ${data?.checkIn}`
-        this.newObj.checkOut=`${data?.date} ${data?.checkOut}`
-       this.newObj.startDate = new Date(data.startDate);
-       this.newObj.endDate = new Date(data.endDate);
+        this.newObj.checkIn = `${data?.date} ${data?.checkIn}`
+        this.newObj.checkOut = `${data?.date} ${data?.checkOut}`
+        this.newObj.startDate = new Date(data.startDate);
+        this.newObj.endDate = new Date(data.endDate);
         this.generateDayList(this.newObj.startDate, this.newObj.endDate);
         this.UpdateAttendance()
         // Swal.fire({
@@ -337,6 +395,7 @@ export class DateWiseAttendanceComponent {
 
   openupdate() {
     this.updateFlag = true;
+
   }
 
   UpdateAttendance() {

@@ -53,7 +53,7 @@ export class BankDetailsComponent {
   //         this.back()
   //       }
   //       else if (response.status === "expired") {
-  //         this.router.navigate(["login"]);
+  //           this.router.navigate(["login"]);
   //       }
 
   //       else {
@@ -101,7 +101,7 @@ this.obj['accountNumber']=this.obj['accountNumber'].toString()
            this.fetchBank()
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
 
         else {
@@ -111,6 +111,7 @@ this.obj['accountNumber']=this.obj['accountNumber'].toString()
       },
       error: (err) => {
         console.error('Error:', err);
+          this.notyf.error(err?.error?.message)
       }
     });
 
@@ -128,7 +129,7 @@ this.obj['accountNumber']=this.obj['accountNumber'].toString()
 
       if (status == true) {
            this.desigantionList = []
-        this.notyf.success(data['message']);
+        // this.notyf.success(data['message']);
         this.desigantionList = data.data;
       } else {
         this.notyf.error(data['message']);
@@ -161,7 +162,7 @@ this.obj['accountNumber']=this.obj['accountNumber'].toString()
   }
   updatedata() {
     this.obj['id']=this.editingId
-      this.obj['employeeId']=this.personalDetails.id
+    this.obj['employeeId']=this.personalDetails.id
     this.empService.updateBank(this.editingId, this.obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
@@ -175,7 +176,7 @@ this.obj['accountNumber']=this.obj['accountNumber'].toString()
           this.resetForm();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)
@@ -246,7 +247,7 @@ this.obj['accountNumber']=this.obj['accountNumber'].toString()
           this.fetchBank();
         }
         else if (status === "expired") {
-          this.router.navigate(["login"]);
+            this.router.navigate(["login"]);
         }
         else {
           this.notyf.error(message)

@@ -14,6 +14,12 @@ export class MasterService {
   // getDepartments(): Observable<any> {
   //   return this.http.get(`${this.baseUrl}/departments`);
   // }
+  getBaseUrl(): string {
+    const PORT = localStorage.getItem('PORT')?.replace(/["\\,]/g, '') || '3002';
+    return window.location.hostname == 'localhost'
+      ? localStorage.getItem('base_url')?.replace(/["\\,]/g, '') || ''
+      : localStorage.getItem('base_url')?.replace(/["\\,]/g, '') || '';
+  }
 
   getDesignations(): Observable<any> {
     return this.http.post(`${this.baseUrl}getDesignations`, {});
@@ -35,6 +41,9 @@ export class MasterService {
 
   Departmentsdd(): Observable<any> {
     return this.http.post(`${this.baseUrl}department-dd`, {});
+  }
+  designationDD(obj: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}designation-dd`, obj);
   }
 
   deleteDepartment(data: any): Observable<any> {
@@ -85,7 +94,7 @@ export class MasterService {
 
 
 
-  getDocument(obj:any): Observable<any> {
+  getDocument(obj: any): Observable<any> {
     return this.http.post(`${this.baseUrl}getDocument`, obj);
   }
   getDocumentType(): Observable<any> {
@@ -100,7 +109,7 @@ export class MasterService {
     return this.http.post<any>(`${this.baseUrl}createDocument`, dept);
   }
 
-  updateDocument(id: any, dept: any): Observable<any> {
+  updateDocument(dept: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}editDocument`, dept);
   }
   updateDocumentType(id: any, dept: any): Observable<any> {
@@ -114,22 +123,22 @@ export class MasterService {
     return this.http.post(`${this.baseUrl}deleteDocumentType`, data);
   }
 
-   getDocumentDD(): Observable<any> {
+  getDocumentDD(): Observable<any> {
     return this.http.post(`${this.baseUrl}getDocumentDD`, {});
   }
 
-addSalaryMaster(dept: any): Observable<any> {
+  addSalaryMaster(dept: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}attendance-setting`, dept);
   }
 
- updateSalaryMaster(id: any, dept: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}updateSalaryMaster`, dept);
+  updateSalaryMaster(id: any, dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}update-attendance-setting`, dept);
   }
 
   deleteSalaryMaster(data: any): Observable<any> {
     return this.http.post(`${this.baseUrl}deleteSalaryMaster`, data);
   }
-   getAttendanceSetting(): Observable<any> {
+  getAttendanceSetting(): Observable<any> {
     return this.http.post(`${this.baseUrl}get-attendance-setting`, {});
   }
 
@@ -138,11 +147,11 @@ addSalaryMaster(dept: any): Observable<any> {
   createLeave(dept: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}create-leave`, dept);
   }
-     getLeaveList(): Observable<any> {
+  getLeaveList(): Observable<any> {
     return this.http.post(`${this.baseUrl}get-leaves`, {});
   }
 
- updateLeave(id: any, dept: any): Observable<any> {
+  updateLeave(id: any, dept: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}update-leaves`, dept);
   }
 
@@ -159,18 +168,18 @@ addSalaryMaster(dept: any): Observable<any> {
   getLeaveTypeList(): Observable<any> {
     return this.http.post(`${this.baseUrl}get-leave-type-dd`, {});
   }
-   ApplyLeave(dept: any): Observable<any> {
+  ApplyLeave(dept: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}apply-leave`, dept);
   }
-   UpdateApplyLeaveStatus(dept: any): Observable<any> {
+  UpdateApplyLeaveStatus(dept: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}update-apply-leave-status`, dept);
   }
-     getapplyLeaveList(): Observable<any> {
+  getapplyLeaveList(): Observable<any> {
     return this.http.post(`${this.baseUrl}get-applied-leaves`, {});
   }
 
 
-    getHolidayType(): Observable<any> {
+  getHolidayType(): Observable<any> {
     return this.http.post(`${this.baseUrl}getHolidayTypes`, {});
   }
 
@@ -186,10 +195,102 @@ addSalaryMaster(dept: any): Observable<any> {
     return this.http.post(`${this.baseUrl}deleteHolidayType`, data);
   }
   getHolidayTypeDD(): Observable<any> {
-     return this.http.post(`${this.baseUrl}getHolidayTypeDD`, {});
+    return this.http.post(`${this.baseUrl}getHolidayTypeDD`, {});
   }
 
-//    getAttendanceSetting(): Observable<any> {
-//     return this.http.post(`${this.baseUrl}get-attendance-setting`, {});
-//   }
+  addPrefix(dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}add-prefix`, dept);
+  }
+
+  updatePrefix(id: any, dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}update-prefix`, dept);
+  }
+
+  deletePrefix(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}delete-prefix`, data);
+  }
+  getPrefix(): Observable<any> {
+    return this.http.post(`${this.baseUrl}get-prefix`, {});
+  }
+
+  addComponent(dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}create-component`, dept);
+  }
+
+  updateComponent(id: any, dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}updateComponent`, dept);
+  }
+  getComponent(): Observable<any> {
+    return this.http.post(`${this.baseUrl}get-component`, {});
+  }
+  fetchComponentsMaster(): Observable<any> {
+    return this.http.post(`${this.baseUrl}get-component`, {});
+  }
+  deleteSalaryComponent(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}delete-component`, data);
+  }
+  updateSalaryComponent(id: any, dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}update-component`, dept);
+  }
+  addCurrency(dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}add-Currency`, dept);
+  }
+
+  updateCurrency(id: any, dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}update-Currency`, dept);
+  }
+
+  deleteCurrency(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}delete-Currency`, data);
+  }
+  getCurrency(): Observable<any> {
+    return this.http.post(`${this.baseUrl}get-Currency`, {});
+  }
+
+  getSalaryOrder(): Observable<any> {
+    return this.http.post(`${this.baseUrl}getSalaryOrder`, {});
+  }
+
+  addSalaryOrder(dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}createSalaryOrder`, dept);
+  }
+
+  updateSalaryOrder(id: any, dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}editSalaryOrder`, dept);
+  }
+
+  deleteSalaryOrder(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}deleteSalaryOrder`, data);
+  }
+
+  getRegularizeList(obj: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}pending-regularize-list`, obj);
+  }
+  UpdateApplyRegularizeStatus(obj: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}update-status`, obj);
+  }
+
+
+  addBranch(dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}createBranch`, dept);
+  }
+
+  updateBranch(id: any, dept: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}updateBranch`, dept);
+  }
+  getBranchs(): Observable<any> {
+    return this.http.post(`${this.baseUrl}getBranch`, {});
+  }
+
+
+  BranchDD(): Observable<any> {
+    return this.http.post(`${this.baseUrl}branch-dd`, {});
+  }
+
+  deleteBranch(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}deleteBranch`, data);
+  }
+  //    getAttendanceSetting(): Observable<any> {
+  //     return this.http.post(`${this.baseUrl}get-attendance-setting`, {});
+  //   }
 }

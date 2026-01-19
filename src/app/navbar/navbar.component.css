@@ -84,26 +84,12 @@ aside {
     margin: 0;
     list-style: none;
 }
-/* *, *::before, *::after {
-    box-sizing: border-box;
-} */
+
 li {
     display: list-item;
     text-align: -webkit-match-parent;
     unicode-bidi: isolate;
 }
-/* .menu-horizontal .menu-inner .menu-item:not(.menu-item-closing) > .menu-sub, .menu-horizontal .menu-inner .menu-item.open > .menu-toggle {
-    background-color: var(--bs-menu-bg);
-} */
-
-/* .menu-item:hover {
-
-  background-color: #f5f5f5;
-}
-
-.menu-item:hover > .menu-sub {
-  display: block;
-} */
 
 .menu-item.open > .menu-sub {
   display: block;
