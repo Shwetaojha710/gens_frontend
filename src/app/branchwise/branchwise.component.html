@@ -1,4 +1,5 @@
-<div class="authentication-wrapper authentication-basic container-p-y p-4 p-sm-0" style="background-image: url('/assets/img/logo/abstract-background_1409-897.jpg');background-size: cover;background-repeat: no-repeat;">
+<div class="authentication-wrapper authentication-basic container-p-y p-4 p-sm-0"
+  style="background-image: url('/assets/img/logo/abstract-background_1409-897.jpg');background-size: cover;background-repeat: no-repeat;">
   <div class="py-6">
     <!-- Login -->
     <div class="container p-md-7 p-1">
@@ -55,8 +56,39 @@
       </div>
 
       <div class="buy-now">
-        <a href="#" target="_blank"
-          class="btn btn-outline-primary bg-white btn-buy-now waves-effect waves-light">View More</a>
+
+
+        <button type="button" class="btn btn-outline-primary bg-white btn-buy-now waves-effect waves-light"
+          data-bs-toggle="modal" data-bs-target="#exampleModal">
+          View More
+        </button>
+      </div>
+
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel1">Search Branch</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-12 mt-2">
+                  <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search Branch"
+                      aria-label="Search Branch" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-primary waves-effect" type="button"
+                      id="button-addon2">Search</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="modal-footer">
+             
+            </div>
+          </div>
+        </div>
       </div>
       <!-- <div class="row mb-12 g-6">
                 <div class="col-md-12">
@@ -101,6 +133,9 @@
                 </div>
             </div> -->
     </div>
+
+
+
     <!-- /Login -->
     <!-- <img alt="mask" src="/assets/img/illustrations/auth-basic-forgot-password-mask-light.png"
       class="authentication-image d-none d-lg-block"
