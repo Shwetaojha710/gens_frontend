@@ -63,15 +63,23 @@ import { BranchComponent } from './master/branch/branch.component';
 import { BranchwiseComponent } from './branchwise/branchwise.component';
 import { TrackingComponent } from './tracking/tracking.component';
 import { LiveTrackingComponent } from './tracking/live-tracking/live-tracking.component';
+
+import { NewdashboardComponent } from './newdashboard/newdashboard.component';
+
 import { CompanyRegComponent } from './company-reg/company-reg.component';
+
 
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
   { path: 'Home', component: LandingPageComponent },
   { path: 'login', component: LoginComponent },
+
+  { path: 'branchwise', component: BranchwiseComponent },
+
   { path: 'company-reg', component: CompanyRegComponent },
   { path: 'branchwise',component: BranchwiseComponent},
+
   { path: 'emp-profile', component: EmpProfileComponent },
 
   { path: 'check-out', component: CheckoutComponent },
@@ -81,7 +89,7 @@ export const routes: Routes = [
     canActivate: [AuthGuard],
     children: [
       { path: 'dashboard', component: DashboardComponent },
-
+      // { path: 'dashboard', component: NewdashboardComponent },
       {
         path: 'employee',
         children: [
