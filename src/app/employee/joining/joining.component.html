@@ -160,7 +160,6 @@
                 Enter valid Mother Name
               </small>
             </div>
-
             <div class="col-md-3">
               <label class="col-form-label fw-bold">Nationality
                 <span style="color: red"> *</span>
@@ -368,7 +367,7 @@
   </div>
   <!--Header-->
 
-  <div class="row mb-6" *ngIf="!createFlag">
+  <div class="row g-3 mb-6" *ngIf="!createFlag">
     <div class="col-lg-3 col-sm-6">
       <div class="card">
         <div class="card-body">
@@ -518,8 +517,8 @@
                   <td>
                      <button type="button" class="badge badge-center bg-label-secondary"
                       (click)="enableDisableLoc(item,'attendance')">
-                      Offline Attendance
-                      <!-- <i class="fas fa-location"></i> -->
+                      <!-- Offline Attendance -->
+                      <i class="fa fa-clock"></i>
                     </button>&nbsp;
                     <button type="button" class="badge badge-center bg-label-secondary"
                       (click)="enableDisableLoc(item,'location')">
