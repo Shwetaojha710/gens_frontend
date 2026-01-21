@@ -1,204 +1,41 @@
-<div class="authentication-wrapper authentication-cover">
-  <!-- Logo -->
-
-  <!-- /Logo -->
-  <div class="authentication-inner row m-0">
-    <!-- /Left Section -->
-    <!-- <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center justify-content-center p-12 pb-2">
-          <img
-            src="../../assets/img/illustrations/auth-login-illustration-light.png"
-            class="auth-cover-illustration w-100"
-            alt="auth-illustration"
-            data-app-light-img="illustrations/auth-login-illustration-light.png"
-            data-app-dark-img="illustrations/auth-login-illustration-dark.png" />
-          <img
-            alt="mask"
-            src="../../assets/img/illustrations/auth-basic-login-mask-light.png"
-            class="authentication-image d-none d-lg-block"
-            data-app-light-img="illustrations/auth-basic-login-mask-light.png"
-            data-app-dark-img="illustrations/auth-basic-login-mask-dark.png" />
-        </div> -->
-    <!-- /Left Section -->
-
+<div class="authentication-wrapper authentication-basic container-p-y p-4 p-sm-0"
+  style="background-image: url('/assets/img/logo/abstract-background_1409-897.jpg');background-size: cover;background-repeat: no-repeat;">
+  <div class="py-6">
     <!-- Login -->
-    <div
-      class="d-flex col-12 col-lg-5 col-xl-4 align-items-center authentication-bg position-relative py-sm-12 px-12 py-6 bg-white">
-      <div class="w-px-400 mx-auto pt-12 pt-lg-0 text-center">
-        <div class="app-brand justify-content-center mb-5">
-          <a href="/" class="app-brand-link gap-2">
-            <img src="/assets/img/logo/logo-quaere.png" width="250">
-          </a>
-        </div>
-        <h4 class="mb-1">Head-Office Lucknow! 👋</h4>
-        <p class="mb-5">Central administration and monitoring access.</p>
+    <div class="container p-md-7 p-1">
+      <!-- Logo -->
+      <div class="app-brand justify-content-center mt-5">
+        <a href="/" class="app-brand-link gap-2">
+          <img src="/assets/img/logo/logo-quaere.png" width="250">
+          <!-- <img [src]="tenantDetails?.image" alt="Document" width="250" height="auto" style="cursor: pointer" /> -->
+        </a>
 
-        <form id="formAuthentication" class="mb-5" action="index.html" method="GET">
-
-
-
-          <button class="btn btn-primary d-grid w-100">Lucknow branch</button>
-        </form>
-
-
-
-        <div class="divider my-5">
-          <div class="divider-text">or</div>
-        </div>
-
-        <div class="d-flex justify-content-center gap-2">
-          <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-facebook">
-            <i class="icon-base ri ri-facebook-fill icon-18px"></i>
-          </a>
-
-          <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-twitter">
-            <i class="icon-base ri ri-twitter-fill icon-18px"></i>
-          </a>
-
-          <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-github">
-            <i class="icon-base ri ri-github-fill icon-18px"></i>
-          </a>
-
-          <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-google-plus">
-            <i class="icon-base ri ri-google-fill icon-18px"></i>
-          </a>
+      </div>
+      <div class="app-brand justify-content-center mb-10 mt-5">
+        <div class="text-center">
+          <h4 style="    font-size: 32px;
+    color: #005495;
+    font-weight: 900;">
+            {{tenantDetails?.companyName}}
+            <!-- Quaere ETechnologies Pvt. Ltd. -->
+          </h4>
+          <p>
+            {{tenantDetails?.companyAddress}}
+            7th Floor, Cyber Tower, Pickup Road, Vibhuti Khand, Gomti Nagar, Lucknow-226010 (Uttar Pradesh)
+          </p>
         </div>
       </div>
-    </div>
-    <div
-      class="d-flex col-12 col-lg-5 col-xl-4 align-items-center authentication-bg position-relative py-sm-12 px-12 py-6"
-      style="background: #f3fbff !important;">
-      <div class="w-px-400 mx-auto pt-12 pt-lg-0 text-center">
-        <div class="app-brand justify-content-center mb-5">
-          <a href="/" class="app-brand-link gap-2">
-            <img src="/assets/img/logo/logo-quaere.png" width="250">
-          </a>
-        </div>
-        <h4 class="mb-1"> Varanasi Branch ! 👋</h4>
-        <p class="mb-5">Central administration and monitoring access.</p>
+      <!-- /Logo -->
 
-        <form>
-
-
-
-          <button class="btn btn-primary d-grid w-100">Varanasi branch</button>
-        </form>
-
-
-
-        <div class="divider my-5">
-          <div class="divider-text">or</div>
-        </div>
-
-        <div class="d-flex justify-content-center gap-2">
-          <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-facebook">
-            <i class="icon-base ri ri-facebook-fill icon-18px"></i>
-          </a>
-
-          <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-twitter">
-            <i class="icon-base ri ri-twitter-fill icon-18px"></i>
-          </a>
-
-          <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-github">
-            <i class="icon-base ri ri-github-fill icon-18px"></i>
-          </a>
-
-          <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-google-plus">
-            <i class="icon-base ri ri-google-fill icon-18px"></i>
-          </a>
-        </div>
-
-        <div class="buy-now">
-          <!-- <a href="#costumModal11" target="_blank" data-toggle="modal"
-            class="btn btn-primary btn-buy-now waves-effect waves-light">View More</a> -->
-          <button type="button" class="btn btn-primary btn-buy-now waves-effect waves-light" data-bs-toggle="modal"
-            data-bs-target="#animationModal">
-            View More
-          </button>
-
-        </div>
-      </div>
-    </div>
-    <div
-      class="d-flex col-12 col-lg-5 col-xl-4 align-items-center authentication-bg position-relative py-sm-12 px-12 py-6"
-      style="background: #def5ff !important;">
-      <div class="w-px-400 mx-auto pt-12 pt-lg-0 text-center">
-        <div class="app-brand justify-content-center mb-5">
-          <a href="/" class="app-brand-link gap-2">
-            <img src="/assets/img/logo/logo-quaere.png" width="250">
-          </a>
-        </div>
-        <h4 class="mb-1">Jaunpur Branch ! 👋</h4>
-        <p class="mb-5">Central administration and monitoring access.</p>
-
-        <form id="formAuthentication" class="mb-5" action="index.html" method="GET">
-
-
-
-          <button class="btn btn-primary d-grid w-100">Jaunpur branch</button>
-        </form>
-
-
-
-        <div class="divider my-5">
-          <div class="divider-text">or</div>
-        </div>
-
-        <div class="d-flex justify-content-center gap-2">
-          <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-facebook">
-            <i class="icon-base ri ri-facebook-fill icon-18px"></i>
-          </a>
-
-          <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-twitter">
-            <i class="icon-base ri ri-twitter-fill icon-18px"></i>
-          </a>
-
-          <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-github">
-            <i class="icon-base ri ri-github-fill icon-18px"></i>
-          </a>
-
-          <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-google-plus">
-            <i class="icon-base ri ri-google-fill icon-18px"></i>
-          </a>
-        </div>
-      </div>
-    </div>
-    <!-- /Login -->
-
-
-    <!-- Modal template -->
-    <div class="modal animate__animated animate__heartBeat" id="animationModal" tabindex="-1" aria-modal="true"
-      role="dialog">
-      <div class="modal-dialog modal-dialog-centered" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel5">Search Branch</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body">
-            <div class="row">
-              <div class="col mb-6 mt-2">
-                <div class="form-floating form-floating-outline">
-                  <input type="search" id="nameAnimation" class="form-control" placeholder="Search Branch">
-                  <label for="nameAnimation">Search Branch</label>
-                </div>
-                <!-- <div class="col mb-6 mt-2">
-                  <div class="list-group">
-                    <a href="javascript:void(0);" class="list-group-item list-group-item-action active waves-effect">Bear claw cake biscuit</a>
-                    <a href="javascript:void(0);" class="list-group-item list-group-item-action waves-effect">Soufflé pastry pie ice</a>
-                    <a href="javascript:void(0);" class="list-group-item list-group-item-action disabled waves-effect">Tart tiramisu cake</a>
-                    <a href="javascript:void(0);" class="list-group-item list-group-item-action waves-effect">Bonbon toffee muffin</a>
-                    <a href="javascript:void(0);" class="list-group-item list-group-item-action waves-effect">Dragée tootsie roll</a>
-                  </div>
-                </div> -->
-              </div>
-            </div>
-
+      <div class="row g-3 mb-12">
+        <div class="col-md-12">
+          <div class="row g-3">
 
             <div class="col-lg-4" *ngFor="let branch of branchList">
-              <div class="card card-100 text-center">
+              <div class="card card-100 text-center" style="padding: 40px 20px;">
                 <div class="card-body">
                   <div class="mb-4">
-                    <img src="/assets/img/logo/office.svg" width="60">
+                    <img src="/assets/img/logo/icomoon-free_office.svg" width="60">
                   </div>
 
                   <h5 class="card-title">{{ branch.name }}</h5>
@@ -213,14 +50,96 @@
                 </div>
               </div>
             </div>
-          </div>
-          <div class="modal-footer">
-            <hr>
-            <button type="button" class="btn btn-primary waves-effect waves-light">Search</button>
+
           </div>
         </div>
       </div>
+
+      <div class="buy-now">
+
+
+        <button type="button" class="btn btn-outline-primary bg-white btn-buy-now waves-effect waves-light"
+          data-bs-toggle="modal" data-bs-target="#exampleModal">
+          View More
+        </button>
+      </div>
+
+      <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="exampleModalLabel1">Search Branch</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+                <div class="col-12 mt-2">
+                  <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search Branch"
+                      aria-label="Search Branch" aria-describedby="button-addon2">
+                    <button class="btn btn-outline-primary waves-effect" type="button"
+                      id="button-addon2">Search</button>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="modal-footer">
+             
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="row mb-12 g-6">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-lg-4">
+                            <div class="card card-100 text-center">
+                                <div class="card-body">
+                                    <div class="mb-4"><img src="/assets/img/logo/office.svg" width="60"></div>
+                                    <h5 class="card-title">Lucknow Branch</h5>
+                                    <p class="card-text">Central administration and monitoring access.
+                                    </p>
+                                    <a href="javascript:void(0)" class="btn btn-primary waves-effect waves-light">Go to
+                                        Dashboard</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card card-100 text-center">
+                                <div class="card-body">
+                                    <div class="mb-4"><img src="/assets/img/logo/office.svg" width="60"></div>
+                                    <h5 class="card-title">Varanasi branch</h5>
+                                    <p class="card-text">Central administration and monitoring access.
+                                    </p>
+                                    <a href="javascript:void(0)" class="btn btn-primary waves-effect waves-light">Go to
+                                        Dashboard</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card card-100 text-center">
+                                <div class="card-body">
+                                    <div class="mb-4"><img src="/assets/img/logo/office.svg" width="60"></div>
+                                    <h5 class="card-title">Jaunpur Branch</h5>
+                                    <p class="card-text">Central administration and monitoring access.
+                                    </p>
+                                    <a href="javascript:void(0)" class="btn btn-primary waves-effect waves-light">Go to
+                                        Dashboard</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div> -->
     </div>
-    <!-- Modal Body -->
+
+
+
+    <!-- /Login -->
+    <!-- <img alt="mask" src="/assets/img/illustrations/auth-basic-forgot-password-mask-light.png"
+      class="authentication-image d-none d-lg-block"
+      data-app-light-img="illustrations/auth-basic-forgot-password-mask-light.png"
+      data-app-dark-img="illustrations/auth-basic-forgot-password-mask-dark.png" style="visibility: visible;"> -->
   </div>
 </div>

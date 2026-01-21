@@ -19,30 +19,42 @@ export class BranchwiseComponent {
     branchList: any
     obj: any = {};
     stats:any = []
-    User:any={}
-  constructor(private dashboardService: DashboardService, private router: Router, public masterService: MasterService) {
-     this.getBranchDD()
-     this.User = JSON.parse(localStorage.getItem('tenant') || '{}');
-  }
-  DummyBranchData=[
+    tenantDetails:any={}
+    branchDt=[
   {
-    "id": "4abc445c-01e7-40dd-9439-6a5ce8b2a8f6",
-    "name": "XYZ",
+    "id": "98874c19-03c5-439c-8280-61a615b4983b",
+    "name": "X-Y-Z",
+    "description": "Central administration and monitoring access."
+  },
+    {
+    "id": "98874c19-03c5-439c-8280-61a615b4983b",
+    "name": "A-B-C",
+    "description": "Central administration and monitoring access."
+  },
+   {
+    "id": "98874c19-03c5-439c-8280-61a615b4983b",
+    "name": "D-E-F",
     "description": "Central administration and monitoring access."
   }
 ]
+  baseurl: any;
+  constructor(private dashboardService: DashboardService, private router: Router, public masterService: MasterService) {
+      this.baseurl = this.masterService.getBaseUrl();
+    this.getBranchDD()
+     this.tenantDetails=JSON.parse(localStorage.getItem('tenant') || '{}');
+     this.tenantDetails.image=`${this.baseurl}${this.tenantDetails['image']}`
+  }
   getBranchDD(){
     this.branchList=[]
     this.masterService.BranchDD().subscribe((res) => {
       if (res.status == true) {
         this.notyf.success(res.message || 'Dashboard data loaded successfully')
         this.stats = res.data.stats;
-        if(res.data.length==0){
-          this.branchList=this.DummyBranchData
+        if (res.data.length<=2) {
+          this.branchList=[...res.data,...this.branchDt].slice(0, 3);
         }else{
         this.branchList = res.data
         }
-
       } else if (res.status == 'expired') {
         this.router.navigate(['login'])
       } else {
@@ -57,7 +69,4 @@ export class BranchwiseComponent {
   // redirect to dashboard
   this.router.navigate(['/layout/dashboard']);
 }
-
-
-
 }

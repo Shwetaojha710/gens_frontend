@@ -1,7 +1,117 @@
+
 .buy-now .btn-buy-now {
     position: fixed;
     z-index: 1080;
     box-shadow: 0 1px 20px 1px #0663a9;
-    inset-block-end: 7rem;
+    inset-block-end: 5rem;
     inset-inline-end: 55.5rem;
 }
+
+.quaere-text {
+        font-size: 32px;
+        color: #0663a9;
+        font-weight: 900;
+    }
+
+
+@media screen and (max-width: 480px) {
+    h4.quaere-text {
+        font-size: 18px;
+        color: #0663a9;
+        font-weight: 900;
+    }
+
+    p.pquaere-text{
+        font-size: 14px!important;
+        color: #676a7b;
+    }
+}
+/* 
+.card-border-hover1:hover{
+    border: 1px solid #005495 !important;
+} */
+
+
+/* 
+.auth-pattern-shapes::before {
+    width: 140px;
+    height: 140px;
+    top: 23%;
+    left: 70%;
+    transform: rotate(25deg);
+}
+.auth-pattern-shapes::before, .auth-pattern-shapes::after {
+    content: "";
+    position: absolute;
+    border-radius: 30px;
+    background: rgba(114, 98, 251, .1);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+}
+
+.auth-pattern-shapes::after {
+    width: 180px;
+    height: 180px;
+    bottom: 20%;
+    right: 10%;
+    background: rgba(98, 239, 255, .08);
+}
+.auth-pattern-shapes::before, .auth-pattern-shapes::after {
+    content: "";
+    position: absolute;
+    border-radius: 30px;
+    background: rgba(114, 98, 251, .1);
+    backdrop-filter: blur(25px);
+    -webkit-backdrop-filter: blur(25px);
+}
+
+.auth-pattern-outline::before {
+    content: "";
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    top: 18%;
+    left: 70%;
+    border: 2px dotted rgba(114, 98, 251, .4);
+    border-radius: 12px;
+    transform: rotate(25deg);
+}
+
+.auth-pattern-outline::after {
+    content: "";
+    position: absolute;
+    width: 160px;
+    height: 160px;
+    bottom: 15%;
+    right: 8%;
+    border: 1px solid rgba(98, 239, 255, .3);
+    border-radius: 16px;
+}
+
+.auth-pattern-shape.extra {
+    position: absolute;
+    top: 50%;
+    left: 12%;
+    width: 150px;
+    height: 150px;
+    border-radius: 40px;
+    background: rgba(255, 130, 184, .1);
+    backdrop-filter: blur(20px);
+    transform: rotate(25deg);
+}
+
+.auth-pattern-extra {
+    position: absolute;
+    top: 50%;
+    left: 12%;
+    width: 100px;
+    height: 100px;
+    transform: translateY(-50%) rotate(10deg);
+    border: 1px solid rgba(255, 130, 184, .3);
+    border-radius: 10px;
+}
+
+.bg-pattern {
+    background: radial-gradient(circle at 30% 40%, rgba(110, 66, 193, 0.04), transparent 50%), radial-gradient(circle at 70% 60%, rgba(66, 135, 245, 0.04), transparent 50%);
+} */
+

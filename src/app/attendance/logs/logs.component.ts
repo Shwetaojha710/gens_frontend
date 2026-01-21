@@ -192,9 +192,9 @@ export class LogsComponent {
                 : '';
           });
         });
-
+      
         // console.log(this.AttendanceMasterList,"attendance master list");
-
+        
         this.originalList = this.AttendanceMasterList;
         this.updateDisplayedList();
 
@@ -270,7 +270,7 @@ export class LogsComponent {
 // //             status: statusMap[item1.status] || item1.status
 // //           }))
 // //         }));
-
+      
 // //        this.AttendanceMasterList= this.AttendanceMasterList.forEach((employee: any) => {
 // //   employee.dayTime = {};
 

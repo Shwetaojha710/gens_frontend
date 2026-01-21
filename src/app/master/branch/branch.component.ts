@@ -8,6 +8,8 @@ import Swal from 'sweetalert2';
 import { MasterService } from '../../services/master.service';
 import { StatusService } from '../../services/status.service';
 import { ValidationUtil } from '../../shared/utils/validation.util';
+import { LocationService } from '../../services/location.service';
+import { LocationsService } from '../../services/locations.service';
 
 @Component({
   selector: 'app-branch',
@@ -34,12 +36,14 @@ export class BranchComponent {
   BranchForm!: FormGroup;
   BranchList: any[] = [];
   editingId: number | null = null;
-
-  constructor(
+  latitude!: number;
+  longitude!: number;
+  constructor(private locationService: LocationsService,
     private fb: FormBuilder,
     private BranchService: MasterService,
     public statusService: StatusService,
     private router: Router,
+
   ) {
     this.BranchForm = this.fb.group({
       name: ['', Validators.required],
@@ -47,6 +51,18 @@ export class BranchComponent {
     });
 
     this.notyf = new Notyf();
+  }
+   getLocation() {
+    this.locationService.getCurrentLocation()
+      .then((res) => {
+        this.latitude = res.latitude;
+        this.longitude = res.longitude;
+        this.obj['latitude']=this.latitude
+        this.obj['longitude']=this.longitude
+      })
+      .catch((err) => {
+        console.error('Location error:', err);
+      });
   }
   searchText: any = '';
   async ngOnInit() {

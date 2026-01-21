@@ -35,7 +35,7 @@ export class LoginComponent {
 
     this.notyf = new Notyf();
   }
-passwordVisible: boolean = false;
+  passwordVisible: boolean = false;
 
 
   login() {
@@ -51,17 +51,14 @@ passwordVisible: boolean = false;
         const data = JSON.parse(res)
         if (data.status === true) {
           localStorage.setItem('token', data.data.token);
-           localStorage.setItem("base_url", data.data.baseUrl);
-           localStorage.setItem("tenant", JSON.stringify(data.data.tenant));
-           localStorage.setItem("branch",  JSON.stringify(data.data.branch));
-           localStorage.setItem("PORT", data.data.PORT);
-           localStorage.setItem('user', JSON.stringify(data.data.user));
-           localStorage.setItem('currency', JSON.stringify(data.data.currencyList));
+          localStorage.setItem("base_url", data.data.baseUrl);
+          localStorage.setItem("PORT", data.data.PORT);
+          localStorage.setItem('user', JSON.stringify(data.data.user));
+          localStorage.setItem('tenant', JSON.stringify(data.data.tenant));
+          localStorage.setItem('branch', JSON.stringify(data.data.branch));
+          localStorage.setItem('currency', JSON.stringify(data.data.currencyList));
           this.notyf.success(data.message);
-          // if(data.data.branch.length==0){
-             this.router.navigate(['branchwise']);
-          // }
-          // this.router.navigate(['layout/dashboard']);
+          this.router.navigate(['branchwise']);
         } else {
           this.notyf.error(data.message);
         }
@@ -77,11 +74,14 @@ passwordVisible: boolean = false;
   //   const control = this.form.get(field);
   //   return !!(control && control.touched && control.invalid);
   // }
-  goToEmpProfile(){
+  goToEmpProfile() {
     this.router.navigate(['emp-profile']);
   }
+  gotoRegister() {
+    this.router.navigate(['company-reg']);
+  }
   isInvalid(controlName: string): boolean {
-  const control = this.form.get(controlName);
-  return control ? control.invalid && (control.dirty || control.touched) : false;
-}
+    const control = this.form.get(controlName);
+    return control ? control.invalid && (control.dirty || control.touched) : false;
+  }
 }
