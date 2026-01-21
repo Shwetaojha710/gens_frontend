@@ -13,8 +13,8 @@ export class AttendanceService {
   getattendancelist(obj: any): Observable<any> {
     return this.http.post(`${this.baseUrl}get-emp-attendance`, obj);
   }
-  getHolidayList(): Observable<any> {
-    return this.http.post(`${this.baseUrl}get-holidayList`, {});
+  getHolidayList(obj:any): Observable<any> {
+    return this.http.post(`${this.baseUrl}get-holidayList`, obj);
   }
   addHoliday(obj: any): Observable<any> {
     return this.http.post(`${this.baseUrl}add-holiday`, obj);

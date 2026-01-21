@@ -18,7 +18,7 @@
         <hr style="margin: 0rem 0 !important" />
         <div class="card-body">
           <div class="row">
-            <div class="col-lg-4 col-sm-12">
+            <div class="col-lg-3 col-sm-12">
               <label for="defaultFormControlInput" class="form-label"
                 >Name</label
               >
@@ -30,12 +30,45 @@
                 [(ngModel)]="obj['name']"
                 aria-describedby="defaultFormControlHelp"
                 required
+                (change)="getLocation()"
               />
 
               <div class="invalid-feedback">Enter a valid email address.</div>
             </div>
-            &nbsp;
-            <div class="col-lg-4 col-sm-12" *ngIf="updateFlag">
+            <div class="col-lg-3 col-sm-12">
+              <label for="defaultFormControlInput" class="form-label"
+                >Latitude</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="defaultFormControlInput"
+                placeholder="Enter Latitude"
+                [(ngModel)]="obj['latitude']"
+                aria-describedby="defaultFormControlHelp"
+                required
+              />
+
+              <div class="invalid-feedback">Enter a valid Latitude.</div>
+            </div>
+            <div class="col-lg-3 col-sm-12">
+              <label for="defaultFormControlInput" class="form-label"
+                >Longitude</label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="defaultFormControlInput"
+                placeholder="Enter Longitude"
+                [(ngModel)]="obj['longitude']"
+                aria-describedby="defaultFormControlHelp"
+                required
+              />
+
+              <div class="invalid-feedback">Enter a valid Longitude.</div>
+            </div>
+            <!-- &nbsp; -->
+            <div class="col-lg-3 col-sm-12" *ngIf="updateFlag">
               <label for="defaultFormControlInput" class="form-label"
                 >Status</label
               >
@@ -155,6 +188,8 @@
                   <tr>
                     <th>SI.No</th>
                     <th>Name</th>
+                    <th>Latitude</th>
+                    <th>Longitude</th>
                     <th>Status</th>
                     <th>createdAt</th>
                     <th>Actions</th>
@@ -164,6 +199,8 @@
                   <tr *ngFor="let item of BranchList; let i = index">
                     <th scope="row">{{ i + 1 }}</th>
                     <td>{{ item["name"] }}</td>
+                    <td>{{ item["longitude"] ||0 }}</td>
+                    <td>{{ item["latitude"] ||0}}</td>
                     <td>
                       <span
                         class="badge  overflow-hidden px-2"
