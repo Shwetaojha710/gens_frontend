@@ -1,12 +1,12 @@
-<div class="authentication-wrapper authentication-basic container-p-y p-4 p-sm-0">
+<div class="authentication-wrapper authentication-basic container-p-y p-4 p-sm-0" style="background-image: url('/assets/img/logo/abstract-background_1409-897.jpg');background-size: cover;background-repeat: no-repeat;">
   <div class="py-6">
     <!-- Login -->
     <div class="container p-md-7 p-1">
       <!-- Logo -->
       <div class="app-brand justify-content-center mt-5">
         <a href="/" class="app-brand-link gap-2">
-          <!-- <img src="/assets/img/logo/logo-quaere.png" width="250"> -->
-          <img [src]="tenantDetails?.image" alt="Document" width="250" height="auto" style="cursor: pointer" />
+          <img src="/assets/img/logo/logo-quaere.png" width="250">
+          <!-- <img [src]="tenantDetails?.image" alt="Document" width="250" height="auto" style="cursor: pointer" /> -->
         </a>
 
       </div>
@@ -20,21 +20,21 @@
           </h4>
           <p>
             {{tenantDetails?.companyAddress}}
-            <!-- 7th Floor, Cyber Tower, Pickup Road, Vibhuti Khand, Gomti Nagar, Lucknow-226010 (Uttar Pradesh) -->
+            7th Floor, Cyber Tower, Pickup Road, Vibhuti Khand, Gomti Nagar, Lucknow-226010 (Uttar Pradesh)
           </p>
         </div>
       </div>
       <!-- /Logo -->
 
-      <div class="row mb-12 g-6">
+      <div class="row g-3 mb-12">
         <div class="col-md-12">
-          <div class="row">
+          <div class="row g-3">
 
             <div class="col-lg-4" *ngFor="let branch of branchList">
-              <div class="card card-100 text-center">
+              <div class="card card-100 text-center" style="padding: 40px 20px;">
                 <div class="card-body">
                   <div class="mb-4">
-                    <img src="/assets/img/logo/office.svg" width="60">
+                    <img src="/assets/img/logo/icomoon-free_office.svg" width="60">
                   </div>
 
                   <h5 class="card-title">{{ branch.name }}</h5>
@@ -54,7 +54,10 @@
         </div>
       </div>
 
-
+      <div class="buy-now">
+        <a href="#" target="_blank"
+          class="btn btn-outline-primary bg-white btn-buy-now waves-effect waves-light">View More</a>
+      </div>
       <!-- <div class="row mb-12 g-6">
                 <div class="col-md-12">
                     <div class="row">
@@ -99,9 +102,9 @@
             </div> -->
     </div>
     <!-- /Login -->
-    <img alt="mask" src="/assets/img/illustrations/auth-basic-forgot-password-mask-light.png"
+    <!-- <img alt="mask" src="/assets/img/illustrations/auth-basic-forgot-password-mask-light.png"
       class="authentication-image d-none d-lg-block"
       data-app-light-img="illustrations/auth-basic-forgot-password-mask-light.png"
-      data-app-dark-img="illustrations/auth-basic-forgot-password-mask-dark.png" style="visibility: visible;">
+      data-app-dark-img="illustrations/auth-basic-forgot-password-mask-dark.png" style="visibility: visible;"> -->
   </div>
 </div>

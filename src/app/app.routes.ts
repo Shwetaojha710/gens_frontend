@@ -64,9 +64,10 @@ import { BranchwiseComponent } from './branchwise/branchwise.component';
 import { TrackingComponent } from './tracking/tracking.component';
 import { LiveTrackingComponent } from './tracking/live-tracking/live-tracking.component';
 
-import { NewdashboardComponent } from './newdashboard/newdashboard.component';
+// import { NewdashboardComponent } from './newdashboard/newdashboard.component';
 
 import { CompanyRegComponent } from './company-reg/company-reg.component';
+import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 
 
 export const routes: Routes = [
@@ -74,6 +75,8 @@ export const routes: Routes = [
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
   { path: 'Home', component: LandingPageComponent },
   { path: 'login', component: LoginComponent },
+
+  { path: 'privacy-policy', component: PrivacyPolicyComponent },
 
   { path: 'branchwise', component: BranchwiseComponent },
 
