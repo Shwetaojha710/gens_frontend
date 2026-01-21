@@ -1,7 +1,0 @@
-.buy-now .btn-buy-now {
-    position: fixed;
-    z-index: 1080;
-    box-shadow: 0 1px 20px 1px #0663a9;
-    inset-block-end: 7rem;
-    inset-inline-end: 55.5rem;
-}

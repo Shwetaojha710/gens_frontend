@@ -68,8 +68,10 @@ export class AddComponent {
     await this.getDesignation(this.personalDetails.departmentId)
   }
   async getEmploymentTypes() {
+    let obj:any={}
     this.employmentTypes = [];
-    this.Documentervice.getEmploymentTypes().subscribe(data => {
+    obj["branchId"]=this.personalDetails['branchId']
+    this.Documentervice.getEmploymentTypes(obj).subscribe(data => {
       this.employmentTypes = data.data || [];
     });
   }
@@ -109,9 +111,8 @@ export class AddComponent {
   departmentDD: any = []
   async DepartmentDD() {
     this.departmentDD = []
-
-
-    this.Documentervice.Departmentsdd().subscribe({
+   let obj:any={}
+    this.Documentervice.Departmentsdd(obj).subscribe({
       next: (response: any) => {
         let message = response.message ? response.message : 'Data found Successfully';
 

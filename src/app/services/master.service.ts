@@ -24,8 +24,8 @@ export class MasterService {
   getDesignations(): Observable<any> {
     return this.http.post(`${this.baseUrl}getDesignations`, {});
   }
-  getEmploymentTypes(): Observable<any> {
-    return this.http.post(`${this.baseUrl}getEmpTypeDD`, {});
+  getEmploymentTypes(obj:any): Observable<any> {
+    return this.http.post(`${this.baseUrl}getEmpTypeDD`, obj);
   }
   addDepartment(dept: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}createDepartment`, dept);
@@ -39,8 +39,8 @@ export class MasterService {
   }
 
 
-  Departmentsdd(): Observable<any> {
-    return this.http.post(`${this.baseUrl}department-dd`, {});
+  Departmentsdd(obj:any): Observable<any> {
+    return this.http.post(`${this.baseUrl}department-dd`, obj);
   }
   designationDD(obj: any): Observable<any> {
     return this.http.post(`${this.baseUrl}designation-dd`, obj);

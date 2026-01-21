@@ -284,7 +284,6 @@ isAllSelected() {
     newObj = Object.assign({}, item)
     // newObj['id']=item.id
     newObj['status'] = status
-       newObj['ids']=item.id
     // newObj['employeeId']=item.employeeId
 
     this.master.UpdateApplyRegularizeStatus(newObj).subscribe({

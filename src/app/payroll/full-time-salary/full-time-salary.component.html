@@ -16,7 +16,7 @@
         <hr style="margin: 0rem 0 !important" />
         <div class="card-body">
           <div class="row g-3">
-            <div class="col-lg-3 col-sm-12">
+            <div class="col-3">
               <label for="defaultFormControlInput" class="form-label">Select Employee</label>
               <ng-select [items]="EmpList" bindLabel="label" bindValue="value" [(ngModel)]="obj['employeeId']"
                 [multiple]="false" placeholder="Select Employee" name="state" id="select2Danger" required
@@ -26,7 +26,7 @@
                 Employee Is required
               </small>
             </div>
-            <div class="col-lg-3 col-sm-12">
+            <div class="col-3">
               <label for="defaultFormControlInput" class="form-label">Select Month</label>
               <ng-select [items]="monthList" bindLabel="label" bindValue="value" [(ngModel)]="obj['month']"
                 [multiple]="false" placeholder="Select Month" name="state" id="select2Danger" required
@@ -36,7 +36,7 @@
                 Month Is Required
               </small>
             </div>
-            <div class="col-lg-3 col-sm-12">
+            <div class="col-3">
               <label for="defaultFormControlInput" class="form-label">Select Year</label>
               <ng-select [items]="yearList" bindLabel="label" bindValue="value" [(ngModel)]="obj['year']"
                 [multiple]="false" placeholder="Select Year" name="state" id="select2Danger" required
@@ -72,7 +72,6 @@
 
            <app-search-pagination [totalItems]="SalaryArr.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
           (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
-           <div class="table-responsive">
           <table class="table table-hover">
             <thead>
               <tr>
@@ -83,7 +82,7 @@
                 <th>Employee Id</th>
                 <th>Monthly Salary</th>
                 <th>Monthly Deduction</th>
-                <th>Bonus</th>
+                <!-- <th>Bonus</th> -->
                 <th>Net Pay</th>
                 <!--
                 <th>Total Leave Days</th>
@@ -106,7 +105,7 @@
                 </td>
                 <td>{{ item["TotalSalary"] }}</td>
                 <td>{{ item["totalDeduction"] }}</td>
-                <td>{{ item["bonusamount"] ||0 }}</td>
+                <!-- <td>{{ item["bonusamount"] ||0 }}</td> -->
                 <td>{{ item["basePay"] }}</td>
                 <!-- <td>{{ item["totalLeaveDays"] }}</td>
                 <td>{{ item["totalWorkingDays"] }}</td>
@@ -128,7 +127,6 @@
               </tr>
             </tbody>
           </table>
-          </div>
            </app-search-pagination>
 
         <!-- <div class="table-responsive text-nowrap">

@@ -22,10 +22,17 @@
       class="d-flex col-12 col-lg-5 col-xl-4 align-items-center authentication-bg position-relative py-sm-12 px-12 py-6">
       <div class="w-px-400 mx-auto pt-12 pt-lg-0">
         <h4 class="mb-1">Welcome to GENS HR Payroll</h4>
-        <p class="mb-5">Please sign in to your account</p>
+        <p class="mb-5">Please Register to your account</p>
 
-        <form id="formAuthentication" class="mb-5" [formGroup]="form" (ngSubmit)="login()">
+        <form id="formAuthentication" class="mb-5" [formGroup]="form" (ngSubmit)="register()">
 
+          <!-- Tenant Name -->
+          <div class="form-floating form-floating-outline mb-4">
+            <input type="text" class="form-control" id="company_name" formControlName="tenantName"
+              placeholder="Enter your company Name" autofocus />
+            <label for="company_name">Company Name</label>
+            <div class="invalid-feedback">Company Name is required.</div>
+          </div>
           <!-- Tenant ID -->
           <div class="form-floating form-floating-outline mb-4">
             <input type="text" class="form-control" id="company_code" formControlName="tenantId"
@@ -56,6 +63,14 @@
 
             <div class="invalid-feedback">Password is required.</div>
           </div>
+          <!-- Upload Logo -->
+          <div class="form-floating form-floating-outline mb-4">
+            <!-- <label for="formFile" class="form-label">Upload Profile Picture</label> -->
+            <input class="form-control" type="file" id="formFile" (change)="onFileChange($event)" accept="image/*"
+              #fileInput />
+            <label for="image">Upload</label>
+            <div class="invalid-feedback">Image is required.</div>
+          </div>
 
           <!-- Remember + Forgot -->
           <div class="mb-4 d-flex justify-content-between align-items-center mt-4">
@@ -69,9 +84,7 @@
             <!-- <a routerLink="['/emp-profile']" class="link-info" routerLinkActive="active">
               Forgot Password?
             </a> -->
-         <a (click)="goToEmpProfile()" class="link-info" style="cursor: pointer;">
-  Forgot Password?
-</a>
+
 
           </div>
 
@@ -84,8 +97,8 @@
 
         <p class="text-center">
           <span>New on our platform?</span>
-           <a (click)="gotoRegister()" class="link-info" style="cursor: pointer;">
-            <span> Create an account</span>
+          <a (click)="gotoLogin()" class="link-info" style="cursor: pointer;">
+            <span> Login</span>
           </a>
         </p>
       </div>
