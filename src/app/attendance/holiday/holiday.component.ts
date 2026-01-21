@@ -29,6 +29,7 @@ export class HolidayComponent {
     this.createFlag = false
 
   }
+  yearList: any = [];
   status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
   HolidayList: any = [];
 
@@ -45,12 +46,34 @@ export class HolidayComponent {
 
     this.notyf = new Notyf();
   }
+  NewObj:any={}
   baseurl: any;
   async ngOnInit() {
     //  this.baseurl = localStorage.getItem('base_url')?.replace(/["\\,]/g, '') || '';
     this.baseurl = this.master.getBaseUrl();
     await this.fetchHoliday();
     await this.fetchHolidaytype()
+      await this.getYear()
+    const year = new Date().getFullYear()
+   this.NewObj['year'] = this.yearList.find((item: any) => item.value == year);
+  }
+   async getYear() {
+    this.yearList = []
+    this.master.getAttendanceYear().subscribe((data: { [x: string]: any; data: any; }) => {
+      console.log(data)
+      if (data['status'] == true) {
+        // this.notyf.success(data['message']);
+        this.yearList = data.data;
+
+      }
+      else if (data['status'] == 'expired') {
+        this.router.navigate(['login'])
+      }
+      else {
+        this.notyf.error(data['message']);
+      }
+    });
+
   }
   pageSize = 5;
   currentPage = 1;
@@ -83,9 +106,6 @@ export class HolidayComponent {
   searchText: any = ''
 
   applyFilters() {
-
-
-
     const value = this.searchTerm || '';
     this.searchText = value.trim();
 
@@ -115,7 +135,8 @@ export class HolidayComponent {
   async fetchHoliday() {
     this.HolidayList = []
     this.originalList = []
-    this.attendanceService.getHolidayList().subscribe(data => {
+
+    this.attendanceService.getHolidayList(this.NewObj).subscribe(data => {
       if (data['status'] == true) {
         // this.notyf.success(data['message']);
 

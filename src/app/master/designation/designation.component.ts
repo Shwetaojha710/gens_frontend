@@ -94,9 +94,9 @@ export class DesignationComponent {
   }
   async designationdd() {
     this.departmentDD = []
+    let obj:any={}
 
-
-    this.master.Departmentsdd().subscribe({
+    this.master.Departmentsdd(obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
 

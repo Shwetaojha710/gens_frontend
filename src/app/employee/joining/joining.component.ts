@@ -45,13 +45,14 @@ export class JoiningComponent {
     { value: 'Other', label: 'Other' }
   ]
   createFlag: boolean = false;
-  baseurl:any;
+  baseurl: any;
   async ngOnInit() {
     await this.countrydd();
     await this.loadEmployees();
     await this.getEmploymentTypes();
     await this.DepartmentDD()
     await this.applyFilters()
+    await this. getBranchDD()
     this.baseurl = this.master.getBaseUrl();
   }
 
@@ -61,7 +62,7 @@ export class JoiningComponent {
   searchTerm = '';
   onSearch(term: string) {
     if (!term) {
-      this.searchText=''
+      this.searchText = ''
       this.loadEmployees()
     } else {
       this.searchTerm = term.toLowerCase();
@@ -103,8 +104,10 @@ export class JoiningComponent {
   }
 
   async getEmploymentTypes() {
+    let obj:any={}
+    obj["branchId"]=this.personalDetails["branchId"]
     this.employmentTypes = [];
-    this.master.getEmploymentTypes().subscribe(data => {
+    this.master.getEmploymentTypes(obj).subscribe(data => {
       this.employmentTypes = data.data || [];
     });
   }
@@ -184,7 +187,34 @@ export class JoiningComponent {
     }
   }
 
+    branchList: any
+stats:any
+  getBranchDD() {
+    this.branchList = []
+    this.master.BranchDD().subscribe((res) => {
+      if (res.status == true) {
+        // this.notyf.success(res.message || 'Dashboard data loaded successfully')
+        this.stats = res.data.stats;
+        this.branchList = res.data
+      } else if (res.status == 'expired') {
+        this.router.navigate(['login'])
+      } else {
+        this.notyf.error(res.message || 'Something went wrong')
+      }
+    });
+  }
 
+   async onBranchChange(branchId: any) {
+    console.log('Selected Branch ID:', branchId);
+    this.personalDetails['branchId']=branchId
+    this.personalDetails['departmentId']=null
+    this.personalDetails['designationId']=null
+    this.personalDetails['reportingPersonId']=null
+    this.personalDetails['empType']=null
+    await this.DepartmentDD()
+    // await this.designationDD()
+    await this.getEmploymentTypes()
+  }
 
   preventMoreThanTenDigits(event: KeyboardEvent, value: string): void {
     const isDigit = /^[0-9]$/.test(event.key);
@@ -207,19 +237,36 @@ export class JoiningComponent {
   }
   personalDetails: any = {}
   submitForm() {
-    if (
+    // if (
+    //   !this.validateField(this.personalDetails.firstName, 'First Name') ||
+    //   !this.validateField(this.personalDetails.lastName, 'Last Name') ||
+    //   !this.validateField(this.personalDetails.email, 'Email') ||
+    //   !this.validateField(this.personalDetails.mobile, 'Mobile Number') ||
+    //   !this.validateField(this.personalDetails.adhaarNo, 'Aadhaar Number') ||
+    //   !this.validateField(this.personalDetails.dateOfBirth, 'Date of Birth') ||
+    //   !this.validateField(this.personalDetails.currentAddress, 'Current Address') ||
+    //   !this.validateField(this.personalDetails.permanentAddress, 'Permanent Address') ||
+    //   !this.validateField(this.personalDetails.city, 'City') ||
+    //   !this.validateField(this.personalDetails.gender, 'Gender') ||
+    //   !this.validateField(this.personalDetails.martialStatus, 'Marital Status') ||
+    //   !this.validateField(this.personalDetails.shift_id, 'Shift')
+    // ) {
+    //   return;
+    // }
+
+     if (
       !this.validateField(this.personalDetails.firstName, 'First Name') ||
       !this.validateField(this.personalDetails.lastName, 'Last Name') ||
       !this.validateField(this.personalDetails.email, 'Email') ||
       !this.validateField(this.personalDetails.mobile, 'Mobile Number') ||
-      !this.validateField(this.personalDetails.adhaarNo, 'Aadhaar Number') ||
-      !this.validateField(this.personalDetails.dateOfBirth, 'Date of Birth') ||
-      !this.validateField(this.personalDetails.currentAddress, 'Current Address') ||
-      !this.validateField(this.personalDetails.permanentAddress, 'Permanent Address') ||
-      !this.validateField(this.personalDetails.city, 'City') ||
-      !this.validateField(this.personalDetails.gender, 'Gender') ||
-      !this.validateField(this.personalDetails.martialStatus, 'Marital Status') ||
-      !this.validateField(this.personalDetails.shift_id, 'Shift')
+      // !this.validateField(this.personalDetails.adhaarNo, 'Aadhaar Number') ||
+      !this.validateField(this.personalDetails.dateOfBirth, 'Date of Birth')
+      // !this.validateField(this.personalDetails.currentAddress, 'Current Address') ||
+      // !this.validateField(this.personalDetails.permanentAddress, 'Permanent Address') ||
+      // !this.validateField(this.personalDetails.city, 'City') ||
+      // !this.validateField(this.personalDetails.gender, 'Gender') ||
+      // !this.validateField(this.personalDetails.martialStatus, 'Marital Status') ||
+      // !this.validateField(this.personalDetails.shift_id, 'Shift')
     ) {
       return;
     }
@@ -229,17 +276,17 @@ export class JoiningComponent {
       return;
     }
 
-    const aadhaarRaw = this.personalDetails.adhaarNo.replace(/\D/g, '');
-    if (aadhaarRaw.length !== 12) {
-      this.notyf.error('Please enter a valid 12 digit Aadhaar number');
-      return;
-    }
+    // const aadhaarRaw = this.personalDetails.adhaarNo.replace(/\D/g, '');
+    // if (aadhaarRaw.length !== 12) {
+    //   this.notyf.error('Please enter a valid 12 digit Aadhaar number');
+    //   return;
+    // }
     const dob = new Date(this.personalDetails.dateOfBirth);
     const formattedDob = `${dob.getDate().toString().padStart(2, '0')}/${(dob.getMonth() + 1).toString().padStart(2, '0')}/${dob.getFullYear()}`;;
     let obj: any = {}
     obj = Object.assign({}, this.personalDetails);
     obj.dateOfBirth = formattedDob;
-    obj.adhaarNo = aadhaarRaw
+    // obj.adhaarNo = aadhaarRaw
     this.employeeService.createEmp(obj).subscribe(
       (response) => {
 
@@ -265,7 +312,7 @@ export class JoiningComponent {
       },
       (error) => {
         console.error('Error adding employee:', error);
-        let errorMessage=error?.error?.message?error?.error?.message:error?.message
+        let errorMessage = error?.error?.message ? error?.error?.message : error?.message
         this.notyf.error(errorMessage);
         // alert('Failed to add employee. Please try again.');
       }
@@ -277,10 +324,12 @@ export class JoiningComponent {
   }
   departmentDD: any = []
   async DepartmentDD() {
+
     this.departmentDD = []
+    let obj:any={}
+    obj['branchId'] = this.personalDetails['branchId'] ? this.personalDetails['branchId']  :null
 
-
-    this.master.Departmentsdd().subscribe({
+    this.master.Departmentsdd(obj).subscribe({
       next: (response: any) => {
 
         let message = response.message ? response.message : 'Data found Successfully';
@@ -292,7 +341,7 @@ export class JoiningComponent {
           this.departmentDD = response.data;
           // this.notyf.success(message)
 
-          this.back()
+          // this.back()
         }
         else if (response.status === "expired") {
           this.router.navigate(["login"]);
@@ -314,6 +363,7 @@ export class JoiningComponent {
     this.designationDD = []
     let obj: any = {}
     obj['department'] = departmentId?.value || departmentId
+    obj['branchId'] = this.personalDetails['branchId'] ? this.personalDetails['branchId']  :null
     this.master.designationDD(obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
@@ -324,7 +374,7 @@ export class JoiningComponent {
           this.designationDD = response.data;
 
         }
-        else if (response.status === "expired") {
+        else if (response.status == "expired") {
           this.router.navigate(["login"]);
         }
 
@@ -353,35 +403,43 @@ export class JoiningComponent {
         // this.notyf.success(response.message || 'Employees loaded successfully');
         this.employees = [];
         this.cardData = response.data.cardData
-        if(this.activeFlag==true){
-        this.employees = response.data.formattedEmps || [];
-        this.originalList = response.data.formattedEmps || [];
-        this.employeeList = response.data?.formattedEmps?.map((item: any) => ({
-          value: item.id,
-          label: `${item?.empCode}-${item.firstName} ${item?.lastName || ''}`
-        }));
+        if (this.activeFlag == true) {
+          this.employees = response.data.formattedEmps || [];
+          this.originalList = response.data.formattedEmps || [];
+          this.employeeList = response.data?.formattedEmps?.map((item: any) => ({
+            value: item.id,
+            label: `${item?.empCode}-${item.firstName} ${item?.lastName || ''}`
+          }));
         }
-        else if(this.inActiveFlag==true){
-           this.employees = response.data.formattedInactivemps || [];
-        this.originalList = response.data.formattedInactivemps || [];
-        this.employeeList = response.data?.formattedInactivemps?.map((item: any) => ({
-          value: item.id,
-          label: `${item?.empCode}-${item.firstName} ${item?.lastName || ''}`
-        }));
+        else if (this.inActiveFlag == true) {
+          this.employees = response.data.formattedInactivemps || [];
+          this.originalList = response.data.formattedInactivemps || [];
+          this.employeeList = response.data?.formattedInactivemps?.map((item: any) => ({
+            value: item.id,
+            label: `${item?.empCode}-${item.firstName} ${item?.lastName || ''}`
+          }));
+        }
+        else if (this.newJoinerFlag == true) {
+          this.employees = response.data.formattednewJoinermps || [];
+          this.originalList = response.data.formattednewJoinermps || [];
+          this.employeeList = response.data?.formattednewJoinermps?.map((item: any) => ({
+            value: item.id,
+            label: `${item?.empCode}-${item.firstName} ${item?.lastName || ''}`
+          }));
         }
 
         this.employees = this.employees.map((item: any, index: any) => {
           return {
             ...item,
             si_no: index + 1,
-            profileImage:  item.profileImage ? `${this.baseurl}${item?.profileImage}` : item.gender =='Female'?"../../assets/img/avatars/2.png":'../../assets/img/avatars/1.png'
+            profileImage: item.profileImage ? `${this.baseurl}${item?.profileImage}` : item.gender == 'Female' ? "../../assets/img/avatars/2.png" : '../../assets/img/avatars/1.png'
           }
         })
         this.originalList = this.originalList.map((item: any, index: any) => {
           return {
             ...item,
             si_no: index + 1,
-           profileImage:  item.profileImage ? `${this.baseurl}${item?.profileImage}` : item.gender =='Female'?"../../assets/img/avatars/2.png":'../../assets/img/avatars/1.png'
+            profileImage: item.profileImage ? `${this.baseurl}${item?.profileImage}` : item.gender == 'Female' ? "../../assets/img/avatars/2.png" : '../../assets/img/avatars/1.png'
 
           }
         })
@@ -405,7 +463,7 @@ export class JoiningComponent {
     );
 
   }
-    status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
+  status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
 
   async update(data: any) {
 
@@ -424,18 +482,27 @@ export class JoiningComponent {
     this.updateFlag = true;
   }
 
-  inActiveFlag:any=false
-  activeFlag:any=true
+  inActiveFlag: any = false
+  activeFlag: any = true
+  newJoinerFlag: any = false
 
-  async checkStatus(){
-   this.inActiveFlag=true
-   this.activeFlag=false
-   await this.loadEmployees()
+  async checkStatus() {
+    this.inActiveFlag = true
+    this.activeFlag = false
+    this.newJoinerFlag = false
+    await this.loadEmployees()
   }
-  async checkActiveStatus(){
-   this.inActiveFlag=false
-   this.activeFlag=true
-   await this.loadEmployees()
+  async checknewJoiner() {
+    this.inActiveFlag = false
+    this.activeFlag = false
+    this.newJoinerFlag = true
+    await this.loadEmployees()
+  }
+  async checkActiveStatus() {
+    this.inActiveFlag = false
+    this.newJoinerFlag = false
+    this.activeFlag = true
+    await this.loadEmployees()
   }
   updateform() {
     this.createFlag = false;
@@ -475,8 +542,8 @@ export class JoiningComponent {
     )
 
   }
-    enableDisableLoc(data: any,type:any) {
-    const Enable= data?.isLocation ==true ? 'Disable':'Enable'
+  enableDisableLoc(data: any, type: any) {
+    const Enable = data?.isLocation == true ? 'Disable' : 'Enable'
 
     Swal.fire({
       title: "Are you sure?",
@@ -488,7 +555,7 @@ export class JoiningComponent {
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
-        this.activeLocation(data,type);
+        this.activeLocation(data, type);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
 
       }
@@ -559,13 +626,13 @@ export class JoiningComponent {
     this.personalDetails.panNo = this.personalDetails.panNo?.toUpperCase() || '';
   }
 
-  activeLocation(data:any,type:any){
-   let obj = Object.assign({},data)
-   if(type=="attendance"){
-obj['isofflineAtt']=!obj['isofflineAtt']
-   }else{
-    obj['isLocation']=!obj['isLocation']
-   }
+  activeLocation(data: any, type: any) {
+    let obj = Object.assign({}, data)
+    if (type == "attendance") {
+      obj['isofflineAtt'] = !obj['isofflineAtt']
+    } else {
+      obj['isLocation'] = !obj['isLocation']
+    }
 
     this.employeeService.activeLocation(obj).subscribe(
       (response) => {

@@ -25,8 +25,8 @@ getCountry(): Observable<any[]> {
   return this.http.post<any[]>(`${this.baseUrl}getCountryDD`, {});
 }
 
-getEmploymentTypes(): Observable<any[]> {
-  return this.http.post<any[]>(`${this.baseUrl}getemptypesDD`, {});
+getEmploymentTypes(obj:any): Observable<any[]> {
+  return this.http.post<any[]>(`${this.baseUrl}getemptypesDD`, obj);
 }
 getStates(data: any): Observable<any> {
   return this.http.post(`${this.baseUrl}getStateDD`, data);

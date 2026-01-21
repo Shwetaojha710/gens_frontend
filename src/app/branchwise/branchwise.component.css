@@ -1,3 +1,4 @@
+
 .buy-now .btn-buy-now {
     position: fixed;
     z-index: 1080;
@@ -113,3 +114,4 @@
 .bg-pattern {
     background: radial-gradient(circle at 30% 40%, rgba(110, 66, 193, 0.04), transparent 50%), radial-gradient(circle at 70% 60%, rgba(66, 135, 245, 0.04), transparent 50%);
 } */
+

@@ -12,35 +12,35 @@
         <hr style="margin: 0rem 0 !important" />
         <div class="card-body">
           <div class="row g-2">
-            <div class="col-lg-3 col-sm-12">
+            <div class="col-3">
               <label for="defaultFormControlInput" class="form-label">Select Employee</label>
               <ng-select [items]="EmpList" bindLabel="label" bindValue="value" [(ngModel)]="obj['employeeId']"
                 [multiple]="false" placeholder="Select Employee" name="state" id="select2Danger" required
                 #enCashableRef="ngModel">
               </ng-select>
             </div>
-            <div class="col-lg-3 col-sm-12">
+            <div class="col-3">
               <label for="defaultFormControlInput" class="form-label">From Date</label>
               <input type="date" class="form-control" id="defaultFormControlInput" placeholder="Select From Date"
                 [(ngModel)]="obj['fromDate']" aria-describedby="defaultFormControlHelp" required />
 
 
             </div>
-            <div class="col-lg-3 col-sm-12">
+            <div class="col-3">
               <label for="defaultFormControlInput" class="form-label">To Date</label>
               <input type="date" class="form-control" id="defaultFormControlInput" placeholder="Select To Date"
                 [(ngModel)]="obj['toDate']" aria-describedby="defaultFormControlHelp" required [min]="getToDateMin()" />
 
 
             </div>
-            <div class="col-lg-3 col-sm-12">
+            <div class="col-3">
               <label for="defaultFormControlInput" class="form-label">Amount</label>
               <input type="number" class="form-control" id="defaultFormControlInput" placeholder="Enter Amount"
                 [(ngModel)]="obj['amount']" aria-describedby="defaultFormControlHelp" required />
 
 
             </div>
-            <div class="col-lg-3 col-sm-12">
+            <div class="col-3">
               <label for="formFile" class="form-label">Document</label>
               <!-- <input #fileInput class="form-control" type="file" id="formFile" type="file"
                 (change)="onFileChange($event)" accept="image/*" /> -->
@@ -73,13 +73,13 @@
 
 
 
-            <div class="col-lg-3 col-sm-12" *ngIf="updateFlag">
+            <div class="col-3" *ngIf="updateFlag">
               <label for="defaultFormControlInput" class="form-label">Status</label>
               <ng-select [items]="status" bindLabel="label" bindValue="value" [(ngModel)]="obj['status']"
                 [multiple]="false" placeholder="Select Status" name="status" id="select2Danger">
               </ng-select>
             </div>
-            <div class="col-lg-3 col-sm-12">
+            <div class="col-3">
               <label for="defaultFormControlInput" class="form-label">Description</label>
               <textarea class="form-control" rows="4" placeholder="Enter Description" [(ngModel)]="obj.remark"
                 name="address"></textarea>
@@ -116,7 +116,6 @@
         <app-search-pagination [totalItems]="ReimbursementList.length" [pageSize]="itemsPerPage"
           [currentPage]="currentPage" (search)="onSearch($event)" (pageChange)="onPageChange($event)"
           (pageSizeChange)="onPageSizeChange($event)">
-  <div class="table-responsive">
           <table class="table table-striped dataTable">
             <thead>
               <tr>
@@ -179,7 +178,6 @@
               </tr>
             </tbody>
           </table>
-</div>
         </app-search-pagination>
 
       </div>

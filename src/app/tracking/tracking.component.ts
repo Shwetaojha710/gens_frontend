@@ -68,50 +68,35 @@ export class TrackingComponent implements OnInit, OnDestroy {
     this.isLiveTrackingEnabled = false;
     this.stopLiveTracking();
 
-    if (this.map) {
-      try {
-        this.map.remove();
-        this.map = null as any;
-      } catch (e) {
-        console.warn('Error removing map:', e);
-      }
-    }
-
-    this.fullScreenControl = null;
-    this.trafficControl = null;
-    this.zoomControl = null;
-    this.trafficLayer = null;
-    this.isTrafficEnabled = false;
-    this.markers = [];
-    this.arrowMarkers = [];
-
     setTimeout(() => {
-      const checkMapElement = () => {
-        const mapElement = document.getElementById('map');
-        if (!mapElement) {
-          console.error('Map container not found');
-          return;
-        }
+      const mapElement = document.getElementById('map');
+      if (!mapElement) {
+        console.error('Map container not found');
+        return;
+      }
 
-        if (mapElement.offsetWidth === 0 || mapElement.offsetHeight === 0) {
-          setTimeout(checkMapElement, 50);
-          return;
-        }
-
+      if (!this.map) {
         this.initMap();
-        
         setTimeout(() => {
-          if (this.map) {
-            this.map.invalidateSize();
-            setTimeout(() => {
-              this.loadAndPlotData(user);
-            }, 100);
-          }
+          this.loadAndPlotData(user);
         }, 200);
-      };
-
-      checkMapElement();
-    }, 150);
+      } else {
+        this.clearMap();
+        if (!this.fullScreenControl) {
+          this.addFullScreenControl();
+        }
+        if (!this.trafficControl) {
+          this.addTrafficControl();
+        }
+        if (!this.zoomControl) {
+          this.addCustomZoomControl();
+        }
+        this.map.invalidateSize();
+        setTimeout(() => {
+          this.loadAndPlotData(user);
+        }, 100);
+      }
+    }, 100);
   }
 
   clearMap() {
@@ -265,17 +250,17 @@ export class TrackingComponent implements OnInit, OnDestroy {
     if (!aadhaar || aadhaar.length < 4) {
       return aadhaar || '';
     }
-    
+
     const cleaned = aadhaar.replace(/\s+/g, '');
-    
+
     if (cleaned.length <= 4) {
       return 'XXXX XXXX ' + cleaned;
     }
-    
+
     const first4 = cleaned.substring(0, 4);
     const last4 = cleaned.substring(cleaned.length - 4);
     const middle = 'XXXX';
-    
+
     return `${first4} ${middle} ${last4}`;
   }
   activeTrackingUsers() {
@@ -320,18 +305,8 @@ export class TrackingComponent implements OnInit, OnDestroy {
       return;
     }
 
-    if (mapElement.offsetWidth === 0 || mapElement.offsetHeight === 0) {
-      console.warn('Map container has no dimensions, retrying...');
-      setTimeout(() => this.initMap(), 100);
-      return;
-    }
-
     if (this.map) {
-      try {
-        this.map.remove();
-      } catch (e) {
-        console.warn('Error removing existing map:', e);
-      }
+      this.map.remove();
     }
 
     this.map = L.map('map', {
@@ -353,7 +328,7 @@ export class TrackingComponent implements OnInit, OnDestroy {
       if (this.map) {
         this.map.invalidateSize();
       }
-    }, 150);
+    }, 100);
   }
 
   addFullScreenControl() {
@@ -370,15 +345,15 @@ export class TrackingComponent implements OnInit, OnDestroy {
         link.title = 'Toggle Full Screen';
         link.setAttribute('role', 'button');
         link.setAttribute('aria-label', 'Toggle Full Screen');
-        
+
         const icon = L.DomUtil.create('i', 'fas', link);
         icon.className = `fas ${self.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
-        
+
         const updateIcon = () => {
           icon.className = `fas ${self.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
           link.setAttribute('title', self.isFullScreen ? 'Exit Full Screen' : 'Toggle Full Screen');
         };
-        
+
         L.DomEvent.disableClickPropagation(container);
         L.DomEvent.on(link, 'click', (e) => {
           L.DomEvent.stopPropagation(e);
@@ -411,14 +386,14 @@ export class TrackingComponent implements OnInit, OnDestroy {
         link.title = 'Toggle Traffic';
         link.setAttribute('role', 'button');
         link.setAttribute('aria-label', 'Toggle Traffic');
-        
+
         const icon = L.DomUtil.create('i', 'fas', link);
         icon.className = `fas fa-traffic-light`;
         if (self.isTrafficEnabled) {
           link.style.backgroundColor = '#ffc107';
           link.style.color = '#000';
         }
-        
+
         L.DomEvent.disableClickPropagation(container);
         L.DomEvent.on(link, 'click', (e) => {
           L.DomEvent.stopPropagation(e);
@@ -454,15 +429,15 @@ export class TrackingComponent implements OnInit, OnDestroy {
         const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
         container.style.display = 'flex';
         container.style.flexDirection = 'column';
-        
+
         const zoomInLink = L.DomUtil.create('a', 'leaflet-control-zoom-in', container);
         zoomInLink.href = '#';
         zoomInLink.title = 'Zoom In';
         zoomInLink.setAttribute('role', 'button');
         zoomInLink.setAttribute('aria-label', 'Zoom In');
-        
+
         const zoomInIcon = L.DomUtil.create('i', 'fas fa-plus', zoomInLink);
-        
+
         L.DomEvent.disableClickPropagation(zoomInLink);
         L.DomEvent.on(zoomInLink, 'click', (e) => {
           L.DomEvent.stopPropagation(e);
@@ -475,9 +450,9 @@ export class TrackingComponent implements OnInit, OnDestroy {
         zoomOutLink.title = 'Zoom Out';
         zoomOutLink.setAttribute('role', 'button');
         zoomOutLink.setAttribute('aria-label', 'Zoom Out');
-        
+
         const zoomOutIcon = L.DomUtil.create('i', 'fas fa-minus', zoomOutLink);
-        
+
         L.DomEvent.disableClickPropagation(zoomOutLink);
         L.DomEvent.on(zoomOutLink, 'click', (e) => {
           L.DomEvent.stopPropagation(e);
@@ -547,7 +522,7 @@ export class TrackingComponent implements OnInit, OnDestroy {
 
   toggleTraffic() {
     this.isTrafficEnabled = !this.isTrafficEnabled;
-    
+
     if (!this.map) {
       return;
     }
@@ -567,9 +542,9 @@ export class TrackingComponent implements OnInit, OnDestroy {
         pane: 'overlayPane',
         zIndex: 1000
       });
-      
+
       this.trafficLayer.addTo(this.map);
-      
+
       setTimeout(() => {
         if (this.map) {
           this.map.invalidateSize();
@@ -593,221 +568,235 @@ export class TrackingComponent implements OnInit, OnDestroy {
       }
     }
   }
-// async loadAndPlotData(user: any) {
-//   const employeeId = user ? user.id : null;
-//   const payload: any = {};
+  // async loadAndPlotData(user: any) {
+  //   const employeeId = user ? user.id : null;
+  //   const payload: any = {};
 
-//   if (employeeId) {
-//     payload.employeeId = employeeId;
-//   }
+  //   if (employeeId) {
+  //     payload.employeeId = employeeId;
+  //   }
 
-//   this.locationService.getLatestLocations(payload).subscribe(async res => {
-//     const points: any[] = res?.data || [];
-//     if (!points.length) return;
+  //   this.locationService.getLatestLocations(payload).subscribe(async res => {
+  //     const points: any[] = res?.data || [];
+  //     if (!points.length) return;
 
-//     this.clearMap();
+  //     this.clearMap();
 
-//     const bounds = L.latLngBounds([]);
-//     const polylineColor = '#2c3e50';
+  //     const bounds = L.latLngBounds([]);
+  //     const polylineColor = '#2c3e50';
 
-//     // ✅ Sort points
-//     const sortedPoints = [...points].sort(
-//       (a, b) => a.timestamp - b.timestamp
-//     );
+  //     // ✅ Sort points
+  //     const sortedPoints = [...points].sort(
+  //       (a, b) => a.timestamp - b.timestamp
+  //     );
 
-//     // ✅ Draw polyline
-//     const route: L.LatLngExpression[] = sortedPoints.map(p => [
-//       p.coords.latitude,
-//       p.coords.longitude
-//     ]);
+  //     // ✅ Draw polyline
+  //     const route: L.LatLngExpression[] = sortedPoints.map(p => [
+  //       p.coords.latitude,
+  //       p.coords.longitude
+  //     ]);
 
-//     this.polyline = L.polyline(route, {
-//       color: polylineColor,
-//       weight: 6,
-//       opacity: 0.9
-//     }).addTo(this.map);
+  //     this.polyline = L.polyline(route, {
+  //       color: polylineColor,
+  //       weight: 6,
+  //       opacity: 0.9
+  //     }).addTo(this.map);
 
-//     bounds.extend(this.polyline.getBounds());
+  //     bounds.extend(this.polyline.getBounds());
 
-//     // =====================================================
-//     // 🔥 ADD LOCATION NAME FOR EACH POLYLINE POINT (HERE)
-//     // =====================================================
-//     for (const point of sortedPoints) {
-//       const latLng: L.LatLngExpression = [
-//         point.coords.latitude,
-//         point.coords.longitude
-//       ];
+  //     // =====================================================
+  //     // 🔥 ADD LOCATION NAME FOR EACH POLYLINE POINT (HERE)
+  //     // =====================================================
+  //     for (const point of sortedPoints) {
+  //       const latLng: L.LatLngExpression = [
+  //         point.coords.latitude,
+  //         point.coords.longitude
+  //       ];
 
-//       // 🔥 Reverse geocode
-//       const locationName = await this.addLocationName(point);
+  //       // 🔥 Reverse geocode
+  //       const locationName = await this.addLocationName(point);
 
-//       const marker = L.circleMarker(latLng, {
-//         radius: 5,
-//         color: '#2c3e50',
-//         fillColor: '#3498db',
-//         fillOpacity: 1
-//       }).addTo(this.map);
+  //       const marker = L.circleMarker(latLng, {
+  //         radius: 5,
+  //         color: '#2c3e50',
+  //         fillColor: '#3498db',
+  //         fillOpacity: 1
+  //       }).addTo(this.map);
 
-//       // Tooltip (hover)
-//       marker.bindTooltip(
-//         `<b>Location:</b><br>${locationName}`,
-//         { sticky: true }
-//       );
+  //       // Tooltip (hover)
+  //       marker.bindTooltip(
+  //         `<b>Location:</b><br>${locationName}`,
+  //         { sticky: true }
+  //       );
 
-//       // Popup (click)
-//       marker.bindPopup(`
-//         <b>Location</b><br/>
-//         ${locationName}<br/><br/>
-//         <b>Lat:</b> ${point.coords.latitude.toFixed(6)}<br/>
-//         <b>Lng:</b> ${point.coords.longitude.toFixed(6)}<br/>
-//         <b>Speed:</b> ${point.coords.speed} m/s<br/>
-//         <b>Time:</b> ${new Date(point.timestamp).toLocaleString()}
-//       `);
+  //       // Popup (click)
+  //       marker.bindPopup(`
+  //         <b>Location</b><br/>
+  //         ${locationName}<br/><br/>
+  //         <b>Lat:</b> ${point.coords.latitude.toFixed(6)}<br/>
+  //         <b>Lng:</b> ${point.coords.longitude.toFixed(6)}<br/>
+  //         <b>Speed:</b> ${point.coords.speed} m/s<br/>
+  //         <b>Time:</b> ${new Date(point.timestamp).toLocaleString()}
+  //       `);
 
-//       bounds.extend(latLng);
-//     }
+  //       bounds.extend(latLng);
+  //     }
 
-//     // ✅ START marker
-//     const start = sortedPoints[0];
-//     const startMarker = L.marker(
-//       [start.coords.latitude, start.coords.longitude],
-//       { icon: this.createCustomIcon('#28a745', 'START') }
-//     ).addTo(this.map);
+  //     // ✅ START marker
+  //     const start = sortedPoints[0];
+  //     const startMarker = L.marker(
+  //       [start.coords.latitude, start.coords.longitude],
+  //       { icon: this.createCustomIcon('#28a745', 'START') }
+  //     ).addTo(this.map);
 
-//     // ✅ END marker
-//     if (sortedPoints.length > 1) {
-//       const end = sortedPoints[sortedPoints.length - 1];
-//       const endMarker = L.marker(
-//         [end.coords.latitude, end.coords.longitude],
-//         { icon: this.createCustomIcon('#dc3545', 'END') }
-//       ).addTo(this.map);
-//     }
+  //     // ✅ END marker
+  //     if (sortedPoints.length > 1) {
+  //       const end = sortedPoints[sortedPoints.length - 1];
+  //       const endMarker = L.marker(
+  //         [end.coords.latitude, end.coords.longitude],
+  //         { icon: this.createCustomIcon('#dc3545', 'END') }
+  //       ).addTo(this.map);
+  //     }
 
-//     if (bounds.isValid()) {
-//       this.map.fitBounds(bounds, { padding: [50, 50] });
-//     }
-//   });
-// }
+  //     if (bounds.isValid()) {
+  //       this.map.fitBounds(bounds, { padding: [50, 50] });
+  //     }
+  //   });
+  // }
 
   loadAndPlotData(user: any) {
-  const employeeId = user ? user.id : null;
-  const payload: any = {};
+    const employeeId = user ? user.id : null;
+    const payload: any = {};
 
-  if (employeeId) {
-    payload.employeeId = employeeId;
-  }
-
-  this.locationService.getLatestLocations(payload).subscribe(res => {
-    const points: any = res?.data || [];
-    if (!points.length) return;
-
-    this.clearMap();
-
-    const polylineColor = '#2c3e50';
-    const bounds = L.latLngBounds([]);
-
-    const sortedPoints = [...points].sort(
-      (a, b) => a.timestamp - b.timestamp
-    );
-
-    const route: L.LatLngExpression[] = sortedPoints.map(p => [
-      p.coords.latitude,
-      p.coords.longitude
-    ]);
-
-    this.polyline = L.polyline(route, {
-      color: polylineColor,
-      weight: 6,
-      opacity: 0.9,
-      smoothFactor: 1.0,
-      lineCap: 'round',
-      lineJoin: 'round'
-    }).addTo(this.map);
-
-    bounds.extend(this.polyline.getBounds());
-
-    const startPoint = sortedPoints[0];
-    const startIcon = this.createCustomIcon('#28a745', 'START');
-
-    const startMarker = L.marker(
-      [startPoint.coords.latitude, startPoint.coords.longitude],
-      { icon: startIcon }
-    ).addTo(this.map);
-
-    this.bindMarkerPopupWithAddress(startMarker, 'START', startPoint.coords.latitude, startPoint.coords.longitude, startPoint.timestamp);
-
-    this.markers.push(startMarker);
-    bounds.extend([startPoint.coords.latitude, startPoint.coords.longitude]);
-
-    if (sortedPoints.length > 1) {
-      const endPoint = sortedPoints[sortedPoints.length - 1];
-      const endIcon = this.createCustomIcon('#dc3545', 'END');
-
-      const endMarker = L.marker(
-        [endPoint.coords.latitude, endPoint.coords.longitude],
-        { icon: endIcon }
-      ).addTo(this.map);
-
-      this.bindMarkerPopupWithAddress(endMarker, 'END', endPoint.coords.latitude, endPoint.coords.longitude, endPoint.timestamp);
-
-      this.markers.push(endMarker);
-      bounds.extend([endPoint.coords.latitude, endPoint.coords.longitude]);
+    if (employeeId) {
+      payload.employeeId = employeeId;
+    }
+    if (this.obj.startDate) {
+      payload.start_date = this.obj.startDate
     }
 
-    const totalSegments = sortedPoints.length - 1;
-    const arrowSpacing = Math.max(2, Math.floor(totalSegments / 8));
+    if (this.obj.endDate) {
+      payload.end_date = this.obj.endDate
+    }
 
-    for (let i = 0; i < totalSegments; i += arrowSpacing) {
-      const curr = sortedPoints[i];
-      const next = sortedPoints[i + 1];
+    this.locationService.getLatestLocations(payload).subscribe(res => {
+      // Handle no data response
+      if (!res?.status || !Array.isArray(res?.data) || res.data.length == 0) {
+        this.clearMap();
+        // this.notfy
+        console.warn(res?.message || 'No location data available');
+        return;
+      }
+      const points: any = res?.data || [];
+      if (!points.length) return;
 
-      const bearing = this.calculateBearing(
-        curr.coords.latitude,
-        curr.coords.longitude,
-        next.coords.latitude,
-        next.coords.longitude
+      this.clearMap();
+
+      const polylineColor = '#2c3e50';
+      const bounds = L.latLngBounds([]);
+
+      const sortedPoints = [...points].sort(
+        (a, b) => a.timestamp - b.timestamp
       );
 
-      const ratio = 0.6;
-      const arrowLat =
-        curr.coords.latitude +
-        (next.coords.latitude - curr.coords.latitude) * ratio;
-      const arrowLng =
-        curr.coords.longitude +
-        (next.coords.longitude - curr.coords.longitude) * ratio;
+      const route: L.LatLngExpression[] = sortedPoints.map(p => [
+        p.coords.latitude,
+        p.coords.longitude
+      ]);
 
-      const arrowIcon = this.createArrowIcon(bearing);
-      const arrowMarker = L.marker([arrowLat, arrowLng], {
-        icon: arrowIcon
+      this.polyline = L.polyline(route, {
+        color: polylineColor,
+        weight: 6,
+        opacity: 0.9,
+        smoothFactor: 1.0,
+        lineCap: 'round',
+        lineJoin: 'round'
       }).addTo(this.map);
 
-      this.arrowMarkers.push(arrowMarker);
-    }
+      bounds.extend(this.polyline.getBounds());
 
-    if (bounds.isValid()) {
-      this.map.fitBounds(bounds, { padding: [50, 50] });
-    }
-  });
-}
-async addLocationName(point: any): Promise<string> {
-  try {
-    const res: any = await this.locationService.getAddressFromCoords(point.coords.latitude, point.coords.longitude)
-      .toPromise();
+      const startPoint = sortedPoints[0];
+      const startIcon = this.createCustomIcon('#28a745', 'START');
 
-    return res?.display_name || 'Unknown Location';
-  } catch {
-    return 'Unknown Location';
+      const startMarker = L.marker(
+        [startPoint.coords.latitude, startPoint.coords.longitude],
+        { icon: startIcon }
+      ).addTo(this.map);
+
+      this.bindMarkerPopupWithAddress(startMarker, 'START', startPoint.coords.latitude, startPoint.coords.longitude, startPoint.timestamp);
+
+      this.markers.push(startMarker);
+      bounds.extend([startPoint.coords.latitude, startPoint.coords.longitude]);
+
+      if (sortedPoints.length > 1) {
+        const endPoint = sortedPoints[sortedPoints.length - 1];
+        const endIcon = this.createCustomIcon('#dc3545', 'END');
+
+        const endMarker = L.marker(
+          [endPoint.coords.latitude, endPoint.coords.longitude],
+          { icon: endIcon }
+        ).addTo(this.map);
+
+        this.bindMarkerPopupWithAddress(endMarker, 'END', endPoint.coords.latitude, endPoint.coords.longitude, endPoint.timestamp);
+
+        this.markers.push(endMarker);
+        bounds.extend([endPoint.coords.latitude, endPoint.coords.longitude]);
+      }
+
+      const totalSegments = sortedPoints.length - 1;
+      const arrowSpacing = Math.max(2, Math.floor(totalSegments / 8));
+
+      for (let i = 0; i < totalSegments; i += arrowSpacing) {
+        const curr = sortedPoints[i];
+        const next = sortedPoints[i + 1];
+
+        const bearing = this.calculateBearing(
+          curr.coords.latitude,
+          curr.coords.longitude,
+          next.coords.latitude,
+          next.coords.longitude
+        );
+
+        const ratio = 0.6;
+        const arrowLat =
+          curr.coords.latitude +
+          (next.coords.latitude - curr.coords.latitude) * ratio;
+        const arrowLng =
+          curr.coords.longitude +
+          (next.coords.longitude - curr.coords.longitude) * ratio;
+
+        const arrowIcon = this.createArrowIcon(bearing);
+        const arrowMarker = L.marker([arrowLat, arrowLng], {
+          icon: arrowIcon
+        }).addTo(this.map);
+
+        this.arrowMarkers.push(arrowMarker);
+      }
+
+      if (bounds.isValid()) {
+        this.map.fitBounds(bounds, { padding: [50, 50] });
+      }
+    });
   }
-}
+  async addLocationName(point: any): Promise<string> {
+    try {
+      const res: any = await this.locationService.getAddressFromCoords(point.coords.latitude, point.coords.longitude)
+        .toPromise();
+
+      return res?.display_name || 'Unknown Location';
+    } catch {
+      return 'Unknown Location';
+    }
+  }
 
   async getAddressFromAPI(lat: number, lng: number): Promise<string | null> {
     try {
       const response: any = await firstValueFrom(this.locationService.getAddressFromGlobalVTS(lat, lng));
-      
+
       if (response && response.address && typeof response.address === 'string' && response.address.trim() !== '') {
         return response.address;
       }
-      
+
       return null;
     } catch (error) {
       console.error('Error fetching address from API:', error);
@@ -823,24 +812,24 @@ async addLocationName(point: any): Promise<string> {
       <b>Lng:</b> ${lng.toFixed(6)}<br/>
       <b>Time:</b> ${new Date(timestamp).toLocaleString()}
     `;
-    
+
     marker.bindPopup(initialContent);
-    
+
     this.getAddressFromAPI(lat, lng).then(address => {
       let popupContent = `
         <b>${label}</b><br/>
       `;
-      
+
       if (address) {
         popupContent += `<b>Address:</b> ${address}<br/>`;
       }
-      
+
       popupContent += `
         <b>Lat:</b> ${lat.toFixed(6)}<br/>
         <b>Lng:</b> ${lng.toFixed(6)}<br/>
         <b>Time:</b> ${new Date(timestamp).toLocaleString()}
       `;
-      
+
       marker.setPopupContent(popupContent);
     }).catch(error => {
       const fallbackContent = `
@@ -1023,6 +1012,12 @@ async addLocationName(point: any): Promise<string> {
     });
   }
 
+  DateWiseTracking() {
+    this.currentTrackingUser['start_date'] = this.obj['startDate']
+    this.currentTrackingUser['end_date'] = this.obj['endDate']
+    this.loadAndPlotData(this.currentTrackingUser);
+  }
+
   startLiveTracking() {
     if (!this.currentTrackingUser) {
       console.warn('No user selected for live tracking');
@@ -1040,6 +1035,21 @@ async addLocationName(point: any): Promise<string> {
     }, this.liveTrackingIntervalSeconds * 1000);
   }
 
+  setMinToDate() {
+    if (this.obj['startDate']) {
+      const fromDate = new Date(this.obj['startDate']);
+
+      if (!isNaN(fromDate.getTime())) {
+        this.minDate = fromDate.toISOString().split('T')[0];
+      }
+    }
+   this.obj['endDate']=null
+  }
+  minDate: any
+  getToDateMin(): string {
+    return this.obj['startDate'] || this.minDate;
+  }
+
   stopLiveTracking() {
     this.isLiveTrackingEnabled = false;
     if (this.liveTrackingInterval) {
@@ -1047,53 +1057,26 @@ async addLocationName(point: any): Promise<string> {
       this.liveTrackingInterval = null;
     }
   }
-
-  backToList() {
-    this.stopLiveTracking();
-    
-    if (this.map) {
-      try {
-        this.clearMap();
-        if (this.trafficLayer) {
-          this.map.removeLayer(this.trafficLayer);
-          this.trafficLayer = null;
-        }
-        this.map.remove();
-        this.map = null as any;
-      } catch (e) {
-        console.warn('Error cleaning up map:', e);
-      }
-    }
-    
-    this.fullScreenControl = null;
-    this.trafficControl = null;
-    this.zoomControl = null;
-    this.isTrafficEnabled = false;
-    this.isFullScreen = false;
-    this.currentTrackingUser = null;
-    
-    this.viewLiveTracking = true;
-  }
-
+  obj: any = {}
   toggleFullScreen() {
     this.isFullScreen = !this.isFullScreen;
-    
+
     if (this.isFullScreen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
     }
-    
+
     const fullscreenIcon = document.querySelector('.leaflet-control-fullscreen i');
     if (fullscreenIcon) {
       fullscreenIcon.className = `fas ${this.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
     }
-    
+
     const fullscreenLink = document.querySelector('.leaflet-control-fullscreen');
     if (fullscreenLink) {
       fullscreenLink.setAttribute('title', this.isFullScreen ? 'Exit Full Screen' : 'Toggle Full Screen');
     }
-    
+
     setTimeout(() => {
       if (this.map) {
         this.map.invalidateSize();
@@ -1120,23 +1103,9 @@ async addLocationName(point: any): Promise<string> {
 
   ngOnDestroy() {
     this.stopLiveTracking();
-    
-    if (this.map) {
-      try {
-        this.clearMap();
-        if (this.trafficLayer) {
-          this.map.removeLayer(this.trafficLayer);
-          this.trafficLayer = null;
-        }
-        this.map.remove();
-        this.map = null as any;
-      } catch (e) {
-        console.warn('Error destroying map:', e);
-      }
+    if (this.trafficLayer && this.map) {
+      this.map.removeLayer(this.trafficLayer);
+      this.trafficLayer = null;
     }
-    
-    this.fullScreenControl = null;
-    this.trafficControl = null;
-    this.zoomControl = null;
   }
 }
