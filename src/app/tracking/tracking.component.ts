@@ -9,6 +9,7 @@ import { SearchPaginationComponent } from '../master/search-pagination/search-pa
 import { CommonModule } from '@angular/common';
 import { MasterService } from '../services/master.service';
 import { firstValueFrom } from 'rxjs';
+import { GoogleroadService } from '../services/googleroad.service';
 
 @Component({
   selector: 'app-tracking',
@@ -34,7 +35,7 @@ export class TrackingComponent implements OnInit, OnDestroy {
   fullScreenControl: any = null;
   trafficControl: any = null;
   zoomControl: any = null;
-  constructor(private locationService: LocationService, public statusService: StatusService, private router: Router, private master: MasterService,) {
+  constructor(private googleRoadService: GoogleroadService, private locationService: LocationService, public statusService: StatusService, private router: Router, private master: MasterService,) {
   }
 
   ngOnInit(): void {
@@ -698,6 +699,22 @@ export class TrackingComponent implements OnInit, OnDestroy {
       const sortedPoints = [...points].sort(
         (a, b) => a.timestamp - b.timestamp
       );
+// const filtered = filterOutliers(coords, locationData);
+// const snappedRoute =  this.googleRoadService.snapToRoad(coords:any).subscribe((snappedPoints:any) => {
+// this.googleRoadService.snapToRoad(sortedPoints)
+//   .subscribe(snappedRoute => {
+
+//     const route: L.LatLngExpression[] = snappedRoute.map((p:any) => [
+//       p.latitude,
+//       p.longitude
+//     ]);
+
+//     this.polyline = L.polyline(route, {
+//       color: '#2c3e50',
+//       weight: 6,
+//       opacity: 0.9
+//     }).addTo(this.map);
+//   });
 
       const route: L.LatLngExpression[] = sortedPoints.map(p => [
         p.coords.latitude,
@@ -781,7 +798,7 @@ export class TrackingComponent implements OnInit, OnDestroy {
   async addLocationName(point: any): Promise<string> {
     try {
       const res: any = await this.locationService.getAddressFromCoords(point.coords.latitude, point.coords.longitude)
-        .toPromise();
+        // .toPromise();
 
       return res?.display_name || 'Unknown Location';
     } catch {
@@ -793,7 +810,7 @@ export class TrackingComponent implements OnInit, OnDestroy {
     try {
       const response: any = await firstValueFrom(this.locationService.getAddressFromGlobalVTS(lat, lng));
 
-      if (response && response.address && typeof response.address === 'string' && response.address.trim() !== '') {
+      if (response && response.address && typeof response.address == 'string' && response.address.trim() !== '') {
         return response.address;
       }
 
