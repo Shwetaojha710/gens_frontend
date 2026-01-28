@@ -543,7 +543,16 @@ stats:any
 
   }
   enableDisableLoc(data: any, type: any) {
-    const Enable = data?.isLocation == true ? 'Disable' : 'Enable'
+     let Enable;
+    if (type == "location") {
+      Enable = data?.isLocation == true ? 'Disable' : 'Enable'
+    }
+    else if(type=="attendanceAllTime"){
+       Enable = data?.isofflineAllTimeAtt == true ? 'Disable' : 'Enable'
+    }
+    else {
+      Enable = data?.isofflineAtt == true ? 'Disable' : 'Enable'
+    }
 
     Swal.fire({
       title: "Are you sure?",
@@ -630,7 +639,11 @@ stats:any
     let obj = Object.assign({}, data)
     if (type == "attendance") {
       obj['isofflineAtt'] = !obj['isofflineAtt']
-    } else {
+    }
+    else if(type=="attendanceAllTime"){
+     obj['isofflineAllTimeAtt'] = !obj['isofflineAllTimeAtt']
+    }
+    else {
       obj['isLocation'] = !obj['isLocation']
     }
 
@@ -685,4 +698,12 @@ stats:any
     this.personalDetails.adhaarNo = formatted; // store raw 12-digit Aadhaar number
   }
 
+    getStatusClass(status: any): string {
+    switch (status) {
+      case true: return 'badge-outline-success';
+      case false: return 'badge-outline-danger';
+      case 'completed': return 'bg-light-success';
+      default: return 'bg-light-secondary';
+    }
+  }
 }
