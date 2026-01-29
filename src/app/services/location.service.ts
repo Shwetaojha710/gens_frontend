@@ -19,7 +19,14 @@ export class LocationService {
   getActiveTrackingUsers(): Observable<any> {
     return this.http.get(`${this.baseUrl}active-location-emp`);
   }
-
+  snapToRoads(points: { latitude: number; longitude: number }[])
+    : Observable<any[]> {
+ return this.http.post<any[]>(`${this.baseUrl}snap-to-roads`, { points });
+    // return this.http.post<any[]>(
+    //   '/api/snap-to-roads',   // 👈 backend endpoint
+    //   { points }
+    // );
+  }
 //   getAddressFromCoords(lat: number, lng: number) {
 //   return this.http.get<any>(
 //     `https://maps.googleapis.com/maps/api/geocode/json`,
@@ -69,12 +76,46 @@ export class LocationService {
 };
 
 
-  getAddressFromGlobalVTS(lat: number, lng: number): Observable<any> {
-    return this.http.get<any>(
-      `https://maps.googleapis.com/maps/api/geocode/json/${lat}/${lng}`
-    );
+  // getAddressFromGlobalVTS(lat: number, lng: number): Observable<any> {
+  //   return this.http.get<any>(
+  //     `https://maps.googleapis.com/maps/api/geocode/json/${lat}/${lng}`
+  //   );
+  // }
+
+
+ async getAddressFromGlobalVTS(lat:any, lng:any): Promise<any> {
+  try {
+    const GOOGLE_API_KEY = this.API_KEY; // 🔐 move key to env
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_API_KEY}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if (data.status !== "OK" || !data.results.length) return null;
+
+    const result = data.results[0];
+    const components = result.address_components;
+
+    const getComponent = (type:any) =>
+      components.find((c:any )=> c.types.includes(type))?.long_name || "";
+
+    return {
+      address: result.formatted_address,     // 📍 Google full address
+      street: `${getComponent("street_number")} ${getComponent("route")}`.trim(),
+      area: getComponent("sublocality") || getComponent("neighborhood"),
+      city: getComponent("locality") || getComponent("administrative_area_level_2"),
+      state: getComponent("administrative_area_level_1"),
+      pincode: getComponent("postal_code"),
+      country: getComponent("country"),
+      coordinates: {
+        latitude: lat,
+        longitude: lng,
+      },
+    };
+
+  } catch (error) {
+    console.error("Reverse geocoding failed:", error);
+    return null;
   }
-
-
-
+};
 }

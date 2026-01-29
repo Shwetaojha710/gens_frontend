@@ -174,6 +174,13 @@ export class ReimbursementComponent {
       default: return 'bg-light-secondary';
     }
   }
+  isExcel(mimeType: string): boolean {
+    return (
+      mimeType === 'application/vnd.ms-excel' ||
+      mimeType === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+  }
+
   onFileChange(event: any) {
     const files = event.target.files as FileList;
 
@@ -183,7 +190,9 @@ export class ReimbursementComponent {
       return;
     }
 
-    const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg'];
+    const allowedTypes = ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg', 'image/gif', 'image/bmp', 'image/webp', 'image/svg+xml', 'image/tiff', 'image/x-icon', 'image/heic', 'text/csv',
+      'application/vnd.ms-excel', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'];
+
 
     this.selectedFiles = [];
     this.previewFiles = []; // store previews (images or PDF icons)
@@ -516,7 +525,7 @@ export class ReimbursementComponent {
           this.resetForm();
         }
         else if (status === "expired") {
-            this.router.navigate(["login"]);
+          this.router.navigate(["login"]);
         }
 
         else {
