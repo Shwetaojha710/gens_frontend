@@ -56,7 +56,9 @@
                 </div>
 
                 <!-- If PDF, show preview + download -->
-                <div *ngIf="fileType == 'application/pdf'" style="margin-top: -10px;">
+                <!-- <div *ngIf="fileType == 'application/pdf'" style="margin-top: -10px;"> -->
+                <div style="margin-top: -10px;">
+
                   <!-- <iframe [src]="sanitizedImage" width="200" height="80" style="border: 1px solid #cfd0d6; border-radius: 5px;"></iframe> -->
 
                   <br />
@@ -150,14 +152,29 @@
                 <td>{{ item.createdAt | date: 'short' }}</td>
                 <td>
                   <ng-container *ngFor="let f of item.files">
-                    <ng-container *ngIf="f.doc_type.startsWith('image/'); else pdfBlock">
-                      <img [src]="f.image" width="80" height="auto" class="m-1 rounded" (click)="openModal1(f.image)" />
+
+                    <!-- IMAGE -->
+                    <ng-container *ngIf="f.doc_type.startsWith('image/')">
+                      <img [src]="f.image" width="80" class="m-1 rounded cursor-pointer"
+                        (click)="openModal1(f.image)" />
                     </ng-container>
 
-                    <ng-template #pdfBlock>
-                      <a [href]="f.image" class="btn btn-sm btn-primary" target="_blank">Download PDF</a>
-                    </ng-template>
+                    <!-- PDF -->
+                    <ng-container *ngIf="f.doc_type === 'application/pdf'">
+                      <a [href]="f.image" class="btn btn-sm btn-primary m-1" target="_blank" download>
+                        Download PDF
+                      </a>
+                    </ng-container>
+
+                    <!-- EXCEL -->
+                    <ng-container *ngIf="isExcel(f.doc_type)">
+                      <a [href]="f.image" class="btn btn-sm btn-success m-1" download>
+                        Download Excel
+                      </a>
+                    </ng-container>
+
                   </ng-container>
+
                 </td>
                 <td>
 

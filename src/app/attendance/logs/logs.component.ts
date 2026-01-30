@@ -187,15 +187,17 @@ export class LogsComponent {
             const checkOutTime = match?.checkOut?.split(' ')[1];
 
             employee.dayTime[day] =
-              checkInTime && checkOutTime
-                ? `${checkInTime} - ${checkOutTime}`
+              checkInTime || checkOutTime
+                ? `${checkInTime} - ${checkOutTime|| ''}`
                 : '';
           });
         });
-      
+
         // console.log(this.AttendanceMasterList,"attendance master list");
-        
+
         this.originalList = this.AttendanceMasterList;
+       console.log(this.AttendanceMasterList,"attendance master list");
+
         this.updateDisplayedList();
 
       } else if (response.status === false) {
@@ -270,7 +272,7 @@ export class LogsComponent {
 // //             status: statusMap[item1.status] || item1.status
 // //           }))
 // //         }));
-      
+
 // //        this.AttendanceMasterList= this.AttendanceMasterList.forEach((employee: any) => {
 // //   employee.dayTime = {};
 
