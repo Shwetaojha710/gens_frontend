@@ -13,6 +13,7 @@ import { SearchPaginationComponent } from '../../master/search-pagination/search
 import * as XLSX from 'xlsx';
 import FileSaver from 'file-saver';
 import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-full-time-salary',
   imports: [NgSelectModule,
@@ -159,23 +160,24 @@ export class FullTimeSalaryComponent {
       this.isLoading = false
       if (this.statusService.handleResponseStatus(response.status, response.message || "Success")) {
         this.masterSelected = false
-
-
-     Swal.fire({
-  title: "Salary Generated Successfully",
-  text: "Download Excel File",
-  // icon: "info",
-  showCancelButton: true,
-  confirmButtonText: "Yes, Export it!",
-  cancelButtonText: "No, cancel!",
-  confirmButtonColor: "#28a745", // ✅ green
-  cancelButtonColor: "#d33",     // optional red
-  reverseButtons: true
-}).then(async (result) => {
-  if (result.isConfirmed) {
-    await this.generateExcel();
-  }
-});
+        Swal.fire({
+          title: "Salary Generated Successfully",
+          imageUrl: "/assets/img/success.png",
+          imageWidth: 120,
+          imageHeight: 120,
+          imageAlt: "Success Icon",
+          confirmButtonText: "Download Excel File",
+          confirmButtonColor: "#0663a9",
+           showCancelButton: true,
+           text:"Please click the button below to download the Excel file containing the salary details.",
+      cancelButtonText: "No, cancel!",
+      cancelButtonColor: "#d33",
+          reverseButtons: true
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            await this.generateExcel();
+          }
+        });
 
 
 
@@ -310,6 +312,8 @@ export class FullTimeSalaryComponent {
     FileSaver.saveAs(blob, `Salary_${monthYear}.xlsx`);
     this.SalaryArr = []
     this.originalList = []
+    this.filteredSalary = []
+    this.obj={}
   }
   EmpList: any = []
   async empList() {
