@@ -12,7 +12,7 @@
         <hr style="margin: 0rem 0 !important" />
         <div class="card-body">
           <div class="row">
-            <div class="col-4">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-4">
               <label for="defaultFormControlInput" class="form-label">Type</label>
               <ng-select [items]="status" bindLabel="label" bindValue="value" [(ngModel)]="obj['shift']"
                 [multiple]="false" placeholder="Select Shift Type" name="status" id="select2Danger">
@@ -22,7 +22,8 @@
 
           <div class="row mt-4">
             <div class="col-12">
-              <table class="table table-bordered">
+              <div class="table-responsive">
+                <table class="table table-bordered">
                 <thead>
                   <tr>
                     <th scope="col">SI.No</th>
@@ -44,6 +45,7 @@
                   </tr>
                 </tbody>
               </table>
+              </div>
             </div>
           </div>
           <div class="row">

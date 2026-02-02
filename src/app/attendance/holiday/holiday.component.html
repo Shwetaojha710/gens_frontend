@@ -11,8 +11,8 @@
 
         <hr style="margin: 0rem 0 !important" />
         <div class="card-body">
-          <div class="row">
-            <div class="col-3">
+          <div class="row g-2">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
               <label for="defaultFormControlInput" class="form-label">Holiday Type
                 <span style="color: red"> * </span>
               </label>
@@ -33,7 +33,7 @@
                 Holiday Type is Required
               </small>
             </div>
-            <div class="col-3">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
               <label for="defaultFormControlInput" class="form-label">Holiday Name<span style="color: red"> *
                 </span></label>
               <input type="text" class="form-control" id="defaultFormControlInput" placeholder="Enter Holiday Name"
@@ -44,7 +44,7 @@
               </small>
             </div>
 
-            <div class="col-3">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
               <label for="defaultFormControlInput" class="form-label">Holiday Date<span style="color: red"> *
                 </span></label>
               <input type="date" class="form-control" id="defaultFormControlInput" placeholder="Select Holiday Date"
@@ -56,7 +56,7 @@
             </div>
 
 
-            <!-- <div class="col-3">
+            <!-- <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
               <label for="file" class="form-label">
                 Upload Image <span style="color: red">*</span>
               </label>
@@ -100,7 +100,7 @@
               </div>
             </div> -->
 
-            <div class="col-3">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
               <label for="formFile" class="form-label">Upload Image <span style="color: red">*</span></label>
               <input #fileInput class="form-control" type="file" id="formFile" type="file"
                 (change)="onFileChange($event)" accept="image/*" />
@@ -164,10 +164,10 @@
       <div class="card">
 
         <div class="row mb-2 align-items-center">
-        <div class="col-md-9">
+        <div class="col-md-8">
           <h5 class="card-header d-flex justify-content-between align-items-center" >Holiday List</h5>
         </div>
-        <div class="col-md-3">
+        <div class="col-md-4 col-12">
           <div class="d-flex">
             <ng-select
               [items]="yearList"
@@ -178,7 +178,7 @@
               placeholder="Select Year"
               name="state"
               id="select2Danger"
-              class="w-100 mx-2"
+              class="w-100 mx-1"
               required
               #enCashableRef="ngModel"
               (change)="fetchHoliday()"
@@ -187,7 +187,7 @@
             <button
               *ngIf="createFlag == false"
               type="button"
-              class="btn btn-xs btn-block btn-primary"
+              class="btn btn-xs btn-block btn-primary mx-2"
               (click)="opencreate()"
             >
               <i class="fa-solid fa-plus"></i>&nbsp;Add
@@ -206,6 +206,7 @@
 
         <app-search-pagination [totalItems]="HolidayList.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
           (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
+          <div class="table-responsive">
           <table class="table table-striped dataTable">
             <thead>
               <tr>
@@ -242,6 +243,7 @@
               </tr>
             </tbody>
           </table>
+          </div>
         </app-search-pagination>
 
 
