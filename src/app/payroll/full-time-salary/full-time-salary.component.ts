@@ -162,15 +162,15 @@ export class FullTimeSalaryComponent {
         this.masterSelected = false
         Swal.fire({
           title: "Salary Generated Successfully",
-          imageUrl: "/assets/img/success.png",
-          imageWidth: 120,
-          imageHeight: 120,
+          imageUrl: "/assets/img/icons8-success-192.gif",
+          imageWidth: 140,
+          imageHeight: 140,
           imageAlt: "Success Icon",
-          confirmButtonText: "Download Excel File",
+          confirmButtonText: '<i class="fa fa-download"></i> Download Excel File',
           confirmButtonColor: "#0663a9",
            showCancelButton: true,
            text:"Please click the button below to download the Excel file containing the salary details.",
-      cancelButtonText: "No, cancel!",
+      cancelButtonText: '<i class="fa fa-times me-2"></i> Cancel',
       cancelButtonColor: "#d33",
           reverseButtons: true
         }).then(async (result) => {
