@@ -73,7 +73,7 @@ formatMinutesToHHMM(minutes: number): string {
       console.warn('User is undefined');
       return;
     }
-
+     this.obj={}
     this.viewLiveTracking = false;
     this.currentTrackingUser = user;
     this.isLiveTrackingEnabled = false;
@@ -92,7 +92,7 @@ formatMinutesToHHMM(minutes: number): string {
           this.loadAndPlotData(user);
         }, 200);
       } else {
-        this.clearMap();
+         this.initMap();
         if (!this.fullScreenControl) {
           this.addFullScreenControl();
         }
@@ -110,27 +110,26 @@ formatMinutesToHHMM(minutes: number): string {
     }, 100);
   }
 
-  clearMap() {
-    this.markers.forEach(marker => {
-      this.map.removeLayer(marker);
-    });
-    this.markers = [];
+clearMap() {
+  if (!this.map) return;
 
-    this.arrowMarkers.forEach(marker => {
-      this.map.removeLayer(marker);
-    });
-    this.arrowMarkers = [];
+  this.markers.forEach(m => this.map.removeLayer(m));
+  this.markers = [];
 
-    if (this.polyline) {
-      this.map.removeLayer(this.polyline);
-    }
+  this.arrowMarkers.forEach(m => this.map.removeLayer(m));
+  this.arrowMarkers = [];
 
-    this.map.eachLayer((layer) => {
-      if (layer !== this.currentTileLayer && layer !== this.trafficLayer) {
-        this.map.removeLayer(layer);
-      }
-    });
+  if (this.polyline) {
+    this.map.removeLayer(this.polyline);
+    this.polyline = null!;
   }
+
+  if (this.playbackMarker) {
+    this.map.removeLayer(this.playbackMarker);
+    this.playbackMarker = null!;
+  }
+}
+
   createCustomIcon(
   color: string,
   label: string | number
@@ -948,6 +947,7 @@ formatMinutesToHHMM(minutes: number): string {
 
     return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   }
+
 detectStays(points: any[]) {
   const STAY_DISTANCE = 50; // meters
   const STAY_TIME = 5 * 60 * 1000; // 5 minutes
@@ -1005,6 +1005,30 @@ detectStays(points: any[]) {
   return stays;
 }
 
+ removeSameLocationPoints(data:any, minDistance = 5) {
+  if (!data.length) return [];
+
+  const filtered = [data[0]];
+
+  for (let i = 1; i < data.length; i++) {
+    const prev = filtered[filtered.length - 1];
+    const curr = data[i];
+
+    const dist = this.getDistanceInMeters(
+      prev.coords.latitude,
+      prev.coords.longitude,
+      curr.coords.latitude,
+      curr.coords.longitude
+    );
+
+    // keep only if moved more than X meters
+    if (dist >= minDistance) {
+      filtered.push(curr);
+    }
+  }
+
+  return filtered;
+}
 
 drawStartEndMarkers(points: any[]) {
   const start = points[0];
@@ -1168,7 +1192,12 @@ loadAndPlotData(user: any) {
     const points = res.data.sort((a:any, b:any) => a.timestamp - b.timestamp);
 
     this.clearMap();
+// const cleanedData = this.removeSameLocationPoints(points, 5);
 
+// const polylinePath = cleanedData.map(p => ({
+//   lat: p.coords.latitude,
+//   lng: p.coords.longitude
+// }));
     // 1️⃣ Draw route
     const polyline = this.drawPolyline(points);
     if (polyline) {
@@ -1235,24 +1264,29 @@ loadAndPlotData(user: any) {
 //     lineJoin: 'round'
 //   });
 // }
+
 drawPolyline(points: any[]): L.Polyline | null {
   if (!points || points.length < 2) return null;
 
-  const route = points.map(p => [
-    p.latitude ?? p.coords.latitude,
-    p.longitude ?? p.coords.longitude
-  ] as L.LatLngExpression);
+  const route: L.LatLngExpression[] = points
+    .map(p => ({
+      lat: p.latitude ?? p.coords?.latitude,
+      lng: p.longitude ?? p.coords?.longitude
+    }))
+    .filter(p => p.lat != null && p.lng != null)
+    .map(p => [p.lat, p.lng]);
 
   if (route.length < 2) return null;
 
   return L.polyline(route, {
-    color: '#2c3e50',
-    weight: 5,
+    color: '#1c68b4',
+    weight: 6,
     opacity: 0.9,
     lineCap: 'round',
     lineJoin: 'round'
   });
 }
+
 
 async drawSnappedRoute(points: any[]) {
   // prepare coords for API
