@@ -84,8 +84,10 @@
                 <ul class="p-0 m-0">
                   <li class="d-flex align-items-center mb-4 pb-2" *ngFor="let emp of Event.birthdays">
                     <div class="avatar flex-shrink-0 me-4">
-                      <img [src]="emp?.profileImage ? emp.profileImage : '../../assets/img/avatars/4.png'" alt="avatar"
-                        class="rounded-3" />
+                      <!-- <img [src]="emp?.profileImage ? emp.profileImage : '../../assets/img/avatars/4.png'" alt="avatar"
+                        class="rounded-3" /> -->
+                          <img [src]="emp?.profileImage || 'assets/img/avatars/4.png'" (error)="onImageError($event,emp,'profileImage')"
+                      alt="avatar" class="rounded-3" />
                     </div>
 
                     <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
@@ -202,6 +204,7 @@
                   <li class="d-flex align-items-center mb-4 pb-2" *ngFor="let emp of Event.anniversaries">
                     <div class="avatar flex-shrink-0 me-4">
                       <img src="../../assets/img/avatars/4.png" alt="avatar" class="rounded-3" />
+
                     </div>
 
                     <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
@@ -315,9 +318,13 @@
           <ul class="p-0 m-0">
             <li class="d-flex align-items-center mb-6" *ngFor="let item of employeeList">
               <div class="avatar flex-shrink-0 me-4">
-                                    <!-- <img [src]="item['profileImage']" alt="Document" width="100" height="auto" style="cursor: pointer" /> -->
-    <img [src]="item['profileImage'] ? item['profileImage'] : '../../assets/img/avatars/4.png'" alt="avatar"
-                        class="rounded-3" />
+                <!-- <img [src]="item['profileImage']" alt="Document" width="100" height="auto" style="cursor: pointer" /> -->
+                <!-- <img [src]="item['profileImage'] ? item['profileImage'] : '../../assets/img/avatars/4.png'" alt="avatar"
+                  class="rounded-3" /> -->
+                   <img [src]="item?.profileImage" (error)="onImageError($event,item, 'profileImage')"
+                      alt="avatar" class="rounded-3" />
+
+                  <!-- 322 -->
                 <!-- <img src="../../assets/img/avatars/5.png" alt="avatar" class="img-fluid rounded-circle w-auto h-auto" /> -->
               </div>
               <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
@@ -357,7 +364,10 @@
               <div class="avatar avatar-md flex-shrink-0 me-4">
                 <div class="avatar-initial bg-lightest img-fluid rounded-circle w-auto h-auto">
                   <div>
-                    <img [src]="item['image']" alt="Document" width="100" height="auto" style="cursor: pointer" />
+                    <img [src]="item?.image || 'assets/img/avatars/calendar.png'" (error)="onImageError($event,item, 'holidayImage')"
+                      alt="avatar" class="rounded-3" />
+
+                    <!-- <img [src]="item['image']" alt="Document" width="100" height="auto" style="cursor: pointer" /> -->
                   </div>
                 </div>
               </div>

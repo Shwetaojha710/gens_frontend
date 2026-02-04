@@ -29,6 +29,7 @@ export class ApplyLeaveComponent {
 
   }
   status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
+  leaveStatus: any = [{ value: 'pending', label: 'PENDING' }, { value: 'approved', label: 'APPROVED' }, { value: 'rejected', label: 'REJECTED' }]
 
   // onSubmit() {
   //    console.log(this.obj)
@@ -56,6 +57,21 @@ export class ApplyLeaveComponent {
   getToDateMin(): string {
     return this.obj['fromDate'] || this.minDate;
   }
+    monthList = [
+    { value: '01', label: 'January' },
+    { value: '02', label: 'February' },
+    { value: '03', label: 'March' },
+    { value: '04', label: 'April' },
+    { value: '05', label: 'May' },
+    { value: '06', label: 'June' },
+    { value: '07', label: 'July' },
+    { value: '08', label: 'August' },
+    { value: '09', label: 'September' },
+    { value: '10', label: 'October' },
+    { value: '11', label: 'November' },
+    { value: '12', label: 'December' }
+  ];
+  yearList: any = [];
   async ngOnInit() {
     this.EmployeeForm = this.fb.group({
       name: ['', Validators.required],
@@ -68,6 +84,27 @@ export class ApplyLeaveComponent {
     await this.messagingService.initMessaging();
     const token = await this.messagingService.requestPermission();
     console.log('FCM Token after init:', token);
+          await this.getYear()
+    const year = new Date().getFullYear()
+   this.obj['year'] = this.yearList.find((item: any) => item.value == year);
+  }
+   async getYear() {
+    this.yearList = []
+    this.master.getAttendanceYear().subscribe((data: { [x: string]: any; data: any; }) => {
+      console.log(data)
+      if (data['status'] == true) {
+        // this.notyf.success(data['message']);
+        this.yearList = data.data;
+
+      }
+      else if (data['status'] == 'expired') {
+        this.router.navigate(['login'])
+      }
+      else {
+        this.notyf.error(data['message']);
+      }
+    });
+
   }
   //   async enableNotifications() {
   //       await  this.messagingService.listen();
@@ -180,7 +217,8 @@ export class ApplyLeaveComponent {
   async getApplyLeaveList() {
     this.applyLeaveList = []
     this.originalList = []
-    this.master.getapplyLeaveList().subscribe({
+     this.filteredDesignation = []
+    this.master.getapplyLeaveList(this.obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
 
@@ -205,6 +243,7 @@ export class ApplyLeaveComponent {
         }
 
         else {
+
           this.notyf.error(message)
         }
 
@@ -243,7 +282,7 @@ export class ApplyLeaveComponent {
     this.master.getemployeeList().subscribe((data: { [x: string]: any; data: any; }) => {
       if (data['status'] == true) {
         // this.notyf.success(data['message']);
-        data.data.shift();
+        // data.data.shift();
         this.EmpList = data.data;
 
       }
