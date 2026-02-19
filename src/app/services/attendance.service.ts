@@ -34,6 +34,9 @@ export class AttendanceService {
   updateAttendance(obj: any): Observable<any> {
     return this.http.post(`${this.baseUrl}update-attendance`, obj);
   }
+  BulkUpdateAttendance(obj: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}bulk-update-attendance`, obj);
+  }
   updateEmpAttendance(obj: any): Observable<any> {
     return this.http.post(`${this.baseUrl}update-emp-attendance`, obj);
   }

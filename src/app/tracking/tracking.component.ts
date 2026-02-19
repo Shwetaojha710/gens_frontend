@@ -73,7 +73,7 @@ formatMinutesToHHMM(minutes: number): string {
       console.warn('User is undefined');
       return;
     }
-
+     this.obj={}
     this.viewLiveTracking = false;
     this.currentTrackingUser = user;
     this.isLiveTrackingEnabled = false;
@@ -92,7 +92,7 @@ formatMinutesToHHMM(minutes: number): string {
           this.loadAndPlotData(user);
         }, 200);
       } else {
-        this.clearMap();
+         this.initMap();
         if (!this.fullScreenControl) {
           this.addFullScreenControl();
         }
@@ -110,27 +110,26 @@ formatMinutesToHHMM(minutes: number): string {
     }, 100);
   }
 
-  clearMap() {
-    this.markers.forEach(marker => {
-      this.map.removeLayer(marker);
-    });
-    this.markers = [];
+clearMap() {
+  if (!this.map) return;
 
-    this.arrowMarkers.forEach(marker => {
-      this.map.removeLayer(marker);
-    });
-    this.arrowMarkers = [];
+  this.markers.forEach(m => this.map.removeLayer(m));
+  this.markers = [];
 
-    if (this.polyline) {
-      this.map.removeLayer(this.polyline);
-    }
+  this.arrowMarkers.forEach(m => this.map.removeLayer(m));
+  this.arrowMarkers = [];
 
-    this.map.eachLayer((layer) => {
-      if (layer !== this.currentTileLayer && layer !== this.trafficLayer) {
-        this.map.removeLayer(layer);
-      }
-    });
+  if (this.polyline) {
+    this.map.removeLayer(this.polyline);
+    this.polyline = null!;
   }
+
+  if (this.playbackMarker) {
+    this.map.removeLayer(this.playbackMarker);
+    this.playbackMarker = null!;
+  }
+}
+
   createCustomIcon(
   color: string,
   label: string | number
@@ -638,232 +637,7 @@ formatMinutesToHHMM(minutes: number): string {
       }
     }
   }
-  // async loadAndPlotData(user: any) {
-  //   const employeeId = user ? user.id : null;
-  //   const payload: any = {};
 
-  //   if (employeeId) {
-  //     payload.employeeId = employeeId;
-  //   }
-
-  //   this.locationService.getLatestLocations(payload).subscribe(async res => {
-  //     const points: any[] = res?.data || [];
-  //     if (!points.length) return;
-
-  //     this.clearMap();
-
-  //     const bounds = L.latLngBounds([]);
-  //     const polylineColor = '#2c3e50';
-
-  //     // ✅ Sort points
-  //     const sortedPoints = [...points].sort(
-  //       (a, b) => a.timestamp - b.timestamp
-  //     );
-
-  //     // ✅ Draw polyline
-  //     const route: L.LatLngExpression[] = sortedPoints.map(p => [
-  //       p.coords.latitude,
-  //       p.coords.longitude
-  //     ]);
-
-  //     this.polyline = L.polyline(route, {
-  //       color: polylineColor,
-  //       weight: 6,
-  //       opacity: 0.9
-  //     }).addTo(this.map);
-
-  //     bounds.extend(this.polyline.getBounds());
-
-  //     // =====================================================
-  //     // 🔥 ADD LOCATION NAME FOR EACH POLYLINE POINT (HERE)
-  //     // =====================================================
-  //     for (const point of sortedPoints) {
-  //       const latLng: L.LatLngExpression = [
-  //         point.coords.latitude,
-  //         point.coords.longitude
-  //       ];
-
-  //       // 🔥 Reverse geocode
-  //       const locationName = await this.addLocationName(point);
-
-  //       const marker = L.circleMarker(latLng, {
-  //         radius: 5,
-  //         color: '#2c3e50',
-  //         fillColor: '#3498db',
-  //         fillOpacity: 1
-  //       }).addTo(this.map);
-
-  //       // Tooltip (hover)
-  //       marker.bindTooltip(
-  //         `<b>Location:</b><br>${locationName}`,
-  //         { sticky: true }
-  //       );
-
-  //       // Popup (click)
-  //       marker.bindPopup(`
-  //         <b>Location</b><br/>
-  //         ${locationName}<br/><br/>
-  //         <b>Lat:</b> ${point.coords.latitude.toFixed(6)}<br/>
-  //         <b>Lng:</b> ${point.coords.longitude.toFixed(6)}<br/>
-  //         <b>Speed:</b> ${point.coords.speed} m/s<br/>
-  //         <b>Time:</b> ${new Date(point.timestamp).toLocaleString()}
-  //       `);
-
-  //       bounds.extend(latLng);
-  //     }
-
-  //     // ✅ START marker
-  //     const start = sortedPoints[0];
-  //     const startMarker = L.marker(
-  //       [start.coords.latitude, start.coords.longitude],
-  //       { icon: this.createCustomIcon('#28a745', 'START') }
-  //     ).addTo(this.map);
-
-  //     // ✅ END marker
-  //     if (sortedPoints.length > 1) {
-  //       const end = sortedPoints[sortedPoints.length - 1];
-  //       const endMarker = L.marker(
-  //         [end.coords.latitude, end.coords.longitude],
-  //         { icon: this.createCustomIcon('#dc3545', 'END') }
-  //       ).addTo(this.map);
-  //     }
-
-  //     if (bounds.isValid()) {
-  //       this.map.fitBounds(bounds, { padding: [50, 50] });
-  //     }
-  //   });
-  // }
-
-//   loadAndPlotData(user: any) {
-//     const employeeId = user ? user.id : null;
-//     const payload: any = {};
-
-//     if (employeeId) {
-//       payload.employeeId = employeeId;
-//     }
-//     if (this.obj.startDate) {
-//       payload.start_date = this.obj.startDate
-//     }
-
-//     if (this.obj.endDate) {
-//       payload.end_date = this.obj.endDate
-//     }
-
-//     this.locationService.getLatestLocations(payload).subscribe(res => {
-//       // Handle no data response
-//       if (!res?.status || !Array.isArray(res?.data) || res.data.length == 0) {
-//         this.clearMap();
-//         // this.notfy
-//         console.warn(res?.message || 'No location data available');
-//         return;
-//       }
-//       const points: any = res?.data || [];
-//       if (!points.length) return;
-
-//       this.clearMap();
-
-//       const polylineColor = '#2c3e50';
-//       const bounds = L.latLngBounds([]);
-
-//       const sortedPoints = [...points].sort(
-//         (a, b) => a.timestamp - b.timestamp
-//       );
-// // const filtered = filterOutliers(coords, locationData);
-// // const snappedRoute =  this.googleRoadService.snapToRoad(coords:any).subscribe((snappedPoints:any) => {
-// // this.googleRoadService.snapToRoad(sortedPoints)
-// //   .subscribe(snappedRoute => {
-
-// //     const route: L.LatLngExpression[] = snappedRoute.map((p:any) => [
-// //       p.latitude,
-// //       p.longitude
-// //     ]);
-
-// //     this.polyline = L.polyline(route, {
-// //       color: '#2c3e50',
-// //       weight: 6,
-// //       opacity: 0.9
-// //     }).addTo(this.map);
-// //   });
-
-//       const route: L.LatLngExpression[] = sortedPoints.map(p => [
-//         p.coords.latitude,
-//         p.coords.longitude
-//       ]);
-
-//       this.polyline = L.polyline(route, {
-//         color: polylineColor,
-//         weight: 6,
-//         opacity: 0.9,
-//         smoothFactor: 1.0,
-//         lineCap: 'round',
-//         lineJoin: 'round'
-//       }).addTo(this.map);
-
-//       bounds.extend(this.polyline.getBounds());
-
-//       const startPoint = sortedPoints[0];
-//       const startIcon = this.createCustomIcon('#28a745', 'START');
-
-//       const startMarker = L.marker(
-//         [startPoint.coords.latitude, startPoint.coords.longitude],
-//         { icon: startIcon }
-//       ).addTo(this.map);
-
-//       this.bindMarkerPopupWithAddress(startMarker, 'START', startPoint.coords.latitude, startPoint.coords.longitude, startPoint.timestamp);
-
-//       this.markers.push(startMarker);
-//       bounds.extend([startPoint.coords.latitude, startPoint.coords.longitude]);
-
-//       if (sortedPoints.length > 1) {
-//         const endPoint = sortedPoints[sortedPoints.length - 1];
-//         const endIcon = this.createCustomIcon('#dc3545', 'END');
-
-//         const endMarker = L.marker(
-//           [endPoint.coords.latitude, endPoint.coords.longitude],
-//           { icon: endIcon }
-//         ).addTo(this.map);
-
-//         this.bindMarkerPopupWithAddress(endMarker, 'END', endPoint.coords.latitude, endPoint.coords.longitude, endPoint.timestamp);
-
-//         this.markers.push(endMarker);
-//         bounds.extend([endPoint.coords.latitude, endPoint.coords.longitude]);
-//       }
-
-//       const totalSegments = sortedPoints.length - 1;
-//       const arrowSpacing = Math.max(2, Math.floor(totalSegments / 8));
-
-//       for (let i = 0; i < totalSegments; i += arrowSpacing) {
-//         const curr = sortedPoints[i];
-//         const next = sortedPoints[i + 1];
-
-//         const bearing = this.calculateBearing(
-//           curr.coords.latitude,
-//           curr.coords.longitude,
-//           next.coords.latitude,
-//           next.coords.longitude
-//         );
-
-//         const ratio = 0.6;
-//         const arrowLat =
-//           curr.coords.latitude +
-//           (next.coords.latitude - curr.coords.latitude) * ratio;
-//         const arrowLng =
-//           curr.coords.longitude +
-//           (next.coords.longitude - curr.coords.longitude) * ratio;
-
-//         const arrowIcon = this.createArrowIcon(bearing);
-//         const arrowMarker = L.marker([arrowLat, arrowLng], {
-//           icon: arrowIcon
-//         }).addTo(this.map);
-
-//         this.arrowMarkers.push(arrowMarker);
-//       }
-
-//       if (bounds.isValid()) {
-//         this.map.fitBounds(bounds, { padding: [50, 50] });
-//       }
-//     });
-//   }
   async addLocationName(point: any): Promise<string> {
     try {
       const res: any = await this.locationService.getAddressFromCoords(point.coords.latitude, point.coords.longitude)
@@ -930,26 +704,94 @@ formatMinutesToHHMM(minutes: number): string {
       marker.setPopupContent(fallbackContent);
     });
   }
-  getDistanceInMeters(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
-  ): number {
-    const R = 6371000; // meters
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
+   getDistanceInMeters(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number
+): number {
+  const R = 6371000; // meters
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
 
-    const a =
-      Math.sin(dLat / 2) ** 2 +
-      Math.cos(lat1 * Math.PI / 180) *
-      Math.cos(lat2 * Math.PI / 180) *
-      Math.sin(dLon / 2) ** 2;
+  const a =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.cos(lat1 * Math.PI / 180) *
+    Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
-    return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+}
+
+filterNearbyPoints(
+  points: any[],
+  maxDistanceMeters = 100,
+  maxTimeDiffSeconds = 60
+) {
+  if (!points || points.length === 0) return [];
+
+  const cleaned: any[] = [];
+
+  for (const point of points) {
+    const lat = point.latitude ?? point.coords?.latitude;
+    const lng = point.longitude ?? point.coords?.longitude;
+    const timestamp = point.timestamp;
+
+    if (lat == null || lng == null || !timestamp) continue;
+
+    if (cleaned.length === 0) {
+      cleaned.push({ lat, lng, timestamp });
+      continue;
+    }
+
+    const last = cleaned[cleaned.length - 1];
+
+    const distance = this.getDistanceInMeters(
+      last.lat,
+      last.lng,
+      lat,
+      lng
+    );
+
+    const timeDiff =
+      Math.abs(timestamp - last.timestamp) / 1000; // seconds
+
+    // ❌ Skip if inside 100m AND within duration
+    if (
+      distance <= maxDistanceMeters &&
+      timeDiff <= maxTimeDiffSeconds
+    ) {
+      continue;
+    }
+
+    // ✅ Keep point
+    cleaned.push({ lat, lng, timestamp });
   }
+
+  return cleaned;
+}
+// commented old version
+  // getDistanceInMeters(
+  //   lat1: number,
+  //   lon1: number,
+  //   lat2: number,
+  //   lon2: number
+  // ): number {
+  //   const R = 6371000; // meters
+  //   const dLat = (lat2 - lat1) * Math.PI / 180;
+  //   const dLon = (lon2 - lon1) * Math.PI / 180;
+
+  //   const a =
+  //     Math.sin(dLat / 2) ** 2 +
+  //     Math.cos(lat1 * Math.PI / 180) *
+  //     Math.cos(lat2 * Math.PI / 180) *
+  //     Math.sin(dLon / 2) ** 2;
+
+  //   return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  // }
+
 detectStays(points: any[]) {
-  const STAY_DISTANCE = 50; // meters
+  const STAY_DISTANCE = 100; // meters
   const STAY_TIME = 5 * 60 * 1000; // 5 minutes
 
   const stays: any[] = [];
@@ -986,7 +828,6 @@ detectStays(points: any[]) {
     }
   }
 
-  // ✅ IMPORTANT: handle last stay
   if (stayStart) {
     const lastPoint = points[points.length - 1];
     const stayDuration = lastPoint.timestamp - stayStart.timestamp;
@@ -1005,6 +846,30 @@ detectStays(points: any[]) {
   return stays;
 }
 
+ removeSameLocationPoints(data:any, minDistance = 5) {
+  if (!data.length) return [];
+
+  const filtered = [data[0]];
+
+  for (let i = 1; i < data.length; i++) {
+    const prev = filtered[filtered.length - 1];
+    const curr = data[i];
+
+    const dist = this.getDistanceInMeters(
+      prev.coords.latitude,
+      prev.coords.longitude,
+      curr.coords.latitude,
+      curr.coords.longitude
+    );
+
+    // keep only if moved more than X meters
+    if (dist >= minDistance) {
+      filtered.push(curr);
+    }
+  }
+
+  return filtered;
+}
 
 drawStartEndMarkers(points: any[]) {
   const start = points[0];
@@ -1150,105 +1015,247 @@ async startPlayback(points: any[]) {
     this.playbackIndex++;
   }, 600); // speed (ms)
 }
-
-
-
+pinnedCount:any
 loadAndPlotData(user: any) {
-  const payload: any = {};
-  if (user?.id) payload.employeeId = user.id;
-  if (this.obj.startDate) payload.start_date = this.obj.startDate;
+  const payload: any = { employeeId: user.id };
+    if (this.obj.startDate) payload.start_date = this.obj.startDate;
   if (this.obj.endDate) payload.end_date = this.obj.endDate;
-
-  this.locationService.getLatestLocations(payload).subscribe(async res => {
-    if (!res?.status || !res.data?.length) {
+this.pinnedCount=0
+  this.locationService.getLatestLocations(payload).subscribe(res => {
+    if (!res?.data?.length) {
       this.clearMap();
       return;
     }
 
-    const points = res.data.sort((a:any, b:any) => a.timestamp - b.timestamp);
-
     this.clearMap();
 
-    // 1️⃣ Draw route
-    const polyline = this.drawPolyline(points);
-    if (polyline) {
-      polyline.addTo(this.map);
-      this.polyline = polyline;
-      this.map.fitBounds(polyline.getBounds(), { padding: [40, 40] });
-    }
 
+    const rawPoints = res.data.sort(
+      (a: any, b: any) => a.timestamp - b.timestamp
+    );
+
+
+    const cleanedPoints = this.cleanGpsPointsAdvanced(rawPoints);
+
+
+    const latLngs = cleanedPoints.map(p => [
+      p.lat ?? p.coords.latitude,
+      p.lng ?? p.coords.longitude
+    ]);
+
+    this.polyline = L.polyline(latLngs, {
+      color: '#1c68b4',
+      weight: 6,
+      opacity: 0.9,
+      smoothFactor: 2
+    }).addTo(this.map);
+
+    this.map.fitBounds(this.polyline.getBounds(), {
+      padding: [40, 40],
+      maxZoom: 16
+    });
+
+    this.drawStartEndMarkers(rawPoints);
+
+
+    const pinned = rawPoints.filter((p:any) => p.location_type == 'pinned');
+    this.pinnedCount = pinned.length;
+   console.log(pinned);
+
+    this.addPinnedMarkers(this.map, pinned);
 
 // ✅ new (clean route)
 // await this.drawSnappedRoute(points);
 
 
     // 2️⃣ Start / End markers
-    this.drawStartEndMarkers(points);
+    this.drawStartEndMarkers(rawPoints);
 
     // 3️⃣ Detect stays
-    const stays = this.detectStays(points);
+    const stays = this.detectStays(rawPoints);
 
     // 4️⃣ Draw stay markers
-    await this.drawStayMarkers(stays);
-   await this.startPlayback(points);
-
+     this.drawStayMarkers(stays);
+  //  await this.startPlayback(points);
   });
 }
 
-// drawPolyline(points: any[]): L.Polyline | null {
-//   if (!points || points.length < 2) return null;
 
-//   const sorted = [...points].sort((a, b) => a.timestamp - b.timestamp);
+addPinnedMarkers(map: L.Map, pinned: any[]) {
+  if (!pinned || !pinned.length) return;
 
-//   const valid = sorted.filter(p =>
-//     p?.coords &&
-//     typeof p.coords.latitude == 'number' &&
-//     typeof p.coords.longitude == 'number'
-//   );
+  const pinIcon = L.icon({
+    iconUrl: 'assets/img/icons/pinned.png',   // 👈 your pin image
+    iconSize: [36, 36],
+    iconAnchor: [18, 36],                 // 🔥 EXACT point on coordinate
+    popupAnchor: [0, -36]
+  });
 
-//   const filtered = valid.filter((p, i, arr) => {
-//     if (i === 0) return true;
+  pinned.forEach(async (p, index) => {
+    const lat = p.lat ?? p.coords?.latitude;
+    const lng = p.lng ?? p.coords?.longitude;
 
-//     const prev = arr[i - 1];
-//     const distance = this.getDistanceInMeters(
-//       prev.coords.latitude,
-//       prev.coords.longitude,
-//       p.coords.latitude,
-//       p.coords.longitude
-//     );
+    if (lat == null || lng == null) return;
 
-//     return distance <= 200; // remove GPS jumps
-//   });
+    const marker = L.marker([lat, lng], {
+      icon: pinIcon,
+      zIndexOffset: 2000
+    }).addTo(map);
+  const address = await this.getAddressFromAPI(
+      lat,
+     lng
+    );
+    marker.bindPopup(`
+      <b>Pinned Location</b><br/>
+      #${index + 1}<br/>
+      <b>Address:</b> ${address}<br/>
+      <b>Lat:</b> ${lat.toFixed(6)}<br/>
+      <b>Lng:</b> ${lng.toFixed(6)}<br/>
 
-//   const route = filtered.map(p => [
-//     p.coords.latitude,
-//     p.coords.longitude
-//   ] as L.LatLngExpression);
+    `);
 
-//   if (route.length < 2) return null;
+    this.markers.push(marker);
+  });
+}
 
-//   return L.polyline(route, {
-//     color: '#2c3e50',
-//     weight: 5,
-//     opacity: 0.9,
-//     lineCap: 'round',
-//     lineJoin: 'round'
+// loadAndPlotData(user: any) {
+//   const payload: any = {};
+//   if (user?.id) payload.employeeId = user.id;
+//   if (this.obj.startDate) payload.start_date = this.obj.startDate;
+//   if (this.obj.endDate) payload.end_date = this.obj.endDate;
+
+//   this.locationService.getLatestLocations(payload).subscribe(async res => {
+//     if (!res?.status || !res.data?.length) {
+//       this.clearMap();
+//       return;
+//     }
+
+//     const points = res.data.sort((a:any, b:any) => a.timestamp - b.timestamp);
+
+//     this.clearMap();
+// // const cleanedData = this.removeSameLocationPoints(points, 5);
+
+// // const polylinePath = cleanedData.map(p => ({
+// //   lat: p.coords.latitude,
+// //   lng: p.coords.longitude
+// // }));
+//     // 1️⃣ Draw route
+//     const polyline = this.drawPolyline(points);
+//     if (polyline) {
+//       polyline.addTo(this.map);
+//       this.polyline = polyline;
+//       this.map.fitBounds(polyline.getBounds(), { padding: [40, 40] });
+//     }
+
+
+// // ✅ new (clean route)
+// // await this.drawSnappedRoute(points);
+
+
+//     // 2️⃣ Start / End markers
+//     this.drawStartEndMarkers(points);
+
+//     // 3️⃣ Detect stays
+//     const stays = this.detectStays(points);
+
+//     // 4️⃣ Draw stay markers
+//     await this.drawStayMarkers(stays);
+//   //  await this.startPlayback(points);
+
 //   });
 // }
+
+getBearing(lat1: number, lng1: number, lat2: number, lng2: number): number {
+  const toRad = (v: number) => (v * Math.PI) / 180;
+
+  const y = Math.sin(toRad(lng2 - lng1)) * Math.cos(toRad(lat2));
+  const x =
+    Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
+    Math.sin(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      Math.cos(toRad(lng2 - lng1));
+
+  return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
+}
+
+cleanGpsPointsAdvanced(
+  rawPoints: any[],
+  options = {
+    minDistance: 50,        // meters
+    minSpeed: 5,            // km/h
+    minTime: 20,            // seconds
+    maxBearingChange: 45    // degrees (zigzag killer)
+  }
+) {
+  const cleaned: any[] = [];
+
+  for (const p of rawPoints) {
+    const lat = p.latitude ?? p.coords?.latitude;
+    const lng = p.longitude ?? p.coords?.longitude;
+    const timestamp = p.timestamp;
+
+    if (!lat || !lng || !timestamp) continue;
+
+    if (cleaned.length < 2) {
+      cleaned.push({ lat, lng, timestamp });
+      continue;
+    }
+
+    const last = cleaned[cleaned.length - 1];
+    const prev = cleaned[cleaned.length - 2];
+
+    const distance = this.getDistanceInMeters(last.lat, last.lng, lat, lng);
+    const timeDiff = (timestamp - last.timestamp) / 1000;
+    const speed = this.getSpeedKmph(distance, timeDiff);
+
+    const bearing1 = this.getBearing(prev.lat, prev.lng, last.lat, last.lng);
+    const bearing2 = this.getBearing(last.lat, last.lng, lat, lng);
+    const bearingDiff = Math.abs(bearing1 - bearing2);
+
+    // ❌ Remove jitter / zigzag
+    if (
+      distance < options.minDistance ||
+      speed < options.minSpeed ||
+      timeDiff < options.minTime ||
+      bearingDiff > options.maxBearingChange
+    ) {
+      // keep latest point only
+      cleaned[cleaned.length - 1] = { lat, lng, timestamp };
+      continue;
+    }
+
+    cleaned.push({ lat, lng, timestamp });
+  }
+
+  return cleaned;
+}
+getSpeedKmph(
+  distanceMeters: number,
+  timeSeconds: number
+): number {
+  if (timeSeconds <= 0) return 0;
+  return (distanceMeters / timeSeconds) * 3.6;
+}
+
+
+
 drawPolyline(points: any[]): L.Polyline | null {
   if (!points || points.length < 2) return null;
 
-  const route = points.map(p => [
-    p.latitude ?? p.coords.latitude,
-    p.longitude ?? p.coords.longitude
-  ] as L.LatLngExpression);
+  const cleaned = this.cleanGpsPointsAdvanced(points);
 
-  if (route.length < 2) return null;
+  if (cleaned.length < 2) return null;
 
-  return L.polyline(route, {
-    color: '#2c3e50',
-    weight: 5,
+  const latLngs: L.LatLngExpression[] = cleaned.map(p => [
+    p.lat,
+    p.lng
+  ]);
+
+  return L.polyline(latLngs, {
+    color: '#1c68b4',
+    weight: 6,
     opacity: 0.9,
+    smoothFactor: 2,   // smooths tiny curves
     lineCap: 'round',
     lineJoin: 'round'
   });
@@ -1275,159 +1282,6 @@ async drawSnappedRoute(points: any[]) {
   });
 }
 
-  // loadAndPlotData(user: any) {
-  //   const employeeId = user ? user.id : null;
-  //   const obj: any = {}
-  //   if (employeeId) {
-  //     obj['employeeId'] = employeeId
-  //   }
-  //   this.locationService.getLatestLocations(obj).subscribe(res => {
-  //     if (!res?.data) return;
-
-  //     this.clearMap();
-
-  //     const polylineColor = '#2c3e50';
-  //     const bounds: L.LatLngBounds = L.latLngBounds([]);
-
-  //     Object.keys(res.data).forEach((employeeId) => {
-  //       const points = res.data[employeeId];
-  //       if (!points.length) return;
-
-  //       const sortedPoints = [...points].sort((a: any, b: any) =>
-  //         new Date(a.tracked_at).getTime() - new Date(b.tracked_at).getTime()
-  //       );
-
-  //       const route: L.LatLngExpression[] = sortedPoints.map((p: any) => [
-  //         p.latitude,
-  //         p.longitude
-  //       ]);
-
-  //       this.polyline = L.polyline(route, {
-  //         color: polylineColor,
-  //         weight: 6,
-  //         opacity: 0.9,
-  //         smoothFactor: 1.0,
-  //         lineCap: 'round',
-  //         lineJoin: 'round'
-  //       }).addTo(this.map);
-
-  //       bounds.extend(this.polyline.getBounds());
-
-  //       if (sortedPoints.length > 0) {
-  //         const startPoint = sortedPoints[0];
-  //         const startIcon = this.createCustomIcon('#28a745', 'START');
-  //         const startMarker = L.marker([startPoint.latitude, startPoint.longitude], {
-  //           icon: startIcon
-  //         }).addTo(this.map);
-
-  //         startMarker.bindPopup(`
-  //         <b>START</b><br/>
-  //         <b>Employee:</b> ${employeeId}<br/>
-  //         Lat: ${startPoint.latitude.toFixed(6)}<br/>
-  //         Lng: ${startPoint.longitude.toFixed(6)}<br/>
-  //         Time: ${new Date(startPoint.tracked_at).toLocaleString()}
-  //       `);
-
-  //         this.markers.push(startMarker);
-  //         bounds.extend([startPoint.latitude, startPoint.longitude]);
-  //       }
-
-  //       if (sortedPoints.length > 1) {
-  //         const endPoint = sortedPoints[sortedPoints.length - 1];
-  //         const endIcon = this.createCustomIcon('#dc3545', 'END');
-  //         const endMarker = L.marker([endPoint.latitude, endPoint.longitude], {
-  //           icon: endIcon
-  //         }).addTo(this.map);
-
-  //         endMarker.bindPopup(`
-  //         <b>END</b><br/>
-  //         <b>Employee:</b> ${employeeId}<br/>
-  //         Lat: ${endPoint.latitude.toFixed(6)}<br/>
-  //         Lng: ${endPoint.longitude.toFixed(6)}<br/>
-  //         Time: ${new Date(endPoint.tracked_at).toLocaleString()}
-  //       `);
-
-  //         this.markers.push(endMarker);
-  //         bounds.extend([endPoint.latitude, endPoint.longitude]);
-  //       }
-
-  //       const totalSegments = sortedPoints.length - 1;
-
-  //       const arrowSpacing = Math.max(2, Math.floor(totalSegments / 8));
-
-  //       for (let i = 0; i < totalSegments; i += arrowSpacing) {
-  //         const currentPoint = sortedPoints[i];
-  //         const nextPoint = sortedPoints[i + 1];
-
-  //         const segmentRatio = 0.6;
-  //         const arrowLat = currentPoint.latitude + (nextPoint.latitude - currentPoint.latitude) * segmentRatio;
-  //         const arrowLon = currentPoint.longitude + (nextPoint.longitude - currentPoint.longitude) * segmentRatio;
-
-  //         const bearing = this.calculateBearing(
-  //           currentPoint.latitude,
-  //           currentPoint.longitude,
-  //           nextPoint.latitude,
-  //           nextPoint.longitude
-  //         );
-
-  //         const arrowIcon = this.createArrowIcon(bearing);
-  //         const arrowMarker = L.marker([arrowLat, arrowLon], {
-  //           icon: arrowIcon
-  //         }).addTo(this.map);
-
-  //         this.arrowMarkers.push(arrowMarker);
-  //       }
-
-  //       if (sortedPoints.length >= 2) {
-  //         const firstPoint = sortedPoints[0];
-  //         const secondPoint = sortedPoints[1];
-  //         const initialBearing = this.calculateBearing(
-  //           firstPoint.latitude,
-  //           firstPoint.longitude,
-  //           secondPoint.latitude,
-  //           secondPoint.longitude
-  //         );
-
-  //         const startRatio = 0.3;
-  //         const startArrowLat = firstPoint.latitude + (secondPoint.latitude - firstPoint.latitude) * startRatio;
-  //         const startArrowLon = firstPoint.longitude + (secondPoint.longitude - firstPoint.longitude) * startRatio;
-
-  //         const startArrowIcon = this.createArrowIcon(initialBearing);
-  //         const startArrowMarker = L.marker([startArrowLat, startArrowLon], {
-  //           icon: startArrowIcon
-  //         }).addTo(this.map);
-
-  //         this.arrowMarkers.push(startArrowMarker);
-  //       }
-
-  //       if (sortedPoints.length >= 2) {
-  //         const secondLastPoint = sortedPoints[sortedPoints.length - 2];
-  //         const lastPoint = sortedPoints[sortedPoints.length - 1];
-  //         const finalBearing = this.calculateBearing(
-  //           secondLastPoint.latitude,
-  //           secondLastPoint.longitude,
-  //           lastPoint.latitude,
-  //           lastPoint.longitude
-  //         );
-
-  //         const endRatio = 0.7;
-  //         const endArrowLat = secondLastPoint.latitude + (lastPoint.latitude - secondLastPoint.latitude) * endRatio;
-  //         const endArrowLon = secondLastPoint.longitude + (lastPoint.longitude - secondLastPoint.longitude) * endRatio;
-
-  //         const endArrowIcon = this.createArrowIcon(finalBearing);
-  //         const endArrowMarker = L.marker([endArrowLat, endArrowLon], {
-  //           icon: endArrowIcon
-  //         }).addTo(this.map);
-
-  //         this.arrowMarkers.push(endArrowMarker);
-  //       }
-  //     });
-
-  //     if (bounds.isValid()) {
-  //       this.map.fitBounds(bounds, { padding: [50, 50] });
-  //     }
-  //   });
-  // }
 
   toggleLiveTracking() {
     if (!this.currentTrackingUser) {

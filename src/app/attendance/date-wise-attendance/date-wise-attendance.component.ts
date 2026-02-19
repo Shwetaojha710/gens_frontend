@@ -37,6 +37,16 @@ export class DateWiseAttendanceComponent {
     { value: '12', label: 'December' }
   ];
 
+    checkUncheckAll() {
+    this.AttendanceMasterList.forEach((item: any) => item.editable = this.masterSelected);
+  }
+  masterSelected: boolean = false;
+
+  isAllSelected() {
+    this.masterSelected = this.AttendanceMasterList.every((item: any) => item.editable);
+
+  }
+
   getMin(a: number, b: number): number {
     return Math.min(a, b);
   }
@@ -399,8 +409,37 @@ applyFilter(event: any) {
   }
 
   UpdateAttendance() {
-
     this.attendanceService.updateAttendance(this.newObj).subscribe((data: {
+      [x: string]: any;
+    }) => {
+      if (data['status'] == true) {
+        this.notyf.success(data['message']);
+        this.fetchAttendance();
+        this.updateFlag = false;
+      } else if (data['status'] == 'expired') {
+        this.router.navigate(['login'])
+      }
+      else {
+        this.notyf.error(data['message']);
+      }
+    },
+      (error: any) => {
+        this.notyf.error('Failed to update attendance. Please try again.');
+      }
+    );
+
+  }
+
+
+    correctAll() {
+    // console.log(this.newObj);
+    // console.log(this.AttendanceMasterList);
+    const selectedEmployees = this.AttendanceMasterList.filter((item: any) => item.editable);
+    if (selectedEmployees.length == 0) {
+      this.notyf.error('Please Select CheckBox');
+      return;
+    }
+    this.attendanceService.BulkUpdateAttendance(this.AttendanceMasterList).subscribe((data: {
       [x: string]: any;
     }) => {
       if (data['status'] == true) {

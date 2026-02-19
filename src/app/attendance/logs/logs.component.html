@@ -52,18 +52,23 @@
       <div id="DataTables_Table_0_wrapper" class="dt-container dt-bootstrap5 dt-empty-footer">
         <div class="row card-header mx-0 px-2">
           <div class="d-md-flex justify-content-between align-items-center dt-layout-start col-md-auto me-auto">
+
             <p class="card-title mb-0 text-md-start text-center" style="    display: flex;
     flex-wrap: wrap;
     padding-bottom: 6px;">
-              <span class="text-success">P = Present</span> &nbsp;
+          
+
+              <!-- <span class="text-success">P = Present</span> &nbsp; -->
+
 
               <span class="text-danger">A = Absent</span> &nbsp;
 
-              <span class="text-danger">L = Leave</span> &nbsp;
+              <span class="text-orange">L = Leave</span> &nbsp;
 
-              <span class="text-info">H = Holiday</span> &nbsp;
+              <span class="text-success">H = Holiday</span> &nbsp;
+              <span class="text-fh">FH = First half</span> &nbsp;
 
-              <span class="text-warning">O = Off Day</span> &nbsp;
+              <span class="text-info">SH = Second Half</span> &nbsp;
 
               <span class="text-primary">WO = Week Off</span> &nbsp;
             </p>
@@ -112,6 +117,7 @@
               <thead>
                 <tr role="row">
                   <th style="width: 120px; font-size: 12px">Employee</th>
+                  <th style="width: 120px; font-size: 12px">Emp Code</th>
 
                   <th *ngFor="let day of dayList" style="width: 50px; font-size: 12px">
                     {{ day }}
@@ -119,17 +125,33 @@
                 </tr>
               </thead>
 
+
+
               <tbody>
                 <tr *ngFor="let item of AttendanceMasterList">
   <td style="width: 100px; font-size: 12px">
     {{ item.employee_name }}
   </td>
+  <td style="width: 100px; font-size: 12px">
+    {{ item.empCode }}
+  </td>
 
   <ng-container *ngFor="let day of dayList">
-    <td style="width: 60px; font-size: 12px; text-align: center">
+    <td style="width: 60px; font-size: 12px; text-align: center;">
       <!-- {{item}}
       {{day}} -->
-      {{ item.dayTime[day] || '--' }}
+        <span [ngClass]="{
+                          'text-danger':item.dayTime[day] == 'A',
+                          'text-primary':item.dayTime[day]== 'WO',
+                          'text-success':item.dayTime[day] == 'H',
+                          'text-orange':item.dayTime[day] == 'L',
+                          'text-fh':item.dayTime[day] == 'FH',
+                          'text-info':item.dayTime[day] == 'SH',
+                          'fw-bold': true
+                        }">
+                        {{ item.dayTime[day] || '--' }}
+                      </span>
+      <!-- {{ item.dayTime[day] || '--' }} -->
       <!-- {{item}}
       {{item.dayTime}}
       {{day}} -->
@@ -141,7 +163,7 @@
                   <td style="width: 100px; font-size: 12px">
                     {{ item.employee_name }}
                   </td>
-                
+
 
                   <ng-container *ngFor="let day of item.data">
                       <td style="width: 60px; font-size: 12px; text-align: center">

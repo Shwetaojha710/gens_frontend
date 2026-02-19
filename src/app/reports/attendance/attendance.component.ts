@@ -152,9 +152,11 @@ export class AttendanceComponent {
 
   fetchAttendance() {
     this.AttendanceList = []
+    this.AttendanceMasterList = []
     this.originalList = []
     this.attendanceService.getLateAttendance(this.obj).subscribe((response: any) => {
       if (response && response.data && response.status === true) {
+
         this.notyf.success(response.message || 'Employees loaded successfully');
         this.AttendanceMasterList = [];
         this.AttendanceMasterList = response.data || [];
@@ -186,7 +188,7 @@ export class AttendanceComponent {
       (error: any) => {
         this.AttendanceMasterList = [];
         console.error('Error loading employees:', error);
-        this.notyf.error(error)
+        this.notyf.error(error?.error?.message)
         // alert('Failed to load employees. Please try again.');
       }
     );

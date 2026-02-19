@@ -168,10 +168,10 @@ export class FullTimeSalaryComponent {
           imageAlt: "Success Icon",
           confirmButtonText: '<i class="fa fa-download"></i> Download Excel File',
           confirmButtonColor: "#0663a9",
-           showCancelButton: true,
-           text:"Please click the button below to download the Excel file containing the salary details.",
-      cancelButtonText: '<i class="fa fa-times me-2"></i> Cancel',
-      cancelButtonColor: "#d33",
+          showCancelButton: true,
+          text: "Please click the button below to download the Excel file containing the salary details.",
+          cancelButtonText: '<i class="fa fa-times me-2"></i> Cancel',
+          cancelButtonColor: "#d33",
           reverseButtons: true
         }).then(async (result) => {
           if (result.isConfirmed) {
@@ -235,7 +235,7 @@ export class FullTimeSalaryComponent {
           })
           this.SalaryArr = response.data
           this.originalList = response.data
-          console.log(this.SalaryArr, "salary Array");
+          // console.log(this.SalaryArr, "salary Array");
           // pagination
           const start = (this.currentPage - 1) * this.pageSize;
           const end = start + this.pageSize;
@@ -313,7 +313,7 @@ export class FullTimeSalaryComponent {
     this.SalaryArr = []
     this.originalList = []
     this.filteredSalary = []
-    this.obj={}
+    this.obj = {}
   }
   EmpList: any = []
   async empList() {
@@ -343,6 +343,7 @@ export class FullTimeSalaryComponent {
   isLoading: boolean = false;
   originalList: any = []
   newObj: any = {}
+  absentDaysArr:any=[]
   onSubmit() {
     if (this.obj['year'] == undefined || this.obj['year'] == null || this.obj['year'] == '') {
       this.notyf.error("year is Required");
@@ -352,6 +353,7 @@ export class FullTimeSalaryComponent {
     this.isLoading = true;
     this.SalaryArr = []
     this.originalList = []
+    this.absentDaysArr=[]
     this.newObj = Object.assign({}, this.obj)
     if (this.newObj['employeeId'] === 'All') {
       this.newObj['employeeId'] = this.EmpList
@@ -367,7 +369,7 @@ export class FullTimeSalaryComponent {
         this.isLoading = false;
         let message = response.message ? response.message : 'Data found Successfully';
         let status = this.statusService.handleResponseStatus(response.status, message);
-        console.log(status)
+
         console.log("response", response);
 
         if (status == true) {
@@ -375,7 +377,8 @@ export class FullTimeSalaryComponent {
           this.notyf.success(message)
           this.SalaryArr = response.data
           this.originalList = response.data
-          console.log(this.SalaryArr, "salary Array");
+
+          // console.log(this.SalaryArr, "salary Array");
           // pagination
           const start = (this.currentPage - 1) * this.pageSize;
           const end = start + this.pageSize;
@@ -407,7 +410,9 @@ export class FullTimeSalaryComponent {
   personalDetails: any = {}
   EmployerDedArr: any = []
   view(item: any) {
+    this.activeTab = 'salary';
     const obj = Object.assign({}, item)
+    this.absentDaysArr = obj.absentdaysArr
     this.personalDetails = {}
     this.personalDetails = obj
     this.SalaryBreakup = []
@@ -497,4 +502,101 @@ export class FullTimeSalaryComponent {
 
     this.modal.hide();
   }
+  activeTab = 'salary';
+
+  attendanceList: any[] = [];
+  leaveList: any[] = [];
+  loadAttendance() {
+
+    const empId = this.personalDetails?.employeeId;
+    let newObj: any = {}
+    newObj = {
+      "employeeId": empId,
+      "month": this.obj['month'],
+      "year": this.obj['year'],
+      "shift_name":  this.personalDetails?.shift_name
+    }
+    this.payroll.empMonthlyLeaveAttDetails(newObj).subscribe((res: any) => {
+    this.payroll.empMonthlyLeaveAttDetails(newObj).subscribe({
+      next: (response: any) => {
+        console.log('response', response);
+
+        let message = response.message ? response.message : 'Data found Successfully';
+        let status = this.statusService.handleResponseStatus(response.status, message);
+        console.log(status)
+        console.log("response", response);
+
+        if (status === true) {
+         this.attendanceList = res.data?.attendanceList || [];
+        }
+        else if (status == "expired") {
+          this.router.navigate(["login"]);
+        }
+
+        else {
+          this.notyf.error(message)
+        }
+
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.notyf.error(err.error?.message)
+      }
+    });
+
+
+
+
+    });
+
+  }
+
+  loadLeaveRequests() {
+
+    const empId = this.personalDetails?.employeeId;
+    let newObj: any = {}
+    newObj = {
+      "employeeId": empId,
+      "month": this.obj['month'],
+      "year": this.obj['year'],
+       "shift_name":  this.personalDetails?.shift_name
+    }
+    this.payroll.empMonthlyLeaveAttDetails(newObj).subscribe({
+      next: (response: any) => {
+        console.log('response', response);
+
+        let message = response.message ? response.message : 'Data found Successfully';
+        let status = this.statusService.handleResponseStatus(response.status, message);
+        console.log(status)
+        console.log("response", response);
+
+        if (status === true) {
+          this.leaveList = response.data?.leaveList || [];
+        }
+        else if (status == "expired") {
+          this.router.navigate(["login"]);
+        }
+
+        else {
+          this.notyf.error(message)
+        }
+
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.notyf.error(err.error?.message)
+      }
+    });
+
+    // this.apiService.getEmployeeLeaves({
+    //   emp_id: empId
+    // }).subscribe((res:any)=>{
+
+    //   this.leaveList = res.data || [];
+
+    // });
+
+  }
+
+
 }

@@ -120,7 +120,9 @@
             <h5 class="mb-0">Map View</h5>
           </div>
           <div class="d-flex align-items-center gap-2">
+            <div class="col-1 badge"> Pinned: {{ pinnedCount }}</div>
             <div class="col-2">
+
               <label for="defaultFormControlInput" class="form-label mb-1">Select Start Date
                 <span style="color: red">*</span>
               </label>
@@ -135,6 +137,7 @@
                 [(ngModel)]="obj['endDate']" name="month" [min]="getToDateMin()" required
                 (change)="DateWiseTracking()" />
             </div>
+            <!-- <div class="badge">Pinned: {{ pinnedCount }}</div> -->
             <!-- <button
             type="button"
             class="btn btn-sm btn-success"

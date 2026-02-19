@@ -126,15 +126,90 @@
       </div>
     </div>
   </div>
+
+  <div class="row mb-6" *ngIf="!createFlag">
+    <div class="col-md">
+
+      <div class="card">
+        <h5 class="card-header d-flex justify-content-between align-items-center">
+          <span>Filter Apply Leave</span>
+          <button *ngIf="createFlag == false" type="button" class="btn btn-xs btn-primary float-end"
+            (click)="opencreate()">
+            <i class="fa-solid fa-plus"></i>&nbsp;Add
+          </button>
+        </h5>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label">Select Employee</label>
+              <ng-select [items]="EmpList" bindLabel="label" bindValue="value" [(ngModel)]="obj['emp_id']"
+                [multiple]="false" placeholder="Select Employee" name="state" id="select2Danger" required
+                #enCashableRef="ngModel">
+              </ng-select>
+            </div>
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label">Select Leave Type</label>
+              <ng-select [items]="leaveTypeList" bindLabel="label" bindValue="value" [(ngModel)]="obj['leave_type_id']"
+                [multiple]="false" placeholder="Select Leave Type" name="state" id="select2Danger" required
+                #leaveTypeFilterRef="ngModel">
+              </ng-select>
+
+            </div>
+
+
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label">Select Year
+                <span style="color: red">*</span>
+              </label>
+              <ng-select [items]="yearList" bindLabel="label" bindValue="value" [(ngModel)]="obj['year']"
+                [multiple]="false" placeholder="Select Year" name="state" id="select2Danger" class="w-100 mx-2" required
+                #enCashableRef="ngModel">
+              </ng-select>
+            </div>
+
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label">Select Month
+                <span style="color: red"> * </span>
+              </label>
+              <ng-select [items]="monthList" bindLabel="label" bindValue="value" [(ngModel)]="obj['month']"
+                [multiple]="false" placeholder="Select Month" name="state" id="select2Danger" required
+                #enCashableRef="ngModel">
+              </ng-select>
+            </div>
+
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label">Select Status
+                <span style="color: red"> * </span>
+              </label>
+              <ng-select [items]="leaveStatus" bindLabel="label" bindValue="value" [(ngModel)]="obj['status']"
+                [multiple]="false" placeholder="Select Status" name="state" id="select2Danger" required
+                #enCashableRef="ngModel">
+              </ng-select>
+            </div>
+
+          </div>
+          <div class="row mt-2">
+            <div class="col-12 justify-content-center">
+              <button type="button" class="btn btn-sm btn-primary waves-effect waves-light" (click)="getApplyLeaveList()">
+                Submit
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <div class="row mb-6">
     <div class="col-md">
       <div class="card">
         <h5 class="card-header d-flex justify-content-between align-items-center">
           <span>Apply Leave List</span>
-          <button *ngIf="createFlag == false" type="button" class="btn btn-xs btn-primary float-end"
+          <!-- <button *ngIf="createFlag == false" type="button" class="btn btn-xs btn-primary float-end"
             (click)="opencreate()">
             <i class="fa-solid fa-plus"></i>&nbsp;Add
-          </button>
+          </button> -->
         </h5>
 
         <!-- <app-search-pagination
@@ -191,21 +266,25 @@
 
                   <td>{{ item["createdAt"] }}</td>
 
-                  <td>
-                    <button type="button" class="badge badge-center bg-label-success" *ngIf="item.status!='rejected'"
-                      (click)="statuschange(item,'approved')">
-                      <i class="fas fa-check"></i>
-                    </button>
-                    &nbsp;
-                    <button *ngIf="item.status=='pending'" type="button" class="badge badge-center bg-label-danger"
-                      (click)="statuschange(item,'rejected')">
-                      <i class="fa-solid fa-xmark"></i>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+                <td>
+                  <button type="button" class="badge badge-center bg-label-success" *ngIf="item.status!='approved'"
+                    (click)="statuschange(item,'approved')">
+                    <i class="fas fa-check"></i>
+                  </button>
+                  &nbsp;
+                 <button
+  *ngIf="['pending','recommended'].includes(item.status)"
+  type="button"
+  class="badge badge-center bg-label-danger"
+  (click)="statuschange(item,'rejected')">
+
+  <i class="fa-solid fa-xmark"></i>
+
+</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </app-search-pagination>
 
         <!-- <div class="table-responsive text-nowrap">

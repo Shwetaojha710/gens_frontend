@@ -174,8 +174,8 @@ export class MasterService {
   UpdateApplyLeaveStatus(dept: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}update-apply-leave-status`, dept);
   }
-  getapplyLeaveList(): Observable<any> {
-    return this.http.post(`${this.baseUrl}get-applied-leaves`, {});
+  getapplyLeaveList(obj:any): Observable<any> {
+    return this.http.post(`${this.baseUrl}get-applied-leaves`, obj);
   }
 
 

@@ -14,6 +14,9 @@ import * as pdfFonts from "pdfmake/build/vfs_fonts";
 import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
 import * as XLSX from 'xlsx';
 import FileSaver from 'file-saver';
+import { Document, Packer, Paragraph, Table, TableRow, TableCell, WidthType, TextRun } from "docx";
+import { saveAs } from "file-saver";
+import { toWords } from 'number-to-words';
 // Tell TS/ESBuild that pdfMake is dynamic
 const pdfMakeX: any = pdfMake;
 pdfMakeX.vfs = (pdfFonts as any).vfs;
@@ -223,7 +226,9 @@ export class GeneratedSalaryComponent {
   SalaryArr: any = []
   isLoading: boolean = false;
   originalList: any = []
+  totalAmount: any = 0
   onSubmit() {
+    this.totalAmount = 0
     this.isLoading = true;
     this.SalaryArr = []
     this.originalList = []
@@ -248,14 +253,17 @@ export class GeneratedSalaryComponent {
         if (status == true) {
 
           this.notyf.success(message)
-          response.data=response.data.map((item:any, index: any)=>{
-            return{
-              ...item,
-          si_no: index + 1,
-            }
-          })
-          this.SalaryArr = response.data
-          this.originalList = response.data
+          if (response.data && response.data.salaryList) {
+            response.data.salaryList = response.data.salaryList.map((item: any, index: any) => {
+              return {
+                ...item,
+                si_no: index + 1,
+              }
+            })
+          }
+          this.SalaryArr = response.data.salaryList
+          this.originalList = response.data.salaryList
+          this.totalAmount = response.data.totalAmount
           console.log(this.SalaryArr, "salary Array");
           // pagination
           const start = (this.currentPage - 1) * this.pageSize;
@@ -285,17 +293,17 @@ export class GeneratedSalaryComponent {
   modal: any;
   PayArr: any = []
   DedArr: any = []
-  personalDetails:any;
-    EmployerDedArr: any = []
-   getDaysInMonth(year: number, month: number): number {
-  return new Date(year, month, 0).getDate();
-}
+  personalDetails: any;
+  EmployerDedArr: any = []
+  getDaysInMonth(year: number, month: number): number {
+    return new Date(year, month, 0).getDate();
+  }
   view(item: any) {
     const obj = Object.assign({}, item)
-    this.personalDetails=obj
+    this.personalDetails = obj
 
-    this.personalDetails['totalWorkingDays']= this.getDaysInMonth(this.personalDetails.year, this.personalDetails.month)
- console.log(this.personalDetails,"personal detailss");
+    this.personalDetails['totalWorkingDays'] = this.getDaysInMonth(this.personalDetails.year, this.personalDetails.month)
+    console.log(this.personalDetails, "personal detailss");
     this.SalaryBreakup = []
     this.payroll.getBillDetails(obj).subscribe({
       next: (response: any) => {
@@ -315,8 +323,8 @@ export class GeneratedSalaryComponent {
           this.PayArr = []
           this.DedArr = []
           const EmployerDedArr = [];
-          this.EmployerDedArr=[]
-             // Initialize totals
+          this.EmployerDedArr = []
+          // Initialize totals
           let totalEarning = 0;
           let totalDeduction = 0;
           let totalEmployerDeduction = 0;
@@ -726,5 +734,987 @@ export class GeneratedSalaryComponent {
     };
     return numToWords(Math.floor(amount));
   }
+
+  chequeNo: any = '';
+async generateDoc() {
+
+  if (this.SalaryArr.length == 0) {
+    this.notyf.error('please Submit First then export');
+    return;
+  }
+
+  if (!this.chequeNo) {
+    this.notyf.error("Cheque No is required");
+    return;
+  }
+
+  const {
+    Document,
+    Packer,
+    Paragraph,
+    TextRun,
+    AlignmentType,
+    Table,
+    TableRow,
+    TableCell,
+    WidthType,
+    ImageRun,
+    Footer,
+    Header
+  } = await import("docx");
+
+  this.obj['totalAmount'] = this.totalAmount;
+  this.obj['chequeNo'] = this.chequeNo;
+  this.obj['bill_date'] = new Date();
+const today = new Date();
+
+const day = today.getDate();
+
+// function to add st/nd/rd/th
+const getOrdinal = (n: number) => {
+  if (n > 3 && n < 21) return "th";
+  switch (n % 10) {
+    case 1: return "st";
+    case 2: return "nd";
+    case 3: return "rd";
+    default: return "th";
+  }
+};
+
+const month = today.toLocaleString('en-IN', { month: 'short' });
+const year = today.getFullYear();
+
+const formattedDate = `Dated: ${day}${getOrdinal(day)} ${month}, ${year}`;
+
+  this.payroll.SubmitSalaryDoc(this.obj).subscribe(async () => {
+
+    // ======================
+    // LOAD IMAGE FUNCTION
+    // ======================
+
+    const loadImg = async (path:string,w:number,h:number)=>
+      new ImageRun({
+        data: await fetch(path).then(r=>r.arrayBuffer()),
+        type:'png',
+        transformation:{ width:w,height:h }
+      });
+
+    const logo = await loadImg('assets/img/logo/logo-quaere.png',120,40);
+    const soc2 = await loadImg('assets/img/logo/footer1.png',45,45);
+    const cmmi = await loadImg('assets/img/logo/footer_2.png',120,60);
+
+    // ======================
+    // HEADER (LOGO + DATE)
+    // ======================
+
+    const header = new Header({
+
+      children:[
+
+        new Table({
+          width:{ size:100,type:WidthType.PERCENTAGE },
+          borders:{
+            top:{style:"none"},
+            bottom:{style:"none"},
+            left:{style:"none"},
+            right:{style:"none"},
+            insideHorizontal:{style:"none"},
+            insideVertical:{style:"none"}
+          },
+          rows:[
+
+            new TableRow({
+
+              children:[
+
+                new TableCell({
+                  borders:{top:{style:"none"},bottom:{style:"none"},left:{style:"none"},right:{style:"none"}},
+                  children:[ new Paragraph({ children:[logo] }) ]
+                }),
+
+                // new TableCell({
+                //   borders:{top:{style:"none"},bottom:{style:"none"},left:{style:"none"},right:{style:"none"}},
+                //   children:[
+
+                //     new Paragraph({
+                //       alignment:AlignmentType.RIGHT,
+                //       children:[
+                //         new TextRun({
+                //           text:`Dated: ${new Date().toLocaleDateString()}`,
+                //           bold:true,
+                //           size:24
+                //         })
+                //       ]
+                //     })
+
+                //   ]
+                // })
+
+              ]
+
+            })
+
+          ]
+        })
+
+      ]
+
+    });
+
+    // ======================
+    // TABLE DATA
+    // ======================
+
+    const rows:any[] = [];
+
+    rows.push(
+      new TableRow({
+        children:["S.No","Beneficiary Name","Beneficiary Ac No","IFSC","Amt","Remarks"]
+        .map(text=> new TableCell({
+          children:[ new Paragraph({
+            alignment:AlignmentType.CENTER,
+            children:[ new TextRun({ text, bold:true }) ]
+          })]
+        }))
+      })
+    );
+
+    this.SalaryArr.forEach((emp:any,index:number)=>{
+
+      rows.push(
+        new TableRow({
+          children:[
+            new TableCell({children:[new Paragraph(String(index+1))]}),
+            new TableCell({children:[new Paragraph(emp.employeeName||"")]}),
+            new TableCell({children:[new Paragraph(emp.bankAccount||"")]}),
+            new TableCell({children:[new Paragraph(emp.ifscCode||"")]}),
+            new TableCell({children:[new Paragraph(emp.net_amount||"0")]}),
+            new TableCell({children:[new Paragraph(`SALARY ${this.monthObj[emp.month]}-${emp.year}`)]}),
+          ]
+        })
+      );
+
+    });
+
+    const table = new Table({
+      width:{size:100,type:WidthType.PERCENTAGE},
+      rows
+    });
+
+    // ======================
+    // FOOTER
+    // ======================
+
+    const footer = new Footer({
+
+      children:[
+
+        new Paragraph({
+          border:{ top:{
+            color: "999999", size: 6,
+            style: 'nil'
+          } }
+        }),
+
+        new Table({
+
+          width:{size:100,type:WidthType.PERCENTAGE},
+
+          borders:{
+            top:{style:"none"},
+            bottom:{style:"none"},
+            left:{style:"none"},
+            right:{style:"none"},
+            insideHorizontal:{style:"none"},
+            insideVertical:{style:"none"}
+          },
+
+          rows:[ new TableRow({
+
+            children:[
+
+              // BLUE STRIP
+              new TableCell({
+                shading:{ fill:"1E73BE" },
+                width:{ size:3,type:WidthType.PERCENTAGE },
+                borders:{top:{style:"none"},bottom:{style:"none"},left:{style:"none"},right:{style:"none"}},
+                children:[ new Paragraph("") ]
+              }),
+
+              // COMPANY TEXT
+              new TableCell({
+
+                width:{ size:67,type:WidthType.PERCENTAGE },
+
+                borders:{top:{style:"none"},bottom:{style:"none"},left:{style:"none"},right:{style:"none"}},
+
+                children:[
+
+                  new Paragraph({
+                    children:[
+                      new TextRun({ text:"Quaere Technologies Private Limited ",bold:true }),
+                      new TextRun({ text:"AN ISO 9001 : 2015" })
+                    ]
+                  }),
+
+                  new Paragraph("7th Floor, Cyber Tower, Vibhuti Khand,"),
+                  new Paragraph("Gomti Nagar, Lucknow, U.P.-226010"),
+                  new Paragraph("Web: www.quaeretech.com"),
+                  new Paragraph("E-mail: info@quaeretech.com | Tel: 0522-4067760"),
+
+                  new Paragraph({
+                    children:[ new TextRun({ text:"GSTN- 09AAACQ1581F1Z1",bold:true }) ]
+                  })
+
+                ]
+
+              }),
+
+              // ICONS RIGHT
+              new TableCell({
+                width:{ size:30,type:WidthType.PERCENTAGE },
+                borders:{top:{style:"none"},bottom:{style:"none"},left:{style:"none"},right:{style:"none"}},
+                children:[
+
+                  new Paragraph({
+                    alignment:AlignmentType.RIGHT,
+                    children:[ soc2,new TextRun(" "),cmmi ]
+                  })
+
+                ]
+              })
+
+            ]
+
+          }) ]
+        })
+
+      ]
+
+    });
+
+    // ======================
+    // DOCUMENT
+    // ======================
+
+    const doc = new Document({
+
+      sections:[{
+
+        headers:{ default: header },
+        footers:{ default: footer },
+
+        children:[
+        // new Paragraph(""),
+        new Paragraph({
+                      alignment:AlignmentType.RIGHT,
+                      children:[
+                        new TextRun({
+                          text:`${formattedDate}`,
+                          bold:true,
+                          size:24
+                        })
+                      ]
+                    }),
+          new Paragraph(""),
+          new Paragraph("To,"),
+          new Paragraph("The Branch Manager"),
+          new Paragraph("ICICI Bank"),
+          new Paragraph("Gomti Nagar, Lucknow"),
+
+          new Paragraph(""),
+
+          new Paragraph({
+            alignment:AlignmentType.CENTER,
+            children:[ new TextRun({ text:"SUB: Amount Transfer", bold:true, size:28 }) ]
+          }),
+
+          new Paragraph(""),
+
+          new Paragraph({
+            children:[ new TextRun({
+              text:`1) Enclosed please find Cheque No.${this.chequeNo} dated ${new Date().toLocaleDateString()} of Rs.${this.totalAmount}/- (${this.convertNumberToWords(this.totalAmount)}). Kindly transfer the amount as per details given below:`,
+              size:22
+            })]
+          }),
+
+          new Paragraph(""),
+          table,
+          new Paragraph(""),
+
+          new Paragraph({
+            alignment:AlignmentType.RIGHT,
+            children:[ new TextRun("Shiv Pal Singh") ]
+          }),
+
+          new Paragraph({
+            alignment:AlignmentType.RIGHT,
+            children:[ new TextRun({ text:"Director",bold:true }) ]
+          })
+
+        ]
+
+      }]
+    });
+
+    Packer.toBlob(doc).then(blob=>{
+      saveAs(blob,"SalaryTransfer.docx");
+    });
+
+  });
+
+}
+
+//   async generateDoc() {
+
+//   if (this.SalaryArr.length == 0) {
+//     this.notyf.error('please Submit First then export');
+//     return;
+//   }
+
+//   if (!this.chequeNo) {
+//     this.notyf.error("Cheque No is required");
+//     return;
+//   }
+
+//   const {
+//     Document,
+//     Packer,
+//     Paragraph,
+//     TextRun,
+//     AlignmentType,
+//     Table,
+//     TableRow,
+//     TableCell,
+//     WidthType,
+//     ImageRun,
+//     Footer
+//   } = await import("docx");
+
+//   this.obj['totalAmount'] = this.totalAmount;
+//   this.obj['chequeNo'] = this.chequeNo;
+//   this.obj['bill_date'] = new Date();
+
+//   this.payroll.SubmitSalaryDoc(this.obj).subscribe(async (response:any)=>{
+
+//     // ======================
+//     // TABLE DATA
+//     // ======================
+
+//     const rows:any[] = [];
+
+//     rows.push(
+//       new TableRow({
+//         children:[
+//           "S.No","Beneficiary Name","Beneficiary Ac No","IFSC","Amt","Remarks"
+//         ].map(text => new TableCell({
+//           children:[ new Paragraph({
+//             alignment: AlignmentType.CENTER,
+//             children:[ new TextRun({ text, bold:true }) ]
+//           })]
+//         }))
+//       })
+//     );
+
+//     this.SalaryArr.forEach((emp:any,index:number)=>{
+//       rows.push(
+//         new TableRow({
+//           children:[
+//             new TableCell({children:[new Paragraph(String(index+1))]}),
+//             new TableCell({children:[new Paragraph(emp.employeeName||"")]}),
+//             new TableCell({children:[new Paragraph(emp.bankAccount||"")]}),
+//             new TableCell({children:[new Paragraph(emp.ifscCode||"")]}),
+//             new TableCell({children:[new Paragraph(emp.net_amount||"0")]}),
+//             new TableCell({children:[new Paragraph(`SALARY ${emp.month}-${emp.year}`)]}),
+//           ]
+//         })
+//       );
+//     });
+
+//     const table = new Table({
+//       width:{size:100,type:WidthType.PERCENTAGE},
+//       rows
+//     });
+
+//     // ======================
+//     // LOAD IMAGES
+//     // ======================
+
+//     const loadImg = async(path:string,w:number,h:number)=> new ImageRun({
+//       data: await fetch(path).then(r=>r.arrayBuffer()),
+//       type: 'png',
+//       transformation:{ width:w, height:h }
+//     });
+
+//     const logo = await loadImg('assets/img/logo/logo-quaere.png',120,40);
+
+//     const soc2 = await loadImg('assets/img/footer1.png',45,45);
+//     const cmmi = await loadImg('assets/img/footer_2.png',60,40);
+//     // const msme = await loadImg('assets/img/footer/msme.png',50,40);
+//     // const updesco = await loadImg('assets/img/footer/updesco.png',70,30);
+
+//     // ======================
+//     // FOOTER
+//     // ======================
+
+//     const footer = new Footer({
+
+//       children:[
+
+//         new Paragraph({
+//           border:{ top:{
+//             color: "999999", size: 6,
+//             style: 'nil'
+//           } }
+//         }),
+
+//         new Table({
+//           width:{size:100,type:WidthType.PERCENTAGE},
+
+//           rows:[ new TableRow({
+
+//             children:[
+
+//               // BLUE BAR
+//               new TableCell({
+//                 shading:{ fill:"1E73BE" },
+//                 width:{ size:3, type:WidthType.PERCENTAGE },
+//                 children:[ new Paragraph("") ]
+//               }),
+
+//               // COMPANY TEXT
+//               new TableCell({
+//                 width:{ size:67, type:WidthType.PERCENTAGE },
+//                 children:[
+
+//                   new Paragraph({
+//                     children:[
+//                       new TextRun({ text:"Quaere Technologies Private Limited ", bold:true }),
+//                       new TextRun({ text:"AN ISO 9001 : 2015" })
+//                     ]
+//                   }),
+
+//                   new Paragraph("7th Floor, Cyber Tower, Vibhuti Khand,"),
+//                   new Paragraph("Gomti Nagar, Lucknow, U.P.-226010"),
+//                   new Paragraph("Web: www.quaeretech.com"),
+//                   new Paragraph("E-mail: info@quaeretech.com | Tel: 0522-4067760"),
+//                   new Paragraph({
+//                     children:[ new TextRun({ text:"GSTN- 09AAACQ1581F1Z1", bold:true }) ]
+//                   })
+
+//                 ]
+//               }),
+
+//               // ICONS RIGHT
+//               new TableCell({
+//                 width:{ size:30, type:WidthType.PERCENTAGE },
+//                 children:[
+//                   new Paragraph({
+//                     alignment:AlignmentType.RIGHT,
+//                     children:[
+//                       soc2,new TextRun(" "),
+//                       cmmi,new TextRun(" "),
+//                       // msme,new TextRun(" "),
+//                       // updesco
+//                     ]
+//                   })
+//                 ]
+//               })
+
+//             ]
+
+//           }) ]
+//         })
+
+//       ]
+
+//     });
+
+//     // ======================
+//     // DOCUMENT
+//     // ======================
+
+//     const doc = new Document({
+
+//       sections:[{
+
+//         footers:{ default: footer },
+
+//         children:[
+
+//           new Table({
+//             width:{size:100,type:WidthType.PERCENTAGE},
+//             rows:[ new TableRow({
+//               children:[
+
+//                 new TableCell({
+//                   children:[ new Paragraph({ children:[logo] }) ]
+//                 }),
+
+//                 new TableCell({
+//                   children:[ new Paragraph({
+//                     alignment:AlignmentType.RIGHT,
+//                     children:[
+//                       new TextRun({
+//                         text:`Dated: ${new Date().toLocaleDateString()}`,
+//                         bold:true,
+//                         size:24
+//                       })
+//                     ]
+//                   }) ]
+//                 })
+
+//               ]
+//             }) ]
+//           }),
+
+//           new Paragraph(""),
+//           new Paragraph("To,"),
+//           new Paragraph("The Branch Manager"),
+//           new Paragraph("ICICI Bank"),
+//           new Paragraph("Gomti Nagar, Lucknow"),
+
+//           new Paragraph(""),
+
+//           new Paragraph({
+//             alignment:AlignmentType.CENTER,
+//             children:[
+//               new TextRun({
+//                 text:"SUB: Amount Transfer",
+//                 bold:true,
+//                 size:28
+//               })
+//             ]
+//           }),
+
+//           new Paragraph(""),
+
+//           new Paragraph({
+//             children:[
+//               new TextRun({
+//                 text:`1) Enclosed please find Cheque No.${this.chequeNo} dated ${new Date().toLocaleDateString()} of Rs.${this.totalAmount}/- (${this.convertNumberToWords(this.totalAmount)}). Kindly transfer the amount as per details given below:`,
+//                 size:22
+//               })
+//             ]
+//           }),
+
+//           new Paragraph(""),
+//           table,
+//           new Paragraph(""),
+
+//           new Paragraph({
+//             alignment:AlignmentType.RIGHT,
+//             children:[ new TextRun("Shiv Pal Singh") ]
+//           }),
+
+//           new Paragraph({
+//             alignment:AlignmentType.RIGHT,
+//             children:[ new TextRun({ text:"Director", bold:true }) ]
+//           })
+
+//         ]
+
+//       }]
+//     });
+
+//     Packer.toBlob(doc).then(blob=>{
+//       saveAs(blob,"SalaryTransfer.docx");
+//     });
+
+//   });
+
+// }
+
+
+
+  // async generateDoc() {
+
+  //   if (this.SalaryArr.length == 0) {
+  //     this.notyf.error('please Submit First then export');
+  //     return;
+  //   }
+
+  //   if (!this.chequeNo) {
+  //     this.notyf.error("Cheque No is required");
+  //     return;
+  //   }
+
+  //   const {
+  //     Document,
+  //     Packer,
+  //     Paragraph,
+  //     TextRun,
+  //     AlignmentType,
+  //     Table,
+  //     TableRow,
+  //     TableCell,
+  //     WidthType,
+  //     ImageRun,
+  //     Footer
+  //   } = await import("docx");
+
+  //   this.obj['totalAmount'] = this.totalAmount;
+  //   this.obj['chequeNo'] = this.chequeNo;
+  //   this.obj['bill_date'] = new Date();
+
+  //   this.payroll.SubmitSalaryDoc(this.obj).subscribe(async (response: any) => {
+
+  //     const rows: any[] = [];
+
+  //     // ==========================
+  //     // TABLE HEADER
+  //     // ==========================
+
+  //     rows.push(
+  //       new TableRow({
+  //         children: [
+
+  //           new TableCell({
+  //             children: [new Paragraph({
+  //               children: [
+  //                 new TextRun({ text: "S.No", bold: true })
+  //               ]
+  //             })]
+  //           }),
+  //           new TableCell({
+  //             children: [new Paragraph({
+  //               children: [
+  //                 new TextRun({ text: "Beneficiary Name", bold: true })
+  //               ]
+  //             })]
+  //           }),
+  //           new TableCell({
+  //             children: [new Paragraph({
+  //               children: [
+  //                 new TextRun({ text: "Beneficiary Ac No", bold: true })
+  //               ]
+  //             })]
+  //           }),
+  //           new TableCell({
+  //             children: [new Paragraph({
+  //               children: [
+  //                 new TextRun({ text: "IFSC", bold: true })
+  //               ]
+  //             })]
+  //           }),
+  //           new TableCell({
+  //             children: [new Paragraph({
+  //               children: [
+  //                 new TextRun({ text: "Amt", bold: true })
+  //               ]
+  //             })]
+  //           }),
+  //           new TableCell({
+  //             children: [new Paragraph({
+  //               children: [
+  //                 new TextRun({ text: "Remarks", bold: true })
+  //               ]
+  //             })]
+  //           }),
+
+  //           // new TableCell({ children: [new Paragraph({ text: "S.No", bold: true })] }),
+  //           // new TableCell({ children: [new Paragraph({ text: "Beneficiary Name", bold: true })] }),
+  //           // new TableCell({ children: [new Paragraph({ text: "Beneficiary Ac No", bold: true })] }),
+  //           // new TableCell({ children: [new Paragraph({ text: "IFSC", bold: true })] }),
+  //           // new TableCell({ children: [new Paragraph({ text: "Amt", bold: true })] }),
+  //           // new TableCell({ children: [new Paragraph({ text: "Remarks", bold: true })] }),
+  //         ]
+  //       })
+  //     );
+
+  //     // ==========================
+  //     // TABLE DATA
+  //     // ==========================
+
+  //     this.SalaryArr.forEach((emp: any, index: number) => {
+
+  //       rows.push(
+  //         new TableRow({
+  //           children: [
+  //             new TableCell({ children: [new Paragraph(String(index + 1))] }),
+  //             new TableCell({ children: [new Paragraph(emp.employeeName || '')] }),
+  //             new TableCell({ children: [new Paragraph(emp.bankAccount || '')] }),
+  //             new TableCell({ children: [new Paragraph(emp.ifscCode || '')] }),
+  //             new TableCell({ children: [new Paragraph(emp.net_amount || '0')] }),
+  //             new TableCell({ children: [new Paragraph(`SALARY ${emp.month}-${emp.year}`)] }),
+  //           ]
+  //         })
+  //       );
+
+  //     });
+
+  //     const table = new Table({
+  //       width: { size: 100, type: WidthType.PERCENTAGE },
+  //       rows: rows
+  //     });
+
+  //     // ==========================
+  //     // LOAD LOGO
+  //     // ==========================
+
+  //     const logoBuffer = await fetch('assets/img/logo/logo-quaere.png').then(r => r.arrayBuffer());
+
+  //     const logo = new ImageRun({
+  //       data: logoBuffer,
+  //       type: "png",
+  //       transformation: {
+  //         width: 120,
+  //         height: 40
+  //       }
+  //     });
+
+  //     // ==========================
+  //     // CREATE DOCUMENT
+  //     // ==========================
+
+  //     const doc = new Document({
+
+  //       sections: [
+  //         {
+
+  //           footers: {
+  //             default: new Footer({
+  //               children: [
+  //                 new Paragraph({
+  //                   alignment: AlignmentType.CENTER,
+  //                   children: [
+  //                     new TextRun({
+  //                       text: "Quaere Technologies Private Limited | Gomti Nagar, Lucknow",
+  //                       size: 18
+  //                     })
+  //                   ]
+  //                 })
+  //               ]
+  //             })
+  //           },
+
+  //           children: [
+
+  //             // HEADER TABLE (LOGO + DATE)
+
+  //             new Table({
+  //               width: { size: 100, type: WidthType.PERCENTAGE },
+  //               rows: [
+  //                 new TableRow({
+  //                   children: [
+
+  //                     new TableCell({
+  //                       children: [new Paragraph({ children: [logo] })]
+  //                     }),
+
+  //                     new TableCell({
+  //                       children: [
+  //                         new Paragraph({
+  //                           alignment: AlignmentType.RIGHT,
+  //                           children: [
+  //                             new TextRun({
+  //                               text: `Dated: ${new Date().toLocaleDateString()}`,
+  //                               bold: true,
+  //                               size: 24
+  //                             })
+  //                           ]
+  //                         })
+  //                       ]
+  //                     })
+
+  //                   ]
+  //                 })
+  //               ]
+  //             }),
+
+  //             new Paragraph(""),
+  //             new Paragraph({
+  //               children: [
+  //                 new TextRun({ text: "Hello world", bold: true })
+  //               ]
+  //             }),
+  //             // new Paragraph({ text: "To,", bold: true }),
+  //             new Paragraph("The Branch Manager"),
+  //             new Paragraph("ICICI Bank"),
+  //             new Paragraph("Gomti Nagar, Lucknow"),
+
+  //             new Paragraph(""),
+
+  //             // SUBJECT CENTER
+
+  //             new Paragraph({
+  //               alignment: AlignmentType.CENTER,
+  //               children: [
+  //                 new TextRun({
+  //                   text: "SUB: Amount Transfer",
+  //                   bold: true,
+  //                   size: 28
+  //                 })
+  //               ]
+  //             }),
+
+  //             new Paragraph(""),
+
+  //             new Paragraph({
+  //               children: [
+  //                 new TextRun({
+  //                   text: `1) Enclosed please find Cheque No.${this.chequeNo} dated ${new Date().toLocaleDateString()} of Rs.${this.totalAmount}/- (${this.convertNumberToWords(this.totalAmount)}). Kindly transfer the amount as per details given below:`,
+  //                   size: 22
+  //                 })
+  //               ]
+  //             }),
+
+  //             new Paragraph(""),
+
+  //             table,
+
+  //             new Paragraph(""),
+
+  //             new Paragraph({
+  //               alignment: AlignmentType.RIGHT,
+  //               children: [new TextRun("Shiv Pal Singh")]
+  //             }),
+
+  //             new Paragraph({
+  //               alignment: AlignmentType.RIGHT,
+  //               children: [new TextRun({ text: "Director", bold: true })]
+  //             })
+
+  //           ]
+  //         }
+  //       ]
+  //     });
+
+  //     // ==========================
+  //     // DOWNLOAD FILE
+  //     // ==========================
+
+  //     Packer.toBlob(doc).then(blob => {
+  //       saveAs(blob, "SalaryTransfer.docx");
+  //     });
+
+  //   });
+
+  // }
+
+
+  // generateDoc() {
+  //   if (this.SalaryArr.length == 0) {
+  //     this.notyf.error('please Submit First then export')
+  //     return
+  //   }
+  //   if (!this.chequeNo) {
+  //     this.notyf.error("Cheque No is required")
+  //     return
+  //   }
+  //   this.obj['totalAmount'] = this.totalAmount
+  //   this.obj['chequeNo'] = this.chequeNo
+  //   this.obj['bill_date'] = new Date().getDate()
+  //   this.payroll.SubmitSalaryDoc(this.obj).subscribe({
+  //     next: (response: any) => {
+  //       console.log('response', response);
+
+  //       let message = response.message ? response.message : 'Data found Successfully';
+  //       let status = this.statusService.handleResponseStatus(response.status, message);
+  //       console.log(status)
+  //       console.log("response", response);
+
+  //       if (status == true) {
+
+
+  //         const rows = [];
+
+  //         // Table Header
+  //         rows.push(
+  //           new TableRow({
+  //             children: [
+  //               new TableCell({ children: [new Paragraph("S.No")] }),
+  //               new TableCell({ children: [new Paragraph("Beneficiary Name")] }),
+  //               new TableCell({ children: [new Paragraph("Beneficiary Ac No")] }),
+  //               new TableCell({ children: [new Paragraph("IFSC")] }),
+  //               new TableCell({ children: [new Paragraph("Amt")] }),
+  //               new TableCell({ children: [new Paragraph("Remarks")] }),
+  //             ]
+  //           })
+  //         );
+
+  //         // Dynamic rows from salary data
+  //         this.SalaryArr.forEach((emp: any, index: any) => {
+
+  //           rows.push(
+  //             new TableRow({
+  //               children: [
+  //                 new TableCell({ children: [new Paragraph(String(index + 1))] }),
+  //                 new TableCell({ children: [new Paragraph(emp.employeeName || '')] }),
+  //                 new TableCell({ children: [new Paragraph(emp.bankAccount || '')] }),
+  //                 new TableCell({ children: [new Paragraph(emp.ifscCode || '')] }),
+  //                 new TableCell({ children: [new Paragraph(emp.net_amount || '0')] }),
+  //                 new TableCell({ children: [new Paragraph(`SALARY ${emp.month}-${emp.year}`)] }),
+  //               ]
+  //             })
+  //           );
+
+  //         });
+
+  //         const table = new Table({
+  //           width: { size: 100, type: WidthType.PERCENTAGE },
+  //           rows: rows
+  //         });
+
+  //         // Create Document
+  //         const doc = new Document({
+
+  //           sections: [{
+  //             children: [
+
+  //               new Paragraph("Dated: " + new Date().toLocaleDateString()),
+
+  //               new Paragraph(""),
+  //               new Paragraph("To,"),
+  //               new Paragraph("The Branch Manager"),
+  //               new Paragraph("ICICI Bank"),
+  //               new Paragraph("Gomti Nagar, Lucknow"),
+
+  //               new Paragraph(""),
+  //               new Paragraph("SUB: Amount Transfer"),
+
+  //               new Paragraph(""),
+
+  //               new Paragraph({
+  //                 children: [
+  //                   new TextRun(`1) Enclosed please find Cheque No.${this.chequeNo} Dated:-${new Date().getDate()}  of Rs.${this.totalAmount}/-(${this.convertNumberToWords(this.totalAmount)}) . Kindly transfer the amount as per details given below:`)
+  //                 ]
+  //               }),
+
+  //               new Paragraph(""),
+
+  //               table
+
+  //             ]
+  //           }]
+  //         });
+
+  //         // Download
+  //         Packer.toBlob(doc).then(blob => {
+  //           saveAs(blob, "SalaryTransfer.docx");
+  //         });
+
+
+
+  //       }
+  //       else if (status == "expired") {
+  //         this.router.navigate(["login"]);
+  //       }
+
+  //       else {
+  //         this.notyf.error(message)
+  //       }
+
+  //     },
+  //     error: (err) => {
+  //       console.error('Error:', err);
+  //       this.notyf.error(err.error?.message)
+  //     }
+  //   });
+
+
+
+  // }
+
 
 }
