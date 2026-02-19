@@ -4,10 +4,12 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 @Component({
   selector: 'app-search-pagination',
-  imports: [CommonModule,FormsModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './search-pagination.component.html',
-  styleUrl: './search-pagination.component.css'
+  styleUrls: ['./search-pagination.component.css']
 })
+
 export class SearchPaginationComponent {
   @Input() totalItems = 0;
   @Input() pageSize = 10;
