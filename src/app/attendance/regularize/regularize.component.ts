@@ -12,14 +12,10 @@ import { StatusService } from '../../services/status.service';
 
 @Component({
   selector: 'app-regularize',
-  imports: [NgSelectModule,
-    FormsModule, CommonModule, SearchPaginationComponent],
+  imports: [NgSelectModule,FormsModule, CommonModule, SearchPaginationComponent],
   templateUrl: './regularize.component.html',
   styleUrl: './regularize.component.css'
 })
-// export class RegularizeComponent {
-
-// }
 
 export class RegularizeComponent {
   obj: any = {}
@@ -31,6 +27,7 @@ export class RegularizeComponent {
 
   }
   status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
+  leaveStatus: any = [{ value: 'pending', label: 'Pending' }, { value: 'approved', label: 'Approved' }, { value: 'rejected', label: 'Rejected' }]
 
   // onSubmit() {
   //    console.log(this.obj)
@@ -52,16 +49,16 @@ export class RegularizeComponent {
     this.fromDashboard = this.route.snapshot.queryParamMap.get('fromDashboard');
     const today1 = new Date();
     // if (this.fromDashboard == 'true') {
-      this.obj['emp_id'] = 'All';
+    this.obj['emp_id'] = 'All';
 
-      const today = new Date();
-      const year = today.getFullYear();
-      const month = (today.getMonth() + 1).toString().padStart(2, '0');
-      const day = today.getDate().toString().padStart(2, '0');
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
 
-      this.obj['startDate'] = `${year}-${month}-${day}`;
-      this.obj['endDate'] = `${year}-${month}-${day}`;
-      this.getRegularize();
+    this.obj['startDate'] = `${year}-${month}-${day}`;
+    this.obj['endDate'] = `${year}-${month}-${day}`;
+    this.getRegularize();
 
 
     // } else {
@@ -79,6 +76,17 @@ export class RegularizeComponent {
       name: ['', Validators.required],
       description: ['']
     });
+    this.obj['status'] = 'pending'
+    // if (this.fromDashboard == 'true') {
+    this.obj['emp_id'] = 'All';
+
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = (today.getMonth() + 1).toString().padStart(2, '0');
+    const day = today.getDate().toString().padStart(2, '0');
+
+    this.obj['startDate'] = `${year}-${month}-${day}`;
+    this.obj['endDate'] = `${year}-${month}-${day}`;
     await this.empList();
     await this.getRegularize()
 
@@ -88,16 +96,16 @@ export class RegularizeComponent {
   }
 
   masterSelected: boolean = false;
-checkUncheckAll() {
-  // Apply changes on original list (not only paginated list)
-  this.applyRegularizeList.forEach((item: any) => {
-    item.isSelected = this.masterSelected;
-  });
-}
+  checkUncheckAll() {
+    // Apply changes on original list (not only paginated list)
+    this.applyRegularizeList.forEach((item: any) => {
+      item.isSelected = this.masterSelected;
+    });
+  }
 
-isAllSelected() {
-  this.masterSelected = this.applyRegularizeList.every((item: any) => item.isSelected);
-}
+  isAllSelected() {
+    this.masterSelected = this.applyRegularizeList.every((item: any) => item.isSelected);
+  }
   EmpList: any = []
   async empList() {
     this.EmpList = []
@@ -249,7 +257,7 @@ isAllSelected() {
     }
     else {
       let newObj: any = {}
-      newObj['ids']=item.id
+      newObj['ids'] = item.id
       newObj['status'] = status
       newObj['employeeId'] = item.employeeId
 
@@ -298,6 +306,7 @@ isAllSelected() {
         if (status === true) {
 
           this.notyf.success(message)
+
           this.getRegularize();
           this.resetForm();
         }
@@ -380,7 +389,8 @@ isAllSelected() {
 
   resetForm() {
     this.createFlag = false
-    this.obj = {}
+    // this.obj = {}
+
     this.editingId = null;
   }
   isInvalid(field: string): boolean {
@@ -398,56 +408,56 @@ isAllSelected() {
     this.updateFlag = false
   }
 
-approveAll() {
-  const selected = this.applyRegularizeList.filter((item: any) => item.isSelected);
+  approveAll() {
+    const selected = this.applyRegularizeList.filter((item: any) => item.isSelected);
 
-  if (selected.length === 0) {
-    this.notyf.error("Please select at least one record");
-    return;
-  }
-
-  Swal.fire({
-    title: "Are you sure?",
-    text: `You are about to APPROVE ${selected.length} requests`,
-    icon: "warning",
-    showCancelButton: true,
-    confirmButtonText: "Yes, Approve All",
-    cancelButtonText: "Cancel",
-  }).then((result) => {
-    if (result.isConfirmed) {
-      const payload = {
-        ids: selected.map((x: any) => x.id),
-        status: "approved"
-      };
-
-      this.master.UpdateApplyRegularizeStatus(payload).subscribe({
-        next: (response: any) => {
-          let message = response.message || "Approved Successfully";
-          let status = this.statusService.handleResponseStatus(response.status, message);
-
-          if (status === true) {
-            this.notyf.success(message);
-
-            // Reset selections
-            this.masterSelected = false;
-            this.applyRegularizeList.forEach((item: any) => item.isSelected = false);
-
-            this.getRegularize(); // refresh list
-          }
-          else if (status === "expired") {
-            this.router.navigate(["login"]);
-          } else {
-            this.notyf.error(message);
-          }
-        },
-        error: (err: any) => {
-          console.error("Error:", err);
-          this.notyf.error(err.error?.message || "Something went wrong");
-        }
-      });
+    if (selected.length === 0) {
+      this.notyf.error("Please select at least one record");
+      return;
     }
-  });
-}
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: `You are about to APPROVE ${selected.length} requests`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Approve All",
+      cancelButtonText: "Cancel",
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const payload = {
+          ids: selected.map((x: any) => x.id),
+          status: "approved"
+        };
+
+        this.master.UpdateApplyRegularizeStatus(payload).subscribe({
+          next: (response: any) => {
+            let message = response.message || "Approved Successfully";
+            let status = this.statusService.handleResponseStatus(response.status, message);
+
+            if (status === true) {
+              this.notyf.success(message);
+
+              // Reset selections
+              this.masterSelected = false;
+              this.applyRegularizeList.forEach((item: any) => item.isSelected = false);
+
+              this.getRegularize(); // refresh list
+            }
+            else if (status === "expired") {
+              this.router.navigate(["login"]);
+            } else {
+              this.notyf.error(message);
+            }
+          },
+          error: (err: any) => {
+            console.error("Error:", err);
+            this.notyf.error(err.error?.message || "Something went wrong");
+          }
+        });
+      }
+    });
+  }
 
 
 }

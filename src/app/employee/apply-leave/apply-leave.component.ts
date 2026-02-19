@@ -29,7 +29,7 @@ export class ApplyLeaveComponent {
 
   }
   status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
-  leaveStatus: any = [{ value: 'pending', label: 'PENDING' }, { value: 'approved', label: 'APPROVED' }, { value: 'rejected', label: 'REJECTED' }]
+  leaveStatus: any = [{ value: 'pending', label: 'Pending' },{ value: 'recommended', label: 'Recommended' },{ value: 'self_declined', label: 'Self Declined' }, { value: 'approved', label: 'Approved' }, { value: 'rejected', label: 'Rejected' }]
 
   // onSubmit() {
   //    console.log(this.obj)

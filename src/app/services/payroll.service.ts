@@ -111,4 +111,11 @@ baseUrl=environment.apiUrl
     deleteReimbursement(obj: any): Observable<any> {
     return this.http.post(`${this.baseUrl}delete-reimbursement`, obj);
   }
+
+     empMonthlyLeaveAttDetails(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}employee-monthly-leave-attendance-details`, data);
+  }
+  SubmitSalaryDoc(data: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}SubmitSalaryDoc`, data);
+  }
 }

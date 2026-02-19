@@ -44,19 +44,39 @@ export class LogsComponent {
     this.updateDisplayedList();
   }
   dayList: string[] = [];
+  ExportDayList: string[] = [];
+
 
   generateDayList(month: number, year: number) {
-    const daysInMonth = new Date(year, month, 0).getDate(); // month is 1-based
-    this.dayList = [];
+  const today = new Date();
+
+  const currentYear = today.getFullYear();
+  const currentMonth = today.getMonth() + 1; // JS month is 0-based
+  const currentDate = today.getDate();
+
+  const totalDaysInMonth = new Date(year, month, 0).getDate(); // month is 1-based
+
+  // decide how many days to show
+  let daysInMonth = totalDaysInMonth;
+
+  // if current month selected → show till today only
+  if (year == currentYear && month == currentMonth) {
+    daysInMonth = currentDate;
+  }
+
+  this.dayList = [];
+  this.ExportDayList = [];
 
     for (let i = 1; i <= daysInMonth; i++) {
       const day = i.toString().padStart(2, '0');
       const date = new Date(year, month - 1, i); // month-1 because Date expects 0-based month
       const weekday = date.toLocaleDateString('en-US', { weekday: 'short' }); // e.g., "Mon", "Tue"
       this.dayList.push(`${day} ${weekday}`);
+      this.ExportDayList.push(`${day}`);
     }
 
     console.log(this.dayList);
+    console.log(this.ExportDayList);
   }
   status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
 
@@ -145,267 +165,405 @@ export class LogsComponent {
     this.updateDisplayedList();
   }
   fetchAttendance() {
-  this.AttendanceList = [];
-  this.originalList = [];
+    this.AttendanceList = [];
+    this.originalList = [];
 
-  this.attendanceService.getattendancelist(this.obj).subscribe(
-    (response: any) => {
-      if (response && response.status === true && response.data) {
+    this.attendanceService.getattendancelist(this.obj).subscribe(
+      (response: any) => {
+        if (response && response.status === true && response.data) {
 
-        this.notyf.success(response.message || 'Employees loaded successfully');
+          this.notyf.success(response.message || 'Employees loaded successfully');
 
-        this.AttendanceMasterList = response.data || [];
+          this.AttendanceMasterList = response.data || [];
 
-        this.generateDayList(this.obj.month, this.obj.year);
+          this.generateDayList(this.obj.month, this.obj.year);
 
-        // 3️⃣ Status mapping
-        const statusMap: Record<string, string> = {
-          'Week Off': 'WO',
-          'Present': 'P',
-          'Absent': 'A'
-        };
+          // 3️⃣ Status mapping
+          const statusMap: Record<string, string> = {
+            'Week Off': 'WO',
+            'Present': 'P',
+            'Absent': 'A',
+            'On Leave': 'L',
+            'Holiday': 'H',
+            'First Half': 'FH',
+            'Second Half': 'H',
+          };
 
-        this.AttendanceMasterList = this.AttendanceMasterList.map((item: any) => ({
-          ...item,
-          data: item.data.map((item1: any) => ({
-            ...item1,
-            status: statusMap[item1.status] || item1.status
-          }))
-        }));
+          this.AttendanceMasterList = this.AttendanceMasterList.map((item: any) => ({
+            ...item,
+            data: item.data.map((item1: any) => ({
+              ...item1,
+              status: statusMap[item1.status] || item1.status
+            }))
+          }));
 
-        this.AttendanceMasterList.forEach((employee: any) => {
-          employee.dayTime = {};
+          this.AttendanceMasterList.forEach((employee: any) => {
 
-          this.dayList.forEach(day => {
-            const dayNum = day.slice(0, 2);
+            employee.dayTime = {};
 
-            const match = employee.data.find((entry: any) =>
-              entry.date.endsWith(`-${dayNum}`)
-            );
+            this.dayList.forEach(day => {
 
-            const checkInTime  = match?.checkIn?.split(' ')[1];
-            const checkOutTime = match?.checkOut?.split(' ')[1];
+              const dayNum = day.slice(0, 2);
 
-            employee.dayTime[day] =
-              checkInTime || checkOutTime
-                ? `${checkInTime} - ${checkOutTime|| ''}`
-                : '';
+              const match = employee.data.find((entry: any) =>
+                entry.date.endsWith(`-${dayNum}`)
+              );
+
+              //s Format Time Function
+              const formatTime = (dateTime: string) => {
+                if (!dateTime) return '';
+                return new Date(dateTime)
+                  .toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+
+              };
+
+              let checkInTime = formatTime(match?.checkIn);
+              let checkOutTime = formatTime(match?.checkOut);
+              if (checkOutTime == "Invalid Date") {
+                checkOutTime = '00:00'
+              }
+              if (checkInTime == "Invalid Date") {
+                checkInTime = '00:00'
+              }
+              // Present
+              if (checkInTime || checkOutTime) {
+                employee.dayTime[day] = `${checkInTime} - ${checkOutTime}`;
+              }
+
+              // Week Off
+              else if (match?.status == 'WO') {
+                employee.dayTime[day] = 'WO';
+              }
+
+              // Absent
+              else if (match?.status == 'A') {
+                employee.dayTime[day] = 'A';
+              }
+              else if (match?.status == 'H') {
+                employee.dayTime[day] = 'H';
+              }
+              else if (match?.status == 'L') {
+                employee.dayTime[day] = 'L';
+              }
+              else if (match?.status == 'FH') {
+                employee.dayTime[day] = 'FH';
+              }
+              else if (match?.status == 'SH') {
+                employee.dayTime[day] = 'SH';
+              }
+
+              else {
+                employee.dayTime[day] = '--';
+              }
+
+            });
+
           });
-        });
 
-        // console.log(this.AttendanceMasterList,"attendance master list");
 
-        this.originalList = this.AttendanceMasterList;
-       console.log(this.AttendanceMasterList,"attendance master list");
 
-        this.updateDisplayedList();
 
-      } else if (response.status === false) {
-        this.notyf.error(response.message);
-      } else if (response.status === 'expired') {
+          // this.AttendanceMasterList.forEach((employee: any) => {
+          //   employee.dayTime = {};
+
+          //   this.dayList.forEach(day => {
+          //     const dayNum = day.slice(0, 2);
+
+          //     const match = employee.data.find((entry: any) =>
+          //       entry.date.endsWith(`-${dayNum}`)
+          //     );
+
+          //     const checkInTime  = match?.checkIn?.split(' ')[1];
+          //     const checkOutTime = match?.checkOut?.split(' ')[1];
+
+          //     employee.dayTime[day] =
+          //       checkInTime && checkOutTime
+          //         ? `${checkInTime} - ${checkOutTime}`
+          //         : '';
+          //   });
+          // });
+
+
+
+          this.originalList = this.AttendanceMasterList;
+
+          this.updateDisplayedList();
+
+        } else if (response.status === false) {
+          this.notyf.error(response.message);
+        } else if (response.status === 'expired') {
+          this.AttendanceMasterList = [];
+          this.router.navigate(['login']);
+        }
+      },
+      (error: any) => {
         this.AttendanceMasterList = [];
-        this.router.navigate(['login']);
+        console.error('Error loading employees:', error);
+        this.notyf.error(error);
       }
-    },
-    (error: any) => {
-      this.AttendanceMasterList = [];
-      console.error('Error loading employees:', error);
-      this.notyf.error(error);
-    }
-  );
-}
+    );
+  }
 
 
-//   fetchAttendance() {
-//     this.AttendanceList = []
-//     this.originalList = []
-//     console.log(this.AttendanceMasterList, "attendace master list 111")
-//     this.attendanceService.getattendancelist(this.obj).subscribe((response: any) => {
-//       if (response && response.data && response.status === true) {
-//         this.notyf.success(response.message || 'Employees loaded successfully');
-//         this.AttendanceMasterList = [];
-//         this.AttendanceMasterList = response.data || [];
-//         const statusMap: Record<string, string> = {
-//           'Week Off': 'WO',
-//           'Present': 'P',
-//           'Absent': 'A'
-//         };
-//         // 1️⃣ Map status text
-// this.AttendanceMasterList = this.AttendanceMasterList.map((item: any) => ({
-//   ...item,
-//   data: item.data.map((item1: any) => ({
-//     ...item1,
-//     status: statusMap[item1.status] || item1.status
-//   }))
-// }));
+  //   fetchAttendance() {
+  //     this.AttendanceList = []
+  //     this.originalList = []
+  //     console.log(this.AttendanceMasterList, "attendace master list 111")
+  //     this.attendanceService.getattendancelist(this.obj).subscribe((response: any) => {
+  //       if (response && response.data && response.status === true) {
+  //         this.notyf.success(response.message || 'Employees loaded successfully');
+  //         this.AttendanceMasterList = [];
+  //         this.AttendanceMasterList = response.data || [];
+  //         const statusMap: Record<string, string> = {
+  //           'Week Off': 'WO',
+  //           'Present': 'P',
+  //           'Absent': 'A'
+  //         };
+  //         // 1️⃣ Map status text
+  // this.AttendanceMasterList = this.AttendanceMasterList.map((item: any) => ({
+  //   ...item,
+  //   data: item.data.map((item1: any) => ({
+  //     ...item1,
+  //     status: statusMap[item1.status] || item1.status
+  //   }))
+  // }));
 
-// // 2️⃣ Add dayTime object
-// this.AttendanceMasterList.forEach((employee: any) => {
-//   employee.dayTime = {};
+  // // 2️⃣ Add dayTime object
+  // this.AttendanceMasterList.forEach((employee: any) => {
+  //   employee.dayTime = {};
 
-//   this.dayList.forEach(day => {
-//     const dayNum = day.slice(0, 2);
+  //   this.dayList.forEach(day => {
+  //     const dayNum = day.slice(0, 2);
 
-//     const match = employee.data.find((entry: any) =>
-//       entry.date.endsWith(`-${dayNum}`)
-//     );
+  //     const match = employee.data.find((entry: any) =>
+  //       entry.date.endsWith(`-${dayNum}`)
+  //     );
 
-//     const checkInTime  = match?.checkIn?.split(' ')[1];
-//     const checkOutTime = match?.checkOut?.split(' ')[1];
+  //     const checkInTime  = match?.checkIn?.split(' ')[1];
+  //     const checkOutTime = match?.checkOut?.split(' ')[1];
 
-//     employee.dayTime[day] =
-//       checkInTime && checkOutTime
-//         ? `${checkInTime} - ${checkOutTime}`
-//         : '';
-//   });
-// });
+  //     employee.dayTime[day] =
+  //       checkInTime && checkOutTime
+  //         ? `${checkInTime} - ${checkOutTime}`
+  //         : '';
+  //   });
+  // });
 
-// // Optional
-// this.originalList = this.AttendanceMasterList;
+  // // Optional
+  // this.originalList = this.AttendanceMasterList;
 
-// console.log(this.AttendanceMasterList);
+  // console.log(this.AttendanceMasterList);
 
-// //         this.AttendanceMasterList = this.AttendanceMasterList.map((item: any) => ({
-// //           ...item,
-// //           data: item.data.map((item1: any) => ({
-// //             ...item1,
-// //             status: statusMap[item1.status] || item1.status
-// //           }))
-// //         }));
+  // //         this.AttendanceMasterList = this.AttendanceMasterList.map((item: any) => ({
+  // //           ...item,
+  // //           data: item.data.map((item1: any) => ({
+  // //             ...item1,
+  // //             status: statusMap[item1.status] || item1.status
+  // //           }))
+  // //         }));
 
-// //        this.AttendanceMasterList= this.AttendanceMasterList.forEach((employee: any) => {
-// //   employee.dayTime = {};
+  // //        this.AttendanceMasterList= this.AttendanceMasterList.forEach((employee: any) => {
+  // //   employee.dayTime = {};
 
-// //   this.dayList.forEach(day => {
-// //     const dayNum = day.slice(0, 2);
+  // //   this.dayList.forEach(day => {
+  // //     const dayNum = day.slice(0, 2);
 
-// //     const match = employee.data.find((entry: any) =>
-// //       entry.date.endsWith(`-${dayNum}`)
-// //     );
+  // //     const match = employee.data.find((entry: any) =>
+  // //       entry.date.endsWith(`-${dayNum}`)
+  // //     );
 
-// //     const checkInTime  = match?.checkIn?.split(' ')[1];
-// //     const checkOutTime = match?.checkOut?.split(' ')[1];
+  // //     const checkInTime  = match?.checkIn?.split(' ')[1];
+  // //     const checkOutTime = match?.checkOut?.split(' ')[1];
 
-// //     if (checkInTime && checkOutTime) {
-// //       employee.dayTime[day] = `${checkInTime} - ${checkOutTime}`;
-// //     } else {
-// //       employee.dayTime[day] = ''; // A / WO
-// //     }
-// //   });
-// // });
-// //   this.originalList = this.AttendanceMasterList
-//         this.generateDayList(this.obj['month'], this.obj['year']);
-//         this.updateDisplayedList();
-//       } else if (response.status === false) {
-//         this.notyf.error(response.message)
-//       }
-//       else if (response.status == 'expired') {
-//         this.AttendanceMasterList = [];
-//         this.router.navigate(['login'])
-//       }
-//     },
-//       (error: any) => {
-//         this.AttendanceMasterList = [];
-//         console.error('Error loading employees:', error);
-//         this.notyf.error(error)
-//         // alert('Failed to load employees. Please try again.');
-//       }
-//     );
+  // //     if (checkInTime && checkOutTime) {
+  // //       employee.dayTime[day] = `${checkInTime} - ${checkOutTime}`;
+  // //     } else {
+  // //       employee.dayTime[day] = ''; // A / WO
+  // //     }
+  // //   });
+  // // });
+  // //   this.originalList = this.AttendanceMasterList
+  //         this.generateDayList(this.obj['month'], this.obj['year']);
+  //         this.updateDisplayedList();
+  //       } else if (response.status === false) {
+  //         this.notyf.error(response.message)
+  //       }
+  //       else if (response.status == 'expired') {
+  //         this.AttendanceMasterList = [];
+  //         this.router.navigate(['login'])
+  //       }
+  //     },
+  //       (error: any) => {
+  //         this.AttendanceMasterList = [];
+  //         console.error('Error loading employees:', error);
+  //         this.notyf.error(error)
+  //         // alert('Failed to load employees. Please try again.');
+  //       }
+  //     );
 
-//   }
+  //   }
 
   export(): void {
-  const exportData: any[] = [];
 
-this.originalList.forEach((employee: any) => {
-  const row: any = {};
-  row['Employee'] = employee.employee_name;
+    const exportData: any[] = [];
+    const columnOrder = ['Employee', 'EmpCode', ...this.ExportDayList];
 
-  this.dayList.forEach(day => {
-    const dayNum = day.slice(0, 2);
-    const match = employee.data.find((entry: any) =>
-      entry.date.endsWith(`-${dayNum}`)
-    );
+    this.originalList.forEach((employee: any) => {
 
-    const checkInTime  = match?.checkIn?.split(' ')[1] || '';
-    const checkOutTime = match?.checkOut?.split(' ')[1] || '';
+      const row: any = {};
 
-    row[day] = checkInTime && checkOutTime
-      ? `${checkInTime} - ${checkOutTime}`
-      : '';
-  });
+      // fixed columns
+      row['Employee'] = employee.employee_name;
+      row['EmpCode'] = employee.empCode;
 
-  exportData.push(row);
-});
+      this.ExportDayList.forEach(day => {
+
+        const dayNum = day.slice(0, 2);
+
+        const match = employee.data.find((entry: any) =>
+          entry.date.endsWith(`-${dayNum}`)
+        );
+
+        const formatTime = (dateTime: string) => {
+          if (!dateTime) return '';
+          return new Date(dateTime).toLocaleTimeString([], {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: false
+          });
+        };
+
+        let checkInTime = formatTime(match?.checkIn);
+        let checkOutTime = formatTime(match?.checkOut);
+        if (checkOutTime == "Invalid Date") {
+          checkOutTime = '00:00'
+        }
+        if (checkInTime == "Invalid Date") {
+          checkInTime = '00:00'
+        }
+             if (checkInTime || checkOutTime) {
+                row[day] = `${checkInTime} - ${checkOutTime}`;
+              }
+
+              // Week Off
+              else if (match?.status == 'WO') {
+                row[day] = 'WO';
+              }
+
+              // Absent
+              else if (match?.status == 'A') {
+                row[day] = 'A';
+              }
+              else if (match?.status == 'H') {
+                row[day] = 'H';
+              }
+              else if (match?.status == 'L') {
+                row[day] = 'L';
+              }
+              else if (match?.status == 'FH') {
+                row[day] = 'FH';
+              }
+              else if (match?.status == 'SH') {
+                row[day] = 'SH';
+              }
+
+              else {
+                row[day] = '--';
+              }
+        // if (checkInTime || checkOutTime) {
+        //   row[day] = `${checkInTime} ${checkOutTime}`;
+        // }
+        // else if (match?.status == 'WO') {
+        //   row[day] = 'WO';
+        // }
+        // else if (match?.status == 'A') {
+        //   row[day] = 'A';
+        // }
+        // else {
+        //   row[day] = '--';
+        // }
+
+      });
+
+      exportData.push(row);
+
+    });
+
+    const sheetData = [
+      columnOrder,
+      ...exportData.map(row => columnOrder.map(col => row[col]))
+    ];
+
+    const worksheet: XLSX.WorkSheet = XLSX.utils.aoa_to_sheet(sheetData);
+
+    const workbook: XLSX.WorkBook = {
+      Sheets: { Attendance: worksheet },
+      SheetNames: ['Attendance']
+    };
+
+    const excelBuffer: any = XLSX.write(workbook, {
+      bookType: 'xlsx',
+      type: 'array'
+    });
+
+    const blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    });
+
+    FileSaver.saveAs(blob, 'Monthly_Attendance.xlsx');
+
+  }
 
 
-  const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
-  const workbook: XLSX.WorkBook = {
-    Sheets: { Attendance: worksheet },
-    SheetNames: ['Attendance']
-  };
 
-  const excelBuffer: any = XLSX.write(workbook, {
-    bookType: 'xlsx',
-    type: 'array'
-  });
+  //   export(): void {
+  //     const exportData: any[] = [];
 
-  const blob = new Blob([excelBuffer], {
-    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
-  });
+  //     this.originalList.forEach((employee: any) => {
+  //       const row: any = {};
+  //       row['Employee'] = employee.employee_name;
 
-  FileSaver.saveAs(blob, 'Monthly_Attendance.xlsx');
-}
+  //       this.dayList.forEach(day => {
+  //   const dayNum = day.slice(0, 2); // "01", "02", ...
+  //   const match = employee.data.find((entry: any) =>
+  //     entry.date.endsWith(`-${dayNum}`)
+  //   );
 
-
-//   export(): void {
-//     const exportData: any[] = [];
-
-//     this.originalList.forEach((employee: any) => {
-//       const row: any = {};
-//       row['Employee'] = employee.employee_name;
-
-//       this.dayList.forEach(day => {
-//   const dayNum = day.slice(0, 2); // "01", "02", ...
-//   const match = employee.data.find((entry: any) =>
-//     entry.date.endsWith(`-${dayNum}`)
-//   );
-
-//   row[day] = {
-//     status: this.mapStatus(match?.status || ''),
-//     checkIn: match?.checkIn || '',
-//     checkOut: match?.checkOut || ''
-//   };
-// });
+  //   row[day] = {
+  //     status: this.mapStatus(match?.status || ''),
+  //     checkIn: match?.checkIn || '',
+  //     checkOut: match?.checkOut || ''
+  //   };
+  // });
 
 
-//       // this.dayList.forEach(day => {
-//       //   const dayNum = day.slice(0, 2); // "01", "02", ...
-//       //   const match = employee.data.find((entry: any) =>
-//       //     entry.date.endsWith(`-${dayNum}`)
-//       //   );
+  //       // this.dayList.forEach(day => {
+  //       //   const dayNum = day.slice(0, 2); // "01", "02", ...
+  //       //   const match = employee.data.find((entry: any) =>
+  //       //     entry.date.endsWith(`-${dayNum}`)
+  //       //   );
 
-//       //   row[day] = this.mapStatus(match?.status || '');
-//       //   row[day] =match?.checkIn
-//       //   row[day] =match?.checkOut
-//       // });
+  //       //   row[day] = this.mapStatus(match?.status || '');
+  //       //   row[day] =match?.checkIn
+  //       //   row[day] =match?.checkOut
+  //       // });
 
-//       exportData.push(row);
-//     });
+  //       exportData.push(row);
+  //     });
 
-//     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
-//     const workbook: XLSX.WorkBook = {
-//       Sheets: { 'Attendance': worksheet },
-//       SheetNames: ['Attendance']
-//     };
+  //     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(exportData);
+  //     const workbook: XLSX.WorkBook = {
+  //       Sheets: { 'Attendance': worksheet },
+  //       SheetNames: ['Attendance']
+  //     };
 
-//     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
-//     const blob = new Blob([excelBuffer], {
-//       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
-//     });
+  //     const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+  //     const blob = new Blob([excelBuffer], {
+  //       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+  //     });
 
-//     FileSaver.saveAs(blob, 'Monthly_Attendance.xlsx');
-//   }
+  //     FileSaver.saveAs(blob, 'Monthly_Attendance.xlsx');
+  //   }
 
   mapStatus(status: string): string {
     const map: any = {

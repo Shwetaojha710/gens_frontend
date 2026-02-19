@@ -383,7 +383,7 @@
   <!--Header-->
 
   <div class="row g-3 mb-6" *ngIf="!createFlag">
-    <div class="col-lg-3 col-sm-6">
+    <div class="col-lg-3 col-sm-6"  (click)="checkTotalEmp()">
       <div class="card">
         <div class="card-body">
           <div class="d-flex align-items-center flex-wrap">
@@ -480,12 +480,13 @@
                 <tr>
                   <th style="width: 10px!important;">SI.NO </th>
 
-                  <th>Name/Email</th>
+                  <th>Name/Email/<br>Gender</th>
                   <!-- <th>Email</th> -->
                   <th>Phone</th>
                   <th>Aadhaar No.</th>
                   <th>DOB</th>
-                  <th>Gender</th>
+                  <!-- <th>Gender</th> -->
+                  <th>Status</th>
                   <th>Location</th>
                   <th>Atten.</th>
                   <th>All Time Atten.</th>
@@ -512,6 +513,8 @@
                           <small class="text-truncate">  {{ item["email"] }}</small>
                           <br>
                         <small class="text-truncate">{{item?.empCode}}</small>
+                        <br>
+                        <small class="text-truncate">{{item?.gender}}</small>
 
 
 
@@ -530,8 +533,16 @@
                   <td>
                     {{ item["dateOfBirth"] | date : "dd-MM-yyyy" }}
                   </td>
-                  <td>
+                  <!-- <td>
                     {{ item["gender"] }}
+                  </td> -->
+                  <td>
+                       <span
+                    class="badge badge-outline-success px-2"
+                    [ngClass]="getUserStatusClass(item.status)"
+                  >
+                    {{ item.status =='active' ? 'Active' : 'InActive' }}
+                  </span>
                   </td>
                   <td>
                        <span

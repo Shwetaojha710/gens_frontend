@@ -266,15 +266,20 @@
                 <td>{{ item["createdAt"] }}</td>
 
                 <td>
-                  <button type="button" class="badge badge-center bg-label-success" *ngIf="item.status!='rejected'"
+                  <button type="button" class="badge badge-center bg-label-success" *ngIf="item.status!='approved'"
                     (click)="statuschange(item,'approved')">
                     <i class="fas fa-check"></i>
                   </button>
                   &nbsp;
-                  <button *ngIf="item.status=='pending'" type="button" class="badge badge-center bg-label-danger"
-                    (click)="statuschange(item,'rejected')">
-                    <i class="fa-solid fa-xmark"></i>
-                  </button>
+                 <button
+  *ngIf="['pending','recommended'].includes(item.status)"
+  type="button"
+  class="badge badge-center bg-label-danger"
+  (click)="statuschange(item,'rejected')">
+
+  <i class="fa-solid fa-xmark"></i>
+
+</button>
                 </td>
               </tr>
             </tbody>
