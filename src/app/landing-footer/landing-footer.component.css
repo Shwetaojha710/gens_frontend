@@ -249,7 +249,7 @@ nav.layout-navbar .menu-text {
   color: var(--bs-footer-text);
 }
 .landing-footer .footer-form input, .landing-footer .footer-form input:hover:not(:focus):not(:disabled) {
-  border-color: color-mix(in srgb, #eaeaff 22%, #30334e);
+  border-color: color-mix(in srgb, #eaeaff 22%, #ffffff);
 }
 .landing-footer .footer-form input:focus {
   border-color: var(--bs-primary);

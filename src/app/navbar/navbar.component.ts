@@ -104,7 +104,7 @@ export class NavbarComponent {
         { title: 'Pay Slip Setup', icon: 'ri-file-pdf-2-line', link: '/layout/master/pay-slip' },
         { title: 'Branch', icon: 'ri-file-pdf-2-line', link: '/layout/master/branch' },
 
-        // {title: 'Attendance Master', icon: 'ri-file-line', link: '/layout/master/salary-master'}
+        // {title: 'Attendance Master11', icon: 'ri-file-line', link: '/layout/master/salary-master'}
 
       ]
     },

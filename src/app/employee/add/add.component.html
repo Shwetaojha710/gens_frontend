@@ -266,6 +266,23 @@
                       disabled="true">
                     </ng-select>
                   </div>
+                   <div class="col-md-3">
+              <label class="col-form-label fw-bold">Joining Date
+                <!-- <span *ngIf="!updateFlag" style="color: red"> *</span> -->
+              </label>
+              <input type="date" class="form-control" placeholder="Select Joining Date"
+                [(ngModel)]="personalDetails.joiningDate" name="joiningDate"  #joiningDateRef="ngModel"disabled />
+
+            </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">Role
+                <!-- <span *ngIf="!updateFlag" style="color: red"> *</span> -->
+              </label>
+               <ng-select [items]="role" bindLabel="label" bindValue="value" [(ngModel)]="personalDetails['role']"
+                [multiple]="false" placeholder="Select Role" name="role" id="select2Danger" disabled="true">
+              </ng-select>
+
+            </div>
                   <div class="col-md-3">
                     <label class="col-form-label fw-bold">Department
                       <span style="color: red"> *</span>

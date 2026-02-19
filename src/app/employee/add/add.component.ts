@@ -39,6 +39,8 @@ export class AddComponent {
     console.log(this.personalDetails, "personaldetails");
 
   }
+    role: any = [{ value: 'manager', label: 'Manager' }, { value: 'teamLeader', label: 'Team Leader' }, { value: 'employee', label: 'employee' }]
+
   maritalStatusList = [
     { value: 'Single', label: 'Single' },
     { value: 'Married', label: 'Married' },

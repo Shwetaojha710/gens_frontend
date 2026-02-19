@@ -36,6 +36,7 @@ export type ChartOptions = {
   styleUrl: './dashboard.component.css'
 })
 export class DashboardComponent {
+[x: string]: any;
   @ViewChild("chart") chart: ChartComponent | undefined;
   notyf: Notyf = new Notyf();
   public chartOptions!: Partial<ChartOptions>;
@@ -43,7 +44,7 @@ export class DashboardComponent {
   obj: any = {};
 
   constructor(private dashboardService: DashboardService, private router: Router, public masterService: MasterService) {
-     this.getBranchDD()
+    this.getBranchDD()
   }
   stats: any = []
   employeeList: any = []
@@ -51,6 +52,25 @@ export class DashboardComponent {
   leaveList: any = []
   baseurl: any;
   Event: any = []
+  onImageError(event: Event,data:any, imageType: string) {
+    console.log(event.target);
+
+    if (imageType == 'holidayImage') {
+      const img = event.target as HTMLImageElement;
+      img.src = 'assets/img/avatars/calendar.png';
+      return;
+    }
+    else {
+      const img = event.target as HTMLImageElement;
+      img.src =data?.gender == "Male"?'assets/img/avatars/5.png': 'assets/img/avatars/4.png';
+      return;
+    }
+    // if (imageType === 'profileImage') {
+
+    // }
+    // const img = event.target as HTMLImageElement;
+    // img.src = 'assets/img/avatars/calendar.png';
+  }
 
 
   leaveTypes: any = []
@@ -103,12 +123,12 @@ export class DashboardComponent {
   //  localStorage.setItem('branchId', JSON.stringify(this.obj['branchId']));
   // }
   onBranchChange(branchId: any) {
-  console.log('Selected Branch ID:', branchId);
-  localStorage.setItem('branchId', branchId)
-}
+    console.log('Selected Branch ID:', branchId);
+    localStorage.setItem('branchId', branchId)
+  }
 
-  getBranchDD(){
-    this.branchList=[]
+  getBranchDD() {
+    this.branchList = []
     this.masterService.BranchDD().subscribe((res) => {
       if (res.status == true) {
         this.notyf.success(res.message || 'Dashboard data loaded successfully')

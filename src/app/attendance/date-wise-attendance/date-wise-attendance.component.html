@@ -1,5 +1,5 @@
 <div class="container-xxl mt-5">
-  <div class="row mb-6" *ngIf="updateFlag == false" >
+  <div class="row mb-6" *ngIf="updateFlag == false">
     <div class="col-md" *ngIf="fromDashboard != 'true'">
       <div class="card">
         <h5 class="card-header d-flex justify-content-between align-items-center">
@@ -28,7 +28,7 @@
                 <span style="color: red">*</span>
               </label>
               <input type="date" class="form-control" id="defaultFormControlInput" placeholder="Select Start Date"
-                [(ngModel)]="obj['startDate']" name="month" required  (change)="setMinToDate()"/>
+                [(ngModel)]="obj['startDate']" name="month" required (change)="setMinToDate()" />
             </div>
 
             <div class="col-4">
@@ -55,8 +55,14 @@
     <div class="card-datatable text-nowrap">
       <div id="DataTables_Table_0_wrapper" class="dt-container dt-bootstrap5 dt-empty-footer">
         <div class="row card-header mx-0 px-2">
-          <div class="d-md-flex justify-content-between align-items-center dt-layout-start col-md-auto me-auto">
-            <p class="card-title mb-0 text-md-start text-center" style="    display: flex;
+          <h5 class="card-header d-flex justify-content-between align-items-center">
+            <span>Attendance List</span>
+            <button type="button" class="btn btn-xs btn-primary float-end" (click)="correctAll()">
+              All Attendance Submit
+            </button>
+          </h5>
+          <!-- <div class="d-md-flex justify-content-between align-items-center dt-layout-start col-md-auto me-auto">
+            <p class="card-title mb-0 text-md-start text-center" style="display: flex;
     flex-wrap: wrap;">
               <span class="text-success">P = Present</span> &nbsp;
 
@@ -70,10 +76,15 @@
 
               <span class="text-secondary">WO = Week Off</span> &nbsp;
             </p>
-          </div>
-          <div class="d-md-flex justify-content-between align-items-center dt-layout-end col-md-auto mt-0">
+          </div> -->
+          <!-- <div class="d-md-flex justify-content-between align-items-center dt-layout-end col-md-auto mt-0">
             <div class="dt-buttons btn-group flex-wrap">
-              <!-- <div class="btn-group">
+              <div class="btn-group">
+
+                <button class="btn btn-primary btn-sm" (click)="correctAll()">
+                 Correct All
+                </button>
+
                 <button
                   class="btn btn-xs buttons-collection btn-label-primary dropdown-toggle me-4 waves-effect border-none"
                   tabindex="0"
@@ -92,9 +103,9 @@
                     ></span
                   >
                 </button>
-              </div> -->
+              </div>
             </div>
-          </div>
+          </div> -->
         </div>
 
         <div class="row m-3 mx-2 my-0 justify-content-between">
@@ -118,12 +129,16 @@
             </div>
           </div>
         </div>
+        <br>
         <div class="justify-content-between dt-layout-table">
           <div class="d-md-flex justify-content-between align-items-center dt-layout-full table-responsive">
             <table class="datatables-basic table table-bordered table-responsive dataTable dtr-column"
               id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
               <thead>
                 <tr role="row">
+                  <th style="width: 20px; font-size: 12px">
+                    <input type="checkbox" [(ngModel)]="masterSelected" (change)="checkUncheckAll()" />
+                  </th>
                   <th style="width: 120px; font-size: 12px">Employee</th>
 
                   <th style="width: 50px; font-size: 12px">Date</th>
@@ -136,6 +151,9 @@
 
               <tbody>
                 <tr *ngFor="let item of AttendanceMasterList">
+                  <td>
+                    <input type="checkbox" [(ngModel)]="item.editable" (change)="isAllSelected()" />
+                  </td>
                   <td style="width: 100px; font-size: 12px">
                     {{ item?.employee_name }}
                   </td>

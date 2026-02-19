@@ -109,7 +109,12 @@ export class JoiningComponent {
     this.employmentTypes = [];
     this.master.getEmploymentTypes(obj).subscribe(data => {
       this.employmentTypes = data.data || [];
-    });
+    },
+      (error: any) => {
+        console.error('Error loading employees:', error);
+        this.notyf.error(error?.error?.message)
+        // alert('Failed to load employees. Please try again.');
+      });
   }
   calculateAge(dob: string) {
     if (!dob) return;
@@ -201,7 +206,12 @@ stats:any
       } else {
         this.notyf.error(res.message || 'Something went wrong')
       }
-    });
+    },
+      (error: any) => {
+        console.error('Error loading employees:', error);
+        this.notyf.error(error?.error?.message)
+        // alert('Failed to load employees. Please try again.');
+      });
   }
 
    async onBranchChange(branchId: any) {
@@ -276,17 +286,17 @@ stats:any
       return;
     }
 
-    // const aadhaarRaw = this.personalDetails.adhaarNo.replace(/\D/g, '');
-    // if (aadhaarRaw.length !== 12) {
-    //   this.notyf.error('Please enter a valid 12 digit Aadhaar number');
-    //   return;
-    // }
+    const aadhaarRaw = this.personalDetails.adhaarNo.replace(/\D/g, '');
+    if (aadhaarRaw.length !== 12) {
+      this.notyf.error('Please enter a valid 12 digit Aadhaar number');
+      return;
+    }
     const dob = new Date(this.personalDetails.dateOfBirth);
     const formattedDob = `${dob.getDate().toString().padStart(2, '0')}/${(dob.getMonth() + 1).toString().padStart(2, '0')}/${dob.getFullYear()}`;;
     let obj: any = {}
     obj = Object.assign({}, this.personalDetails);
     obj.dateOfBirth = formattedDob;
-    // obj.adhaarNo = aadhaarRaw
+    obj.adhaarNo = aadhaarRaw
     this.employeeService.createEmp(obj).subscribe(
       (response) => {
 
@@ -294,7 +304,7 @@ stats:any
         let status = this.statusService.handleResponseStatus(response.status, message);
         console.log(status)
         console.log("response", response);
-        if (status === true) {
+        if (status == true) {
           obj = {}
           this.notyf.success(message)
           this.reset();
@@ -354,7 +364,7 @@ stats:any
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err)
+       this.notyf.error(err?.error?.message)
       }
     });
   }
@@ -403,10 +413,18 @@ stats:any
         // this.notyf.success(response.message || 'Employees loaded successfully');
         this.employees = [];
         this.cardData = response.data.cardData
-        if (this.activeFlag == true) {
+          if (this.totalEmpFlag == true) {
           this.employees = response.data.formattedEmps || [];
           this.originalList = response.data.formattedEmps || [];
           this.employeeList = response.data?.formattedEmps?.map((item: any) => ({
+            value: item.id,
+            label: `${item?.empCode}-${item.firstName} ${item?.lastName || ''}`
+          }));
+        }
+        if (this.activeFlag == true) {
+          this.employees = response.data.formattedActiveEmps || [];
+          this.originalList = response.data.formattedActiveEmps || [];
+          this.employeeList = response.data?.formattedActiveEmps?.map((item: any) => ({
             value: item.id,
             label: `${item?.empCode}-${item.firstName} ${item?.lastName || ''}`
           }));
@@ -483,11 +501,20 @@ stats:any
   }
 
   inActiveFlag: any = false
-  activeFlag: any = true
+  activeFlag: any = false
   newJoinerFlag: any = false
+  totalEmpFlag: any = true
 
   async checkStatus() {
     this.inActiveFlag = true
+    this.activeFlag = false
+    this.newJoinerFlag = false
+    this.totalEmpFlag=false
+    await this.loadEmployees()
+  }
+  async checkTotalEmp() {
+    this.totalEmpFlag=true
+    this.inActiveFlag = false
     this.activeFlag = false
     this.newJoinerFlag = false
     await this.loadEmployees()
@@ -495,13 +522,15 @@ stats:any
   async checknewJoiner() {
     this.inActiveFlag = false
     this.activeFlag = false
-    this.newJoinerFlag = true
+    this.newJoinerFlag =true
+    this.totalEmpFlag=false
     await this.loadEmployees()
   }
   async checkActiveStatus() {
     this.inActiveFlag = false
     this.newJoinerFlag = false
     this.activeFlag = true
+    this.totalEmpFlag=false
     await this.loadEmployees()
   }
   updateform() {
@@ -513,6 +542,12 @@ stats:any
     const formattedDob = `${dob.getDate().toString().padStart(2, '0')}/${(dob.getMonth() + 1).toString().padStart(2, '0')}/${dob.getFullYear()}`;;
     const obj = Object.assign({}, this.personalDetails);
     obj.dateOfBirth = formattedDob;
+    const aadhaarRaw = obj.adhaarNo.replace(/\D/g, '');
+    if (aadhaarRaw.length !== 12) {
+      this.notyf.error('Please enter a valid 12 digit Aadhaar number');
+      return;
+    }
+    obj.adhaarNo=aadhaarRaw
     this.employeeService.updateEmp(obj).subscribe(
       (response) => {
 
@@ -535,15 +570,27 @@ stats:any
 
       },
       (error) => {
-        console.error('Error adding employee:', error);
-        this.notyf.error('Failed to add employee. Please try again.');
+           console.error('Error adding employee:', error);
+        let errorMessage = error?.error?.message ? error?.error?.message : error?.message
+        this.notyf.error(errorMessage||'Failed to add employee. Please try again.');
+        // console.error('Error adding employee:', error);
+        // this.notyf.error('Failed to add employee. Please try again.');
       }
 
     )
 
   }
   enableDisableLoc(data: any, type: any) {
-    const Enable = data?.isLocation == true ? 'Disable' : 'Enable'
+     let Enable;
+    if (type == "location") {
+      Enable = data?.isLocation == true ? 'Disable' : 'Enable'
+    }
+    else if(type=="attendanceAllTime"){
+       Enable = data?.isofflineAllTimeAtt == true ? 'Disable' : 'Enable'
+    }
+    else {
+      Enable = data?.isofflineAtt == true ? 'Disable' : 'Enable'
+    }
 
     Swal.fire({
       title: "Are you sure?",
@@ -630,7 +677,11 @@ stats:any
     let obj = Object.assign({}, data)
     if (type == "attendance") {
       obj['isofflineAtt'] = !obj['isofflineAtt']
-    } else {
+    }
+    else if(type=="attendanceAllTime"){
+     obj['isofflineAllTimeAtt'] = !obj['isofflineAllTimeAtt']
+    }
+    else {
       obj['isLocation'] = !obj['isLocation']
     }
 
@@ -685,4 +736,20 @@ stats:any
     this.personalDetails.adhaarNo = formatted; // store raw 12-digit Aadhaar number
   }
 
+    getStatusClass(status: any): string {
+    switch (status) {
+      case true: return 'badge-outline-success';
+      case false: return 'badge-outline-danger';
+      case 'completed': return 'bg-light-success';
+      default: return 'bg-light-secondary';
+    }
+  }
+     getUserStatusClass(status: any): string {
+    switch (status) {
+      case 'active': return 'badge-outline-success';
+      case 'inactive': return 'badge-outline-danger';
+      case 'completed': return 'bg-light-success';
+      default: return 'bg-light-secondary';
+    }
+  }
 }

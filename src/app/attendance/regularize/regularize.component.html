@@ -5,7 +5,7 @@
     <div class="col-md" *ngIf="fromDashboard != 'true'">
       <div class="card">
         <h5 class="card-header d-flex justify-content-between align-items-center">
-          <span>Regularize List</span>
+          <span>Regularize</span>
           <!-- <button
             *ngIf="updateFlag == false"
             type="button"
@@ -17,7 +17,7 @@
         </h5>
         <div class="card-body">
           <div class="row">
-            <div class="col-4">
+            <div class="col-3">
               <label for="defaultFormControlInput" class="form-label">Select Employee</label>
               <ng-select [items]="EmpList" bindLabel="label" bindValue="value" [(ngModel)]="obj['emp_id']"
                 [multiple]="false" placeholder="Select Employee" name="state" id="select2Danger" required
@@ -25,20 +25,29 @@
               </ng-select>
             </div>
 
-            <div class="col-4">
+            <div class="col-3">
               <label for="defaultFormControlInput" class="form-label">Select Start Date
-                <span style="color: red">*</span>
+                <!-- <span style="color: red">*</span> -->
               </label>
               <input type="date" class="form-control" id="defaultFormControlInput" placeholder="Select Start Date"
                 [(ngModel)]="obj['startDate']" name="month" required  (change)="setMinToDate()"/>
             </div>
 
-            <div class="col-4">
+            <div class="col-3">
               <label for="defaultFormControlInput" class="form-label">Select End Date
-                <span style="color: red"> * </span>
+                <!-- <span style="color: red"> * </span> -->
               </label>
               <input type="date" class="form-control" id="defaultFormControlInput" placeholder="Select End Date"
                 [(ngModel)]="obj['endDate']" name="month" [min]="getToDateMin()" required />
+            </div>
+             <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label">Select Status
+
+              </label>
+              <ng-select [items]="leaveStatus" bindLabel="label" bindValue="value" [(ngModel)]="obj['status']"
+                [multiple]="false" placeholder="Select Status" name="state" id="select2Danger" required
+                #enCashableRef="ngModel">
+              </ng-select>
             </div>
           </div>
           <div class="row mt-2">

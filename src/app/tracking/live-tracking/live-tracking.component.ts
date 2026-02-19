@@ -49,8 +49,8 @@ export class LiveTrackingComponent implements OnInit, OnDestroy {
   isTracking: boolean = true;
   trackingInterval: any = null;
   refreshInterval: number = 3;
-staticLocationData:any=[]
- 
+  staticLocationData: any = []
+
   //   {
   //     coords: {
   //       latitude: 26.8687539,
@@ -182,7 +182,7 @@ staticLocationData:any=[]
     }, 500);
   }
 
-   clearMap() {
+  clearMap() {
     this.markers.forEach(marker => {
       this.map.removeLayer(marker);
     });
@@ -205,106 +205,106 @@ staticLocationData:any=[]
   }
 
   loadAndPlotData(user: any) {
-   const employeeId = user ? user.id : null;
-   const payload: any = {};
+    const employeeId = user ? user.id : null;
+    const payload: any = {};
 
-   if (employeeId) {
-     payload.employeeId = employeeId;
-   }
-
-   this.locationService.getLatestLocations(payload).subscribe(res => {
-     const points: any = res?.data || [];
-     if (!points.length) return;
-
-     this.clearMap();
-
-     const polylineColor = '#2c3e50';
-     const bounds = L.latLngBounds([]);
-
-     const sortedPoints = [...points].sort(
-       (a, b) => a.timestamp - b.timestamp
-     );
-
-     const route: L.LatLngExpression[] = sortedPoints.map(p => [
-       p.coords.latitude,
-       p.coords.longitude
-     ]);
-
-     this.polyline = L.polyline(route, {
-       color: polylineColor,
-       weight: 6,
-       opacity: 0.9,
-       smoothFactor: 1.0,
-       lineCap: 'round',
-       lineJoin: 'round'
-     }).addTo(this.map);
-
-     bounds.extend(this.polyline.getBounds());
-
-    const startPoint = sortedPoints[0];
-    const startIcon = this.createCustomIcon('#28a745', 'START');
-
-    const startMarker = L.marker(
-      [startPoint.coords.latitude, startPoint.coords.longitude],
-      { icon: startIcon }
-    ).addTo(this.map);
-
-    this.bindMarkerPopupWithAddress(startMarker, 'START', startPoint.coords.latitude, startPoint.coords.longitude, startPoint.timestamp);
-
-    this.markers.push(startMarker);
-    bounds.extend([startPoint.coords.latitude, startPoint.coords.longitude]);
-
-    if (sortedPoints.length > 1) {
-      const endPoint = sortedPoints[sortedPoints.length - 1];
-      const endIcon = this.createCustomIcon('#dc3545', 'END');
-
-      const endMarker = L.marker(
-        [endPoint.coords.latitude, endPoint.coords.longitude],
-        { icon: endIcon }
-      ).addTo(this.map);
-
-      this.bindMarkerPopupWithAddress(endMarker, 'END', endPoint.coords.latitude, endPoint.coords.longitude, endPoint.timestamp);
-
-      this.markers.push(endMarker);
-      bounds.extend([endPoint.coords.latitude, endPoint.coords.longitude]);
+    if (employeeId) {
+      payload.employeeId = employeeId;
     }
 
-     const totalSegments = sortedPoints.length - 1;
-     const arrowSpacing = Math.max(2, Math.floor(totalSegments / 8));
+    this.locationService.getLiveLatestLocations(payload).subscribe(res => {
+      const points: any = res?.data || [];
+      if (!points.length) return;
 
-     for (let i = 0; i < totalSegments; i += arrowSpacing) {
-       const curr = sortedPoints[i];
-       const next = sortedPoints[i + 1];
+      this.clearMap();
 
-       const bearing = this.calculateBearing(
-         curr.coords.latitude,
-         curr.coords.longitude,
-         next.coords.latitude,
-         next.coords.longitude
-       );
+      const polylineColor = '#2c3e50';
+      const bounds = L.latLngBounds([]);
 
-       const ratio = 0.6;
-       const arrowLat =
-         curr.coords.latitude +
-         (next.coords.latitude - curr.coords.latitude) * ratio;
-       const arrowLng =
-         curr.coords.longitude +
-         (next.coords.longitude - curr.coords.longitude) * ratio;
+      const sortedPoints = [...points].sort(
+        (a, b) => a.timestamp - b.timestamp
+      );
 
-       const arrowIcon = this.createArrowIcon(bearing);
-       const arrowMarker = L.marker([arrowLat, arrowLng], {
-         icon: arrowIcon
-       }).addTo(this.map);
+      const route: L.LatLngExpression[] = sortedPoints.map(p => [
+        p.coords.latitude,
+        p.coords.longitude
+      ]);
 
-       this.arrowMarkers.push(arrowMarker);
-     }
+      this.polyline = L.polyline(route, {
+        color: polylineColor,
+        weight: 6,
+        opacity: 0.9,
+        smoothFactor: 1.0,
+        lineCap: 'round',
+        lineJoin: 'round'
+      }).addTo(this.map);
 
-     if (bounds.isValid()) {
-       this.map.fitBounds(bounds, { padding: [50, 50] });
-     }
-   });
- }
- createArrowIcon(bearing: number): L.DivIcon {
+      bounds.extend(this.polyline.getBounds());
+
+      const startPoint = sortedPoints[0];
+      const startIcon = this.createCustomIcon('#28a745', 'START');
+
+      const startMarker = L.marker(
+        [startPoint.coords.latitude, startPoint.coords.longitude],
+        { icon: startIcon }
+      ).addTo(this.map);
+
+      this.bindMarkerPopupWithAddress(startMarker, 'START', startPoint.coords.latitude, startPoint.coords.longitude, startPoint.timestamp);
+
+      this.markers.push(startMarker);
+      bounds.extend([startPoint.coords.latitude, startPoint.coords.longitude]);
+
+      if (sortedPoints.length > 1) {
+        const endPoint = sortedPoints[sortedPoints.length - 1];
+        const endIcon = this.createCustomIcon('#dc3545', 'END');
+
+        const endMarker = L.marker(
+          [endPoint.coords.latitude, endPoint.coords.longitude],
+          { icon: endIcon }
+        ).addTo(this.map);
+
+        this.bindMarkerPopupWithAddress(endMarker, 'END', endPoint.coords.latitude, endPoint.coords.longitude, endPoint.timestamp);
+
+        this.markers.push(endMarker);
+        bounds.extend([endPoint.coords.latitude, endPoint.coords.longitude]);
+      }
+
+      const totalSegments = sortedPoints.length - 1;
+      const arrowSpacing = Math.max(2, Math.floor(totalSegments / 8));
+
+      for (let i = 0; i < totalSegments; i += arrowSpacing) {
+        const curr = sortedPoints[i];
+        const next = sortedPoints[i + 1];
+
+        const bearing = this.calculateBearing(
+          curr.coords.latitude,
+          curr.coords.longitude,
+          next.coords.latitude,
+          next.coords.longitude
+        );
+
+        const ratio = 0.6;
+        const arrowLat =
+          curr.coords.latitude +
+          (next.coords.latitude - curr.coords.latitude) * ratio;
+        const arrowLng =
+          curr.coords.longitude +
+          (next.coords.longitude - curr.coords.longitude) * ratio;
+
+        const arrowIcon = this.createArrowIcon(bearing);
+        const arrowMarker = L.marker([arrowLat, arrowLng], {
+          icon: arrowIcon
+        }).addTo(this.map);
+
+        this.arrowMarkers.push(arrowMarker);
+      }
+
+      if (bounds.isValid()) {
+        this.map.fitBounds(bounds, { padding: [50, 50] });
+      }
+    });
+  }
+  createArrowIcon(bearing: number): L.DivIcon {
     const rotation = bearing - 90;
 
     const uniqueId = 'arrowGlow' + Math.random().toString(36).substr(2, 9);
@@ -347,14 +347,14 @@ staticLocationData:any=[]
     });
   }
 
- calculateBearing(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  calculateBearing(lat1: number, lon1: number, lat2: number, lon2: number): number {
     const dLon = (lon2 - lon1) * Math.PI / 180;
     const lat1Rad = lat1 * Math.PI / 180;
     const lat2Rad = lat2 * Math.PI / 180;
 
     const y = Math.sin(dLon) * Math.cos(lat2Rad);
     const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) -
-              Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+      Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
 
     let bearing = Math.atan2(y, x) * 180 / Math.PI;
     bearing = (bearing + 360) % 360;
@@ -362,7 +362,7 @@ staticLocationData:any=[]
     return bearing;
   }
 
- createCustomIcon(color: string, label: string): L.DivIcon {
+  createCustomIcon(color: string, label: string): L.DivIcon {
     const size = label === 'START' ? 30 : 30;
     const bgColor = color;
     const textColor = 'white';
@@ -449,15 +449,15 @@ staticLocationData:any=[]
         link.title = 'Toggle Full Screen';
         link.setAttribute('role', 'button');
         link.setAttribute('aria-label', 'Toggle Full Screen');
-        
+
         const icon = L.DomUtil.create('i', 'fas', link);
         icon.className = `fas ${self.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
-        
+
         const updateIcon = () => {
           icon.className = `fas ${self.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
           link.setAttribute('title', self.isFullScreen ? 'Exit Full Screen' : 'Toggle Full Screen');
         };
-        
+
         L.DomEvent.disableClickPropagation(container);
         L.DomEvent.on(link, 'click', (e) => {
           L.DomEvent.stopPropagation(e);
@@ -490,14 +490,14 @@ staticLocationData:any=[]
         link.title = 'Toggle Traffic';
         link.setAttribute('role', 'button');
         link.setAttribute('aria-label', 'Toggle Traffic');
-        
+
         const icon = L.DomUtil.create('i', 'fas', link);
         icon.className = `fas fa-traffic-light`;
         if (self.isTrafficEnabled) {
           link.style.backgroundColor = '#ffc107';
           link.style.color = '#000';
         }
-        
+
         L.DomEvent.disableClickPropagation(container);
         L.DomEvent.on(link, 'click', (e) => {
           L.DomEvent.stopPropagation(e);
@@ -533,15 +533,15 @@ staticLocationData:any=[]
         const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
         container.style.display = 'flex';
         container.style.flexDirection = 'column';
-        
+
         const zoomInLink = L.DomUtil.create('a', 'leaflet-control-zoom-in', container);
         zoomInLink.href = '#';
         zoomInLink.title = 'Zoom In';
         zoomInLink.setAttribute('role', 'button');
         zoomInLink.setAttribute('aria-label', 'Zoom In');
-        
+
         const zoomInIcon = L.DomUtil.create('i', 'fas fa-plus', zoomInLink);
-        
+
         L.DomEvent.disableClickPropagation(zoomInLink);
         L.DomEvent.on(zoomInLink, 'click', (e) => {
           L.DomEvent.stopPropagation(e);
@@ -554,9 +554,9 @@ staticLocationData:any=[]
         zoomOutLink.title = 'Zoom Out';
         zoomOutLink.setAttribute('role', 'button');
         zoomOutLink.setAttribute('aria-label', 'Zoom Out');
-        
+
         const zoomOutIcon = L.DomUtil.create('i', 'fas fa-minus', zoomOutLink);
-        
+
         L.DomEvent.disableClickPropagation(zoomOutLink);
         L.DomEvent.on(zoomOutLink, 'click', (e) => {
           L.DomEvent.stopPropagation(e);
@@ -588,17 +588,17 @@ staticLocationData:any=[]
 
   toggleFullScreen() {
     this.isFullScreen = !this.isFullScreen;
-    
+
     if (this.isFullScreen) {
       document.body.style.overflow = 'hidden';
-      
+
       if (this.map) {
         const currentView = this.map.getCenter();
         const currentZoom = this.map.getZoom();
         const currentLayers = this.map.eachLayer((layer) => layer);
-        
+
         this.map.remove();
-        
+
         setTimeout(() => {
           const fullscreenContainer = document.getElementById('liveMapFullscreen');
           if (fullscreenContainer) {
@@ -611,12 +611,12 @@ staticLocationData:any=[]
               zoomAnimation: true,
               zoomAnimationThreshold: 4
             }).setView(currentView || [26.8687539, 81.0066458], currentZoom || 15);
-            
+
             this.addTileLayer(this.mapType);
             this.addFullScreenControl();
             this.addTrafficControl();
             this.addCustomZoomControl();
-            
+
             setTimeout(() => {
               if (this.map) {
                 this.map.invalidateSize();
@@ -631,13 +631,13 @@ staticLocationData:any=[]
       }
     } else {
       document.body.style.overflow = '';
-      
+
       if (this.map) {
         const currentView = this.map.getCenter();
         const currentZoom = this.map.getZoom();
-        
+
         this.map.remove();
-        
+
         setTimeout(() => {
           const normalContainer = document.getElementById('liveMap');
           if (normalContainer) {
@@ -650,12 +650,12 @@ staticLocationData:any=[]
               zoomAnimation: true,
               zoomAnimationThreshold: 4
             }).setView(currentView || [26.8687539, 81.0066458], currentZoom || 15);
-            
+
             this.addTileLayer(this.mapType);
             this.addFullScreenControl();
             this.addTrafficControl();
             this.addCustomZoomControl();
-            
+
             setTimeout(() => {
               if (this.map) {
                 this.map.invalidateSize();
@@ -669,7 +669,7 @@ staticLocationData:any=[]
         }, 100);
       }
     }
-    
+
     setTimeout(() => {
       const fullscreenIcon = document.querySelector('.leaflet-control-fullscreen i');
       if (fullscreenIcon) {
@@ -691,7 +691,7 @@ staticLocationData:any=[]
     let tileLayerUrl = '';
     let attribution = '';
 
-    switch(mapType) {
+    switch (mapType) {
       case 'osm':
         tileLayerUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
         attribution = '© OpenStreetMap';
@@ -744,7 +744,7 @@ staticLocationData:any=[]
 
   toggleTraffic() {
     this.isTrafficEnabled = !this.isTrafficEnabled;
-    
+
     if (!this.map) {
       return;
     }
@@ -764,9 +764,9 @@ staticLocationData:any=[]
         pane: 'overlayPane',
         zIndex: 1000
       });
-      
+
       this.trafficLayer.addTo(this.map);
-      
+
       setTimeout(() => {
         if (this.map) {
           this.map.invalidateSize();
@@ -942,7 +942,7 @@ staticLocationData:any=[]
     }
   }
 
-  updateCurrentLocation() {
+  async updateCurrentLocation() {
     if (!this.map || !this.currentLocation) return;
 
     if (this.currentMarker) {
@@ -957,16 +957,23 @@ staticLocationData:any=[]
       icon: vehicleIcon,
       zIndexOffset: 1000
     }).addTo(this.map);
+    const address = await this.getAddressFromAPI(
+      latitude,
+      longitude
+    );
+    console.log(address);
 
     const popupContent = `
       <div style="min-width: 200px;">
         <b>${this.employeeName}</b><br/>
         <b>Current Location</b><br/>
+         <small>Address: ${address}</small><br/>
         <small>Lat: ${latitude.toFixed(6)}</small><br/>
         <small>Lng: ${longitude.toFixed(6)}</small><br/>
         <small>Speed: ${speed.toFixed(1)} m/s</small><br/>
         <small>Heading: ${heading.toFixed(0)}°</small><br/>
         <small>Time: ${new Date(this.currentLocation.timestamp).toLocaleString()}</small>
+
       </div>
     `;
     this.currentMarker.bindPopup(popupContent).openPopup();
@@ -1003,7 +1010,7 @@ staticLocationData:any=[]
     }
 
     const lastLoc = this.currentLocation;
-    const randomLat = (Math.random() - 0.5) * 0.001; 
+    const randomLat = (Math.random() - 0.5) * 0.001;
     const randomLon = (Math.random() - 0.5) * 0.001;
     const randomSpeed = Math.random() * 20;
     const randomHeading = Math.random() * 360;
@@ -1025,35 +1032,35 @@ staticLocationData:any=[]
     };
   }
 
- addNewLocation() {
-  if (!this.employee?.id) {
-    this.addGeneratedLocation();
-    return;
-  }
+  addNewLocation() {
+    if (!this.employee?.id) {
+      this.addGeneratedLocation();
+      return;
+    }
 
-  const payload = { employeeId: this.employee.id };
+    const payload = { employeeId: this.employee.id };
 
-  this.locationService.getLatestLocations(payload).subscribe({
-    next: (res) => {
-      const points: LocationData[] = res?.data || [];
+    this.locationService.getLiveLatestLocations(payload).subscribe({
+      next: (res) => {
+        const points: LocationData[] = res?.data || [];
 
-      if (points.length > 0) {
-        const latestPoint = points[points.length - 1];
+        if (points.length > 0) {
+          const latestPoint = points[points.length - 1];
 
-        this.locationHistory.push(latestPoint);
-        this.currentLocation = latestPoint;
+          this.locationHistory.push(latestPoint);
+          this.currentLocation = latestPoint;
 
-        this.plotLocationHistory();
-        this.updateCurrentLocation();
-      } else {
+          this.plotLocationHistory();
+          this.updateCurrentLocation();
+        } else {
+          this.addGeneratedLocation();
+        }
+      },
+      error: () => {
         this.addGeneratedLocation();
       }
-    },
-    error: () => {
-      this.addGeneratedLocation();
-    }
-  });
-}
+    });
+  }
 
   addGeneratedLocation() {
     const newLocation = this.generateNewLocation();
@@ -1099,12 +1106,12 @@ staticLocationData:any=[]
 
   async getAddressFromAPI(lat: number, lng: number): Promise<string | null> {
     try {
-      const response: any = await firstValueFrom(this.locationService.getAddressFromGlobalVTS(lat, lng));
-      
+      const response: any = await this.locationService.getAddressFromGlobalVTS(lat, lng);
+
       if (response && response.address && typeof response.address === 'string' && response.address.trim() !== '') {
         return response.address;
       }
-      
+
       return null;
     } catch (error) {
       console.error('Error fetching address from API:', error);
@@ -1120,24 +1127,24 @@ staticLocationData:any=[]
       <b>Lng:</b> ${lng.toFixed(6)}<br/>
       <b>Time:</b> ${new Date(timestamp).toLocaleString()}
     `;
-    
+
     marker.bindPopup(initialContent);
-    
+
     this.getAddressFromAPI(lat, lng).then(address => {
       let popupContent = `
         <b>${label}</b><br/>
       `;
-      
+
       if (address) {
         popupContent += `<b>Address:</b> ${address}<br/>`;
       }
-      
+
       popupContent += `
         <b>Lat:</b> ${lat.toFixed(6)}<br/>
         <b>Lng:</b> ${lng.toFixed(6)}<br/>
         <b>Time:</b> ${new Date(timestamp).toLocaleString()}
       `;
-      
+
       marker.setPopupContent(popupContent);
     }).catch(error => {
       const fallbackContent = `

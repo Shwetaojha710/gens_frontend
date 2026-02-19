@@ -10,16 +10,24 @@ import { StatusService } from '../../services/status.service';
 declare let bootstrap: any;
 import { firstValueFrom } from 'rxjs';
 import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
+import * as XLSX from 'xlsx';
+import FileSaver from 'file-saver';
+import Swal from 'sweetalert2';
+
 @Component({
   selector: 'app-full-time-salary',
   imports: [NgSelectModule,
-    FormsModule, CommonModule,SearchPaginationComponent],
+    FormsModule, CommonModule, SearchPaginationComponent],
   templateUrl: './full-time-salary.component.html',
   styleUrl: './full-time-salary.component.css'
 })
 
 
 export class FullTimeSalaryComponent {
+  monthObj: any = {
+    '01': 'January', '02': 'February', '03': 'March', '04': 'April', '05': 'May', '06': 'June',
+    '07': 'July', '08': 'August', '09': 'September', '10': 'October', '11': 'November', '12': 'December'
+  }
   monthList = [
     { value: '01', label: 'January' },
     { value: '02', label: 'February' },
@@ -44,7 +52,7 @@ export class FullTimeSalaryComponent {
     await this.empList()
     await this.getYear();
   }
- pageSize = 10;
+  pageSize = 10;
   currentPage = 1;
   searchTerm: any;;
   itemsPerPage = 10;
@@ -74,7 +82,7 @@ export class FullTimeSalaryComponent {
   }
   filteredSalary: any = []
   searchText: any = ''
-    applyFilters() {
+  applyFilters() {
 
 
 
@@ -123,8 +131,8 @@ export class FullTimeSalaryComponent {
     });
 
   }
-  delete(data:any){
-    this.SalaryArr=this.SalaryArr.filter((item:any)=>item.employeeId != data.employeeId)
+  delete(data: any) {
+    this.SalaryArr = this.SalaryArr.filter((item: any) => item.employeeId != data.employeeId)
   }
   employeeSalaryData: any[] = [];
 
@@ -152,7 +160,30 @@ export class FullTimeSalaryComponent {
       this.isLoading = false
       if (this.statusService.handleResponseStatus(response.status, response.message || "Success")) {
         this.masterSelected = false
-        this.notyf.success(response.message);
+        Swal.fire({
+          title: "Salary Generated Successfully",
+          imageUrl: "/assets/img/icons8-success-192.gif",
+          imageWidth: 140,
+          imageHeight: 140,
+          imageAlt: "Success Icon",
+          confirmButtonText: '<i class="fa fa-download"></i> Download Excel File',
+          confirmButtonColor: "#0663a9",
+          showCancelButton: true,
+          text: "Please click the button below to download the Excel file containing the salary details.",
+          cancelButtonText: '<i class="fa fa-times me-2"></i> Cancel',
+          cancelButtonColor: "#d33",
+          reverseButtons: true
+        }).then(async (result) => {
+          if (result.isConfirmed) {
+            await this.generateExcel();
+          }
+        });
+
+
+
+        // this.notyf.success(response.message);
+
+
       } else {
 
         this.isLoading = false
@@ -171,6 +202,119 @@ export class FullTimeSalaryComponent {
     return;
   }
 
+  generateExcel() {
+    this.isLoading = true;
+    this.SalaryArr = []
+    this.originalList = []
+    // let newObj = Object.assign({}, this.obj)
+    // if (newObj['employeeId'] === 'All') {
+    //   newObj['employeeId'] = this.EmpList
+    //     .map((item: any) => item.value)
+    //     .filter((val: any) => val != 'All');
+    // } else {
+    //   newObj['employeeId'] = [newObj['employeeId']]
+    // }
+
+    this.payroll.getGeneratedSalaryList(this.newObj).subscribe({
+      next: async (response: any) => {
+        console.log('response', response);
+        this.isLoading = false;
+        let message = response.message ? response.message : 'Data found Successfully';
+        let status = this.statusService.handleResponseStatus(response.status, message);
+        console.log(status)
+        console.log("response", response);
+
+        if (status == true) {
+
+          this.notyf.success(message)
+          response.data = response.data.map((item: any, index: any) => {
+            return {
+              ...item,
+              si_no: index + 1,
+            }
+          })
+          this.SalaryArr = response.data
+          this.originalList = response.data
+          // console.log(this.SalaryArr, "salary Array");
+          // pagination
+          const start = (this.currentPage - 1) * this.pageSize;
+          const end = start + this.pageSize;
+          this.filteredSalary = this.SalaryArr.slice(start, end);
+          await this.export();
+        }
+        else if (status == "expired") {
+          this.router.navigate(["login"]);
+        }
+
+        else {
+          this.notyf.error(message)
+        }
+
+      },
+      error: (err) => {
+        this.isLoading = false;
+        console.error('Error:', err);
+        this.notyf.error(err.error?.message)
+      }
+    });
+  }
+  async export() {
+    const exportData: any[] = [];
+
+    this.SalaryArr.forEach((employee: any) => {
+      const row: any = {};
+      row['Employee'] = employee.employeeName;
+      row['empCode'] = employee?.empCode;
+      // row['email'] = employee?.email;
+      // row['phone'] = employee?.phone;
+      // row['department'] = employee?.department;
+      // row['designation'] = employee?.designation;
+      row['Account Number'] = employee?.bankAccount;
+      row['IFSC Code'] = employee?.ifscCode;
+      row['Net Amount'] = Math.round(employee?.net_amount).toFixed(0);
+
+      exportData.push(row);
+    });
+
+
+    const worksheet: XLSX.WorkSheet = {};
+
+
+    // const monthYear = `${new Date().toLocaleString('default', { month: 'long' })} ${new Date().getFullYear()}`;
+    const monthYear = `${this.monthObj[this.obj['month']]}-${this.obj['year']}`;
+    XLSX.utils.sheet_add_aoa(worksheet, [[`Salary Sheet - ${monthYear}`]], { origin: "A1" });
+
+
+    XLSX.utils.sheet_add_json(worksheet, exportData, { origin: "A2", skipHeader: false });
+
+
+    const totalCols = Object.keys(exportData[0]).length;
+    worksheet['!merges'] = [
+      { s: { r: 0, c: 0 }, e: { r: 0, c: totalCols - 1 } }
+    ];
+
+
+    worksheet['A1'].s = {
+      font: { bold: true, sz: 14 },
+      alignment: { horizontal: 'center', vertical: 'center' }
+    };
+
+    const workbook: XLSX.WorkBook = {
+      Sheets: { 'Salary': worksheet },
+      SheetNames: ['Salary']
+    };
+
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], {
+      type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+    });
+
+    FileSaver.saveAs(blob, `Salary_${monthYear}.xlsx`);
+    this.SalaryArr = []
+    this.originalList = []
+    this.filteredSalary = []
+    this.obj = {}
+  }
   EmpList: any = []
   async empList() {
     this.EmpList = []
@@ -197,31 +341,35 @@ export class FullTimeSalaryComponent {
   }
   SalaryArr: any = []
   isLoading: boolean = false;
-  originalList:any=[]
+  originalList: any = []
+  newObj: any = {}
+  absentDaysArr:any=[]
   onSubmit() {
     if (this.obj['year'] == undefined || this.obj['year'] == null || this.obj['year'] == '') {
       this.notyf.error("year is Required");
       return
     }
+    this.newObj = {}
     this.isLoading = true;
     this.SalaryArr = []
-    this.originalList=[]
-    let newObj = Object.assign({}, this.obj)
-    if (newObj['employeeId'] === 'All') {
-      newObj['employeeId'] = this.EmpList
+    this.originalList = []
+    this.absentDaysArr=[]
+    this.newObj = Object.assign({}, this.obj)
+    if (this.newObj['employeeId'] === 'All') {
+      this.newObj['employeeId'] = this.EmpList
         .map((item: any) => item.value)
         .filter((val: any) => val != 'All');
     } else {
-      newObj['employeeId'] = [newObj['employeeId']]
+      this.newObj['employeeId'] = [this.newObj['employeeId']]
     }
 
-    this.payroll.calculateAttendance(newObj).subscribe({
+    this.payroll.calculateAttendance(this.newObj).subscribe({
       next: (response: any) => {
         console.log('response', response);
         this.isLoading = false;
         let message = response.message ? response.message : 'Data found Successfully';
         let status = this.statusService.handleResponseStatus(response.status, message);
-        console.log(status)
+
         console.log("response", response);
 
         if (status == true) {
@@ -229,8 +377,9 @@ export class FullTimeSalaryComponent {
           this.notyf.success(message)
           this.SalaryArr = response.data
           this.originalList = response.data
-          console.log(this.SalaryArr, "salary Array");
-   // pagination
+
+          // console.log(this.SalaryArr, "salary Array");
+          // pagination
           const start = (this.currentPage - 1) * this.pageSize;
           const end = start + this.pageSize;
           this.filteredSalary = this.SalaryArr.slice(start, end);
@@ -261,7 +410,9 @@ export class FullTimeSalaryComponent {
   personalDetails: any = {}
   EmployerDedArr: any = []
   view(item: any) {
+    this.activeTab = 'salary';
     const obj = Object.assign({}, item)
+    this.absentDaysArr = obj.absentdaysArr
     this.personalDetails = {}
     this.personalDetails = obj
     this.SalaryBreakup = []
@@ -351,4 +502,101 @@ export class FullTimeSalaryComponent {
 
     this.modal.hide();
   }
+  activeTab = 'salary';
+
+  attendanceList: any[] = [];
+  leaveList: any[] = [];
+  loadAttendance() {
+
+    const empId = this.personalDetails?.employeeId;
+    let newObj: any = {}
+    newObj = {
+      "employeeId": empId,
+      "month": this.obj['month'],
+      "year": this.obj['year'],
+      "shift_name":  this.personalDetails?.shift_name
+    }
+    this.payroll.empMonthlyLeaveAttDetails(newObj).subscribe((res: any) => {
+    this.payroll.empMonthlyLeaveAttDetails(newObj).subscribe({
+      next: (response: any) => {
+        console.log('response', response);
+
+        let message = response.message ? response.message : 'Data found Successfully';
+        let status = this.statusService.handleResponseStatus(response.status, message);
+        console.log(status)
+        console.log("response", response);
+
+        if (status === true) {
+         this.attendanceList = res.data?.attendanceList || [];
+        }
+        else if (status == "expired") {
+          this.router.navigate(["login"]);
+        }
+
+        else {
+          this.notyf.error(message)
+        }
+
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.notyf.error(err.error?.message)
+      }
+    });
+
+
+
+
+    });
+
+  }
+
+  loadLeaveRequests() {
+
+    const empId = this.personalDetails?.employeeId;
+    let newObj: any = {}
+    newObj = {
+      "employeeId": empId,
+      "month": this.obj['month'],
+      "year": this.obj['year'],
+       "shift_name":  this.personalDetails?.shift_name
+    }
+    this.payroll.empMonthlyLeaveAttDetails(newObj).subscribe({
+      next: (response: any) => {
+        console.log('response', response);
+
+        let message = response.message ? response.message : 'Data found Successfully';
+        let status = this.statusService.handleResponseStatus(response.status, message);
+        console.log(status)
+        console.log("response", response);
+
+        if (status === true) {
+          this.leaveList = response.data?.leaveList || [];
+        }
+        else if (status == "expired") {
+          this.router.navigate(["login"]);
+        }
+
+        else {
+          this.notyf.error(message)
+        }
+
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.notyf.error(err.error?.message)
+      }
+    });
+
+    // this.apiService.getEmployeeLeaves({
+    //   emp_id: empId
+    // }).subscribe((res:any)=>{
+
+    //   this.leaveList = res.data || [];
+
+    // });
+
+  }
+
+
 }
