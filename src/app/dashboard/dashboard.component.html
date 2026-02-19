@@ -363,12 +363,18 @@
             <li class="d-flex align-items-center mb-6" *ngFor="let item of holidayList">
               <div class="avatar avatar-md flex-shrink-0 me-4">
                 <div class="avatar-initial bg-lightest img-fluid rounded-circle w-auto h-auto">
+
+                 
+<!--                     <img [src]="item['image']" alt="Document" width="100" height="auto" style="cursor: pointer" /> -->
+                
+
                   <div>
-                    <img [src]="item?.image || 'assets/img/avatars/calendar.png'" (error)="onImageError($event,item, 'holidayImage')"
+                    <img [src]="item?.image || 'assets/img/avatars/calendar.png'" width="100" height="auto" style="cursor: pointer"   (error)="onImageError($event,item, 'holidayImage')"
                       alt="avatar" class="rounded-3" />
 
                     <!-- <img [src]="item['image']" alt="Document" width="100" height="auto" style="cursor: pointer" /> -->
                   </div>
+
                 </div>
               </div>
               <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">

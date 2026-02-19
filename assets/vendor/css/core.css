@@ -28856,3 +28856,11 @@ body:not(.modal-open) .layout-content-navbar .layout-navbar {
   --bs-footer-brand-hover-color: color-mix(in sRGB, var(--bs-paper-bg) 84%, var(--bs-dark-contrast));
   --bs-footer-link-hover-color: color-mix(in sRGB, var(--bs-paper-bg) 84%, var(--bs-dark-contrast));
 }
+
+div.dt-container div.dt-search input {
+    margin-left: 0.5em;
+    display: inline-block;
+    width: 179px;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}

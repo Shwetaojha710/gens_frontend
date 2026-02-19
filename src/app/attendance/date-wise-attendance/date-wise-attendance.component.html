@@ -14,8 +14,8 @@
           </button> -->
         </h5>
         <div class="card-body">
-          <div class="row">
-            <div class="col-4">
+          <div class="row g-2">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-4">
               <label for="defaultFormControlInput" class="form-label">Select Employee</label>
               <ng-select [items]="EmpList" bindLabel="label" bindValue="value" [(ngModel)]="obj['emp_id']"
                 [multiple]="false" placeholder="Select Employee" name="state" id="select2Danger" required
@@ -23,7 +23,7 @@
               </ng-select>
             </div>
 
-            <div class="col-4">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-4">
               <label for="defaultFormControlInput" class="form-label">Select Start Date
                 <span style="color: red">*</span>
               </label>
@@ -31,7 +31,7 @@
                 [(ngModel)]="obj['startDate']" name="month" required (change)="setMinToDate()" />
             </div>
 
-            <div class="col-4">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-4">
               <label for="defaultFormControlInput" class="form-label">Select End Date
                 <span style="color: red"> * </span>
               </label>

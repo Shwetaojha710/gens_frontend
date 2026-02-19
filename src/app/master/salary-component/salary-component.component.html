@@ -17,8 +17,8 @@
 
         <hr style="margin: 0rem 0 !important" />
         <div class="card-body">
-          <div class="row">
-            <div class="col-3">
+          <div class="row g-2">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
               <label for="defaultFormControlInput" class="form-label" >Name
                  <span style="color: red"> *</span>
               </label>
@@ -32,7 +32,7 @@
                 required
               />
             </div>
-            <div class="col-3">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
               <label for="defaultFormControlInput" class="form-label">
                 Component Type
                    <span style="color: red"> *</span>
@@ -49,7 +49,7 @@
               >
               </ng-select>
             </div>
-            <div class="col-3">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
               <label for="defaultFormControlInput" class="form-label">
                 Value Type
                    <span style="color: red"> *</span>
@@ -68,7 +68,7 @@
               >
               </ng-select>
             </div>
-            <div class="col-3" *ngIf="obj['value_type'] == 'percentage'">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3" *ngIf="obj['value_type'] == 'percentage'">
               <label for="defaultFormControlInput" class="form-label">
                 Dependent Component
                    <span style="color: red"> *</span>
@@ -86,7 +86,7 @@
               >
               </ng-select>
             </div>
-            <div class="col-3" *ngIf="obj['value_type'] == 'fixed'">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3" *ngIf="obj['value_type'] == 'fixed'">
               <label for="defaultFormControlInput" class="form-label"
                 >Amount
                 </label
@@ -102,7 +102,7 @@
               />
             </div>
             <div
-              class="col-3"
+              class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3"
               *ngIf="
                 obj['value_type'] == 'percentage' ||
                 obj['value_type'] == 'basic_dependent'
@@ -121,7 +121,7 @@
                 required
               />
             </div>
-            <div class="col-3">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
               <label for="defaultFormControlInput" class="form-label"
                 >Component Description</label
               >

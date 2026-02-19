@@ -1,7 +1,4 @@
-/*
-* demo.css
-* File include item demo only specific css only
-******************************************************************************/
+
 
 .menu .app-brand.demo {
   height: 64px;
@@ -100,4 +97,12 @@
 .layout-demo-info {
   text-align: center;
   margin-top: 1.25rem;
+}
+
+div.dt-container div.dt-search input {
+    margin-left: 0.5em;
+    display: inline-block;
+    width: 179px;
+    margin-bottom: 10px !important;
+    margin-top: 10px !important;
 }

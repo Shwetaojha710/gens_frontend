@@ -18,7 +18,7 @@
         <hr style="margin: 0rem 0 !important" />
         <div class="card-body">
           <div class="row">
-            <div class="col-4">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
               <label for="defaultFormControlInput" class="form-label"
                 >Name</label
               >
@@ -35,7 +35,7 @@
               <div class="invalid-feedback">Enter a valid email address.</div>
             </div>
             &nbsp;
-               <div class="col-4" *ngIf="updateFlag">
+               <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3" *ngIf="updateFlag">
               <label for="defaultFormControlInput" class="form-label"
                 >Status</label
               >
@@ -99,7 +99,8 @@
           (pageChange)="onPageChange($event)"
           (pageSizeChange)="onPageSizeChange($event)"
         >
-          <table class="table table-striped dataTable">
+          <div class="table-responsive">
+            <table class="table table-striped dataTable">
             <thead>
               <tr>
                 <th>SI.No</th>
@@ -143,6 +144,7 @@
               </tr>
             </tbody>
           </table>
+          </div>
         </app-search-pagination>
 
 
