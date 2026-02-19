@@ -1,23 +1,26 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
-import { EmployeeService } from '../../services/employee.service';
+// import { EmployeeService } from '../../services/employee.service';
 import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { CommonModule } from '@angular/common';
-import { DataService } from '../../services/data.service';
+
 import { Router, RouterModule } from '@angular/router';
-import { QualificationComponent } from "../profile/professional-info/qualification/qualification.component";
-import { ExperienceComponent } from '../profile/professional-info/experience/experience.component';
-import { BankDetailsComponent } from '../profile/professional-info/bank-details/bank-details.component';
-import { StatusService } from '../../services/status.service';
+import { QualificationComponent } from '../profile/professional-info/qualification/qualification.component';
+import { ExperienceComponent } from "../profile/professional-info/experience/experience.component";
+import { BankDetailsComponent } from "../profile/professional-info/bank-details/bank-details.component";
 import Swal from 'sweetalert2';
 import { MasterService } from '../../services/master.service';
 import { Notyf } from 'notyf';
 import * as bootstrap from 'bootstrap';
-import { BasicComponent } from "../../payroll/basic/basic.component";
-import { AllowancesComponent } from "../../payroll/allowances/allowances.component";
-import { TotalSalaryComponentComponent } from "../../payroll/total-salary-component/total-salary-component.component";
-import { DeductionsComponent } from "../../payroll/deductions/deductions.component";
-import { AssignLeaveComponent } from "../profile/professional-info/assign-leave/assign-leave.component";
+import { BasicComponent } from '../../payroll/basic/basic.component';
+import { AllowancesComponent } from '../../payroll/allowances/allowances.component';
+import { TotalSalaryComponentComponent } from '../../payroll/total-salary-component/total-salary-component.component';
+import { DeductionsComponent } from '../../payroll/deductions/deductions.component';
+// import { AssignLeaveComponent } from "../profile/professional-info/assign-leave/assign-leave.component";
+import { EmployeeService } from '../../services/employee.service';
+import { DataService } from '../../services/data.service';
+import { StatusService } from '../../services/status.service';
+import { AssignLeaveComponent } from '../profile/professional-info/assign-leave/assign-leave.component';
 
 @Component({
   selector: 'app-add',

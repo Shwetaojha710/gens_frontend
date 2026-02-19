@@ -12,28 +12,28 @@ export class StatusService {
   constructor(private router: Router,) {
     this.notyf = new Notyf();
   }
-handleResponseStatus(status: any, successMessage?: string) {
-  switch (status) {
-    case true:
-      if (successMessage) {
-        // this.notyf.success(successMessage);
-      }
-      return status;
+  handleResponseStatus(status: any, successMessage?: string) {
+    switch (status) {
+      case true:
+        if (successMessage) {
+          // this.notyf.success(successMessage);
+        }
+        return status;
 
-    case 'expired':
-      this.notyf.error(successMessage || 'Session expired');
-      localStorage.clear();
-      this.router.navigate(['login']);
-      return status;
+      case 'expired':
+        this.notyf.error(successMessage || 'Session expired');
+        localStorage.clear();
+        this.router.navigate(['login']);
+        return status;
 
-    case false:
-      this.notyf.error(successMessage || 'Something went wrong');
-      return status;
+      case false:
+        this.notyf.error(successMessage || 'Something went wrong');
+        return status;
 
-    default:
-      this.notyf.error(successMessage || 'Unknown response status');
-      return status;
+      default:
+        this.notyf.error(successMessage || 'Unknown response status');
+        return status;
+    }
   }
-}
 
 }

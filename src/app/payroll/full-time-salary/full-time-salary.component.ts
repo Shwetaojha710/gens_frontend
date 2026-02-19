@@ -7,19 +7,24 @@ import { FormsModule } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { PayrollService } from '../../services/payroll.service';
 import { StatusService } from '../../services/status.service';
+import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
 declare let bootstrap: any;
 import { firstValueFrom } from 'rxjs';
-import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
 import * as XLSX from 'xlsx';
 import FileSaver from 'file-saver';
 import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-full-time-salary',
-  imports: [NgSelectModule,
-    FormsModule, CommonModule, SearchPaginationComponent],
+  // standalone: true,
+  imports: [
+    NgSelectModule,
+    FormsModule,
+    CommonModule,
+    SearchPaginationComponent
+  ],
   templateUrl: './full-time-salary.component.html',
-  styleUrl: './full-time-salary.component.css'
+  styleUrls: ['./full-time-salary.component.css']
 })
 
 
