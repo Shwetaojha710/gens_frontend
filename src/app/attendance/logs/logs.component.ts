@@ -299,7 +299,7 @@ export class LogsComponent {
       (error: any) => {
         this.AttendanceMasterList = [];
         console.error('Error loading employees:', error);
-        this.notyf.error(error);
+        this.notyf.error(error?.error?.message);
       }
     );
   }
