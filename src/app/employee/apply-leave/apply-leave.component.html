@@ -139,7 +139,7 @@
           </button>
         </h5>
         <div class="card-body">
-          <div class="row">
+          <div class="row g-3">
             <div class="col-3">
               <label for="defaultFormControlInput" class="form-label">Select Employee</label>
               <ng-select [items]="EmpList" bindLabel="label" bindValue="value" [(ngModel)]="obj['emp_id']"
@@ -226,7 +226,7 @@
           (pageSizeChange)="onPageSizeChange($event)">
 
           <div class="table-responsive">
-            <table class="table table-striped dataTable">
+            <table class="table dataTable">
               <thead>
                 <tr>
                   <th>SI.No</th>

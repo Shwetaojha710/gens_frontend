@@ -9,7 +9,7 @@
           </button>
         </h5>
 
-        <hr style="margin: 0rem 0 !important" />
+       
         <div class="card-body">
           <div class="row">
             <div class="col-md-3">
@@ -475,12 +475,12 @@
         <app-search-pagination [totalItems]="employees.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
           (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
           <div class="table-responsive">
-            <table class="table table-striped dataTable">
+            <table class="table dataTable">
               <thead>
                 <tr>
                   <th style="width: 10px!important;">SI.NO </th>
 
-                  <th>Name/Email/<br>Gender</th>
+                  <th>Name/Email/Gender</th>
                   <!-- <th>Email</th> -->
                   <th>Phone</th>
                   <th>Aadhaar No.</th>
