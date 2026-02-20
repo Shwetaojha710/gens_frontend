@@ -28864,3 +28864,13 @@ div.dt-container div.dt-search input {
     margin-bottom: 10px;
     margin-top: 10px;
 }
+
+.table:not(.table-dark, .table-light) thead:not(.table-dark, .table-light) tr th {
+    background-color: #dcf6fe !important;
+    text-transform: capitalize;
+}
+
+.card-header {
+    border-bottom: 1px solid #ddd !important;
+    margin-bottom: 15px !important;
+}
