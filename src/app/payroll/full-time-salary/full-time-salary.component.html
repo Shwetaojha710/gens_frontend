@@ -13,7 +13,7 @@
           </button> -->
         </h5>
 
-       
+
         <div class="card-body">
           <div class="row g-3">
             <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
@@ -73,60 +73,60 @@
         <app-search-pagination [totalItems]="SalaryArr.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
           (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
           <div class="table-responsive">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>
-                  <input type="checkbox" [(ngModel)]="masterSelected" (change)="checkUncheckAll()" />
-                </th>
-                <th>SI.No</th>
-                <th>Employee Id</th>
-                <th>Monthly Salary</th>
-                <th>Monthly Deduction</th>
-                <!-- <th>Bonus</th> -->
-                <th>Net Pay</th>
-                <!--
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>
+                    <input type="checkbox" [(ngModel)]="masterSelected" (change)="checkUncheckAll()" />
+                  </th>
+                  <th>SI.No</th>
+                  <th>Employee Id</th>
+                  <th>Monthly Salary</th>
+                  <th>Monthly Deduction</th>
+                  <!-- <th>Bonus</th> -->
+                  <th>Net Pay</th>
+                  <!--
                 <th>Total Leave Days</th>
                 <th>Total Working Days</th>
                 <th>Full Days</th>
                 <th>Absent Days</th>
                 <th>Allowed Leave</th> -->
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody class="table-border-bottom-0">
-              <tr *ngFor="let item of filteredSalary; let i = index">
-                <td>
-                  <input type="checkbox" [(ngModel)]="item.isSelected" (change)="isAllSelected()" />
-                </td>
-                <th scope="row">{{ i + 1 }}</th>
-                <td>
-                  {{ item["empCode"] }}
-                  {{ item["employeeName"] }}
-                </td>
-                <td>{{ item["TotalSalary"] }}</td>
-                <td>{{ item["totalDeduction"] }}</td>
-                <!-- <td>{{ item["bonusamount"] ||0 }}</td> -->
-                <td>{{ item["basePay"] }}</td>
-                <!-- <td>{{ item["totalLeaveDays"] }}</td>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody class="table-border-bottom-0">
+                <tr *ngFor="let item of filteredSalary; let i = index">
+                  <td>
+                    <input type="checkbox" [(ngModel)]="item.isSelected" (change)="isAllSelected()" />
+                  </td>
+                  <th scope="row">{{ i + 1 }}</th>
+                  <td>
+                    {{ item["empCode"] }}
+                    {{ item["employeeName"] }}
+                  </td>
+                  <td>{{ item["TotalSalary"] }}</td>
+                  <td>{{ item["totalDeduction"] }}</td>
+                  <!-- <td>{{ item["bonusamount"] ||0 }}</td> -->
+                  <td>{{ item["basePay"] }}</td>
+                  <!-- <td>{{ item["totalLeaveDays"] }}</td>
                 <td>{{ item["totalWorkingDays"] }}</td>
                 <td>{{ item["fullDays"] }}</td>
                 <td>{{ item["absentDays"] }}</td>
                 <td>{{ item["allowedLeave"] }}</td> -->
 
-                <td>
-                  <button type="button" class="btn btn-outline-success btn-sm" (click)="view(item)">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  &nbsp;
-                  <button type="button" class="btn btn-sm btn-outline-danger" (click)="delete(item)">
-                    <i class="fas fa-trash-alt"></i>
-                  </button> &nbsp;
+                  <td>
+                    <button type="button" class="btn btn-outline-success btn-sm" (click)="view(item)">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    &nbsp;
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="delete(item)">
+                      <i class="fas fa-trash-alt"></i>
+                    </button> &nbsp;
 
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </app-search-pagination>
 
@@ -194,154 +194,161 @@
 <!-- Modal -->
 
 <div class="modal fade" id="SalaryModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-xl">
+  <div class="modal-dialog modal-xl">
     <div class="modal-content">
 
       <!-- HEADER -->
       <div class="modal-header">
         <h5 class="modal-title">Employee Details</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+
       </div>
 
       <div class="modal-body">
 
-        <!-- TAB HEADER -->
-        <ul class="nav nav-tabs mb-3">
+        <div class="nav-align-top">
 
-          <li class="nav-item">
-            <a class="nav-link" [class.active]="activeTab == 'salary'" (click)="activeTab='salary'">
-              Salary Breakup
-            </a>
-          </li>
+          <!-- TAB HEADER -->
+          <ul class="nav nav-tabs mb-3">
 
-          <li class="nav-item">
-            <a class="nav-link" [class.active]="activeTab == 'absentDays'"(click)="activeTab='absentDays'">
-              Absent Days Record
-            </a>
-          </li>
+            <li class="nav-item">
+              <a class="nav-link waves-effect waves-light" [class.active]="activeTab == 'salary'"
+                (click)="activeTab='salary'">
+                Salary Breakup
+              </a>
+            </li>
 
-          <li class="nav-item">
-            <a class="nav-link" [class.active]="activeTab == 'attendance'"
-              (click)="activeTab='attendance'; loadAttendance()">
-              Attendance
-            </a>
-          </li>
+            <li class="nav-item">
+              <a class="nav-link waves-effect waves-light" [class.active]="activeTab == 'absentDays'"
+                (click)="activeTab='absentDays'">
+                Absent Days Record
+              </a>
+            </li>
 
-          <li class="nav-item">
-            <a class="nav-link" [class.active]="activeTab == 'leave'" (click)="activeTab='leave'; loadLeaveRequests()">
-              Leave Requests
-            </a>
-          </li>
+            <li class="nav-item">
+              <a class="nav-link waves-effect waves-light" [class.active]="activeTab == 'attendance'"
+                (click)="activeTab='attendance'; loadAttendance()">
+                Attendance
+              </a>
+            </li>
 
-
-        </ul>
-
-
-        <!-- ================= SALARY TAB ================= -->
-        <div *ngIf="activeTab==='salary'">
+            <li class="nav-item">
+              <a class="nav-link waves-effect waves-light" [class.active]="activeTab == 'leave'"
+                (click)="activeTab='leave'; loadLeaveRequests()">
+                Leave Requests
+              </a>
+            </li>
 
 
-          <div class="row">
-            <div class="col-3">
-              <label for="defaultFormControlInput" class="form-label">Name :
-              </label>
-              {{ personalDetails["employeeName"] }}
+          </ul>
+
+          <!-- ================= SALARY TAB ================= -->
+          <div *ngIf="activeTab==='salary'">
+
+
+            <div class="row">
+              <div class="col-3">
+                <label for="defaultFormControlInput" class="form-label">Name :
+                </label>
+                {{ personalDetails["employeeName"] }}
+              </div>
+              <div class="col-3">
+                <label for="defaultFormControlInput" class="form-label">Employee Code :
+                </label>
+                {{ personalDetails["empCode"] }}
+              </div>
+              <div class="col-3">
+                <label for="defaultFormControlInput" class="form-label">Designation :
+                </label>
+                {{ personalDetails["empCode"] }}
+              </div>
+              <div class="col-3">
+                <label for="defaultFormControlInput" class="form-label">Total Salary :
+                </label>
+                {{ personalDetails["TotalSalary"] }}
+              </div>
             </div>
-            <div class="col-3">
-              <label for="defaultFormControlInput" class="form-label">Employee Code :
-              </label>
-              {{ personalDetails["empCode"] }}
-            </div>
-            <div class="col-3">
-              <label for="defaultFormControlInput" class="form-label">Designation :
-              </label>
-              {{ personalDetails["empCode"] }}
-            </div>
-            <div class="col-3">
-              <label for="defaultFormControlInput" class="form-label">Total Salary :
-              </label>
-              {{ personalDetails["TotalSalary"] }}
-            </div>
-          </div>
-          <hr />
+            <hr />
 
-          <div class="row">
-            <div class="col-md-6">
-              <div class="list-group mb-3">
-                <div class="list-group-item bg-light p-2 border-bottom-0">
-                  <h6 class="mb-0">Earnings</h6>
-                </div>
-                <div class="list-group-item" *ngFor="let item of PayArr; let i = index">
-                  <div class="d-flex align-items-center justify-content-between">
-                    <p class="mb-0">{{ item?.name }}</p>
-                    <h6 class="fw-medium">{{ item?.pay_amount }}</h6>
+            <div class="row">
+              <div class="col-md-6">
+                <div class="list-group mb-3">
+                  <div class="list-group-item bg-light p-2 border-bottom-0">
+                    <h6 class="mb-0">Earnings</h6>
+                  </div>
+                  <div class="list-group-item" *ngFor="let item of PayArr; let i = index">
+                    <div class="d-flex align-items-center justify-content-between">
+                      <p class="mb-0">{{ item?.name }}</p>
+                      <h6 class="fw-medium">{{ item?.pay_amount }}</h6>
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="col-md-3">
-              <div class="list-group mb-3">
-                <div class="list-group-item bg-light p-2 border-bottom-0">
-                  <h6 class="mb-0">Deductions</h6>
+              <div class="col-md-6">
+                <div class="list-group  mb-3">
+                  <div class="list-group-item bg-light p-2 border-bottom-0">
+                    <h6 class="mb-0">Deductions</h6>
+                  </div>
+                  <div class="list-group-item" *ngFor="let item1 of DedArr; let i = index">
+                    <div class="d-flex align-items-center justify-content-between">
+                      <p class="mb-0">{{ item1?.name }}</p>
+                      <h6 class="fw-medium">{{ item1?.pay_amount }}</h6>
+                    </div>
+                  </div>
                 </div>
-                <div class="list-group-item" *ngFor="let item1 of DedArr; let i = index">
-                  <div class="d-flex align-items-center justify-content-between">
-                    <p class="mb-0">{{ item1?.name }}</p>
-                    <h6 class="fw-medium">{{ item1?.pay_amount }}</h6>
+
+                <div class="list-group mb-3">
+                  <div class="list-group-item bg-light p-2 border-bottom-0">
+                    <h6 class="mb-0">Employer Deductions</h6>
+                  </div>
+                  <div class="list-group-item" *ngFor="let item1 of EmployerDedArr; let i = index">
+                    <div class="d-flex align-items-center justify-content-between">
+                      <p class="mb-0">{{ item1?.name }}</p>
+                      <h6 class="fw-medium">{{ item1?.pay_amount }}</h6>
+                    </div>
                   </div>
                 </div>
               </div>
+              <!-- <div class="col-md-3">
+             
+            </div> -->
             </div>
-            <div class="col-md-3">
-              <div class="list-group mb-3">
-                <div class="list-group-item bg-light p-2 border-bottom-0">
-                  <h6 class="mb-0">Employer Deductions</h6>
-                </div>
-                <div class="list-group-item" *ngFor="let item1 of EmployerDedArr; let i = index">
-                  <div class="d-flex align-items-center justify-content-between">
-                    <p class="mb-0">{{ item1?.name }}</p>
-                    <h6 class="fw-medium">{{ item1?.pay_amount }}</h6>
-                  </div>
-                </div>
-              </div>
+
+            <hr />
+
+            <p>Leave Deductions</p>
+
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Total Working Days</th>
+                    <th>Present Days</th>
+                    <th>Absent Days</th>
+                    <th>Leave Taken</th>
+                    <th>Allowed Leaves</th>
+                    <th>Half days</th>
+                    <th>Late Attendance</th>
+                    <th>Leave Deductions</th>
+                    <th>Net Pay</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{{personalDetails['totalWorkingDays']}}</td>
+                    <td>{{personalDetails['fullDays']}}</td>
+                    <td>{{personalDetails['absentDays']}}</td>
+                    <td>{{personalDetails['totalLeaveDays']}}</td>
+                    <td>{{personalDetails['allowedLeave']}}</td>
+                    <td>{{personalDetails['halfDays']}}</td>
+                    <td>{{personalDetails['lateDays']}}</td>
+                    <td>{{personalDetails['totalDeduction']}}</td>
+                    <td>{{personalDetails['basePay']}}</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
-          </div>
-
-          <hr />
-
-          <p>Leave Deductions</p>
-
-          <div class="table-responsive">
-            <table class="table table-striped">
-              <thead>
-                <tr>
-                  <th>Total Working Days</th>
-                  <th>Present Days</th>
-                  <th>Absent Days</th>
-                  <th>Leave Taken</th>
-                  <th>Allowed Leaves</th>
-                  <th>Half days</th>
-                  <th>Late Attendance</th>
-                  <th>Leave Deductions</th>
-                  <th>Net Pay</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>{{personalDetails['totalWorkingDays']}}</td>
-                  <td>{{personalDetails['fullDays']}}</td>
-                  <td>{{personalDetails['absentDays']}}</td>
-                  <td>{{personalDetails['totalLeaveDays']}}</td>
-                  <td>{{personalDetails['allowedLeave']}}</td>
-                  <td>{{personalDetails['halfDays']}}</td>
-                  <td>{{personalDetails['lateDays']}}</td>
-                  <td>{{personalDetails['totalDeduction']}}</td>
-                  <td>{{personalDetails['basePay']}}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <!--
+            <!--
         <div class="table-responsive text-nowrap">
           <table class="table table-hover">
             <thead>
@@ -373,7 +380,7 @@
 
 
 
-          <!-- <div class="row">
+            <!-- <div class="row">
             <div class="col-3">
               <label>Name :</label>
               {{ personalDetails?.employeeName }}
@@ -448,37 +455,37 @@
 
           </div> -->
 
-        </div>
+          </div>
 
-   <!-- ================= absentDays Record TAB ================= -->
-          <div *ngIf="activeTab=='absentDays'">
+          <!-- ================= absentDays Record TAB ================= -->
+          <div *ngIf="activeTab=='absentDays'"style="overflow-y: scroll;height: 500px;">
 
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>SI.NO</th>
-                <th>Date</th>
-                <th>Reason</th>
-              </tr>
-            </thead>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>SI.NO</th>
+                  <th>Date</th>
+                  <th>Reason</th>
+                </tr>
+              </thead>
 
-            <tbody>
-             <tr *ngFor="let item of absentDaysArr; let i = index">
+              <tbody>
+                <tr *ngFor="let item of absentDaysArr; let i = index">
 
-                <td>{{i+1}}</td>
-                <td>{{item.date }}</td>
-                <td>{{item.reason}}</td>
-              </tr>
-            </tbody>
+                  <td>{{i+1}}</td>
+                  <td>{{item.date }}</td>
+                  <td>{{item.reason}}</td>
+                </tr>
+              </tbody>
 
-          </table>
+            </table>
 
-        </div>
+          </div>
 
-        <!-- ================= ATTENDANCE TAB ================= -->
-        <div *ngIf="activeTab=='attendance'">
+          <!-- ================= ATTENDANCE TAB ================= -->
+          <div *ngIf="activeTab=='attendance'" style="overflow-y: scroll;height: 500px;">
 
-          <table class="table table-striped">
+            <table class="table">
             <thead>
               <tr>
                 <th>Date</th>
@@ -489,48 +496,48 @@
             </thead>
 
             <tbody>
-              <tr *ngFor="let item of attendanceList">
-                <td>{{item.date}}</td>
-                <td>{{ item.checkIn }}</td>
-                <td>{{ item.checkOut }}</td>
-                <td>{{item.status}}</td>
+              <tr *ngFor=" let item of attendanceList">
+              <td>{{item.date}}</td>
+              <td>{{ item.checkIn }}</td>
+              <td>{{ item.checkOut }}</td>
+              <td>{{item.status}}</td>
               </tr>
-            </tbody>
+              </tbody>
 
-          </table>
+            </table>
 
+          </div>
+
+          <!-- ================= LEAVE TAB ================= -->
+          <div *ngIf="activeTab=='leave'">
+
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Leave Type</th>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>From Duration</th>
+                  <th>To Duration</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                <tr *ngFor="let leave of leaveList">
+                  <td>{{leave.leave_type_name}}</td>
+                  <td>{{leave.fromDate}}</td>
+                  <td>{{leave.toDate}}</td>
+                  <td>{{leave.duration_type}}</td>
+                  <td>{{leave.to_duration_type}}</td>
+                  <td>{{leave.status}}</td>
+                </tr>
+              </tbody>
+
+            </table>
+
+          </div>
         </div>
-
-        <!-- ================= LEAVE TAB ================= -->
-        <div *ngIf="activeTab=='leave'">
-
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Leave Type</th>
-                <th>From</th>
-                <th>To</th>
-                <th>From Duration</th>
-                <th>To Duration</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <tr *ngFor="let leave of leaveList">
-                <td>{{leave.leave_type_name}}</td>
-                <td>{{leave.fromDate}}</td>
-                <td>{{leave.toDate}}</td>
-                <td>{{leave.duration_type}}</td>
-                <td>{{leave.to_duration_type}}</td>
-                <td>{{leave.status}}</td>
-              </tr>
-            </tbody>
-
-          </table>
-
-        </div>
-
       </div>
     </div>
   </div>
