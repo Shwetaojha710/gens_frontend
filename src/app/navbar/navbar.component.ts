@@ -64,7 +64,8 @@ export class NavbarComponent {
         { title: 'Attendance Logs', icon: 'ri-calendar-line', link: '/layout/attendance/logs' },
         { title: 'Leaves', icon: 'ri-leaf-line', link: '/layout/attendance/leaves' },
         { title: 'Upload Attendance', icon: 'ri-upload-cloud-line', link: '/layout/attendance/upload-attendance' },
-        { title: 'Regularize', icon: 'ri-upload-cloud-line', link: '/layout/attendance/regularize' }
+        { title: 'Regularize', icon: 'ri-upload-cloud-line', link: '/layout/attendance/regularize' },
+        { title: 'Weekend Employee List', icon: 'ri-upload-cloud-line', link: '/layout/attendance/weekend-emp-list' }
 
       ]
     },

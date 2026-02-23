@@ -13,7 +13,7 @@
           </button> -->
         </h5>
 
-       
+
         <div class="card-body">
           <div class="row g-3">
             <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
@@ -73,60 +73,60 @@
         <app-search-pagination [totalItems]="SalaryArr.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
           (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
           <div class="table-responsive">
-          <table class="table table-hover">
-            <thead>
-              <tr>
-                <th>
-                  <input type="checkbox" [(ngModel)]="masterSelected" (change)="checkUncheckAll()" />
-                </th>
-                <th>SI.No</th>
-                <th>Employee Id</th>
-                <th>Monthly Salary</th>
-                <th>Monthly Deduction</th>
-                <!-- <th>Bonus</th> -->
-                <th>Net Pay</th>
-                <!--
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>
+                    <input type="checkbox" [(ngModel)]="masterSelected" (change)="checkUncheckAll()" />
+                  </th>
+                  <th>SI.No</th>
+                  <th>Employee Id</th>
+                  <th>Monthly Salary</th>
+                  <th>Monthly Deduction</th>
+                  <!-- <th>Bonus</th> -->
+                  <th>Net Pay</th>
+                  <!--
                 <th>Total Leave Days</th>
                 <th>Total Working Days</th>
                 <th>Full Days</th>
                 <th>Absent Days</th>
                 <th>Allowed Leave</th> -->
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody class="table-border-bottom-0">
-              <tr *ngFor="let item of filteredSalary; let i = index">
-                <td>
-                  <input type="checkbox" [(ngModel)]="item.isSelected" (change)="isAllSelected()" />
-                </td>
-                <th scope="row">{{ i + 1 }}</th>
-                <td>
-                  {{ item["empCode"] }}
-                  {{ item["employeeName"] }}
-                </td>
-                <td>{{ item["TotalSalary"] }}</td>
-                <td>{{ item["totalDeduction"] }}</td>
-                <!-- <td>{{ item["bonusamount"] ||0 }}</td> -->
-                <td>{{ item["basePay"] }}</td>
-                <!-- <td>{{ item["totalLeaveDays"] }}</td>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody class="table-border-bottom-0">
+                <tr *ngFor="let item of filteredSalary; let i = index">
+                  <td>
+                    <input type="checkbox" [(ngModel)]="item.isSelected" (change)="isAllSelected()" />
+                  </td>
+                  <th scope="row">{{ i + 1 }}</th>
+                  <td>
+                    {{ item["empCode"] }}
+                    {{ item["employeeName"] }}
+                  </td>
+                  <td>{{ item["TotalSalary"] }}</td>
+                  <td>{{ item["totalDeduction"] }}</td>
+                  <!-- <td>{{ item["bonusamount"] ||0 }}</td> -->
+                  <td>{{ item["basePay"] }}</td>
+                  <!-- <td>{{ item["totalLeaveDays"] }}</td>
                 <td>{{ item["totalWorkingDays"] }}</td>
                 <td>{{ item["fullDays"] }}</td>
                 <td>{{ item["absentDays"] }}</td>
                 <td>{{ item["allowedLeave"] }}</td> -->
 
-                <td>
-                  <button type="button" class="btn btn-outline-success btn-sm" (click)="view(item)">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  &nbsp;
-                  <button type="button" class="btn btn-sm btn-outline-danger" (click)="delete(item)">
-                    <i class="fas fa-trash-alt"></i>
-                  </button> &nbsp;
+                  <td>
+                    <button type="button" class="btn btn-outline-success btn-sm" (click)="view(item)">
+                      <i class="fas fa-eye"></i>
+                    </button>
+                    &nbsp;
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="delete(item)">
+                      <i class="fas fa-trash-alt"></i>
+                    </button> &nbsp;
 
-                </td>
-              </tr>
-            </tbody>
-          </table>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </app-search-pagination>
 
@@ -209,13 +209,13 @@
         <ul class="nav nav-tabs mb-3">
 
           <li class="nav-item">
-            <a class="nav-link" [class.active]="activeTab == 'salary'" (click)="activeTab='salary'">
+            <a class="nav-link" [class.active]="activeTab == 'salary'"  (click)="activeTab='salary'; onSubmit()">
               Salary Breakup
             </a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" [class.active]="activeTab == 'absentDays'"(click)="activeTab='absentDays'">
+            <a class="nav-link" [class.active]="activeTab == 'absentDays'" (click)="activeTab='absentDays'; onSubmit()">
               Absent Days Record
             </a>
           </li>
@@ -450,8 +450,8 @@
 
         </div>
 
-   <!-- ================= absentDays Record TAB ================= -->
-          <div *ngIf="activeTab=='absentDays'">
+        <!-- ================= absentDays Record TAB ================= -->
+        <div *ngIf="activeTab=='absentDays'">
 
           <table class="table table-striped">
             <thead>
@@ -463,7 +463,7 @@
             </thead>
 
             <tbody>
-             <tr *ngFor="let item of absentDaysArr; let i = index">
+              <tr *ngFor="let item of absentDaysArr; let i = index">
 
                 <td>{{i+1}}</td>
                 <td>{{item.date }}</td>
@@ -477,23 +477,61 @@
 
         <!-- ================= ATTENDANCE TAB ================= -->
         <div *ngIf="activeTab=='attendance'">
+          <h5 class="card-header d-flex justify-content-between align-items-center">
+            <span>Attendance List</span>
+            <button type="button" class="btn btn-xs btn-primary float-end" (click)="correctAll()">
+              All Attendance Submit
+            </button>
+          </h5>
 
           <table class="table table-striped">
             <thead>
               <tr>
+                <th style="width: 20px; font-size: 12px">
+                  <input type="checkbox" [(ngModel)]="masterSelected" (change)="checkUncheckAll()" />
+                </th>
                 <th>Date</th>
                 <th>Check In</th>
                 <th>Check Out</th>
                 <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
 
             <tbody>
               <tr *ngFor="let item of attendanceList">
+                <td>
+                  <input type="checkbox" [(ngModel)]="item.editable" (change)="isAllSelected()" />
+                </td>
                 <td>{{item.date}}</td>
-                <td>{{ item.checkIn }}</td>
-                <td>{{ item.checkOut }}</td>
+                <!-- <td>{{ item.checkIn }}</td>
+                <td>{{ item.checkOut }}</td> -->
+                <td style="width: 50px; font-size: 12px">
+                  <input type="time" [(ngModel)]="item.checkIn" class="form-control" [disabled]="!item.editable" />
+                  <!-- {{item?.checkIn}} -->
+                </td>
+
+                <td style="width: 50px; font-size: 12px">
+                  <input type="time" [(ngModel)]="item.checkOut" class="form-control" [disabled]="!item.editable" />
+                  <!-- {{ item?.checkOut }} -->
+                </td>
                 <td>{{item.status}}</td>
+                <td>
+                  <!-- <button *ngIf="!item.editable" type="button" class="badge badge-center bg-label-success m-2"
+                      (click)="applyUpdate(item)">
+                      <i class="ri ri-pencil-line"></i>
+                    </button>
+
+                    <button *ngIf="item.editable" type="button" class="badge badge-center bg-label-success m-2"
+                      (click)="update(item)">
+                      <i class="ri ri-send-plane-line"></i>
+
+                    </button> -->
+
+                  <button type="button" class="badge badge-center bg-label-danger" (click)="deleteAttendance(item)">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
               </tr>
             </tbody>
 
@@ -513,6 +551,7 @@
                 <th>From Duration</th>
                 <th>To Duration</th>
                 <th>Status</th>
+                <th>Action</th>
               </tr>
             </thead>
 
@@ -521,9 +560,22 @@
                 <td>{{leave.leave_type_name}}</td>
                 <td>{{leave.fromDate}}</td>
                 <td>{{leave.toDate}}</td>
-                <td>{{leave.duration_type}}</td>
-                <td>{{leave.to_duration_type}}</td>
+                <td>{{leave.duration_type_name}}</td>
+                <td>{{leave.to_duration_type_name}}</td>
                 <td>{{leave.status}}</td>
+                <td>
+                  <button type="button" class="badge badge-center bg-label-success" *ngIf="leave.status!='approved'"
+                    (click)="statuschange(leave,'approved')">
+                    <i class="fas fa-check"></i>
+                  </button>
+                  &nbsp;
+                  <button *ngIf="['pending','recommended'].includes(leave.status)" type="button"
+                    class="badge badge-center bg-label-danger" (click)="statuschange(leave,'rejected')">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                  </button>
+                </td>
               </tr>
             </tbody>
 

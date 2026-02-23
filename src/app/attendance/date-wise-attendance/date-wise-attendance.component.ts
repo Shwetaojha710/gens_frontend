@@ -37,7 +37,7 @@ export class DateWiseAttendanceComponent {
     { value: '12', label: 'December' }
   ];
 
-    checkUncheckAll() {
+  checkUncheckAll() {
     this.AttendanceMasterList.forEach((item: any) => item.editable = this.masterSelected);
   }
   masterSelected: boolean = false;
@@ -91,7 +91,7 @@ export class DateWiseAttendanceComponent {
   AttendanceMasterList: any = [];
   editingId: number | null = null;
   minDate: any
-  fromDashboard:any='false'
+  fromDashboard: any = 'false'
   constructor(
     private master: MasterService,
     private attendanceService: AttendanceService,
@@ -99,38 +99,38 @@ export class DateWiseAttendanceComponent {
     private router: Router,
     private route: ActivatedRoute
   ) {
-      // Check if we came from the dashboard, e.g., via a query param
-   this.fromDashboard = this.route.snapshot.queryParamMap.get('fromDashboard');
+    // Check if we came from the dashboard, e.g., via a query param
+    this.fromDashboard = this.route.snapshot.queryParamMap.get('fromDashboard');
     const today1 = new Date();
-  if (this.fromDashboard == 'true') {
-    this.obj['emp_id'] = 'All';
+    if (this.fromDashboard == 'true') {
+      this.obj['emp_id'] = 'All';
 
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = (today.getMonth() + 1).toString().padStart(2, '0');
-    const day = today.getDate().toString().padStart(2, '0');
+      const today = new Date();
+      const year = today.getFullYear();
+      const month = (today.getMonth() + 1).toString().padStart(2, '0');
+      const day = today.getDate().toString().padStart(2, '0');
 
-    this.obj['startDate'] = `${year}-${month}-${day}`;
-    this.obj['endDate'] = `${year}-${month}-${day}`;
-    this.fetchAttendance();
+      this.obj['startDate'] = `${year}-${month}-${day}`;
+      this.obj['endDate'] = `${year}-${month}-${day}`;
+      this.fetchAttendance();
 
 
-  }else{
-    this.fromDashboard='false'
-  }
+    } else {
+      this.fromDashboard = 'false'
+    }
     this.minDate = today1.toISOString().split('T')[0]; // today
     this.notyf = new Notyf();
   }
-  setMinToDate(){
-  if (this.obj['startDate']) {
-  const fromDate = new Date(this.obj['startDate']);
+  setMinToDate() {
+    if (this.obj['startDate']) {
+      const fromDate = new Date(this.obj['startDate']);
 
-  if (!isNaN(fromDate.getTime())) {  // ✅ valid date check
-    this.minDate = fromDate.toISOString().split('T')[0]; // YYYY-MM-DD
+      if (!isNaN(fromDate.getTime())) {  // ✅ valid date check
+        this.minDate = fromDate.toISOString().split('T')[0]; // YYYY-MM-DD
+      }
+    }
+
   }
-}
-
-}
   getToDateMin(): string {
     return this.newObj['startDate'] || this.minDate;
   }
@@ -156,30 +156,30 @@ export class DateWiseAttendanceComponent {
     this.updateVisiblePages();
     this.updateDisplayedList();
   }
-applyFilter(event: any) {
-  this.searchText = event?.target.value;
+  applyFilter(event: any) {
+    this.searchText = event?.target.value;
 
-  if (!this.searchText || this.searchText.trim() === '') {
-    this.AttendanceMasterList = [...this.originalList];
-    this.updateDisplayedList();
-    return;
+    if (!this.searchText || this.searchText.trim() === '') {
+      this.AttendanceMasterList = [...this.originalList];
+      this.updateDisplayedList();
+      return;
+    }
+
+    const search = this.searchText.toLowerCase();
+
+    this.AttendanceMasterList = this.originalList.filter((item: any) => {
+      return (
+        item.employee_name.toLowerCase().includes(search) ||
+        (item.date && item.date.toLowerCase().includes(search)) ||
+        (item.status && item.status.toLowerCase().includes(search)) ||
+        (item.checkIn && item.checkIn.toLowerCase().includes(search)) ||
+        (item.checkOut && item.checkOut.toLowerCase().includes(search))
+      );
+    });
+
+    this.currentPage = 1;
+    // this.updateDisplayedList();
   }
-
-  const search = this.searchText.toLowerCase();
-
-  this.AttendanceMasterList = this.originalList.filter((item: any) => {
-    return (
-      item.employee_name.toLowerCase().includes(search) ||
-      (item.date && item.date.toLowerCase().includes(search)) ||
-      (item.status && item.status.toLowerCase().includes(search)) ||
-      (item.checkIn && item.checkIn.toLowerCase().includes(search)) ||
-      (item.checkOut && item.checkOut.toLowerCase().includes(search))
-    );
-  });
-
-  this.currentPage = 1;
-  // this.updateDisplayedList();
-}
 
   async ngOnInit() {
 
@@ -193,7 +193,7 @@ applyFilter(event: any) {
   fetchAttendance() {
     this.AttendanceList = []
     this.originalList = []
-    console.log(this.AttendanceMasterList, "Attendance master list 111")
+    // console.log(this.AttendanceMasterList, "Attendance master list 111")
     this.attendanceService.getdateWiseAttendance(this.obj).subscribe((response: any) => {
 
       let message = response.message ? response.message : 'Data found Successfully';
@@ -431,9 +431,7 @@ applyFilter(event: any) {
   }
 
 
-    correctAll() {
-    // console.log(this.newObj);
-    // console.log(this.AttendanceMasterList);
+  correctAll() {
     const selectedEmployees = this.AttendanceMasterList.filter((item: any) => item.editable);
     if (selectedEmployees.length == 0) {
       this.notyf.error('Please Select CheckBox');

@@ -13,6 +13,7 @@ import { firstValueFrom } from 'rxjs';
 import * as XLSX from 'xlsx';
 import FileSaver from 'file-saver';
 import Swal from 'sweetalert2';
+import { AttendanceService } from '../../services/attendance.service';
 
 @Component({
   selector: 'app-full-time-salary',
@@ -50,7 +51,7 @@ export class FullTimeSalaryComponent {
   yearList: any = [];
   notyf: Notyf;
   obj: any = {}
-  constructor(private master: MasterService, private router: Router, private payroll: PayrollService, private statusService: StatusService) {
+  constructor(public attendanceService:AttendanceService,private master: MasterService, private router: Router, private payroll: PayrollService, private statusService: StatusService) {
     this.notyf = new Notyf();
   }
   async ngOnInit() {
@@ -136,9 +137,124 @@ export class FullTimeSalaryComponent {
     });
 
   }
+    deleteAttendance(id: number) {
+    this.attendanceService.deleteAttendance(id).subscribe((data: { [x: string]: any; data: any; }) => {
+      if (data['status'] == true) {
+        this.notyf.success(data['message']);
+        this.attendanceList = this.attendanceList.filter((item: any) => item.id !== id);
+        // this.originalList = this.attendanceList; // Update original list for filtering
+        this.loadAttendance();
+      } else if (data['status'] == 'expired') {
+        this.router.navigate(['login'])
+      } else {
+        this.notyf.error(data['message']);
+      }
+    })
+  }
   delete(data: any) {
     this.SalaryArr = this.SalaryArr.filter((item: any) => item.employeeId != data.employeeId)
   }
+
+    statuschange(item: any, status: any) {
+      if (status == 'rejected') {
+        Swal.fire({
+          title: "Are you sure?",
+          text: "Do you Want to Reject this",
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonText: "Yes, delete it!",
+          cancelButtonText: "No, cancel!",
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            this.RejectLeave(item, status)
+
+          } else if (
+
+            result.dismiss === Swal.DismissReason.cancel
+          ) {
+
+          }
+        });
+
+      }
+      else {
+        let newObj: any = {}
+        newObj = Object.assign({}, item)
+        // newObj['id']=item.id
+        newObj['status'] = status
+        // newObj['employeeId']=item.employeeId
+
+        this.master.UpdateApplyLeaveStatus(newObj).subscribe({
+          next: (response: any) => {
+            console.log('response', response);
+
+            let message = response.message ? response.message : 'Data found Successfully';
+            let status = this.statusService.handleResponseStatus(response.status, message);
+            console.log(status)
+            console.log("response", response);
+
+            if (status === true) {
+
+              this.notyf.success(message)
+              this.loadLeaveRequests();
+              // this.resetForm();
+            }
+            else if (status === "expired") {
+              this.router.navigate(["login"]);
+            }
+
+            else {
+              this.notyf.error(message)
+            }
+
+          },
+          error: (err) => {
+            console.error('Error:', err);
+            this.notyf.error(err.error?.message)
+          }
+        });
+      }
+
+    }
+
+    RejectLeave(item: any, status: any) {
+      let newObj: any = {}
+      newObj = Object.assign({}, item)
+      // newObj['id']=item.id
+      newObj['status'] = status
+      // newObj['employeeId']=item.employeeId
+
+      this.master.UpdateApplyLeaveStatus(newObj).subscribe({
+        next: (response: any) => {
+          console.log('response', response);
+
+          let message = response.message ? response.message : 'Data found Successfully';
+          let status = this.statusService.handleResponseStatus(response.status, message);
+          console.log(status)
+          console.log("response", response);
+
+          if (status === true) {
+
+            this.notyf.success(message)
+            this.loadLeaveRequests();
+            // this.resetForm();
+          }
+          else if (status === "expired") {
+            this.router.navigate(["login"]);
+          }
+
+          else {
+            this.notyf.error(message)
+          }
+
+        },
+        error: (err) => {
+          console.error('Error:', err);
+          this.notyf.error(err.error?.message)
+        }
+      });
+    }
   employeeSalaryData: any[] = [];
 
   async generate_Salary() {
@@ -602,6 +718,112 @@ export class FullTimeSalaryComponent {
     // });
 
   }
+  // newObj: any = {}
+  updateFlag: boolean = false;
+  applyUpdate(item: any) {
+    //     Swal.fire({
+    //       title: "Are you sure?",
+    //       text: "Do you Want to Enable this",
+    //       icon: "warning",
+    //       showCancelButton: true,
+    //       confirmButtonText: "Yes, Enable it!",
+    //       cancelButtonText: "No, cancel!",
+    //       reverseButtons: true
+    //     }).then((result) => {
+    //       if (result.isConfirmed) {
+    //          item.editable = true // toggle enable/disable
 
+    //       } else if (result.dismiss === Swal.DismissReason.cancel) {
+    //  item.editable = false
+    //       }
+    //     });
+    item.editable = true
+  }
+editingId:any
+  update(data: any) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "Do you Want to Update this",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, Update it!",
+      cancelButtonText: "No, cancel!",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+
+        this.newObj = data;
+        this.editingId = data.id;
+        this.newObj.checkIn = `${data?.date} ${data?.checkIn}`
+        this.newObj.checkOut = `${data?.date} ${data?.checkOut}`
+        this.newObj.startDate = new Date(data.startDate);
+        this.newObj.endDate = new Date(data.endDate);
+        // this.generateDayList(this.newObj.startDate, this.newObj.endDate);
+        this.UpdateAttendance()
+        // Swal.fire({
+        //   title: "Deleted!",
+        //   text: "Your file has been deleted.",
+        //   icon: "success"
+        // });
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+
+      }
+    });
+
+  }
+
+  openupdate() {
+    this.updateFlag = true;
+
+  }
+
+  UpdateAttendance() {
+    this.attendanceService.updateAttendance(this.newObj).subscribe((data: {
+      [x: string]: any;
+    }) => {
+      if (data['status'] == true) {
+        this.notyf.success(data['message']);
+        this.loadAttendance();
+        this.updateFlag = false;
+      } else if (data['status'] == 'expired') {
+        this.router.navigate(['login'])
+      }
+      else {
+        this.notyf.error(data['message']);
+      }
+    },
+      (error: any) => {
+        this.notyf.error('Failed to update attendance. Please try again.');
+      }
+    );
+
+  }
+
+  correctAll() {
+    const selectedEmployees = this.attendanceList.filter((item: any) => item.editable);
+    if (selectedEmployees.length == 0) {
+      this.notyf.error('Please Select CheckBox');
+      return;
+    }
+    this.attendanceService.BulkUpdateAttendance(this.attendanceList).subscribe((data: {
+      [x: string]: any;
+    }) => {
+      if (data['status'] == true) {
+        this.notyf.success(data['message']);
+        this.loadAttendance();
+        this.updateFlag = false;
+      } else if (data['status'] == 'expired') {
+        this.router.navigate(['login'])
+      }
+      else {
+        this.notyf.error(data['message']);
+      }
+    },
+      (error: any) => {
+        this.notyf.error('Failed to update attendance. Please try again.');
+      }
+    );
+
+  }
 
 }
