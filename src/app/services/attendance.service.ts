@@ -52,4 +52,10 @@ export class AttendanceService {
     getLateAttendance(obj:any): Observable<any> {
     return this.http.post(`${this.baseUrl}get-late-attendance`, obj);
   }
+    getweekendAttendance(obj:any): Observable<any> {
+    return this.http.post(`${this.baseUrl}get-weekend-attendance`, obj);
+  }
+    AddCompOff(obj: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}generate-comp-off-leave`, obj);
+  }
 }

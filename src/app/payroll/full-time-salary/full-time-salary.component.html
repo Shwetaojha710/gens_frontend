@@ -194,161 +194,154 @@
 <!-- Modal -->
 
 <div class="modal fade" id="SalaryModal" tabindex="-1">
-  <div class="modal-dialog modal-xl">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
     <div class="modal-content">
 
       <!-- HEADER -->
       <div class="modal-header">
         <h5 class="modal-title">Employee Details</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-
       </div>
 
       <div class="modal-body">
 
-        <div class="nav-align-top">
+        <!-- TAB HEADER -->
+        <ul class="nav nav-tabs mb-3">
 
-          <!-- TAB HEADER -->
-          <ul class="nav nav-tabs mb-3">
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab == 'salary'"  (click)="activeTab='salary'; onSubmit()">
+              Salary Breakup
+            </a>
+          </li>
 
-            <li class="nav-item">
-              <a class="nav-link waves-effect waves-light" [class.active]="activeTab == 'salary'"
-                (click)="activeTab='salary'">
-                Salary Breakup
-              </a>
-            </li>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab == 'absentDays'" (click)="activeTab='absentDays'; onSubmit()">
+              Absent Days Record
+            </a>
+          </li>
 
-            <li class="nav-item">
-              <a class="nav-link waves-effect waves-light" [class.active]="activeTab == 'absentDays'"
-                (click)="activeTab='absentDays'">
-                Absent Days Record
-              </a>
-            </li>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab == 'attendance'"
+              (click)="activeTab='attendance'; loadAttendance()">
+              Attendance
+            </a>
+          </li>
 
-            <li class="nav-item">
-              <a class="nav-link waves-effect waves-light" [class.active]="activeTab == 'attendance'"
-                (click)="activeTab='attendance'; loadAttendance()">
-                Attendance
-              </a>
-            </li>
-
-            <li class="nav-item">
-              <a class="nav-link waves-effect waves-light" [class.active]="activeTab == 'leave'"
-                (click)="activeTab='leave'; loadLeaveRequests()">
-                Leave Requests
-              </a>
-            </li>
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab == 'leave'" (click)="activeTab='leave'; loadLeaveRequests()">
+              Leave Requests
+            </a>
+          </li>
 
 
-          </ul>
-
-          <!-- ================= SALARY TAB ================= -->
-          <div *ngIf="activeTab==='salary'">
+        </ul>
 
 
-            <div class="row">
-              <div class="col-3">
-                <label for="defaultFormControlInput" class="form-label">Name :
-                </label>
-                {{ personalDetails["employeeName"] }}
-              </div>
-              <div class="col-3">
-                <label for="defaultFormControlInput" class="form-label">Employee Code :
-                </label>
-                {{ personalDetails["empCode"] }}
-              </div>
-              <div class="col-3">
-                <label for="defaultFormControlInput" class="form-label">Designation :
-                </label>
-                {{ personalDetails["empCode"] }}
-              </div>
-              <div class="col-3">
-                <label for="defaultFormControlInput" class="form-label">Total Salary :
-                </label>
-                {{ personalDetails["TotalSalary"] }}
-              </div>
+        <!-- ================= SALARY TAB ================= -->
+        <div *ngIf="activeTab == 'salary'">
+
+
+          <div class="row">
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label">Name :
+              </label>
+              {{ personalDetails["employeeName"] }}
             </div>
-            <hr />
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label">Employee Code :
+              </label>
+              {{ personalDetails["empCode"] }}
+            </div>
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label">Designation :
+              </label>
+              {{ personalDetails["empCode"] }}
+            </div>
+            <div class="col-3">
+              <label for="defaultFormControlInput" class="form-label">Total Salary :
+              </label>
+              {{ personalDetails["TotalSalary"] }}
+            </div>
+          </div>
+          <hr />
 
-            <div class="row">
-              <div class="col-md-6">
-                <div class="list-group mb-3">
-                  <div class="list-group-item bg-light p-2 border-bottom-0">
-                    <h6 class="mb-0">Earnings</h6>
-                  </div>
-                  <div class="list-group-item" *ngFor="let item of PayArr; let i = index">
-                    <div class="d-flex align-items-center justify-content-between">
-                      <p class="mb-0">{{ item?.name }}</p>
-                      <h6 class="fw-medium">{{ item?.pay_amount }}</h6>
-                    </div>
+          <div class="row">
+            <div class="col-md-6">
+              <div class="list-group mb-3">
+                <div class="list-group-item bg-light p-2 border-bottom-0">
+                  <h6 class="mb-0">Earnings</h6>
+                </div>
+                <div class="list-group-item" *ngFor="let item of PayArr; let i = index">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <p class="mb-0">{{ item?.name }}</p>
+                    <h6 class="fw-medium">{{ item?.pay_amount }}</h6>
                   </div>
                 </div>
               </div>
-              <div class="col-md-6">
-                <div class="list-group  mb-3">
-                  <div class="list-group-item bg-light p-2 border-bottom-0">
-                    <h6 class="mb-0">Deductions</h6>
-                  </div>
-                  <div class="list-group-item" *ngFor="let item1 of DedArr; let i = index">
-                    <div class="d-flex align-items-center justify-content-between">
-                      <p class="mb-0">{{ item1?.name }}</p>
-                      <h6 class="fw-medium">{{ item1?.pay_amount }}</h6>
-                    </div>
-                  </div>
+            </div>
+            <div class="col-md-3">
+              <div class="list-group mb-3">
+                <div class="list-group-item bg-light p-2 border-bottom-0">
+                  <h6 class="mb-0">Deductions</h6>
                 </div>
-
-                <div class="list-group mb-3">
-                  <div class="list-group-item bg-light p-2 border-bottom-0">
-                    <h6 class="mb-0">Employer Deductions</h6>
-                  </div>
-                  <div class="list-group-item" *ngFor="let item1 of EmployerDedArr; let i = index">
-                    <div class="d-flex align-items-center justify-content-between">
-                      <p class="mb-0">{{ item1?.name }}</p>
-                      <h6 class="fw-medium">{{ item1?.pay_amount }}</h6>
-                    </div>
+                <div class="list-group-item" *ngFor="let item1 of DedArr; let i = index">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <p class="mb-0">{{ item1?.name }}</p>
+                    <h6 class="fw-medium">{{ item1?.pay_amount }}</h6>
                   </div>
                 </div>
               </div>
-              <!-- <div class="col-md-3">
-             
-            </div> -->
             </div>
-
-            <hr />
-
-            <p>Leave Deductions</p>
-
-            <div class="table-responsive">
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Total Working Days</th>
-                    <th>Present Days</th>
-                    <th>Absent Days</th>
-                    <th>Leave Taken</th>
-                    <th>Allowed Leaves</th>
-                    <th>Half days</th>
-                    <th>Late Attendance</th>
-                    <th>Leave Deductions</th>
-                    <th>Net Pay</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>{{personalDetails['totalWorkingDays']}}</td>
-                    <td>{{personalDetails['fullDays']}}</td>
-                    <td>{{personalDetails['absentDays']}}</td>
-                    <td>{{personalDetails['totalLeaveDays']}}</td>
-                    <td>{{personalDetails['allowedLeave']}}</td>
-                    <td>{{personalDetails['halfDays']}}</td>
-                    <td>{{personalDetails['lateDays']}}</td>
-                    <td>{{personalDetails['totalDeduction']}}</td>
-                    <td>{{personalDetails['basePay']}}</td>
-                  </tr>
-                </tbody>
-              </table>
+            <div class="col-md-3">
+              <div class="list-group mb-3">
+                <div class="list-group-item bg-light p-2 border-bottom-0">
+                  <h6 class="mb-0">Employer Deductions</h6>
+                </div>
+                <div class="list-group-item" *ngFor="let item1 of EmployerDedArr; let i = index">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <p class="mb-0">{{ item1?.name }}</p>
+                    <h6 class="fw-medium">{{ item1?.pay_amount }}</h6>
+                  </div>
+                </div>
+              </div>
             </div>
-            <!--
+          </div>
+
+          <hr />
+
+          <p>Leave Deductions</p>
+
+          <div class="table-responsive">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Total Working Days</th>
+                  <th>Present Days</th>
+                  <th>Absent Days</th>
+                  <th>Leave Taken</th>
+                  <th>Allowed Leaves</th>
+                  <th>Half days</th>
+                  <th>Late Attendance</th>
+                  <th>Leave Deductions</th>
+                  <th>Net Pay</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>{{personalDetails['totalWorkingDays']}}</td>
+                  <td>{{personalDetails['fullDays']}}</td>
+                  <td>{{personalDetails['absentDays']}}</td>
+                  <td>{{personalDetails['totalLeaveDays']}}</td>
+                  <td>{{personalDetails['allowedLeave']}}</td>
+                  <td>{{personalDetails['halfDays']}}</td>
+                  <td>{{personalDetails['lateDays']}}</td>
+                  <td>{{personalDetails['totalDeduction']}}</td>
+                  <td>{{personalDetails['basePay']}}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <!--
         <div class="table-responsive text-nowrap">
           <table class="table table-hover">
             <thead>
@@ -380,7 +373,7 @@
 
 
 
-            <!-- <div class="row">
+          <!-- <div class="row">
             <div class="col-3">
               <label>Name :</label>
               {{ personalDetails?.employeeName }}
@@ -455,89 +448,141 @@
 
           </div> -->
 
-          </div>
+        </div>
 
-          <!-- ================= absentDays Record TAB ================= -->
-          <div *ngIf="activeTab=='absentDays'"style="overflow-y: scroll;height: 500px;">
+        <!-- ================= absentDays Record TAB ================= -->
+        <div *ngIf="activeTab=='absentDays'">
 
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>SI.NO</th>
-                  <th>Date</th>
-                  <th>Reason</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr *ngFor="let item of absentDaysArr; let i = index">
-
-                  <td>{{i+1}}</td>
-                  <td>{{item.date }}</td>
-                  <td>{{item.reason}}</td>
-                </tr>
-              </tbody>
-
-            </table>
-
-          </div>
-
-          <!-- ================= ATTENDANCE TAB ================= -->
-          <div *ngIf="activeTab=='attendance'" style="overflow-y: scroll;height: 500px;">
-
-            <table class="table">
+          <table class="table table-striped">
             <thead>
               <tr>
+                <th>SI.NO</th>
                 <th>Date</th>
-                <th>Check In</th>
-                <th>Check Out</th>
-                <th>Status</th>
+                <th>Reason</th>
               </tr>
             </thead>
 
             <tbody>
-              <tr *ngFor=" let item of attendanceList">
-              <td>{{item.date}}</td>
-              <td>{{ item.checkIn }}</td>
-              <td>{{ item.checkOut }}</td>
-              <td>{{item.status}}</td>
+              <tr *ngFor="let item of absentDaysArr; let i = index">
+
+                <td>{{i+1}}</td>
+                <td>{{item.date }}</td>
+                <td>{{item.reason}}</td>
               </tr>
-              </tbody>
+            </tbody>
 
-            </table>
+          </table>
 
-          </div>
-
-          <!-- ================= LEAVE TAB ================= -->
-          <div *ngIf="activeTab=='leave'">
-
-            <table class="table">
-              <thead>
-                <tr>
-                  <th>Leave Type</th>
-                  <th>From</th>
-                  <th>To</th>
-                  <th>From Duration</th>
-                  <th>To Duration</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-
-              <tbody>
-                <tr *ngFor="let leave of leaveList">
-                  <td>{{leave.leave_type_name}}</td>
-                  <td>{{leave.fromDate}}</td>
-                  <td>{{leave.toDate}}</td>
-                  <td>{{leave.duration_type}}</td>
-                  <td>{{leave.to_duration_type}}</td>
-                  <td>{{leave.status}}</td>
-                </tr>
-              </tbody>
-
-            </table>
-
-          </div>
         </div>
+
+        <!-- ================= ATTENDANCE TAB ================= -->
+        <div *ngIf="activeTab=='attendance'">
+          <h5 class="card-header d-flex justify-content-between align-items-center">
+            <span>Attendance List</span>
+            <button type="button" class="btn btn-xs btn-primary float-end" (click)="correctAll()">
+              All Attendance Submit
+            </button>
+          </h5>
+
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th style="width: 20px; font-size: 12px">
+                  <input type="checkbox" [(ngModel)]="masterSelected" (change)="checkUncheckAll()" />
+                </th>
+                <th>Date</th>
+                <th>Check In</th>
+                <th>Check Out</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let item of attendanceList">
+                <td>
+                  <input type="checkbox" [(ngModel)]="item.editable" (change)="isAllSelected()" />
+                </td>
+                <td>{{item.date}}</td>
+                <!-- <td>{{ item.checkIn }}</td>
+                <td>{{ item.checkOut }}</td> -->
+                <td style="width: 50px; font-size: 12px">
+                  <input type="time" [(ngModel)]="item.checkIn" class="form-control" [disabled]="!item.editable" />
+                  <!-- {{item?.checkIn}} -->
+                </td>
+
+                <td style="width: 50px; font-size: 12px">
+                  <input type="time" [(ngModel)]="item.checkOut" class="form-control" [disabled]="!item.editable" />
+                  <!-- {{ item?.checkOut }} -->
+                </td>
+                <td>{{item.status}}</td>
+                <td>
+                  <!-- <button *ngIf="!item.editable" type="button" class="badge badge-center bg-label-success m-2"
+                      (click)="applyUpdate(item)">
+                      <i class="ri ri-pencil-line"></i>
+                    </button>
+
+                    <button *ngIf="item.editable" type="button" class="badge badge-center bg-label-success m-2"
+                      (click)="update(item)">
+                      <i class="ri ri-send-plane-line"></i>
+
+                    </button> -->
+
+                  <button type="button" class="badge badge-center bg-label-danger" (click)="deleteAttendance(item)">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <!-- ================= LEAVE TAB ================= -->
+        <div *ngIf="activeTab=='leave'">
+
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Leave Type</th>
+                <th>From</th>
+                <th>To</th>
+                <th>From Duration</th>
+                <th>To Duration</th>
+                <th>Status</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let leave of leaveList">
+                <td>{{leave.leave_type_name}}</td>
+                <td>{{leave.fromDate}}</td>
+                <td>{{leave.toDate}}</td>
+                <td>{{leave.duration_type_name}}</td>
+                <td>{{leave.to_duration_type_name}}</td>
+                <td>{{leave.status}}</td>
+                <td>
+                  <button type="button" class="badge badge-center bg-label-success" *ngIf="leave.status!='approved'"
+                    (click)="statuschange(leave,'approved')">
+                    <i class="fas fa-check"></i>
+                  </button>
+                  &nbsp;
+                  <button *ngIf="['pending','recommended'].includes(leave.status)" type="button"
+                    class="badge badge-center bg-label-danger" (click)="statuschange(leave,'rejected')">
+
+                    <i class="fa-solid fa-xmark"></i>
+
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+
+          </table>
+
+        </div>
+
       </div>
     </div>
   </div>
