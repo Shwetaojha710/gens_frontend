@@ -68,6 +68,7 @@ import { LiveTrackingComponent } from './tracking/live-tracking/live-tracking.co
 
 import { CompanyRegComponent } from './company-reg/company-reg.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
+import { WeekendEmpListComponent } from './attendance/weekend-emp-list/weekend-emp-list.component';
 
 
 export const routes: Routes = [
@@ -133,6 +134,7 @@ export const routes: Routes = [
           { path: 'holiday', component: HolidayComponent },
           { path: 'upload-attendance', component: AttendanceUploadComponent },
           { path: 'regularize', component: RegularizeComponent },
+          { path: 'weekend-emp-list', component: WeekendEmpListComponent },
         ]
       },
       {
