@@ -209,6 +209,29 @@
         <ul class="nav nav-pills mb-3 mb-3">
 
           <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab == 'salary'" (click)="changeTab('salary')">
+              Salary Breakup
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab == 'absentDays'" (click)="changeTab('absentDays')">
+              Absent Days Record
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab == 'attendance'" (click)="changeTab('attendance')">
+              Attendance
+            </a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link" [class.active]="activeTab == 'leave'" (click)="changeTab('leave')">
+              Leave Requests
+            </a>
+          </li>
+          <!-- <li class="nav-item">
             <a class="nav-link" [class.active]="activeTab == 'salary'"  (click)="activeTab='salary'; onSubmit()">
               Salary Breakup
             </a>
@@ -231,7 +254,7 @@
             <a class="nav-link" [class.active]="activeTab == 'leave'" (click)="activeTab='leave'; loadLeaveRequests()">
               Leave Requests
             </a>
-          </li>
+          </li> -->
 
 
         </ul>
@@ -255,7 +278,7 @@
             <div class="col-3">
               <label for="defaultFormControlInput" class="form-label">Designation :
               </label>
-              {{ personalDetails["empCode"] }}
+              {{ personalDetails["designation_name"] }}
             </div>
             <div class="col-3">
               <label for="defaultFormControlInput" class="form-label">Total Salary :
