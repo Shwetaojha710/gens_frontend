@@ -206,7 +206,7 @@
       <div class="modal-body">
 
         <!-- TAB HEADER -->
-        <ul class="nav nav-tabs mb-3">
+        <ul class="nav nav-pills mb-3 mb-3">
 
           <li class="nav-item">
             <a class="nav-link" [class.active]="activeTab == 'salary'" (click)="changeTab('salary')">
@@ -258,7 +258,7 @@
 
 
         </ul>
-
+<hr>
 
         <!-- ================= SALARY TAB ================= -->
         <div *ngIf="activeTab == 'salary'">
@@ -302,7 +302,7 @@
                 </div>
               </div>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-6">
               <div class="list-group mb-3">
                 <div class="list-group-item bg-light p-2 border-bottom-0">
                   <h6 class="mb-0">Deductions</h6>
@@ -314,8 +314,6 @@
                   </div>
                 </div>
               </div>
-            </div>
-            <div class="col-md-3">
               <div class="list-group mb-3">
                 <div class="list-group-item bg-light p-2 border-bottom-0">
                   <h6 class="mb-0">Employer Deductions</h6>
@@ -328,6 +326,7 @@
                 </div>
               </div>
             </div>
+           
           </div>
 
           <hr />
@@ -335,7 +334,7 @@
           <p>Leave Deductions</p>
 
           <div class="table-responsive">
-            <table class="table table-striped">
+            <table class="table table-bordered border-primary">
               <thead>
                 <tr>
                   <th>Total Working Days</th>
@@ -476,7 +475,7 @@
         <!-- ================= absentDays Record TAB ================= -->
         <div *ngIf="activeTab=='absentDays'">
 
-          <table class="table table-striped">
+          <table class="table">
             <thead>
               <tr>
                 <th>SI.NO</th>
@@ -507,7 +506,7 @@
             </button>
           </h5>
 
-          <table class="table table-striped">
+          <table class="table">
             <thead>
               <tr>
                 <th style="width: 20px; font-size: 12px">
@@ -565,7 +564,7 @@
         <!-- ================= LEAVE TAB ================= -->
         <div *ngIf="activeTab=='leave'">
 
-          <table class="table table-striped">
+          <table class="table">
             <thead>
               <tr>
                 <th>Leave Type</th>

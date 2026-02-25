@@ -28866,11 +28866,31 @@ div.dt-container div.dt-search input {
 }
 
 .table:not(.table-dark, .table-light) thead:not(.table-dark, .table-light) tr th {
-    background-color: #dcf6fe !important;
+  
     text-transform: capitalize;
 }
 
 .card-header {
     border-bottom: 1px solid #ddd !important;
     margin-bottom: 15px !important;
+}
+
+/* width */
+::-webkit-scrollbar {
+  width: 5px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #ddd; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
 }

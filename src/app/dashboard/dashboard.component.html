@@ -79,15 +79,15 @@
                 </button>
               </li>
             </ul>
-            <div class="tab-content border-0 pb-0 px-6 mx-1">
+            <div class="tab-content border-0 pb-0 px-6 mx-1" style="overflow-y: scroll;height: 332px;">
               <div class="tab-pane fade show active" id="navs-justified-new" role="tabpanel">
                 <ul class="p-0 m-0">
                   <li class="d-flex align-items-center mb-4 pb-2" *ngFor="let emp of Event.birthdays">
                     <div class="avatar flex-shrink-0 me-4">
                       <!-- <img [src]="emp?.profileImage ? emp.profileImage : '../../assets/img/avatars/4.png'" alt="avatar"
                         class="rounded-3" /> -->
-                          <img [src]="emp?.profileImage || 'assets/img/avatars/4.png'" (error)="onImageError($event,emp,'profileImage')"
-                      alt="avatar" class="rounded-3" />
+                      <img [src]="emp?.profileImage || 'assets/img/avatars/4.png'"
+                        (error)="onImageError($event,emp,'profileImage')" alt="avatar" class="rounded-3" />
                     </div>
 
                     <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
@@ -234,49 +234,6 @@
       </div>
     </div>
 
-    <!-- On route vehicles Table -->
-    <div class="col-md-6 col-xxl-8  order-xxl-1">
-      <div class="card">
-
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <span style="font-weight: bold">Leave Request</span>
-          <button type="button" class="btn btn-xs btn-primary waves-effect waves-light"
-            routerLink="/layout/employee/apply-leave">
-            View All
-          </button>
-        </div>
-        <div class="card-datatable table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Employee Name</th>
-                <th>Leave Type</th>
-                <th>Leave From</th>
-                <th>Leave To</th>
-                <th>Days</th>
-                <th>Status</th>
-                <!-- <th>Details</th> -->
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of leaveList; let i = index">
-                <td>{{ item?.empCode }}</td>
-                <td>{{ item?.name }}</td>
-                <td>{{ item?.type }}</td>
-                <td>{{ item?.fromDate | date : "dd-MM-YYYY" }}</td>
-                <td>{{ item?.toDate | date : "dd-MM-YYYY" }}</td>
-                <td>{{ item?.days }}</td>
-                <td>{{ item?.status }}</td>
-                <!-- <td><a href="#">Details</a></td> -->
-              </tr>
-
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
 
     <div class="col-lg-4 col-xxl-4  order-xxl-1">
       <div class="card h-100">
@@ -321,10 +278,10 @@
                 <!-- <img [src]="item['profileImage']" alt="Document" width="100" height="auto" style="cursor: pointer" /> -->
                 <!-- <img [src]="item['profileImage'] ? item['profileImage'] : '../../assets/img/avatars/4.png'" alt="avatar"
                   class="rounded-3" /> -->
-                   <img [src]="item?.profileImage" (error)="onImageError($event,item, 'profileImage')"
-                      alt="avatar" class="rounded-3" />
+                <img [src]="item?.profileImage" (error)="onImageError($event,item, 'profileImage')" alt="avatar"
+                  class="rounded-3" />
 
-                  <!-- 322 -->
+                <!-- 322 -->
                 <!-- <img src="../../assets/img/avatars/5.png" alt="avatar" class="img-fluid rounded-circle w-auto h-auto" /> -->
               </div>
               <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
@@ -345,8 +302,10 @@
         </div>
       </div>
     </div>
+
+
     <div class="col-lg-4 col-xxl-4 order-xxl-1">
-      <div class="card h-100">
+      <div class="card h-100" style="">
         <div class="card-header d-flex align-items-center justify-content-between">
           <div class="card-title mb-0">
             <h5 class="m-0 me-2 mb-1">Holiday List</h5>
@@ -358,19 +317,20 @@
             </button>
           </div>
         </div>
-        <div class="card-body">
+        <div class="card-body"  style="overflow-y: scroll;height: 225px;">
           <ul class="p-0 m-0">
             <li class="d-flex align-items-center mb-6" *ngFor="let item of holidayList">
               <div class="avatar avatar-md flex-shrink-0 me-4">
                 <div class="avatar-initial bg-lightest img-fluid rounded-circle w-auto h-auto">
 
-                 
-<!--                     <img [src]="item['image']" alt="Document" width="100" height="auto" style="cursor: pointer" /> -->
-                
+
+                  <!--                     <img [src]="item['image']" alt="Document" width="100" height="auto" style="cursor: pointer" /> -->
+
 
                   <div>
-                    <img [src]="item?.image || 'assets/img/avatars/calendar.png'" width="100" height="auto" style="cursor: pointer"   (error)="onImageError($event,item, 'holidayImage')"
-                      alt="avatar" class="rounded-3" />
+                    <img [src]="item?.image || 'assets/img/avatars/calendar.png'" width="100" height="auto"
+                      style="cursor: pointer" (error)="onImageError($event,item, 'holidayImage')" alt="avatar"
+                      class="rounded-3" />
 
                     <!-- <img [src]="item['image']" alt="Document" width="100" height="auto" style="cursor: pointer" /> -->
                   </div>
@@ -391,6 +351,53 @@
         </div>
       </div>
     </div>
+
+    <!-- On route vehicles Table -->
+    <div class="col-md-6 col-xxl-8  order-xxl-1">
+      <div class="card">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span style="font-weight: bold">Leave Request</span>
+          <button type="button" class="btn btn-xs btn-primary waves-effect waves-light"
+            routerLink="/layout/employee/apply-leave">
+            View All
+          </button>
+        </div>
+        <div class="card-datatable table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Employee Name</th>
+                <th>Leave Type</th>
+                <th>Leave From</th>
+                <th>Leave To</th>
+                <th>Days</th>
+                <th>Status</th>
+                <!-- <th>Details</th> -->
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of leaveList; let i = index">
+                <td>{{ item?.empCode }}</td>
+                <td>{{ item?.name }}</td>
+                <td>{{ item?.type }}</td>
+                <td>{{ item?.fromDate | date : "dd-MM-YYYY" }}</td>
+                <td>{{ item?.toDate | date : "dd-MM-YYYY" }}</td>
+                <td>{{ item?.days }}</td>
+                <td>{{ item?.status }}</td>
+                <!-- <td><a href="#">Details</a></td> -->
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+
+
+
     <!-- <div class="col-lg-3 col-xxl-4  order-xxl-4">
       <div class="card h-100">
         <div
