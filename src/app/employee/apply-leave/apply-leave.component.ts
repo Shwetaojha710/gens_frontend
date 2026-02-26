@@ -376,7 +376,7 @@ export class ApplyLeaveComponent {
 
             this.notyf.success(message)
             this.getApplyLeaveList();
-            this.resetForm();
+            // this.resetForm();
           }
           else if (status === "expired") {
             this.router.navigate(["login"]);
@@ -416,7 +416,7 @@ export class ApplyLeaveComponent {
 
           this.notyf.success(message)
           this.getApplyLeaveList();
-          this.resetForm();
+          // this.resetForm();
         }
         else if (status === "expired") {
           this.router.navigate(["login"]);

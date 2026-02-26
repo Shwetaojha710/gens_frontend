@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
-  apiUrl: 'https://gensdemo.demoquaeretech.in/api/api/',
+  apiUrl: 'https://gens.demoquaeretech.in/api/api/',
     firebase: {
    apiKey: "AIzaSyCBII2E72DiTXfMWyRLoQ2JGtz9EZ1TXks",
   authDomain: "gens-7d05d.firebaseapp.com",
