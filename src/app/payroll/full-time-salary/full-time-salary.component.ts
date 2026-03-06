@@ -536,8 +536,9 @@ export class FullTimeSalaryComponent {
     this.SalaryArr = []
     this.originalList = []
     this.absentDaysArr = []
+    this.filteredSalary = []
     this.newObj = Object.assign({}, this.obj)
-    if (this.newObj['employeeId'] === 'All') {
+    if (this.newObj['employeeId'] == 'All') {
       this.newObj['employeeId'] = this.EmpList
         .map((item: any) => item.value)
         .filter((val: any) => val != 'All');

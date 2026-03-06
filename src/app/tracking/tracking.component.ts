@@ -1016,7 +1016,9 @@ async startPlayback(points: any[]) {
   }, 600); // speed (ms)
 }
 pinnedCount:any
+pinned:any=[]
 loadAndPlotData(user: any) {
+  this.pinned=[]
   const payload: any = { employeeId: user.id };
     if (this.obj.startDate) payload.start_date = this.obj.startDate;
   if (this.obj.endDate) payload.end_date = this.obj.endDate;
@@ -1058,11 +1060,11 @@ this.pinnedCount=0
     this.drawStartEndMarkers(rawPoints);
 
 
-    const pinned = rawPoints.filter((p:any) => p.location_type == 'pinned');
-    this.pinnedCount = pinned.length;
-   console.log(pinned);
+     this.pinned = rawPoints.filter((p:any) => p.location_type == 'pinned');
+    this.pinnedCount = this.pinned.length;
+   console.log(this.pinned,"Pinned data");
 
-    this.addPinnedMarkers(this.map, pinned);
+    // this.addPinnedMarkers(this.map, this.pinned);
 
 // ✅ new (clean route)
 // await this.drawSnappedRoute(points);
@@ -1101,7 +1103,7 @@ addPinnedMarkers(map: L.Map, pinned: any[]) {
       icon: pinIcon,
       zIndexOffset: 2000
     }).addTo(map);
-  const address = await this.getAddressFromAPI(
+    const address = await this.getAddressFromAPI(
       lat,
      lng
     );
@@ -1111,7 +1113,7 @@ addPinnedMarkers(map: L.Map, pinned: any[]) {
       <b>Address:</b> ${address}<br/>
       <b>Lat:</b> ${lat.toFixed(6)}<br/>
       <b>Lng:</b> ${lng.toFixed(6)}<br/>
-
+     <b>From:</b> ${new Date(p.timestamp).toLocaleTimeString()}<br/>
     `);
 
     this.markers.push(marker);
@@ -1393,5 +1395,11 @@ async drawSnappedRoute(points: any[]) {
       this.map.removeLayer(this.trafficLayer);
       this.trafficLayer = null;
     }
+  }
+  pinnedMarker(){
+
+
+    this.addPinnedMarkers(this.map, this.pinned);
+
   }
 }

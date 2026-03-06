@@ -89,10 +89,10 @@ export class AddComoffComponent {
     });
 
     this.notyf = new Notyf();
-    this.obj['employeeId'] = 'All'
-    this.obj['year'] = new Date().getFullYear().toString()
-    this.obj['month'] = new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : (new Date().getMonth() + 1).toString()
-    this.fetchAttendance()
+    // this.obj['employeeId'] = 'All'
+    // this.obj['year'] = new Date().getFullYear().toString()
+    // this.obj['month'] = new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : (new Date().getMonth() + 1).toString()
+    // this.fetchAttendance()
   }
   searchText: any = '';
   async ngOnInit() {
@@ -112,9 +112,9 @@ export class AddComoffComponent {
     this.searchText = value.trim();
 
     if (this.searchText === '') {
-      this.departmentList = [...this.originalList];
+      this.AttendanceMasterList = [...this.originalList];
     } else {
-      this.departmentList = this.originalList.filter((item: any) =>
+      this.AttendanceMasterList = this.originalList.filter((item: any) =>
         JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
       );
     }
@@ -158,7 +158,7 @@ export class AddComoffComponent {
     { value: '11', label: 'November' },
     { value: '12', label: 'December' }
   ];
-  leaveStatus: any = [{ value: 'pending', label: 'Pending' }, { value: 'approved', label: 'Approved' }, { value: 'rejected', label: 'Rejected' }]
+  leaveStatus: any = [{ value: 'pending', label: 'Pending' }, { value: 'approved', label: 'Approved' }]
 
   async fetchAttendance() {
     this.AttendanceList = []
@@ -384,9 +384,9 @@ export class AddComoffComponent {
     this.createFlag = false
     this.obj = {}
     this.editingId = null;
-    this.obj['employeeId'] = 'All'
-    this.obj['year'] = new Date().getFullYear().toString()
-    this.obj['month'] = new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : (new Date().getMonth() + 1).toString()
+    // this.obj['employeeId'] = 'All'
+    // this.obj['year'] = new Date().getFullYear().toString()
+    // this.obj['month'] = new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : (new Date().getMonth() + 1).toString()
     this.fetchAttendance()
   }
   isInvalid(field: string): boolean {

@@ -326,7 +326,7 @@
                 </div>
               </div>
             </div>
-           
+
           </div>
 
           <hr />
@@ -586,7 +586,7 @@
                 <td>{{leave.to_duration_type_name}}</td>
                 <td>{{leave.status}}</td>
                 <td>
-                  <button type="button" class="badge badge-center bg-label-success" *ngIf="leave.status!='approved'"
+                  <button type="button" class="badge badge-center bg-label-success" *ngIf="!['approved','rejected','self_declined'].includes(leave.status)"
                     (click)="statuschange(leave,'approved')">
                     <i class="fas fa-check"></i>
                   </button>

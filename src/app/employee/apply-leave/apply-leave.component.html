@@ -267,7 +267,7 @@
                   <td>{{ item["createdAt"] | date: 'short'  }}</td>
 
                 <td>
-                  <button type="button" class="badge badge-center bg-label-success" *ngIf="item.status!='approved'"
+                  <button type="button" class="badge badge-center bg-label-success" *ngIf="!['approved','rejected','self_declined'].includes(item.status)"
                     (click)="statuschange(item,'approved')">
                     <i class="fas fa-check"></i>
                   </button>
