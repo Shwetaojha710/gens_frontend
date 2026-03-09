@@ -121,4 +121,14 @@ export class LocationService {
       return null;
     }
   };
+//   getVisitReport(payload:any){
+//   return this.http.post(
+//     this.baseUrl + "tracking/visit-report",
+//     payload
+//   )
+// }
+
+  getVisitReport(obj: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}visit-report`, obj);
+  }
 }

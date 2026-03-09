@@ -70,6 +70,7 @@ import { CompanyRegComponent } from './company-reg/company-reg.component';
 import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.component';
 import { WeekendEmpListComponent } from './attendance/weekend-emp-list/weekend-emp-list.component';
 import { AddComoffComponent } from './attendance/add-comoff/add-comoff.component';
+import { TrackingReportComponent } from './reports/tracking-report/tracking-report.component';
 
 
 export const routes: Routes = [
@@ -174,7 +175,8 @@ export const routes: Routes = [
         children: [
           { path: 'employee', component: EmployeeComponent },
           { path: 'payroll', component: PayrollComponent },
-          { path: 'attendance', component: AttendanceComponent }
+          { path: 'attendance', component: AttendanceComponent },
+          { path: 'tracking-report', component: TrackingReportComponent },
         ]
       },
       {

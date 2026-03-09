@@ -88,7 +88,8 @@ export class NavbarComponent {
       children: [
         { title: 'Employee Report', icon: 'ri-file-user-line', link: '/layout/reports/employee' },
         { title: 'Payroll Report', icon: 'ri-file-paper-line', link: '/layout/reports/payroll' },
-        { title: 'Attendance Report', icon: 'ri-file-list-3-line', link: '/layout/reports/attendance' }
+        { title: 'Attendance Report', icon: 'ri-file-list-3-line', link: '/layout/reports/attendance' },
+        { title: 'Tracking Report', icon: 'ri-file-list-3-line', link: '/layout/reports/tracking-report' },
       ]
     },
     {
