@@ -74,7 +74,7 @@ export class DashboardComponent {
 
 
   leaveTypes: any = []
-
+trackingList:any=[]
   ngOnInit(): void {
 
     // this.baseurl = localStorage.getItem('base_url')?.replace(/["\\,]/g, '') || '';
@@ -87,6 +87,7 @@ export class DashboardComponent {
     this.holidayList = []
     this.leaveList = []
     this.leaveTypes = []
+    this.trackingList=[]
     this.dashboardService.getDashboardData().subscribe((res) => {
       if (res.status == true) {
         this.notyf.success(res.message || 'Dashboard data loaded successfully')
@@ -96,6 +97,7 @@ export class DashboardComponent {
         this.leaveList = res.data.leaves
         this.leaveTypes = res.data.leaveMasterList
         this.holidayList = res.data.holidays
+        this.trackingList = res.data.trackingList
         this.holidayList = this.holidayList.map((item: any) => {
           return {
             ...item,

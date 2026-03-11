@@ -67,7 +67,7 @@ export class TrackingReportComponent {
   }
   status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
   reportType: any = [{ value: 'monthly', label: 'Monthly' }, { value: 'quarterly', label: 'Quarterly' }]
-  quarterList: any = [{ value: '1', label: 'Q1' }, { value: '2', label: 'Q2' },{ value: '3', label: 'Q3' }, { value: '4', label: 'Q4' },]
+  quarterList: any = [{ value: '1', label: 'Q1' }, { value: '2', label: 'Q2' }, { value: '3', label: 'Q3' }, { value: '4', label: 'Q4' },]
 
   // onSubmit() {
   //    console.log(this.obj)
@@ -104,7 +104,7 @@ export class TrackingReportComponent {
     const start = (this.currentPage - 1) * this.itemsPerPage;
     const end = start + this.itemsPerPage;
 
-    this.AttendanceMasterList = this.originalList.slice(start, end);
+    this.reportData = this.originalList.slice(start, end);
     this.totalPages = Math.ceil(this.originalList.length / this.itemsPerPage);
   }
 
@@ -118,9 +118,9 @@ export class TrackingReportComponent {
     this.searchText = value.trim();
 
     if (this.searchText === '') {
-      this.AttendanceMasterList = [...this.originalList];
+      this.reportData = [...this.originalList];
     } else {
-      this.AttendanceMasterList = this.originalList.filter((item: any) =>
+      this.reportData = this.originalList.filter((item: any) =>
         JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
       );
     }
@@ -158,15 +158,15 @@ export class TrackingReportComponent {
     this.baseurl = this.master.getBaseUrl();
   }
 
- reportData:any = []
-async viewAddress(item:any){
+  reportData: any = []
+  async viewAddress(item: any) {
 
- const lat = item.latitude
- const lng = item.longitude
+    const lat = item.latitude
+    const lng = item.longitude
 
- item.address = await this.getAddressFromAPI(lat,lng)
+    item.address = await this.getAddressFromAPI(lat, lng)
 
-}
+  }
   async getAddressFromAPI(lat: number, lng: number): Promise<string | null> {
     try {
       // const response: any = await firstValueFrom(await this.locationService.getAddressFromGlobalVTS(lat, lng));
@@ -184,28 +184,54 @@ async viewAddress(item:any){
       return null;
     }
   }
-loadReport(){
+  loadReport() {
 
- const payload = {
+    const payload = {
 
-   employeeId:this.obj['emp_id'] ,
-   report_type:this.obj['report_type'],
-   year:this.obj['year'],
-   month:this.obj['month'],
-   quarter:this.obj['quarter'],
+      employeeId: this.obj['emp_id'],
+      report_type: this.obj['report_type'],
+      year: this.obj['year'],
+      month: this.obj['month'],
+      quarter: this.obj['quarter'],
 
- }
+    }
+    this.reportData = []
+    //  this.locationService.getVisitReport(payload)
+    //  .subscribe((res:any)=>{
 
- this.locationService.getVisitReport(payload)
- .subscribe((res:any)=>{
+    //    if(res.status){
+    //      this.reportData = res.data
+    //    }
 
-   if(res.status){
-     this.reportData = res.data
-   }
+    //  })
 
- })
 
-}
+    this.locationService.getVisitReport(payload).subscribe((response: any) => {
+      if (response && response.data && response.status === true) {
+
+        this.notyf.success(response.message || 'Employees loaded successfully');
+
+        this.reportData = response.data
+
+        this.originalList = this.reportData
+        this.updateDisplayedList();
+      } else if (response.status === false) {
+        this.notyf.error(response.message)
+      }
+      else if (response.status == 'expired') {
+        this.reportData = [];
+        this.router.navigate(['login'])
+      }
+    },
+      (error: any) => {
+        this.AttendanceMasterList = [];
+        console.error('Error loading employees:', error);
+        this.notyf.error(error?.error?.message)
+        // alert('Failed to load employees. Please try again.');
+      }
+    );
+
+  }
 
   export(): void {
     const exportData: any[] = [];

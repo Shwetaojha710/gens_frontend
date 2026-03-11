@@ -162,40 +162,42 @@
 
               <div class="col-3" *ngFor="let pin of pinnedLocationList; let i = index">
 
-<div class="pin-card" (click)="zoomToPin(pin)">
+                <div class="pin-card" (click)="zoomToPin(pin)">
 
-<div class="fw-bold">
-Pinned Location ({{pin.count}} times)
-</div>
+                  <div class="fw-bold">
+                    Pinned Location ({{pin.count}} times)
+                  </div>
 
-<div class="fw-bold">
+                  <div class="fw-bold">
 
-<!-- <a
+                    <a
 class="text-primary"
   (click)="viewAddress(pin, i); $event.stopPropagation()"
 >
 View Address
-</a> -->
+</a>
 
-<!-- <div *ngIf="pin.address"> -->
- <b> Address : </b> {{ pin.address }}
-<!-- </div> -->
 
-</div>
+                    <div *ngIf="pin.address">
 
-<div class="small">
+                    <b>Address:</b>{{ pin.address }}
+                    </div>
 
-<div *ngFor="let v of pin.visits">
+                  </div>
 
-{{v.timestamp | date:'dd/MM/yyyy hh:mm:ss a' }}
+                  <div class="small">
 
-</div>
+                    <div *ngFor="let v of pin.visits">
 
-</div>
+                      {{v.timestamp | date:'dd/MM/yyyy hh:mm:ss a' }}
 
-</div>
+                    </div>
 
-</div>
+                  </div>
+
+                </div>
+
+              </div>
 
               <!-- <div class="col-3"   *ngFor="let pin of pinnedLocationList; let i = index">
 
@@ -238,80 +240,76 @@ View Address
 
           </div>
         </div>
-    <div id="map" [class.fullscreen-map]="isFullScreen" [style.height]="isFullScreen ? '100vh' : 'calc(100vh - 200px)'"
-      style="width: 100%; border: 1px solid #ccc;"></div>
+        <div id="map" [class.fullscreen-map]="isFullScreen"
+          [style.height]="isFullScreen ? '100vh' : 'calc(100vh - 200px)'" style="width: 100%; border: 1px solid #ccc;">
+        </div>
 
       </div>
       <div class="col-md-3">
-      <div class="card">
-        <div class="card-header">
-          <h6 class="mb-0">Apply filter</h6>
-        </div>
-        <div class="card-body">
-          <div  class="location-info">
-          <div class="info-item mb-3">
-
-  <button
-    class="btn btn-info btn-sm"
-    (click)="toggleHolds()">
-
-    Pinned ({{ pinnedCount }})
-
-  </button>
-
-  <button
-    class="btn btn-primary btn-sm ms-2"
-    (click)="DateWiseTracking()">
-
-    Map
-
-  </button>
-
-</div>
-
-            <div class="info-item mb-3">
-                    <label for="defaultFormControlInput" class="form-label mb-1">Select Start Date
-                <span style="color: red">*</span>
-              </label>
-              <input type="date" class="form-control" id="defaultFormControlInput" placeholder="Select Start Date"
-                [(ngModel)]="obj['startDate']" name="month" required (change)="setMinToDate()" />
-            </div>
-
-            <div class="info-item mb-3">
-                     <label for="defaultFormControlInput" class="form-label mb-1">Select End Date
-                <span style="color: red"> * </span>
-              </label>
-              <input type="date" class="form-control" id="defaultFormControlInput" placeholder="Select End Date"
-                [(ngModel)]="obj['endDate']" name="month" [min]="getToDateMin()" required
-                (change)="DateWiseTracking()" />
-            </div>
-            <div class="info-item mb-3">
-                    <label for="defaultFormControlInput" class="form-label mb-1">Select Start Time
-                <span style="color: red">*</span>
-              </label>
-              <input type="time" class="form-control" id="defaultFormControlInput" placeholder="Select Start Date"
-                [(ngModel)]="obj['startTime']" name="month" required/>
-            </div>
-
-            <div class="info-item mb-3">
-                     <label for="defaultFormControlInput" class="form-label mb-1">Select End Time
-                <span style="color: red"> * </span>
-              </label>
-              <input type="time" class="form-control" id="defaultFormControlInput" placeholder="Select End Date"
-                [(ngModel)]="obj['endTime']" name="month"  required
-                (change)="DateWiseTracking()" />
-            </div>
-
-
+        <div class="card">
+          <div class="card-header">
+            <h6 class="mb-0">Apply filter</h6>
           </div>
+          <div class="card-body">
+            <div class="location-info">
+              <div class="info-item mb-3">
 
-          <!-- <div class="text-center text-muted py-4">
+                <button class="btn btn-info btn-sm" (click)="toggleHolds()">
+
+                  Pinned ({{ pinnedCount }})
+
+                </button>
+
+                <button class="btn btn-primary btn-sm ms-2" (click)="DateWiseTracking()">
+
+                  Map
+
+                </button>
+
+              </div>
+
+              <div class="info-item mb-3">
+                <label for="defaultFormControlInput" class="form-label mb-1">Select Start Date
+                  <span style="color: red">*</span>
+                </label>
+                <input type="date" class="form-control" id="defaultFormControlInput" placeholder="Select Start Date"
+                  [(ngModel)]="obj['startDate']" name="month" required (change)="setMinToDate()" />
+              </div>
+
+              <div class="info-item mb-3">
+                <label for="defaultFormControlInput" class="form-label mb-1">Select End Date
+                  <span style="color: red"> * </span>
+                </label>
+                <input type="date" class="form-control" id="defaultFormControlInput" placeholder="Select End Date"
+                  [(ngModel)]="obj['endDate']" name="month" [min]="getToDateMin()" required
+                  (change)="DateWiseTracking()" />
+              </div>
+              <div class="info-item mb-3">
+                <label for="defaultFormControlInput" class="form-label mb-1">Select Start Time
+                  <span style="color: red">*</span>
+                </label>
+                <input type="time" class="form-control" id="defaultFormControlInput" placeholder="Select Start Date"
+                  [(ngModel)]="obj['startTime']" name="month" required />
+              </div>
+
+              <div class="info-item mb-3">
+                <label for="defaultFormControlInput" class="form-label mb-1">Select End Time
+                  <span style="color: red"> * </span>
+                </label>
+                <input type="time" class="form-control" id="defaultFormControlInput" placeholder="Select End Date"
+                  [(ngModel)]="obj['endTime']" name="month" required (change)="DateWiseTracking()" />
+              </div>
+
+
+            </div>
+
+            <!-- <div class="text-center text-muted py-4">
             <i class="fas fa-map-marker-alt fa-2x mb-2"></i>
             <p>No location data available</p>
           </div> -->
 
+          </div>
         </div>
-      </div>
 
       </div>
     </div>

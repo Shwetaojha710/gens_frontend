@@ -322,7 +322,62 @@
         </div>
       </div>
     </div>
+  <div class="col-lg-4 col-xxl-4 order-xxl-1">
+      <div class="card h-100" >
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <div class="card-title mb-0">
+            <h5 class="m-0 me-2 mb-1">Tracking List</h5>
+          </div>
+          <div class="btn-group">
+            <button type="button" class="btn btn-xs btn-primary waves-effect waves-light"
+              routerLink="/layout/tracking">
+              View All
+            </button>
+          </div>
+        </div>
+      <div class="card-body" style="overflow-y: scroll;height:225px;">
+  <ul class="p-0 m-0">
 
+    <li class="d-flex align-items-center mb-4" *ngFor="let item of trackingList">
+
+      <!-- Avatar -->
+      <div class="avatar avatar-md flex-shrink-0 me-3">
+        <img
+          src="assets/img/avatars/1.png"
+          class="rounded-circle"
+          width="40"
+        />
+      </div>
+
+      <!-- Employee Info -->
+      <div class="d-flex w-100 justify-content-between align-items-center">
+
+        <div>
+          <h6 class="mb-1">{{ item.employeeName }}</h6>
+
+          <small
+            [ngClass]="{
+              'text-success': item.status === 'live',
+              'text-danger': item.status === 'offline'
+            }"
+          >
+            {{ item.status === 'live' ? 'Live Tracking' : 'Offline' }}
+          </small>
+        </div>
+
+        <!-- Last update -->
+        <div class="badge bg-label-primary rounded-pill">
+          {{ item.lastUpdate ? (item.lastUpdate | date:'shortTime') : '-' }}
+        </div>
+
+      </div>
+
+    </li>
+
+  </ul>
+</div>
+      </div>
+    </div>
 
     <div class="col-lg-4 col-xxl-4  order-xxl-1">
       <div class="card h-100">

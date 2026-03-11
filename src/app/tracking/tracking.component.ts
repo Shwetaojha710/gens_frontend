@@ -657,7 +657,7 @@ export class TrackingComponent implements OnInit, OnDestroy {
     const address = await this.getAddressFromAPI(lat, lng);
 
     this.pinned[index].address = address;
-
+pin.address=address
   }
   async getAddressFromAPI(lat: number, lng: number): Promise<string | null> {
     try {
@@ -1226,9 +1226,7 @@ export class TrackingComponent implements OnInit, OnDestroy {
 
       marker.bindPopup(`
       <b>Pinned Location</b><br/>
-
-      <b>Address:</b> ${pin.address} times<br/>
-         <b>Visits:</b> ${pin.count} times<br/>
+      <b>Visits:</b> ${pin.count} times<br/>
       <br/>
       <b>Visit Times:</b><br/>
       ${visitsHtml}
