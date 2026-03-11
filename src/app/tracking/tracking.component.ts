@@ -18,11 +18,11 @@ import { GoogleroadService } from '../services/googleroad.service';
   imports: [FormsModule, CommonModule, NgSelectModule, SearchPaginationComponent]
 })
 export class TrackingComponent implements OnInit, OnDestroy {
-staySummary: any[] = [];
-totalDistanceMeters = 0;
-totalStayMinutes = 0;
-playbackIndex = 0;
-playbackMarker!: L.Marker;
+  staySummary: any[] = [];
+  totalDistanceMeters = 0;
+  totalStayMinutes = 0;
+  playbackIndex = 0;
+  playbackMarker!: L.Marker;
 
   map!: L.Map;
   markers: L.Marker[] = [];
@@ -42,11 +42,11 @@ playbackMarker!: L.Marker;
   zoomControl: any = null;
   constructor(private googleRoadService: GoogleroadService, private locationService: LocationService, public statusService: StatusService, private router: Router, private master: MasterService,) {
   }
-formatMinutesToHHMM(minutes: number): string {
-  const h = Math.floor(minutes / 60);
-  const m = minutes % 60;
-  return h > 0 ? `${h}h ${m}m` : `${m}m`;
-}
+  formatMinutesToHHMM(minutes: number): string {
+    const h = Math.floor(minutes / 60);
+    const m = minutes % 60;
+    return h > 0 ? `${h}h ${m}m` : `${m}m`;
+  }
 
   ngOnInit(): void {
     this.activeTrackingUsers();
@@ -73,7 +73,7 @@ formatMinutesToHHMM(minutes: number): string {
       console.warn('User is undefined');
       return;
     }
-     this.obj={}
+    this.obj = {}
     this.viewLiveTracking = false;
     this.currentTrackingUser = user;
     this.isLiveTrackingEnabled = false;
@@ -92,7 +92,7 @@ formatMinutesToHHMM(minutes: number): string {
           this.loadAndPlotData(user);
         }, 200);
       } else {
-         this.initMap();
+        this.initMap();
         if (!this.fullScreenControl) {
           this.addFullScreenControl();
         }
@@ -110,47 +110,47 @@ formatMinutesToHHMM(minutes: number): string {
     }, 100);
   }
 
-clearMap() {
-  if (!this.map) return;
+  clearMap() {
+    if (!this.map) return;
 
-  this.markers.forEach(m => this.map.removeLayer(m));
-  this.markers = [];
+    this.markers.forEach(m => this.map.removeLayer(m));
+    this.markers = [];
 
-  this.arrowMarkers.forEach(m => this.map.removeLayer(m));
-  this.arrowMarkers = [];
+    this.arrowMarkers.forEach(m => this.map.removeLayer(m));
+    this.arrowMarkers = [];
 
-  if (this.polyline) {
-    this.map.removeLayer(this.polyline);
-    this.polyline = null!;
+    if (this.polyline) {
+      this.map.removeLayer(this.polyline);
+      this.polyline = null!;
+    }
+
+    if (this.playbackMarker) {
+      this.map.removeLayer(this.playbackMarker);
+      this.playbackMarker = null!;
+    }
   }
-
-  if (this.playbackMarker) {
-    this.map.removeLayer(this.playbackMarker);
-    this.playbackMarker = null!;
-  }
-}
 
   createCustomIcon(
-  color: string,
-  label: string | number
-): L.DivIcon {
-  const size = 30;
-  const textColor = 'white';
+    color: string,
+    label: string | number
+  ): L.DivIcon {
+    const size = 30;
+    const textColor = 'white';
 
-  const displayLabel =
-    typeof label === 'number'
-      ? label.toString()
-      : label === 'START'
-        ? 'S'
-        : label === 'END'
-          ? 'E'
-          : label === 'STAY'
-            ? 'ST'
-            : '';
+    const displayLabel =
+      typeof label == 'number'
+        ? this.formatMinutesToHHMM(label)
+        : label == 'START'
+          ? 'S'
+          : label == 'END'
+            ? 'E'
+            : label == 'STAY'
+              ? 'ST'
+              : '';
 
-  return L.divIcon({
-    className: 'custom-marker',
-    html: `
+    return L.divIcon({
+      className: 'custom-marker',
+      html: `
       <div style="
         background-color: ${color};
         width: ${size}px;
@@ -174,10 +174,10 @@ clearMap() {
         </div>
       </div>
     `,
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size + 6]
-  });
-}
+      iconSize: [size, size],
+      iconAnchor: [size / 2, size + 6]
+    });
+  }
 
 
   // createCustomIcon(color: string, label: string): L.DivIcon {
@@ -641,17 +641,27 @@ clearMap() {
   async addLocationName(point: any): Promise<string> {
     try {
       const res: any = await this.locationService.getAddressFromCoords(point.coords.latitude, point.coords.longitude)
-        // .toPromise();
+      // .toPromise();
 
       return res?.display_name || 'Unknown Location';
     } catch {
       return 'Unknown Location';
     }
   }
+  address: any
+  async viewAddress(pin: any, index: number) {
 
+    const lat = pin.latitude ?? pin.coords?.latitude;
+    const lng = pin.longitude ?? pin.coords?.longitude;
+
+    const address = await this.getAddressFromAPI(lat, lng);
+
+    this.pinned[index].address = address;
+pin.address=address
+  }
   async getAddressFromAPI(lat: number, lng: number): Promise<string | null> {
     try {
-        // const response: any = await firstValueFrom(await this.locationService.getAddressFromGlobalVTS(lat, lng));
+      // const response: any = await firstValueFrom(await this.locationService.getAddressFromGlobalVTS(lat, lng));
       const response: any = await this.locationService.getAddressFromGlobalVTS(lat, lng);
       console.log(response);
 
@@ -704,73 +714,73 @@ clearMap() {
       marker.setPopupContent(fallbackContent);
     });
   }
-   getDistanceInMeters(
-  lat1: number,
-  lon1: number,
-  lat2: number,
-  lon2: number
-): number {
-  const R = 6371000; // meters
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
+  getDistanceInMeters(
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+  ): number {
+    const R = 6371000; // meters
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
 
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos(lat1 * Math.PI / 180) *
-    Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) *
+      Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
-  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
-}
-
-filterNearbyPoints(
-  points: any[],
-  maxDistanceMeters = 100,
-  maxTimeDiffSeconds = 60
-) {
-  if (!points || points.length === 0) return [];
-
-  const cleaned: any[] = [];
-
-  for (const point of points) {
-    const lat = point.latitude ?? point.coords?.latitude;
-    const lng = point.longitude ?? point.coords?.longitude;
-    const timestamp = point.timestamp;
-
-    if (lat == null || lng == null || !timestamp) continue;
-
-    if (cleaned.length === 0) {
-      cleaned.push({ lat, lng, timestamp });
-      continue;
-    }
-
-    const last = cleaned[cleaned.length - 1];
-
-    const distance = this.getDistanceInMeters(
-      last.lat,
-      last.lng,
-      lat,
-      lng
-    );
-
-    const timeDiff =
-      Math.abs(timestamp - last.timestamp) / 1000; // seconds
-
-    // ❌ Skip if inside 100m AND within duration
-    if (
-      distance <= maxDistanceMeters &&
-      timeDiff <= maxTimeDiffSeconds
-    ) {
-      continue;
-    }
-
-    // ✅ Keep point
-    cleaned.push({ lat, lng, timestamp });
+    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
   }
 
-  return cleaned;
-}
-// commented old version
+  filterNearbyPoints(
+    points: any[],
+    maxDistanceMeters = 100,
+    maxTimeDiffSeconds = 60
+  ) {
+    if (!points || points.length === 0) return [];
+
+    const cleaned: any[] = [];
+
+    for (const point of points) {
+      const lat = point.latitude ?? point.coords?.latitude;
+      const lng = point.longitude ?? point.coords?.longitude;
+      const timestamp = point.timestamp;
+
+      if (lat == null || lng == null || !timestamp) continue;
+
+      if (cleaned.length === 0) {
+        cleaned.push({ lat, lng, timestamp });
+        continue;
+      }
+
+      const last = cleaned[cleaned.length - 1];
+
+      const distance = this.getDistanceInMeters(
+        last.lat,
+        last.lng,
+        lat,
+        lng
+      );
+
+      const timeDiff =
+        Math.abs(timestamp - last.timestamp) / 1000; // seconds
+
+      // ❌ Skip if inside 100m AND within duration
+      if (
+        distance <= maxDistanceMeters &&
+        timeDiff <= maxTimeDiffSeconds
+      ) {
+        continue;
+      }
+
+      // ✅ Keep point
+      cleaned.push({ lat, lng, timestamp });
+    }
+
+    return cleaned;
+  }
+  // commented old version
   // getDistanceInMeters(
   //   lat1: number,
   //   lon1: number,
@@ -790,166 +800,166 @@ filterNearbyPoints(
   //   return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   // }
 
-detectStays(points: any[]) {
-  const STAY_DISTANCE = 100; // meters
-  const STAY_TIME = 5 * 60 * 1000; // 5 minutes
+  detectStays(points: any[]) {
+    const STAY_DISTANCE = 100; // meters
+    const STAY_TIME = 5 * 60 * 1000; // 5 minutes
 
-  const stays: any[] = [];
-  let stayStart: any = null;
+    const stays: any[] = [];
+    let stayStart: any = null;
 
-  for (let i = 1; i < points.length; i++) {
-    const prev = points[i - 1];
-    const curr = points[i];
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
 
-    const distance = this.getDistanceInMeters(
-      prev.coords.latitude,
-      prev.coords.longitude,
-      curr.coords.latitude,
-      curr.coords.longitude
-    );
+      const distance = this.getDistanceInMeters(
+        prev.coords.latitude,
+        prev.coords.longitude,
+        curr.coords.latitude,
+        curr.coords.longitude
+      );
 
-    if (distance <= STAY_DISTANCE) {
-      if (!stayStart) stayStart = prev;
-    } else {
-      if (stayStart) {
-        const stayDuration = prev.timestamp - stayStart.timestamp;
+      if (distance <= STAY_DISTANCE) {
+        if (!stayStart) stayStart = prev;
+      } else {
+        if (stayStart) {
+          const stayDuration = prev.timestamp - stayStart.timestamp;
 
-        if (stayDuration >= STAY_TIME) {
-          stays.push({
-            latitude: stayStart.coords.latitude,
-            longitude: stayStart.coords.longitude,
-            duration: stayDuration,
-            from: stayStart.timestamp,
-            to: prev.timestamp
-          });
+          if (stayDuration >= STAY_TIME) {
+            stays.push({
+              latitude: stayStart.coords.latitude,
+              longitude: stayStart.coords.longitude,
+              duration: stayDuration,
+              from: stayStart.timestamp,
+              to: prev.timestamp
+            });
+          }
+          stayStart = null;
         }
-        stayStart = null;
       }
     }
+
+    if (stayStart) {
+      const lastPoint = points[points.length - 1];
+      const stayDuration = lastPoint.timestamp - stayStart.timestamp;
+
+      if (stayDuration >= STAY_TIME) {
+        stays.push({
+          latitude: stayStart.coords.latitude,
+          longitude: stayStart.coords.longitude,
+          duration: stayDuration,
+          from: stayStart.timestamp,
+          to: lastPoint.timestamp
+        });
+      }
+    }
+
+    return stays;
   }
 
-  if (stayStart) {
-    const lastPoint = points[points.length - 1];
-    const stayDuration = lastPoint.timestamp - stayStart.timestamp;
+  removeSameLocationPoints(data: any, minDistance = 5) {
+    if (!data.length) return [];
 
-    if (stayDuration >= STAY_TIME) {
-      stays.push({
-        latitude: stayStart.coords.latitude,
-        longitude: stayStart.coords.longitude,
-        duration: stayDuration,
-        from: stayStart.timestamp,
-        to: lastPoint.timestamp
-      });
+    const filtered = [data[0]];
+
+    for (let i = 1; i < data.length; i++) {
+      const prev = filtered[filtered.length - 1];
+      const curr = data[i];
+
+      const dist = this.getDistanceInMeters(
+        prev.coords.latitude,
+        prev.coords.longitude,
+        curr.coords.latitude,
+        curr.coords.longitude
+      );
+
+      // keep only if moved more than X meters
+      if (dist >= minDistance) {
+        filtered.push(curr);
+      }
     }
+
+    return filtered;
   }
 
-  return stays;
-}
+  drawStartEndMarkers(points: any[]) {
+    const start = points[0];
+    const end = points[points.length - 1];
 
- removeSameLocationPoints(data:any, minDistance = 5) {
-  if (!data.length) return [];
-
-  const filtered = [data[0]];
-
-  for (let i = 1; i < data.length; i++) {
-    const prev = filtered[filtered.length - 1];
-    const curr = data[i];
-
-    const dist = this.getDistanceInMeters(
-      prev.coords.latitude,
-      prev.coords.longitude,
-      curr.coords.latitude,
-      curr.coords.longitude
-    );
-
-    // keep only if moved more than X meters
-    if (dist >= minDistance) {
-      filtered.push(curr);
-    }
-  }
-
-  return filtered;
-}
-
-drawStartEndMarkers(points: any[]) {
-  const start = points[0];
-  const end = points[points.length - 1];
-
-  const startMarker = L.marker(
-    [start.coords.latitude, start.coords.longitude],
-    {
-      icon: this.createCustomIcon('#28a745', 'START'),
-      zIndexOffset: 1000 // 🔥 important
-    }
-  ).addTo(this.map);
-
-  const endMarker = L.marker(
-    [end.coords.latitude, end.coords.longitude],
-    {
-      icon: this.createCustomIcon('#dc3545', 'END'),
-      zIndexOffset: 1000
-    }
-  ).addTo(this.map);
-
-//  (startMarker as any).bringToFront();
-// (endMarker as any).bringToFront();
-
-
-  this.bindMarkerPopupWithAddress(
-    startMarker,
-    'START',
-    start.coords.latitude,
-    start.coords.longitude,
-    start.timestamp
-  );
-
-  this.bindMarkerPopupWithAddress(
-    endMarker,
-    'END',
-    end.coords.latitude,
-    end.coords.longitude,
-    end.timestamp
-  );
-
-  this.markers.push(startMarker, endMarker);
-}
-async drawStayMarkers(stays: any[]) {
-  this.staySummary = [];
-  this.totalStayMinutes = 0;
-
-  for (const stay of stays) {
-    const minutes = Math.max(1, Math.floor(stay.duration / 60000));
-    this.totalStayMinutes += minutes;
-
-    const color =
-      minutes >= 60 ? '#6f42c1' :
-      minutes >= 30 ? '#dc35c6' :
-      minutes >= 10 ? '#fd7e14' :
-                      '#ffc107';
-
-    const address = await this.getAddressFromAPI(
-      stay.latitude,
-      stay.longitude
-    );
-
-    const marker = L.marker(
-      [stay.latitude, stay.longitude],
+    const startMarker = L.marker(
+      [start.coords.latitude, start.coords.longitude],
       {
-        icon: this.createCustomIcon(color, minutes),
-        zIndexOffset: 900
+        icon: this.createCustomIcon('#28a745', 'START'),
+        zIndexOffset: 1000 // 🔥 important
       }
     ).addTo(this.map);
 
-    // Circle
-    L.circle([stay.latitude, stay.longitude], {
-      radius: Math.min(120, minutes * 2),
-      color,
-      fillColor: color,
-      fillOpacity: 0.25,
-      weight: 1
-    }).addTo(this.map);
+    const endMarker = L.marker(
+      [end.coords.latitude, end.coords.longitude],
+      {
+        icon: this.createCustomIcon('#dc3545', 'END'),
+        zIndexOffset: 1000
+      }
+    ).addTo(this.map);
 
-    marker.bindPopup(`
+    //  (startMarker as any).bringToFront();
+    // (endMarker as any).bringToFront();
+
+
+    this.bindMarkerPopupWithAddress(
+      startMarker,
+      'START',
+      start.coords.latitude,
+      start.coords.longitude,
+      start.timestamp
+    );
+
+    this.bindMarkerPopupWithAddress(
+      endMarker,
+      'END',
+      end.coords.latitude,
+      end.coords.longitude,
+      end.timestamp
+    );
+
+    this.markers.push(startMarker, endMarker);
+  }
+  async drawStayMarkers(stays: any[]) {
+    this.staySummary = [];
+    this.totalStayMinutes = 0;
+
+    for (const stay of stays) {
+      const minutes = Math.max(1, Math.floor(stay.duration / 60000));
+      this.totalStayMinutes += minutes;
+
+      const color =
+        minutes >= 60 ? '#6f42c1' :
+          minutes >= 30 ? '#dc35c6' :
+            minutes >= 10 ? '#fd7e14' :
+              '#ffc107';
+
+      const address = await this.getAddressFromAPI(
+        stay.latitude,
+        stay.longitude
+      );
+
+      const marker = L.marker(
+        [stay.latitude, stay.longitude],
+        {
+          icon: this.createCustomIcon(color, minutes),
+          zIndexOffset: 900
+        }
+      ).addTo(this.map);
+
+      // Circle
+      L.circle([stay.latitude, stay.longitude], {
+        radius: Math.min(120, minutes * 2),
+        color,
+        fillColor: color,
+        fillOpacity: 0.25,
+        weight: 1
+      }).addTo(this.map);
+
+      marker.bindPopup(`
       <b>Stay Location</b><br/>
       <b>Duration:</b> ${this.formatMinutesToHHMM(minutes)}<br/>
       <b>From:</b> ${new Date(stay.from).toLocaleTimeString()}<br/>
@@ -957,330 +967,499 @@ async drawStayMarkers(stays: any[]) {
       <b>Address:</b> ${address || 'Unknown'}
     `);
 
-    // 📊 Sidebar data
-    this.staySummary.push({
-      minutes,
-      durationText: this.formatMinutesToHHMM(minutes),
-      address,
-      from: stay.from,
-      to: stay.to
+      // 📊 Sidebar data
+      this.staySummary.push({
+        minutes: this.formatMinutesToHHMM(minutes),
+        durationText: this.formatMinutesToHHMM(minutes),
+        address,
+        from: stay.from,
+        to: stay.to
+      });
+
+      this.markers.push(marker);
+    }
+  }
+  zoomToPin(pin: any) {
+
+    const lat = pin.latitude ?? pin.coords?.latitude;
+    const lng = pin.longitude ?? pin.coords?.longitude;
+
+    // this.map.setView([lat, lng], 17);
+    this.map.setView([lat, lng], 17, {
+      animate: true,
+      duration: 1
     });
 
-    this.markers.push(marker);
-  }
-}
 
-
-calculateTotalDistance(points: any[]): number {
-  let total = 0;
-
-  for (let i = 1; i < points.length; i++) {
-    total += this.getDistanceInMeters(
-      points[i - 1].coords.latitude,
-      points[i - 1].coords.longitude,
-      points[i].coords.latitude,
-      points[i].coords.longitude
-    );
   }
 
-  return total;
-}
+  calculateTotalDistance(points: any[]): number {
+    let total = 0;
 
-async startPlayback(points: any[]) {
-  if (!points.length) return;
-
-  if (this.playbackMarker) {
-    this.map.removeLayer(this.playbackMarker);
-  }
-
-  this.playbackIndex = 0;
-
-  this.playbackMarker = L.marker(
-    [points[0].coords.latitude, points[0].coords.longitude],
-    { icon: this.createCustomIcon('#0d6efd', '▶') }
-  ).addTo(this.map);
-
-  const interval = setInterval(() => {
-    if (this.playbackIndex >= points.length) {
-      clearInterval(interval);
-      return;
+    for (let i = 1; i < points.length; i++) {
+      total += this.getDistanceInMeters(
+        points[i - 1].coords.latitude,
+        points[i - 1].coords.longitude,
+        points[i].coords.latitude,
+        points[i].coords.longitude
+      );
     }
 
-    const p = points[this.playbackIndex];
-    this.playbackMarker.setLatLng([
-      p.coords.latitude,
-      p.coords.longitude
-    ]);
+    return total;
+  }
 
-    this.playbackIndex++;
-  }, 600); // speed (ms)
-}
-pinnedCount:any
-loadAndPlotData(user: any) {
-  const payload: any = { employeeId: user.id };
-    if (this.obj.startDate) payload.start_date = this.obj.startDate;
-  if (this.obj.endDate) payload.end_date = this.obj.endDate;
-this.pinnedCount=0
-  this.locationService.getLatestLocations(payload).subscribe(res => {
-    if (!res?.data?.length) {
-      this.clearMap();
-      return;
+  async startPlayback(points: any[]) {
+    if (!points.length) return;
+
+    if (this.playbackMarker) {
+      this.map.removeLayer(this.playbackMarker);
     }
 
+    this.playbackIndex = 0;
+
+    this.playbackMarker = L.marker(
+      [points[0].coords.latitude, points[0].coords.longitude],
+      { icon: this.createCustomIcon('#0d6efd', '▶') }
+    ).addTo(this.map);
+
+    const interval = setInterval(() => {
+      if (this.playbackIndex >= points.length) {
+        clearInterval(interval);
+        return;
+      }
+
+      const p = points[this.playbackIndex];
+      this.playbackMarker.setLatLng([
+        p.coords.latitude,
+        p.coords.longitude
+      ]);
+
+      this.playbackIndex++;
+    }, 600); // speed (ms)
+  }
+  pinnedCount: any
+  pinned: any = []
+  pinnedLocationList: any = []
+  loadAndPlotData(user: any) {
     this.clearMap();
+    this.pinned = []
+    this.pinnedLocationList = []
+    const payload: any = { employeeId: user.id };
+    if (this.obj.startDate) payload.start_date = this.obj.startDate;
+    if (this.obj.endDate) payload.end_date = this.obj.endDate;
+    if (this.obj.startTime) payload.start_time = this.obj.startTime;
+    if (this.obj.endTime) payload.end_time = this.obj.endTime;
+    this.pinnedCount = 0
+    this.locationService.getLatestLocations(payload).subscribe(res => {
+      if (!res?.data?.length) {
+        this.clearMap();
+        return;
+      }
+
+      this.clearMap();
 
 
-    const rawPoints = res.data.sort(
-      (a: any, b: any) => a.timestamp - b.timestamp
-    );
+      const rawPoints = res.data.sort(
+        (a: any, b: any) => a.timestamp - b.timestamp
+      );
 
 
-    const cleanedPoints = this.cleanGpsPointsAdvanced(rawPoints);
+      const cleanedPoints = this.cleanGpsPointsAdvanced(rawPoints);
 
 
-    const latLngs = cleanedPoints.map(p => [
-      p.lat ?? p.coords.latitude,
-      p.lng ?? p.coords.longitude
-    ]);
+      const latLngs = cleanedPoints.map(p => [
+        p.lat ?? p.coords.latitude,
+        p.lng ?? p.coords.longitude
+      ]);
 
-    this.polyline = L.polyline(latLngs, {
-      color: '#1c68b4',
-      weight: 6,
-      opacity: 0.9,
-      smoothFactor: 2
-    }).addTo(this.map);
+      this.polyline = L.polyline(latLngs, {
+        color: '#1c68b4',
+        weight: 6,
+        opacity: 0.9,
+        smoothFactor: 2
+      }).addTo(this.map);
 
-    this.map.fitBounds(this.polyline.getBounds(), {
-      padding: [40, 40],
-      maxZoom: 16
+      this.map.fitBounds(this.polyline.getBounds(), {
+        padding: [40, 40],
+        maxZoom: 16
+      });
+
+      this.drawStartEndMarkers(rawPoints);
+
+
+      this.pinned = rawPoints.filter((p: any) => p.location_type == 'pinned');
+      this.pinnedCount = this.pinned.length;
+      console.log(this.pinned, "Pinned data");
+
+      this.pinnedLocationList = this.groupPinnedLocations(this.pinned);
+
+      // this.addPinnedMarkers(this.map, this.pinned);
+
+      // ✅ new (clean route)
+      // await this.drawSnappedRoute(points);
+
+
+      // 2️⃣ Start / End markers
+      this.drawStartEndMarkers(rawPoints);
+
+      // 3️⃣ Detect stays
+      const stays = this.detectStays(rawPoints);
+
+      // 4️⃣ Draw stay markers
+      this.drawStayMarkers(stays);
+      //  await this.startPlayback(points);
     });
+  }
+  showHolds: boolean = false;
+  pinnedLocations: any[] = [];
+  toggleHolds() {
+    this.showHolds = true;
+    this.clearMap()
+    this.pinnedMarker()
 
-    this.drawStartEndMarkers(rawPoints);
+  }
+  // addPinnedMarkers(map: L.Map, pinned: any[]) {
 
+  //   if (!pinned?.length) return;
 
-    const pinned = rawPoints.filter((p:any) => p.location_type == 'pinned');
-    this.pinnedCount = pinned.length;
-   console.log(pinned);
+  //   const pinIcon = L.icon({
+  //     iconUrl: 'assets/img/icons/pinned.png',
+  //     iconSize: [36, 36],
+  //     iconAnchor: [18, 36],
+  //     popupAnchor: [0, -36]
+  //   });
 
-    this.addPinnedMarkers(this.map, pinned);
+  //   pinned.forEach((p: any, index: number) => {
 
-// ✅ new (clean route)
-// await this.drawSnappedRoute(points);
+  //     const lat = p.latitude ?? p.coords?.latitude;
+  //     const lng = p.longitude ?? p.coords?.longitude;
 
+  //     if (!lat || !lng) return;
 
-    // 2️⃣ Start / End markers
-    this.drawStartEndMarkers(rawPoints);
+  //     const marker = L.marker([lat, lng], {
+  //       icon: pinIcon,
+  //       zIndexOffset: 2000
+  //     }).addTo(map);
 
-    // 3️⃣ Detect stays
-    const stays = this.detectStays(rawPoints);
+  //     marker.bindPopup(`
+  //     <b>Pinned Location</b><br/>
+  //     ${new Date(p.timestamp).toLocaleString()}
+  //   `);
 
-    // 4️⃣ Draw stay markers
-     this.drawStayMarkers(stays);
-  //  await this.startPlayback(points);
-  });
-}
+  //     this.markers.push(marker);
 
+  //   });
 
-addPinnedMarkers(map: L.Map, pinned: any[]) {
-  if (!pinned || !pinned.length) return;
+  // }
+  //   addPinnedMarkers(map: L.Map, pinned: any[]) {
+  //     if (!pinned || !pinned.length) return;
 
-  const pinIcon = L.icon({
-    iconUrl: 'assets/img/icons/pinned.png',   // 👈 your pin image
-    iconSize: [36, 36],
-    iconAnchor: [18, 36],                 // 🔥 EXACT point on coordinate
-    popupAnchor: [0, -36]
-  });
+  //     const pinIcon = L.icon({
+  //       iconUrl: 'assets/img/icons/pinned.png',   // 👈 your pin image
+  //       iconSize: [36, 36],
+  //       iconAnchor: [18, 36],                 // 🔥 EXACT point on coordinate
+  //       popupAnchor: [0, -36]
+  //     });
 
-  pinned.forEach(async (p, index) => {
-    const lat = p.lat ?? p.coords?.latitude;
-    const lng = p.lng ?? p.coords?.longitude;
+  //     pinned.forEach(async (p, index) => {
 
-    if (lat == null || lng == null) return;
+  //   let lat = p.lat ?? p.coords?.latitude;
+  //   let lng = p.lng ?? p.coords?.longitude;
 
-    const marker = L.marker([lat, lng], {
-      icon: pinIcon,
-      zIndexOffset: 2000
-    }).addTo(map);
-  const address = await this.getAddressFromAPI(
-      lat,
-     lng
-    );
-    marker.bindPopup(`
+  //   if (lat == null || lng == null) return;
+
+  //   // offset overlapping markers
+  //   lat = lat + (index * 0.00002);
+  //   lng = lng + (index * 0.00002);
+
+  //   const marker = L.marker([lat, lng], {
+  //     icon: pinIcon,
+  //     zIndexOffset: 2000
+  //   }).addTo(map);
+
+  //   // const address = await this.getAddressFromAPI(lat, lng);
+
+  //   marker.bindPopup(`
+  //     <b>Pinned Location</b><br/>
+  //     #${index + 1}<br/>
+
+  //     <b>Lat:</b> ${lat.toFixed(6)}<br/>
+  //     <b>Lng:</b> ${lng.toFixed(6)}<br/>
+  //     <b>From:</b> ${new Date(p.timestamp).toLocaleTimeString()}
+  //   `);
+
+  //   this.markers.push(marker);
+
+  // });;
+  //   }
+
+  addPinnedMarkers(map: L.Map, pinned: any[]) {
+
+    if (!pinned || !pinned.length) return;
+
+    const groupedPins: any = this.groupPinnedLocations(pinned);
+
+    groupedPins.forEach((pin: any, index: number) => {
+
+      const lat = pin.latitude;
+      const lng = pin.longitude;
+
+      // ✅ create icon using count
+      const pinIcon = this.createPinIcon(pin.count);
+
+      const marker = L.marker([lat, lng], {
+        icon: pinIcon,
+        zIndexOffset: 2000
+      }).addTo(map);
+
+     const visitsHtml = pin.visits.map((v: any, i: number) => {
+
+  const d = new Date(v.timestamp);
+
+  return `
+  <div style="margin-bottom:4px">
+   <b>${i+1}</b> - ${d.toLocaleDateString()} ${d.toLocaleTimeString()}
+  </div>
+  `;
+
+}).join("");
+
+      marker.bindPopup(`
       <b>Pinned Location</b><br/>
-      #${index + 1}<br/>
-      <b>Address:</b> ${address}<br/>
-      <b>Lat:</b> ${lat.toFixed(6)}<br/>
-      <b>Lng:</b> ${lng.toFixed(6)}<br/>
-
+      <b>Visits:</b> ${pin.count} times<br/>
+      <br/>
+      <b>Visit Times:</b><br/>
+      ${visitsHtml}
     `);
 
-    this.markers.push(marker);
-  });
-}
+      this.markers.push(marker);
 
-// loadAndPlotData(user: any) {
-//   const payload: any = {};
-//   if (user?.id) payload.employeeId = user.id;
-//   if (this.obj.startDate) payload.start_date = this.obj.startDate;
-//   if (this.obj.endDate) payload.end_date = this.obj.endDate;
+    });
 
-//   this.locationService.getLatestLocations(payload).subscribe(async res => {
-//     if (!res?.status || !res.data?.length) {
-//       this.clearMap();
-//       return;
-//     }
+  }
+  createPinIcon(count: number) {
 
-//     const points = res.data.sort((a:any, b:any) => a.timestamp - b.timestamp);
+    return L.divIcon({
+      className: 'pin-count',
+      html: `
+<div style="position:relative">
 
-//     this.clearMap();
-// // const cleanedData = this.removeSameLocationPoints(points, 5);
+<img src="assets/img/icons/pinned.png"
+style="width:36px;height:36px"/>
 
-// // const polylinePath = cleanedData.map(p => ({
-// //   lat: p.coords.latitude,
-// //   lng: p.coords.longitude
-// // }));
-//     // 1️⃣ Draw route
-//     const polyline = this.drawPolyline(points);
-//     if (polyline) {
-//       polyline.addTo(this.map);
-//       this.polyline = polyline;
-//       this.map.fitBounds(polyline.getBounds(), { padding: [40, 40] });
-//     }
+<span style="
+position:absolute;
+top:-6px;
+right:-6px;
+background:red;
+color:white;
+font-size:11px;
+padding:2px 6px;
+border-radius:50%;
+border:2px solid white;
+">${count}</span>
+
+</div>
+`,
+      iconSize: [36, 36],
+      iconAnchor: [15, 30]
+    });
+
+  }
+  groupPinnedLocations(pinned: any[]) {
+
+    const grouped: any = {};
+
+    pinned.forEach((p: any) => {
+
+      const lat = p.lat ?? p.coords?.latitude;
+      const lng = p.lng ?? p.coords?.longitude;
+
+      if (!lat || !lng) return;
+
+      const key = lat.toFixed(5) + "_" + lng.toFixed(5);
+
+      if (!grouped[key]) {
+        grouped[key] = {
+          latitude: lat,
+          longitude: lng,
+          address: p.address,
+          count: 0,
+          visits: []
+        };
+      }
+
+      grouped[key].count++;
+      grouped[key].visits.push(p);
+
+    });
+
+    return Object.values(grouped);
+
+  }
+  // loadAndPlotData(user: any) {
+  //   const payload: any = {};
+  //   if (user?.id) payload.employeeId = user.id;
+  //   if (this.obj.startDate) payload.start_date = this.obj.startDate;
+  //   if (this.obj.endDate) payload.end_date = this.obj.endDate;
+
+  //   this.locationService.getLatestLocations(payload).subscribe(async res => {
+  //     if (!res?.status || !res.data?.length) {
+  //       this.clearMap();
+  //       return;
+  //     }
+
+  //     const points = res.data.sort((a:any, b:any) => a.timestamp - b.timestamp);
+
+  //     this.clearMap();
+  // // const cleanedData = this.removeSameLocationPoints(points, 5);
+
+  // // const polylinePath = cleanedData.map(p => ({
+  // //   lat: p.coords.latitude,
+  // //   lng: p.coords.longitude
+  // // }));
+  //     // 1️⃣ Draw route
+  //     const polyline = this.drawPolyline(points);
+  //     if (polyline) {
+  //       polyline.addTo(this.map);
+  //       this.polyline = polyline;
+  //       this.map.fitBounds(polyline.getBounds(), { padding: [40, 40] });
+  //     }
 
 
-// // ✅ new (clean route)
-// // await this.drawSnappedRoute(points);
+  // // ✅ new (clean route)
+  // // await this.drawSnappedRoute(points);
 
 
-//     // 2️⃣ Start / End markers
-//     this.drawStartEndMarkers(points);
+  //     // 2️⃣ Start / End markers
+  //     this.drawStartEndMarkers(points);
 
-//     // 3️⃣ Detect stays
-//     const stays = this.detectStays(points);
+  //     // 3️⃣ Detect stays
+  //     const stays = this.detectStays(points);
 
-//     // 4️⃣ Draw stay markers
-//     await this.drawStayMarkers(stays);
-//   //  await this.startPlayback(points);
+  //     // 4️⃣ Draw stay markers
+  //     await this.drawStayMarkers(stays);
+  //   //  await this.startPlayback(points);
 
-//   });
-// }
+  //   });
+  // }
 
-getBearing(lat1: number, lng1: number, lat2: number, lng2: number): number {
-  const toRad = (v: number) => (v * Math.PI) / 180;
+  getBearing(lat1: number, lng1: number, lat2: number, lng2: number): number {
+    const toRad = (v: number) => (v * Math.PI) / 180;
 
-  const y = Math.sin(toRad(lng2 - lng1)) * Math.cos(toRad(lat2));
-  const x =
-    Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
-    Math.sin(toRad(lat1)) *
+    const y = Math.sin(toRad(lng2 - lng1)) * Math.cos(toRad(lat2));
+    const x =
+      Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
+      Math.sin(toRad(lat1)) *
       Math.cos(toRad(lat2)) *
       Math.cos(toRad(lng2 - lng1));
 
-  return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
-}
-
-cleanGpsPointsAdvanced(
-  rawPoints: any[],
-  options = {
-    minDistance: 50,        // meters
-    minSpeed: 5,            // km/h
-    minTime: 20,            // seconds
-    maxBearingChange: 45    // degrees (zigzag killer)
+    return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
   }
-) {
-  const cleaned: any[] = [];
 
-  for (const p of rawPoints) {
-    const lat = p.latitude ?? p.coords?.latitude;
-    const lng = p.longitude ?? p.coords?.longitude;
-    const timestamp = p.timestamp;
+  cleanGpsPointsAdvanced(
+    rawPoints: any[],
+    options = {
+      minDistance: 50,        // meters
+      minSpeed: 5,            // km/h
+      minTime: 20,            // seconds
+      maxBearingChange: 45    // degrees (zigzag killer)
+    }
+  ) {
+    const cleaned: any[] = [];
 
-    if (!lat || !lng || !timestamp) continue;
+    for (const p of rawPoints) {
+      const lat = p.latitude ?? p.coords?.latitude;
+      const lng = p.longitude ?? p.coords?.longitude;
+      const timestamp = p.timestamp;
 
-    if (cleaned.length < 2) {
+      if (!lat || !lng || !timestamp) continue;
+
+      if (cleaned.length < 2) {
+        cleaned.push({ lat, lng, timestamp });
+        continue;
+      }
+
+      const last = cleaned[cleaned.length - 1];
+      const prev = cleaned[cleaned.length - 2];
+
+      const distance = this.getDistanceInMeters(last.lat, last.lng, lat, lng);
+      const timeDiff = (timestamp - last.timestamp) / 1000;
+      const speed = this.getSpeedKmph(distance, timeDiff);
+
+      const bearing1 = this.getBearing(prev.lat, prev.lng, last.lat, last.lng);
+      const bearing2 = this.getBearing(last.lat, last.lng, lat, lng);
+      const bearingDiff = Math.abs(bearing1 - bearing2);
+
+      // ❌ Remove jitter / zigzag
+      if (
+        distance < options.minDistance ||
+        speed < options.minSpeed ||
+        timeDiff < options.minTime ||
+        bearingDiff > options.maxBearingChange
+      ) {
+        // keep latest point only
+        cleaned[cleaned.length - 1] = { lat, lng, timestamp };
+        continue;
+      }
+
       cleaned.push({ lat, lng, timestamp });
-      continue;
     }
 
-    const last = cleaned[cleaned.length - 1];
-    const prev = cleaned[cleaned.length - 2];
-
-    const distance = this.getDistanceInMeters(last.lat, last.lng, lat, lng);
-    const timeDiff = (timestamp - last.timestamp) / 1000;
-    const speed = this.getSpeedKmph(distance, timeDiff);
-
-    const bearing1 = this.getBearing(prev.lat, prev.lng, last.lat, last.lng);
-    const bearing2 = this.getBearing(last.lat, last.lng, lat, lng);
-    const bearingDiff = Math.abs(bearing1 - bearing2);
-
-    // ❌ Remove jitter / zigzag
-    if (
-      distance < options.minDistance ||
-      speed < options.minSpeed ||
-      timeDiff < options.minTime ||
-      bearingDiff > options.maxBearingChange
-    ) {
-      // keep latest point only
-      cleaned[cleaned.length - 1] = { lat, lng, timestamp };
-      continue;
-    }
-
-    cleaned.push({ lat, lng, timestamp });
+    return cleaned;
+  }
+  getSpeedKmph(
+    distanceMeters: number,
+    timeSeconds: number
+  ): number {
+    if (timeSeconds <= 0) return 0;
+    return (distanceMeters / timeSeconds) * 3.6;
   }
 
-  return cleaned;
-}
-getSpeedKmph(
-  distanceMeters: number,
-  timeSeconds: number
-): number {
-  if (timeSeconds <= 0) return 0;
-  return (distanceMeters / timeSeconds) * 3.6;
-}
 
 
+  drawPolyline(points: any[]): L.Polyline | null {
+    if (!points || points.length < 2) return null;
 
-drawPolyline(points: any[]): L.Polyline | null {
-  if (!points || points.length < 2) return null;
+    const cleaned = this.cleanGpsPointsAdvanced(points);
 
-  const cleaned = this.cleanGpsPointsAdvanced(points);
+    if (cleaned.length < 2) return null;
 
-  if (cleaned.length < 2) return null;
+    const latLngs: L.LatLngExpression[] = cleaned.map(p => [
+      p.lat,
+      p.lng
+    ]);
 
-  const latLngs: L.LatLngExpression[] = cleaned.map(p => [
-    p.lat,
-    p.lng
-  ]);
+    return L.polyline(latLngs, {
+      color: '#1c68b4',
+      weight: 6,
+      opacity: 0.9,
+      smoothFactor: 2,   // smooths tiny curves
+      lineCap: 'round',
+      lineJoin: 'round'
+    });
+  }
 
-  return L.polyline(latLngs, {
-    color: '#1c68b4',
-    weight: 6,
-    opacity: 0.9,
-    smoothFactor: 2,   // smooths tiny curves
-    lineCap: 'round',
-    lineJoin: 'round'
-  });
-}
+  async drawSnappedRoute(points: any[]) {
+    // prepare coords for API
+    const coords = points.map(p => ({
+      latitude: p.coords.latitude,
+      longitude: p.coords.longitude
+    }));
 
-async drawSnappedRoute(points: any[]) {
-  // prepare coords for API
-  const coords = points.map(p => ({
-    latitude: p.coords.latitude,
-    longitude: p.coords.longitude
-  }));
+    // 🔥 call backend → Google Roads API
+    this.locationService.snapToRoads(coords).subscribe(snapped => {
+      if (!snapped || snapped.length < 2) return;
 
-  // 🔥 call backend → Google Roads API
-  this.locationService.snapToRoads(coords).subscribe(snapped => {
-    if (!snapped || snapped.length < 2) return;
-
-    // draw snapped polyline
-    const polyline = this.drawPolyline(snapped);
-    if (polyline) {
-      polyline.addTo(this.map);
-      this.polyline = polyline;
-      this.map.fitBounds(polyline.getBounds(), { padding: [40, 40] });
-    }
-  });
-}
+      // draw snapped polyline
+      const polyline = this.drawPolyline(snapped);
+      if (polyline) {
+        polyline.addTo(this.map);
+        this.polyline = polyline;
+        this.map.fitBounds(polyline.getBounds(), { padding: [40, 40] });
+      }
+    });
+  }
 
 
   toggleLiveTracking() {
@@ -1299,8 +1478,11 @@ async drawSnappedRoute(points: any[]) {
   }
 
   DateWiseTracking() {
+    this.showHolds = false
     this.currentTrackingUser['start_date'] = this.obj['startDate']
     this.currentTrackingUser['end_date'] = this.obj['endDate']
+    this.currentTrackingUser['start_time'] = this.obj['startTime']
+    this.currentTrackingUser['end_time'] = this.obj['endTime']
     this.loadAndPlotData(this.currentTrackingUser);
   }
 
@@ -1329,7 +1511,7 @@ async drawSnappedRoute(points: any[]) {
         this.minDate = fromDate.toISOString().split('T')[0];
       }
     }
-   this.obj['endDate']=null
+    this.obj['endDate'] = null
   }
   minDate: any
   getToDateMin(): string {
@@ -1393,5 +1575,11 @@ async drawSnappedRoute(points: any[]) {
       this.map.removeLayer(this.trafficLayer);
       this.trafficLayer = null;
     }
+  }
+  pinnedMarker() {
+
+
+    this.addPinnedMarkers(this.map, this.pinned);
+
   }
 }

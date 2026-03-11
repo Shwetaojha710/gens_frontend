@@ -342,20 +342,22 @@ export class FullTimeSalaryComponent {
         this.isLoading = false;
         let message = response.message ? response.message : 'Data found Successfully';
         let status = this.statusService.handleResponseStatus(response.status, message);
-        console.log(status)
-        console.log("response", response);
+        // console.log(status)
+        // console.log("response", response);     // console.log(status)
+        // console.log("response", response);
 
         if (status == true) {
 
           this.notyf.success(message)
-          response.data = response.data.map((item: any, index: any) => {
+         response.data.salaryList = response.data.salaryList.map((item: any, index: any) => {
             return {
               ...item,
               si_no: index + 1,
             }
           })
-          this.SalaryArr = response.data
-          this.originalList = response.data
+          this.SalaryArr = response.data.salaryList
+
+          this.originalList = response.data.salaryList
           // console.log(this.SalaryArr, "salary Array");
           // pagination
           const start = (this.currentPage - 1) * this.pageSize;
@@ -379,65 +381,65 @@ export class FullTimeSalaryComponent {
       }
     });
   }
-  newVar:any=false
+  newVar: any = false
   changeTab(tab: string) {
 
-  this.activeTab = tab;
-  this.newVar=false
+    this.activeTab = tab;
+    this.newVar = false
 
-  switch(tab){
-    case 'salary':
-       this.filterData();
-      // this.newVar=true
-      break;
+    switch (tab) {
+      case 'salary':
+        this.filterData();
+        // this.newVar=true
+        break;
 
-    case 'absentDays':
+      case 'absentDays':
         // this.filterData()
-      this.newVar=true
-      this.filterData();
-      // this.absentDaysArr = this.newObjAssign?.absentdaysArr || [];
-      break;
+        this.newVar = true
+        this.filterData();
+        // this.absentDaysArr = this.newObjAssign?.absentdaysArr || [];
+        break;
 
-    case 'attendance':
-      this.loadAttendance();
-      break;
+      case 'attendance':
+        this.loadAttendance();
+        break;
 
-    case 'leave':
-      this.loadLeaveRequests();
-      break;
+      case 'leave':
+        this.loadLeaveRequests();
+        break;
+
+    }
 
   }
+  //   changeTab(tab: string) {
 
-}
-//   changeTab(tab: string) {
+  //     this.activeTab = tab;
 
-//     this.activeTab = tab;
+  //     if (tab == 'salary') {
+  //       this.onSubmit()
+  //       // Call salary component API
+  //       if (this.newObjAssign) {
+  //         this.view(this.newObjAssign);
+  //       }
 
-//     if (tab == 'salary') {
-//       this.onSubmit()
-//       // Call salary component API
-//       if (this.newObjAssign) {
-//         this.view(this.newObjAssign);
-//       }
+  //     } else if (tab == 'absentDays') {
+  // //  if (this.newObjAssign) {
+  // //         this.view(this.newObjAssign);
+  // //       }
+  //       // Just show data already loaded
+  //       this.absentDaysArr = this.newObjAssign?.absentdaysArr || [];
 
-//     } else if (tab == 'absentDays') {
-// //  if (this.newObjAssign) {
-// //         this.view(this.newObjAssign);
-// //       }
-//       // Just show data already loaded
-//       this.absentDaysArr = this.newObjAssign?.absentdaysArr || [];
+  //     } else if (tab == 'attendance') {
 
-//     } else if (tab == 'attendance') {
+  //       this.loadAttendance();
 
-//       this.loadAttendance();
+  //     } else if (tab == 'leave') {
 
-//     } else if (tab == 'leave') {
+  //       this.loadLeaveRequests();
 
-//       this.loadLeaveRequests();
+  //     }
 
-//     }
-
-//   }
+  //   }
   async export() {
     const exportData: any[] = [];
 
@@ -534,8 +536,9 @@ export class FullTimeSalaryComponent {
     this.SalaryArr = []
     this.originalList = []
     this.absentDaysArr = []
+    this.filteredSalary = []
     this.newObj = Object.assign({}, this.obj)
-    if (this.newObj['employeeId'] === 'All') {
+    if (this.newObj['employeeId'] == 'All') {
       this.newObj['employeeId'] = this.EmpList
         .map((item: any) => item.value)
         .filter((val: any) => val != 'All');
@@ -590,10 +593,15 @@ export class FullTimeSalaryComponent {
   EmployerDedArr: any = []
   newObjAssign: any = {}
   view(item: any) {
-     this.activeTab = 'salary'
-      if(this.newVar==true){
-        this.activeTab='absentDays'
-      }
+    if(!this.modal){
+   const modalEl = document.getElementById('SalaryModal');
+   this.modal = new bootstrap.Modal(modalEl);
+}
+this.modal.show();
+    this.activeTab = 'salary'
+    if (this.newVar == true) {
+      this.activeTab = 'absentDays'
+    }
 
 
 
@@ -603,14 +611,15 @@ export class FullTimeSalaryComponent {
     // this.absentDaysArr = obj.absentdaysArr
     // this.personalDetails = {}
 
-   this.newObjAssign = { ...item };
+    this.newObjAssign = { ...item };
 
-   this.absentDaysArr = this.newObjAssign.absentdaysArr || [];
+    this.absentDaysArr = this.newObjAssign.absentdaysArr || [];
 
-   this.personalDetails = { ...item };
+    this.personalDetails = { ...item };
     // this.personalDetails = obj
     this.SalaryBreakup = []
     this.EmployerDedArr = []
+    const modalEl = document.getElementById('SalaryModal');
     this.payroll.calculateSalaryComponent(obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
@@ -661,9 +670,9 @@ export class FullTimeSalaryComponent {
           const netPay = totalEarning - totalDeduction;
 
           // Show the modal
-          const modalEl = document.getElementById('SalaryModal');
-          this.modal = new bootstrap.Modal(modalEl);
-          this.modal.show();
+          // const modalEl = document.getElementById('SalaryModal');
+          // this.modal = new bootstrap.Modal(modalEl);
+          // this.modal.show();
         }
         else if (status == "expired") {
           this.router.navigate(["login"]);
@@ -710,38 +719,31 @@ export class FullTimeSalaryComponent {
       "year": this.obj['year'],
       "shift_name": this.personalDetails?.shift_name
     }
-    this.payroll.empMonthlyLeaveAttDetails(newObj).subscribe((res: any) => {
-      this.payroll.empMonthlyLeaveAttDetails(newObj).subscribe({
-        next: (response: any) => {
-          console.log('response', response);
+    this.payroll.empMonthlyLeaveAttDetails(newObj).subscribe({
+      next: (response: any) => {
 
-          let message = response.message ? response.message : 'Data found Successfully';
-          let status = this.statusService.handleResponseStatus(response.status, message);
-          console.log(status)
-          console.log("response", response);
+        console.log('response', response);
 
-          if (status == true) {
-            this.attendanceList = res.data?.attendanceList || [];
-            // this.filterData()
-          }
-          else if (status == "expired") {
-            this.router.navigate(["login"]);
-          }
+        let message = response.message ? response.message : 'Data found Successfully';
+        let status = this.statusService.handleResponseStatus(response.status, message);
 
-          else {
-            this.notyf.error(message)
-          }
+        if (status === true) {
 
-        },
-        error: (err) => {
-          console.error('Error:', err);
-          this.notyf.error(err.error?.message)
+          this.attendanceList = response.data?.attendanceList || [];
+
         }
-      });
+        else if (status == "expired") {
+          this.router.navigate(["login"]);
+        }
+        else {
+          this.notyf.error(message);
+        }
 
-
-
-
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.notyf.error(err.error?.message);
+      }
     });
 
   }
@@ -793,8 +795,8 @@ export class FullTimeSalaryComponent {
     // });
 
   }
-newObj1:any = {}
-    filterData() {
+  newObj1: any = {}
+  filterData() {
     if (this.obj['year'] == undefined || this.obj['year'] == null || this.obj['year'] == '') {
       this.notyf.error("year is Required");
       return
@@ -810,7 +812,7 @@ newObj1:any = {}
     //     .map((item: any) => item.value)
     //     .filter((val: any) => val != 'All');
     // } else {
-      this.newObj1['employeeId'] =[this.personalDetails['employeeId']]
+    this.newObj1['employeeId'] = [this.personalDetails['employeeId']]
     // }
 
     this.payroll.calculateAttendance(this.newObj1).subscribe({
@@ -826,7 +828,7 @@ newObj1:any = {}
 
           this.notyf.success(message)
 
-            this.view(response.data[0])
+          this.view(response.data[0])
 
         }
         else if (status == "expired") {

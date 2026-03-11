@@ -65,7 +65,8 @@ export class NavbarComponent {
         { title: 'Leaves', icon: 'ri-leaf-line', link: '/layout/attendance/leaves' },
         { title: 'Upload Attendance', icon: 'ri-upload-cloud-line', link: '/layout/attendance/upload-attendance' },
         { title: 'Regularize', icon: 'ri-upload-cloud-line', link: '/layout/attendance/regularize' },
-        { title: 'Weekend Employee List', icon: 'ri-upload-cloud-line', link: '/layout/attendance/weekend-emp-list' }
+        { title: 'Weekend Employee List', icon: 'ri-upload-cloud-line', link: '/layout/attendance/weekend-emp-list' },
+        { title: 'Add Comp Off', icon: 'ri-upload-cloud-line', link: '/layout/attendance/add-comp-off' }
 
       ]
     },
@@ -87,7 +88,8 @@ export class NavbarComponent {
       children: [
         { title: 'Employee Report', icon: 'ri-file-user-line', link: '/layout/reports/employee' },
         { title: 'Payroll Report', icon: 'ri-file-paper-line', link: '/layout/reports/payroll' },
-        { title: 'Attendance Report', icon: 'ri-file-list-3-line', link: '/layout/reports/attendance' }
+        { title: 'Attendance Report', icon: 'ri-file-list-3-line', link: '/layout/reports/attendance' },
+        { title: 'Tracking Report', icon: 'ri-file-list-3-line', link: '/layout/reports/tracking-report' },
       ]
     },
     {

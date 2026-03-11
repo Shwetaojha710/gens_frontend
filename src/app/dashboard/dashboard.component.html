@@ -49,6 +49,95 @@
       </div>
     </div> -->
 
+
+
+      <div class="col-lg-4 col-xxl-4 order-xxl-1">
+      <div class="card h-100">
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <div class="card-title mb-0">
+            <h5 class="m-0 me-2 mb-1">Employees</h5>
+          </div>
+          <div class="btn-group">
+            <button type="button" class="btn btn-xs btn-primary waves-effect waves-light"
+              routerLink="/layout/employee/joining">
+              View All
+            </button>
+          </div>
+        </div>
+        <div class="card-body" style="overflow-y: scroll;height: 225px;">
+          <ul class="p-0 m-0">
+            <li class="d-flex align-items-center mb-6" *ngFor="let item of employeeList">
+              <div class="avatar flex-shrink-0 me-4">
+                <!-- <img [src]="item['profileImage']" alt="Document" width="100" height="auto" style="cursor: pointer" /> -->
+                <!-- <img [src]="item['profileImage'] ? item['profileImage'] : '../../assets/img/avatars/4.png'" alt="avatar"
+                  class="rounded-3" /> -->
+                <img [src]="item?.profileImage" (error)="onImageError($event,item, 'profileImage')" alt="avatar"
+                  class="rounded-3" />
+
+                <!-- 322 -->
+                <!-- <img src="../../assets/img/avatars/5.png" alt="avatar" class="img-fluid rounded-circle w-auto h-auto" /> -->
+              </div>
+              <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                <div class="me-2">
+                  <h6 class="mb-0">{{ item.name }}</h6>
+                  <small class="d-flex align-items-center">
+                    <span class="text-{{ item.badgeColor }} fw-medium">{{
+                      item.role
+                      }}</span>
+                  </small>
+                </div>
+                <div class="badge bg-label-{{ item.badgeColor }} rounded-pill">
+                  {{ item?.joiningDate || 'NA'}}
+                </div>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- On route vehicles Table -->
+    <div class="col-md-6 col-xxl-8  order-xxl-1">
+      <div class="card">
+
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <span style="font-weight: bold">Leave Request</span>
+          <button type="button" class="btn btn-xs btn-primary waves-effect waves-light"
+            routerLink="/layout/employee/apply-leave">
+            View All
+          </button>
+        </div>
+        <div class="card-datatable table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Employee Name</th>
+                <th>Leave Type</th>
+                <th>Leave From</th>
+                <th>Leave To</th>
+                <th>Days</th>
+                <th>Status</th>
+                <!-- <th>Details</th> -->
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of leaveList; let i = index">
+                <td>{{ item?.empCode }}</td>
+                <td>{{ item?.name }}</td>
+                <td>{{ item?.type }}</td>
+                <td>{{ item?.fromDate | date : "dd-MM-YYYY" }}</td>
+                <td>{{ item?.toDate | date : "dd-MM-YYYY" }}</td>
+                <td>{{ item?.days }}</td>
+                <td>{{ item?.status }}</td>
+                <!-- <td><a href="#">Details</a></td> -->
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
     <div class="col-md-6 col-xxl-4  order-xxl-1">
       <div class="card h-100">
         <div class="card-header d-flex justify-content-between">
@@ -233,7 +322,62 @@
         </div>
       </div>
     </div>
+  <div class="col-lg-4 col-xxl-4 order-xxl-1">
+      <div class="card h-100" >
+        <div class="card-header d-flex align-items-center justify-content-between">
+          <div class="card-title mb-0">
+            <h5 class="m-0 me-2 mb-1">Tracking List</h5>
+          </div>
+          <div class="btn-group">
+            <button type="button" class="btn btn-xs btn-primary waves-effect waves-light"
+              routerLink="/layout/tracking">
+              View All
+            </button>
+          </div>
+        </div>
+      <div class="card-body" style="overflow-y: scroll;height:225px;">
+  <ul class="p-0 m-0">
 
+    <li class="d-flex align-items-center mb-4" *ngFor="let item of trackingList">
+
+      <!-- Avatar -->
+      <div class="avatar avatar-md flex-shrink-0 me-3">
+        <img
+          src="assets/img/avatars/1.png"
+          class="rounded-circle"
+          width="40"
+        />
+      </div>
+
+      <!-- Employee Info -->
+      <div class="d-flex w-100 justify-content-between align-items-center">
+
+        <div>
+          <h6 class="mb-1">{{ item.employeeName }}</h6>
+
+          <small
+            [ngClass]="{
+              'text-success': item.status === 'live',
+              'text-danger': item.status === 'offline'
+            }"
+          >
+            {{ item.status === 'live' ? 'Live Tracking' : 'Offline' }}
+          </small>
+        </div>
+
+        <!-- Last update -->
+        <div class="badge bg-label-primary rounded-pill">
+          {{ item.lastUpdate ? (item.lastUpdate | date:'shortTime') : '-' }}
+        </div>
+
+      </div>
+
+    </li>
+
+  </ul>
+</div>
+      </div>
+    </div>
 
     <div class="col-lg-4 col-xxl-4  order-xxl-1">
       <div class="card h-100">
@@ -258,54 +402,9 @@
       </div>
     </div>
 
-    <div class="col-lg-4 col-xxl-4 order-xxl-1">
-      <div class="card h-100">
-        <div class="card-header d-flex align-items-center justify-content-between">
-          <div class="card-title mb-0">
-            <h5 class="m-0 me-2 mb-1">Employees</h5>
-          </div>
-          <div class="btn-group">
-            <button type="button" class="btn btn-xs btn-primary waves-effect waves-light"
-              routerLink="/layout/employee/joining">
-              View All
-            </button>
-          </div>
-        </div>
-        <div class="card-body">
-          <ul class="p-0 m-0">
-            <li class="d-flex align-items-center mb-6" *ngFor="let item of employeeList">
-              <div class="avatar flex-shrink-0 me-4">
-                <!-- <img [src]="item['profileImage']" alt="Document" width="100" height="auto" style="cursor: pointer" /> -->
-                <!-- <img [src]="item['profileImage'] ? item['profileImage'] : '../../assets/img/avatars/4.png'" alt="avatar"
-                  class="rounded-3" /> -->
-                <img [src]="item?.profileImage" (error)="onImageError($event,item, 'profileImage')" alt="avatar"
-                  class="rounded-3" />
 
-                <!-- 322 -->
-                <!-- <img src="../../assets/img/avatars/5.png" alt="avatar" class="img-fluid rounded-circle w-auto h-auto" /> -->
-              </div>
-              <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                <div class="me-2">
-                  <h6 class="mb-0">{{ item.name }}</h6>
-                  <small class="d-flex align-items-center">
-                    <span class="text-{{ item.badgeColor }} fw-medium">{{
-                      item.role
-                      }}</span>
-                  </small>
-                </div>
-                <div class="badge bg-label-{{ item.badgeColor }} rounded-pill">
-                  {{ item?.joiningDate || 'NA'}}
-                </div>
-              </div>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </div>
-
-
-    <div class="col-lg-4 col-xxl-4 order-xxl-1">
-      <div class="card h-100" style="">
+  <div class="col-lg-4 col-xxl-4 order-xxl-1">
+      <div class="card h-100" >
         <div class="card-header d-flex align-items-center justify-content-between">
           <div class="card-title mb-0">
             <h5 class="m-0 me-2 mb-1">Holiday List</h5>
@@ -352,48 +451,7 @@
       </div>
     </div>
 
-    <!-- On route vehicles Table -->
-    <div class="col-md-6 col-xxl-8  order-xxl-1">
-      <div class="card">
 
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <span style="font-weight: bold">Leave Request</span>
-          <button type="button" class="btn btn-xs btn-primary waves-effect waves-light"
-            routerLink="/layout/employee/apply-leave">
-            View All
-          </button>
-        </div>
-        <div class="card-datatable table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Employee Name</th>
-                <th>Leave Type</th>
-                <th>Leave From</th>
-                <th>Leave To</th>
-                <th>Days</th>
-                <th>Status</th>
-                <!-- <th>Details</th> -->
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of leaveList; let i = index">
-                <td>{{ item?.empCode }}</td>
-                <td>{{ item?.name }}</td>
-                <td>{{ item?.type }}</td>
-                <td>{{ item?.fromDate | date : "dd-MM-YYYY" }}</td>
-                <td>{{ item?.toDate | date : "dd-MM-YYYY" }}</td>
-                <td>{{ item?.days }}</td>
-                <td>{{ item?.status }}</td>
-                <!-- <td><a href="#">Details</a></td> -->
-              </tr>
-
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
 
 
 

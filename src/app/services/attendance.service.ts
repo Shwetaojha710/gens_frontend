@@ -58,4 +58,13 @@ export class AttendanceService {
     AddCompOff(obj: any): Observable<any> {
     return this.http.post(`${this.baseUrl}generate-comp-off-leave`, obj);
   }
+    AddManuallyCompOff(obj: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}create-manually-comp-off`, obj);
+  }
+    listManuallyCompOff(obj: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}list-manually-comp-off`, obj);
+  }
+    approveManuallyCompOff(obj: any): Observable<any> {
+    return this.http.post(`${this.baseUrl}approve-comp-off-leave`, obj);
+  }
 }
