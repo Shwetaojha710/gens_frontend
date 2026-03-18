@@ -173,7 +173,7 @@
                   <th>Employee</th>
                   <th>Latitude</th>
                   <th>Longitude</th>
-                  <th>Total Visits</th>
+                  <th>Total Visits/Duration</th>
                   <th>Address</th>
                   <th>Visit Dates</th>
                 </tr>
@@ -195,7 +195,10 @@
                   <td>
 
                     <span class="badge bg-success">
-                      {{item.total_visits}}
+                      {{item.total_visits}} / <br>
+                    </span>
+                    <span>
+                      {{item.total_duration}}
                     </span>
 
                   </td>

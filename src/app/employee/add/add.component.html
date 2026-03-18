@@ -113,6 +113,34 @@
                     <span class="align-middle">Bank Account</span>
                   </button>
                 </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link tab-link waves-effect waves-light" data-bs-toggle="tab"
+                    data-bs-target="#nda" aria-selected="false" role="tab" tabindex="-1">
+                    <i class="icon-base ri ri-refresh-line icon-sm me-2"></i>
+                    <span class="align-middle">NDA</span>
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link tab-link waves-effect waves-light" data-bs-toggle="tab"
+                    data-bs-target="#offer_letter" aria-selected="false" role="tab" tabindex="-1">
+                    <i class="icon-base ri ri-inbox-archive-line icon-sm me-2"></i>
+                    <span class="align-middle">Offer Letter</span>
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link tab-link waves-effect waves-light" data-bs-toggle="tab"
+                    data-bs-target="#service_agreement" aria-selected="false" role="tab" tabindex="-1">
+                    <i class="icon-base ri ri-inbox-archive-line icon-sm me-2"></i>
+                    <span class="align-middle">Service Agreement</span>
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link tab-link waves-effect waves-light" data-bs-toggle="tab"
+                    data-bs-target="#appointment_letter" aria-selected="false" role="tab" tabindex="-1">
+                    <i class="icon-base ri ri-inbox-archive-line icon-sm me-2"></i>
+                    <span class="align-middle">Appointment Letter</span>
+                  </button>
+                </li>
                 <!-- <li class="nav-item" role="presentation">
                         <button class="nav-link waves-effect waves-light active" data-bs-toggle="tab" data-bs-target="#product" aria-selected="true" role="tab">
                           <i class="icon-base ri ri-settings-4-line icon-sm me-2"></i>
@@ -380,6 +408,43 @@
                 <!-- <router-outlet></router-outlet> -->
                 <app-bank-details></app-bank-details>
               </div>
+                 <!-- DOCUMENT ENGINE -->
+        <app-document-renderer
+        class="tab-pane fade" id="nda" role="tabpanel"
+          [type]="'nda'"
+          [data]="personalDetails">
+        </app-document-renderer>
+
+        <app-document-renderer
+         class="tab-pane fade" id="offer_letter" role="tabpanel"
+          [type]="'offer'"
+          [data]="personalDetails">
+        </app-document-renderer>
+
+        <app-document-renderer
+          class="tab-pane fade" id="appointment_letter" role="tabpanel"
+          [type]="'service'"
+          [data]="personalDetails">
+        </app-document-renderer>
+
+        <app-document-renderer
+         class="tab-pane fade" id="service_agreement" role="tabpanel"
+          [type]="'appointment'"
+          [data]="personalDetails">
+        </app-document-renderer>
+              <!-- <div class="tab-pane fade" id="nda" role="tabpanel">
+
+                <app-nda></app-nda>
+              </div>
+              <div class="tab-pane fade" id="offer_letter" role="tabpanel">
+                <app-offer-letter></app-offer-letter>
+              </div>
+              <div class="tab-pane fade" id="service_agreement" role="tabpanel">
+                <app-service-agreement></app-service-agreement>
+              </div>
+              <div class="tab-pane fade" id="appointment_letter" role="tabpanel">
+                <app-appointment-letter></app-appointment-letter>
+              </div> -->
             </div>
           </div>
         </div>
@@ -418,94 +483,6 @@
         <router-outlet></router-outlet>
       </div>
 
-      <!-- <div class="tab-pane fade" id="navs-top-messages" role="tabpanel">
-        Set Salary
-
-        <hr />
-        <div class="row mt-1">
-          <div class="col-lg-2 col-md-4 col-12 mb-md-0 mb-4">
-            <div
-              class="d-flex justify-content-between flex-column nav-align-left mb-2 mb-md-0"
-            >
-              <ul class="nav nav-pills flex-column flex-nowrap" role="tablist">
-                <li class="nav-item active" role="presentation">
-                  <button
-                    class="nav-link tab-link waves-effect waves-light active"
-                    data-bs-toggle="tab"
-                    data-bs-target="#payment1"
-                    aria-selected="true"
-                    role="tab"
-                    type="link"
-                  >
-                    <i class="fas fa-briefcase"></i> &nbsp;
-                    <span class="align-middle">Basic</span>
-                  </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                  <button
-                    class="nav-link tab-link waves-effect waves-light"
-                    data-bs-toggle="tab"
-                    data-bs-target="#delivery1"
-                    aria-selected="false"
-                    role="tab"
-                    tabindex="-1"
-                  >
-                    <i class="fas fa-coins"></i> &nbsp;
-                    <span class="align-middle"> Allowance</span>
-                  </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                  <button
-                    class="nav-link tab-link waves-effect waves-light"
-                    data-bs-toggle="tab"
-                    data-bs-target="#delivery3"
-                    aria-selected="false"
-                    role="tab"
-                    tabindex="-1"
-                  >
-                    <i class="fas fa-minus-circle"></i> &nbsp;
-                    <span class="align-middle">Statutory Deductions</span>
-                  </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                  <button
-                    class="nav-link tab-link waves-effect waves-light"
-                    data-bs-toggle="tab"
-                    data-bs-target="#delivery2"
-                    aria-selected="false"
-                    role="tab"
-                    tabindex="-1"
-                  >
-                    <i class="fas fa-money-bill-wave"></i> &nbsp;
-                    <span class="align-middle">Total Salary Component</span>
-                  </button>
-                </li>
-              </ul>
-            </div>
-          </div>
-
-          <div class="col-lg-10 col-md-8 col-12">
-            <div class="tab-content p-0">
-              <div
-                class="tab-pane fade show active"
-                id="payment1"
-                role="tabpanel"
-              >
-                <app-basic></app-basic>
-              </div>
-              <div class="tab-pane fade" id="delivery1" role="tabpanel">
-                <app-allowances></app-allowances>
-              </div>
-              <div class="tab-pane fade" id="delivery3" role="tabpanel">
-                <app-deductions></app-deductions>
-              </div>
-              <div class="tab-pane fade" id="delivery2" role="tabpanel">
-                <app-total-salary-component></app-total-salary-component>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div> -->
     </div>
   </div>
 </div>

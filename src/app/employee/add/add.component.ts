@@ -21,11 +21,17 @@ import { EmployeeService } from '../../services/employee.service';
 import { DataService } from '../../services/data.service';
 import { StatusService } from '../../services/status.service';
 import { AssignLeaveComponent } from '../profile/professional-info/assign-leave/assign-leave.component';
+import { NdaComponent } from '../profile/nda/nda.component';
+import { OfferLetterComponent } from '../profile/offer-letter/offer-letter.component';
+import { ServiceAgreementComponent } from '../profile/service-agreement/service-agreement.component';
+import { AppointmentLetterComponent } from '../profile/appointment-letter/appointment-letter.component';
+import { DocumentRendererComponent } from '../profile/document-renderer/document-renderer.component';
 
 @Component({
   selector: 'app-add',
   standalone: true,
-  imports: [CommonModule, FormsModule, AssignLeaveComponent, NgSelectModule, RouterModule, QualificationComponent, ExperienceComponent, BankDetailsComponent, BasicComponent, AllowancesComponent, TotalSalaryComponentComponent, DeductionsComponent, AssignLeaveComponent],
+  imports: [CommonModule, FormsModule, AssignLeaveComponent, NgSelectModule, RouterModule, NdaComponent,QualificationComponent, ExperienceComponent,
+     BankDetailsComponent, BasicComponent, AllowancesComponent,DocumentRendererComponent, TotalSalaryComponentComponent, DeductionsComponent, AssignLeaveComponent,OfferLetterComponent,ServiceAgreementComponent,AppointmentLetterComponent],
   templateUrl: './add.component.html',
   styleUrls: ['./add.component.css']
 })
@@ -271,35 +277,6 @@ export class AddComponent {
       }
     });
 
-    // this.employeeService.pythonregister(uploadData).subscribe({
-    //   next: (response: any) => {
-    //     console.log('response', response);
-
-    //     let message = response.message ? response.message : 'Data found Successfully';
-    //     let status = this.statusService.handleResponseStatus(response.status, message);
-    //     console.log(status)
-    //     console.log("response", response);
-
-    //     if (status === true) {
-
-    //       this.notyf.success(message)
-    //       this.fetchDocument();
-    //       // this.resetForm();
-    //     }
-    //     else if (status === "expired") {
-    //         this.router.navigate(["login"]);
-    //     }
-
-    //     else {
-    //       this.notyf.error(message)
-    //     }
-
-    //   },
-    //   error: (err) => {
-    //     console.error('Error:', err);
-    //     this.notyf.error(err)
-    //   }
-    // });
 
   }
   isFileInvalid: boolean = false;

@@ -71,6 +71,10 @@ import { PrivacyPolicyComponent } from './privacy-policy/privacy-policy.componen
 import { WeekendEmpListComponent } from './attendance/weekend-emp-list/weekend-emp-list.component';
 import { AddComoffComponent } from './attendance/add-comoff/add-comoff.component';
 import { TrackingReportComponent } from './reports/tracking-report/tracking-report.component';
+import { NdaComponent } from './employee/profile/nda/nda.component';
+import { ServiceAgreementComponent } from './employee/profile/service-agreement/service-agreement.component';
+import { AppointmentLetterComponent } from './employee/profile/appointment-letter/appointment-letter.component';
+import { OfferLetterComponent } from './employee/profile/offer-letter/offer-letter.component';
 
 
 export const routes: Routes = [
@@ -84,7 +88,7 @@ export const routes: Routes = [
   { path: 'branchwise', component: BranchwiseComponent },
 
   { path: 'company-reg', component: CompanyRegComponent },
-  { path: 'branchwise',component: BranchwiseComponent},
+  { path: 'branchwise', component: BranchwiseComponent },
 
   { path: 'emp-profile', component: EmpProfileComponent },
 
@@ -113,7 +117,11 @@ export const routes: Routes = [
               { path: 'profile/professional-info/documents', component: DocumentsComponent },
               { path: 'profile/professional-info/bank-details', component: BankDetailsComponent },
               { path: 'profile/professional-info/assign-leave', component: AssignLeaveComponent },
-              { path: 'profile/professional-info/salary-setup', component: SalarySetupComponent }
+              { path: 'profile/professional-info/salary-setup', component: SalarySetupComponent },
+              { path: 'profile/professional-info/nda', component: NdaComponent },
+              { path: 'profile/professional-info/service-agreement', component: ServiceAgreementComponent },
+              { path: 'profile/professional-info/appointment-letter', component: AppointmentLetterComponent },
+              { path: 'profile/professional-info/offer-letter', component: OfferLetterComponent },
             ]
 
           },
