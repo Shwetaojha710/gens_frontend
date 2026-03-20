@@ -249,34 +249,18 @@ convertImageToBase64(img: HTMLImageElement): Promise<void> {
     const image = new Image();
     image.crossOrigin = 'anonymous';
     image.src = img.src;
-image.onload = () => {
-  const maxWidth = 100; // control size
-  const scale = maxWidth / image.naturalWidth;
 
-  canvas.width = maxWidth;
-  canvas.height = image.naturalHeight * scale;
+    image.onload = () => {
+      canvas.width = image.width;
+      canvas.height = image.height;
+      context?.drawImage(image, 0, 0);
 
-  context?.drawImage(image, 0, 0, canvas.width, canvas.height);
+      const dataURL = canvas.toDataURL('image/png');
 
-  const dataURL = canvas.toDataURL('image/png');
+      img.src = dataURL; // replace src with base64
 
-  img.src = dataURL;
-
-  resolve();
-};
-//     image.onload = () => {
-//       // canvas.width = image.width;
-//       // canvas.height = image.height;
-//  canvas.width = "10px";
-//       canvas.height ="10px";
-//       context?.drawImage(image, 0, 0);
-
-//       const dataURL = canvas.toDataURL('image/png');
-
-//       img.src = dataURL; // replace src with base64
-
-//       resolve();
-//     };
+      resolve();
+    };
 
     image.onerror = () => resolve();
   });
