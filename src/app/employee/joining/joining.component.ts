@@ -285,12 +285,14 @@ stats:any
       this.notyf.error('Please enter a valid 10 digit mobile number');
       return;
     }
-
-    const aadhaarRaw = this.personalDetails.adhaarNo.replace(/\D/g, '');
-    if (aadhaarRaw.length !== 12) {
-      this.notyf.error('Please enter a valid 12 digit Aadhaar number');
-      return;
+    let aadhaarRaw
+    if(this.personalDetails.adhaarNo){
+       aadhaarRaw = this.personalDetails.adhaarNo.replace(/\D/g, '');
     }
+    // if (aadhaarRaw.length !== 12) {
+    //   this.notyf.error('Please enter a valid 12 digit Aadhaar number');
+    //   return;
+    // }
     const dob = new Date(this.personalDetails.dateOfBirth);
     const formattedDob = `${dob.getDate().toString().padStart(2, '0')}/${(dob.getMonth() + 1).toString().padStart(2, '0')}/${dob.getFullYear()}`;;
     let obj: any = {}
@@ -543,10 +545,10 @@ stats:any
     const obj = Object.assign({}, this.personalDetails);
     obj.dateOfBirth = formattedDob;
     const aadhaarRaw = obj.adhaarNo.replace(/\D/g, '');
-    if (aadhaarRaw.length !== 12) {
-      this.notyf.error('Please enter a valid 12 digit Aadhaar number');
-      return;
-    }
+    // if (aadhaarRaw.length !== 12) {
+    //   this.notyf.error('Please enter a valid 12 digit Aadhaar number');
+    //   return;
+    // }
     obj.adhaarNo=aadhaarRaw
     this.employeeService.updateEmp(obj).subscribe(
       (response) => {

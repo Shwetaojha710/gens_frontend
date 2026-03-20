@@ -26,6 +26,7 @@
                 #enCashableRef="ngModel">
               </ng-select>
             </div>
+
             <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
               <label for="defaultFormControlInput" class="form-label">Select reportType
                 <span style="color: red"> * </span>
@@ -35,7 +36,6 @@
                 #enCashableRef="ngModel">
               </ng-select>
             </div>
-
             <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3" *ngIf="obj['report_type']=='monthly'">
               <label for="defaultFormControlInput" class="form-label">Select Month
                 <span style="color: red">*</span>
@@ -54,6 +54,17 @@
                 #enCashableRef="ngModel">
               </ng-select>
             </div>
+
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3">
+              <label for="defaultFormControlInput" class="form-label">Select Visit Place
+
+              </label>
+              <ng-select [items]="PlaceDD" bindLabel="visit_place" bindValue="visit_place"
+                [(ngModel)]="obj['visit_place']" [multiple]="false" placeholder="Select Visit Place" name="state"
+                id="select2Danger" required #enCashableRef="ngModel">
+              </ng-select>
+            </div>
+
             <!-- <div class="col-md-2" *ngIf="obj['report_type']=='quarterly'">
 
 <select [(ngModel)]="obj['quarter']">
@@ -173,7 +184,8 @@
                   <th>Employee</th>
                   <th>Latitude</th>
                   <th>Longitude</th>
-                  <th>Total Visits</th>
+                  <th>Total Visits/Duration</th>
+                  <th>Visit Place</th>
                   <th>Address</th>
                   <th>Visit Dates</th>
                 </tr>
@@ -195,13 +207,16 @@
                   <td>
 
                     <span class="badge bg-success">
-                      {{item.total_visits}}
+                      {{item.total_visits}} / <br>
+                    </span>
+                    <span>
+                      {{item.total_duration}}
                     </span>
 
                   </td>
-
+                  <td>{{item.visit_place}}</td>
                   <td>
-                          <div *ngIf="item.address">
+                    <div *ngIf="item.address">
                       {{item.address}}
                     </div>
                     <!-- <button *ngIf="!item.address" class="btn btn-sm btn-primary" (click)="viewAddress(item)">

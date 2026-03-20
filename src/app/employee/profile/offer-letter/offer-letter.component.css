@@ -1,0 +1,98 @@
+.page {
+  width: 794px;
+  min-height: 1123px;
+  margin: auto;
+  padding: 40px;
+  font-family: "Times New Roman", serif;
+  font-size: 14px;
+  color: #000;
+  background: #fff;
+  position: relative;
+}
+
+/* HEADER */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  height: 50px;
+}
+
+.ref-date {
+  text-align: right;
+  font-size: 14px;
+}
+
+/* ADDRESS */
+.address {
+  margin-top: 30px;
+  line-height: 1.5;
+}
+
+/* CONTENT */
+.salutation {
+  margin-top: 20px;
+}
+
+.content {
+  margin-top: 10px;
+  text-align: justify;
+  line-height: 1.6;
+}
+
+ol {
+  margin-left: 20px;
+}
+
+/* SIGNATURE */
+.signature-section {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 50px;
+}
+
+.sign {
+  height: 40px;
+}
+
+.accepted {
+  text-align: right;
+}
+
+/* FOOTER */
+.footer {
+  position: absolute;
+  bottom: 20px;
+  left: 40px;
+  right: 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+}
+
+.footer img {
+  height: 40px;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #offer-doc, #offer-doc * {
+    visibility: visible;
+  }
+
+  #offer-doc {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}
