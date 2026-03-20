@@ -89,7 +89,40 @@ export class TrackingReportComponent {
     this.obj['report_type'] = 'monthly'
     this.obj['year'] = new Date().getFullYear().toString()
     this.obj['month'] = new Date().getMonth() + 1 < 10 ? '0' + (new Date().getMonth() + 1) : (new Date().getMonth() + 1).toString()
+
+    this.VisitPlaceDD()
     this.loadReport()
+
+  }
+
+  PlaceDD: any = []
+
+  VisitPlaceDD() {
+    this.PlaceDD = []
+
+
+    this.locationService.VisitPlaceDD().subscribe((response: any) => {
+      if (response && response.data && response.status == true) {
+
+        this.notyf.success(response.message || 'Employees loaded successfully');
+
+        this.PlaceDD = response.data
+      } else if (response.status == false) {
+        this.notyf.error(response.message)
+      }
+      else if (response.status == 'expired') {
+        this.reportData = [];
+        this.router.navigate(['login'])
+      }
+    },
+      (error: any) => {
+        this.AttendanceMasterList = [];
+        console.error('Error loading employees:', error);
+        this.notyf.error(error?.error?.message)
+        // alert('Failed to load employees. Please try again.');
+      }
+    );
+
   }
   yearList: any = [];
   EmpList: any = []
@@ -196,15 +229,6 @@ export class TrackingReportComponent {
 
     }
     this.reportData = []
-    //  this.locationService.getVisitReport(payload)
-    //  .subscribe((res:any)=>{
-
-    //    if(res.status){
-    //      this.reportData = res.data
-    //    }
-
-    //  })
-
 
     this.locationService.getVisitReport(payload).subscribe((response: any) => {
       if (response && response.data && response.status === true) {

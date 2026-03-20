@@ -25,13 +25,13 @@ import { NdaComponent } from '../profile/nda/nda.component';
 import { OfferLetterComponent } from '../profile/offer-letter/offer-letter.component';
 import { ServiceAgreementComponent } from '../profile/service-agreement/service-agreement.component';
 import { AppointmentLetterComponent } from '../profile/appointment-letter/appointment-letter.component';
-import { DocumentRendererComponent } from '../profile/document-renderer/document-renderer.component';
+// import { DocumentRendererComponent } from '../profile/document-renderer/document-renderer.component';
 
 @Component({
   selector: 'app-add',
   standalone: true,
   imports: [CommonModule, FormsModule, AssignLeaveComponent, NgSelectModule, RouterModule, NdaComponent,QualificationComponent, ExperienceComponent,
-     BankDetailsComponent, BasicComponent, AllowancesComponent,DocumentRendererComponent, TotalSalaryComponentComponent, DeductionsComponent, AssignLeaveComponent,OfferLetterComponent,ServiceAgreementComponent,AppointmentLetterComponent],
+     BankDetailsComponent, BasicComponent, AllowancesComponent, TotalSalaryComponentComponent, DeductionsComponent, AssignLeaveComponent,OfferLetterComponent,ServiceAgreementComponent,AppointmentLetterComponent],
   templateUrl: './add.component.html',
   styleUrls: ['./add.component.css']
 })
@@ -55,7 +55,7 @@ export class AddComponent {
     { value: 'Married', label: 'Married' },
     { value: 'Divorced', label: 'Divorced' },
     { value: 'Widowed', label: 'Widowed' },
-    { value: 'Separated', label: 'Separated ' }
+    { value: 'Separated', label: 'Separated'}
   ];
   genderList = [
     { value: 'Male', label: 'Male' },
