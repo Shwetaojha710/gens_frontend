@@ -259,6 +259,15 @@ export class HolidayComponent {
   //   };
   // }
 
+      getholidayStatusClass(status: any): string {
+    switch (status) {
+      case 'Gazetted': return 'badge-outline-success';
+      case 'Restricted': return 'badge-outline-danger';
+
+      default: return 'bg-light-secondary';
+    }
+  }
+
   onSubmit() {
     if (!ValidationUtil.showRequiredError('Holiday Type', this.obj.holiday_type, this.notyf)) {
       return;
