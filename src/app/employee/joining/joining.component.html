@@ -1,4 +1,4 @@
-<div class="container-xxl mt-5">
+<div class="container-fluid mt-5">
   <div class="row mb-6" *ngIf="createFlag">
     <div class="col-xxl">
       <div class="card">
@@ -394,80 +394,84 @@
 
   <div class="row g-3 mb-6" *ngIf="!createFlag">
     <div class="col-lg-3 col-sm-6"  (click)="checkTotalEmp()">
-      <div class="card">
+      
+
+      <div class="card card-border-shadow-primary h-100">
         <div class="card-body">
-          <div class="d-flex align-items-center flex-wrap">
+          <div class="d-flex align-items-center mb-2">
             <div class="avatar me-4">
-              <div class="avatar-initial bg-label-primary rounded-3">
-                <i class="icon-base ri ri-user-star-line icon-24px"> </i>
-              </div>
+              <span class="avatar-initial rounded-3 bg-label-primary"><i class="icon-base ri ri-user-star-line icon-24px"></i></span>
             </div>
-            <div class="card-info">
-              <div class="d-flex align-items-center">
-                <h5 class="mb-0 me-2">{{cardData?.['totalEmployee']}}</h5>
-              </div>
-              <p class="mb-0">Total Employee</p>
-            </div>
+            <h4 class="mb-0">{{cardData?.['totalEmployee']}}</h4>
           </div>
+          <h6 class="mb-0 fw-normal">Total Employee</h6>
+          <p class="mb-0">
+            <span class="me-1 fw-medium">+2 </span>
+            <small class="text-body-secondary">New Employee added last months</small>
+          </p>
         </div>
       </div>
     </div>
     <div class="col-lg-3 col-sm-6" (click)="checkActiveStatus()">
-      <div class="card">
+      
+
+      <div class="card card-border-shadow-success h-100">
         <div class="card-body">
-          <div class="d-flex align-items-center flex-wrap">
+          <div class="d-flex align-items-center mb-2">
             <div class="avatar me-4">
-              <div class="avatar-initial bg-label-warning rounded-3">
-                <i class="icon-base ri ri-pie-chart-2-line icon-24px"></i>
-              </div>
+              <span class="avatar-initial rounded-3 bg-label-success"><i class="icon-base ri ri-pie-chart-2-line icon-24px"></i></span>
             </div>
-            <div class="card-info">
-              <div class="d-flex align-items-center">
-                <h5 class="mb-0 me-2">{{cardData?.['ActiveEmployee']}}</h5>
-              </div>
-              <p class="mb-0">Active</p>
-            </div>
+            <h4 class="mb-0">{{cardData?.['ActiveEmployee']}}</h4>
           </div>
+          <h6 class="mb-0 fw-normal">Total Active Employee</h6>
+          <p class="mb-0">
+            <span class="me-1 fw-medium">+2 </span>
+            <small class="text-body-secondary">New Employee added last months</small>
+          </p>
         </div>
       </div>
     </div>
     <div class="col-lg-3 col-sm-6" (click)="checkStatus()">
-      <div class="card">
+
+      
+
+      <div class="card card-border-shadow-danger h-100">
         <div class="card-body">
-          <div class="d-flex align-items-center flex-wrap">
+          <div class="d-flex align-items-center mb-2">
             <div class="avatar me-4">
-              <div class="avatar-initial bg-label-info rounded-3">
-                <i class="icon-base ri ri-bank-card-line icon-24px"></i>
-              </div>
+              <span class="avatar-initial rounded-3 bg-label-danger"><i class="icon-base ri ri-pie-chart-2-line icon-24px"></i></span>
             </div>
-            <div class="card-info">
-              <div class="d-flex align-items-center">
-                <h5 class="mb-0 me-2">{{cardData?.['InactiveEmployee']}}</h5>
-              </div>
-              <p class="mb-0">InActive</p>
-            </div>
+            <h4 class="mb-0">{{cardData?.['InactiveEmployee']}}</h4>
           </div>
+          <h6 class="mb-0 fw-normal">Total InActive Employee</h6>
+          <p class="mb-0">
+            <span class="me-1 fw-medium">+2 </span>
+            <small class="text-body-secondary">New Employee added last months</small>
+          </p>
         </div>
       </div>
+
+     
     </div>
     <div class="col-lg-3 col-sm-6" (click)="checknewJoiner()">
-      <div class="card">
+
+ <div class="card card-border-shadow-info h-100">
         <div class="card-body">
-          <div class="d-flex align-items-center flex-wrap">
+          <div class="d-flex align-items-center mb-2">
             <div class="avatar me-4">
-              <div class="avatar-initial bg-label-danger rounded-3">
-                <i class="icon-base ri ri-bank-card-line icon-24px"></i>
-              </div>
+              <span class="avatar-initial rounded-3 bg-label-info"><i class="icon-base ri ri-pie-chart-2-line icon-24px"></i></span>
             </div>
-            <div class="card-info">
-              <div class="d-flex align-items-center">
-                <h5 class="mb-0 me-2">{{cardData?.['newJoiners']}}</h5>
-              </div>
-              <p class="mb-0">New Joiners</p>
-            </div>
+            <h4 class="mb-0">{{cardData?.['newJoiners']}}</h4>
           </div>
+          <h6 class="mb-0 fw-normal">Total New Joiners Employee</h6>
+          <p class="mb-0">
+            <span class="me-1 fw-medium">+2 </span>
+            <small class="text-body-secondary">New Employee added last months</small>
+          </p>
         </div>
       </div>
+      
+      
     </div>
   </div>
 
@@ -490,9 +494,9 @@
                 <tr>
                   <th style="width: 10px!important;">SI.NO </th>
 
-                  <th>Name/Email/Gender</th>
-                  <!-- <th>Email</th> -->
-                  <th>Phone</th>
+                  <th>Name / Designation</th>
+                  <th>Gender</th>
+                  <th>Phone / Email</th>
                   <th>Aadhaar No.</th>
                   <th>DOB</th>
                   <!-- <th>Gender</th> -->
@@ -520,22 +524,22 @@
                           {{ item["firstName"] }} {{ item["lastName"] }}
                         </h6>
                         <small class="text-truncate">{{item?.['designation']}}</small>
-                          <small class="text-truncate">  {{ item["email"] }}</small>
+                          
                           <br>
                         <small class="text-truncate">{{item?.empCode}}</small>
-                        <br>
-                        <small class="text-truncate">{{item?.gender}}</small>
-
+                        
+                        
 
 
                       </div>
                     </div>
                   </td>
-                  <!-- <td>
-                    {{ item["email"] }}
-                  </td> -->
                   <td>
-                    {{ item["mobile"] }}
+                   <small class="text-truncate">{{item?.gender}}</small>
+
+                  </td>
+                  <td>
+                    {{ item["mobile"] }}<br><small class="text-truncate">  {{ item["email"] }}</small>
                   </td>
                   <td>
                     {{ item["adhaarNo"] }}
@@ -582,13 +586,13 @@
                   </td>
                   <td>
 
-                     <button type="button" class="badge badge-center bg-label-secondary" title="All Time Attendance"
+                     <button type="button" class="badge badge-center bg-label-primary" title="All Time Attendance"
                       (click)="enableDisableLoc(item,'attendanceAllTime')">
                       <!-- Attendance All Time -->
                       <i class="fa-solid fa-calendar-check"></i>
                     </button>&nbsp;
 
-                    <button type="button" class="badge badge-center bg-label-secondary" title="Attendance"
+                    <button type="button" class="badge badge-center bg-label-warning" title="Attendance"
                       (click)="enableDisableLoc(item,'attendance')">
                       <!-- Offline Attendance -->
 
@@ -598,12 +602,12 @@
                       <!-- <i class="fas fa-location"></i> -->
 
                     </button>&nbsp;
-                    <button type="button" class="badge badge-center bg-label-secondary"  title="Location"
+                    <button type="button" class="badge badge-center bg-label-primary"  title="Location"
                       (click)="enableDisableLoc(item,'location')">
                       <i class="fas fa-location"></i></button>&nbsp;
                     <button type="button" class="badge badge-center bg-label-secondary"  title="View Details" (click)="view(item)">
                       <i class="far fa-eye"></i></button>&nbsp;
-                    <button type="button" class="badge badge-center bg-label-primary"  title="Update" (click)="update(item)">
+                    <button type="button" class="badge badge-center bg-label-info"  title="Update" (click)="update(item)">
                       <i class="fas fa-edit"></i>
                     </button>
                     &nbsp;
