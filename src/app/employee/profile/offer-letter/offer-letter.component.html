@@ -1,10 +1,13 @@
-<div class="row mb-2">
+
+
+<!-- <div class="row mb-2">
   <div class="col-12 text-right">
     <button type="button" class="btn btn-primary float-end" (click)="printDoc()">
-      <i class="fa fa-download mx-2"></i> Download
+      <i class="fa fa-download mx-2"></i> print
     </button>
   </div>
-</div>
+</div> -->
+
 <div class="row mb-2">
   <div class="col-12 text-right">
     <button type="button" class="btn btn-primary float-end" (click)="downloadDoc()">
@@ -14,27 +17,52 @@
 </div>
 
 
-<div id="offer-doc" class="page">
-
+<div id="offer-doc" >
+  <div style="text-align:left; margin-bottom:20px;" >
+    <img src="/assets/img/logo/logo-quaere.png" width="250">
+  </div>
   <!-- HEADER -->
-  <div class="header">
+  <!-- <div class="header">
     <div class="logo-section">
          <img src="/assets/img/logo/logo-quaere.png" width="250" >
 
     </div>
 
-    <div class="ref-date">
-      <div><b>Ref:</b> Quaere/Emp/Offer/11234</div>
-      <div><b>Date:</b> 12jan,2026</div>
+    <div class="ref-date" style="text-align: right;float: right;">
+      <div style="text-align: right;float: right;"><b>Ref:</b> Quaere/Emp/Offer/11234</div>
+      <div style="text-align: right;float: right;"><b>Date:</b> 12jan,2026</div>
     </div>
-  </div>
+  </div> -->
+  <table style="width:100%; font-size:14px; border: none;">
+    <tr>
+      <td><b>Ref: Quaere/Emp/Offer/<span style="text-align: right; font-weight: bold; margin-bottom: 5px;" *ngIf="isDownload==false">
+            <input type="text" [(ngModel)]="personalDetails.refNo" class="form-control w-80 h-30" />
+          </span>
+          <span style="text-align: right; font-weight: bold;" *ngIf="isDownload">{{personalDetails.refNo }}</span>
+
+          <!-- {{refNo}} -->
+
+
+        </b></td>
+      <td style="text-align:right;"><b>
+
+          <span style="text-align: right; font-weight: bold; margin-bottom: 5px;" *ngIf="isDownload==false">
+            <input type="date" [(ngModel)]="personalDetails.offerDate" class="form-control w-80 h-30" />
+          </span>
+          <span style="text-align: right; font-weight: bold;" *ngIf="isDownload">{{personalDetails.offerDate | date:'ddMMMM, yyyy' }}</span>
+
+          <!-- {{offerDate | date:'dd MMMM, yyyy'}}--></b>
+      </td>
+    </tr>
+  </table>
 
   <!-- ADDRESS -->
   <div class="address">
-    <p><b>{{personalDetails?.firstName}} {{personalDetails?.lastName}}</b></p>
-    <p>S/O Mr. {{personalDetails?.fatherName}}</p>
-    <p>{{personalDetails.permanentAddress}}</p>
-    <p>{{personalDetails.currentAddress}}</p>
+    <p style="font-size:11px;"><b>{{personalDetails?.firstName}} {{personalDetails?.lastName}}</b></p>
+    <p style="font-size:11px;"> <span *ngIf="personalDetails.gender=='Male'"> S/O</span>
+            <span *ngIf="personalDetails.gender=='Female'"> D/O</span>  {{personalDetails?.fatherName}}</p>
+    <p style="font-size:11px;">{{personalDetails.permanentAddress}}</p>
+    <!-- <p>{{personalDetails.currentAddress}}</p> -->
     <!-- <p>{{city}} - {{pincode}}</p> -->
   </div>
 
@@ -43,65 +71,65 @@
 
   <!-- BODY -->
   <div class="content">
-    <p>
+    <p style="font-size:11px;">
       With reference to your application and subsequent interview with us,
       we are pleased to offer you employment in our Company as
       <b>{{personalDetails?.designation}}</b> in the <b>{{personalDetails?.department}}</b> at our Head Office – {{personalDetails?.location}},
       as per the mutually agreed terms and conditions discussed with you at the time of interview.
     </p>
 
-    <p>
+    <p style="font-size:11px;">
       You are requested to report for joining on or before
       <b>{{personalDetails?.joiningDate}}</b>.
     </p>
 
-    <p>You are advised to submit the following documents at the time of joining:</p>
+    <p style="font-size:11px;">You are advised to submit the following documents at the time of joining:</p>
 
     <ol>
-      <li>Three latest passport size photographs.</li>
-      <li>Self-attested copy of address proof & ID proof.</li>
-      <li>Mark sheet of 10th, 12th and Degree/Diploma.</li>
-      <li>Salary proof from previous company.</li>
-      <li>Relieving Letter from previous employers.</li>
-      <li>Two references (one current & one previous employer).</li>
+      <li style="font-size:11px;">Three Latest passport size color photographs</li>
+      <li style="font-size:11px;">Self-attested copy of address proof & ID proof.</li>
+      <li style="font-size:11px;">One set of all credentials (mark sheet of 10th& 12th and pass certificate with Degree/Diploma)</li>
+      <li style="font-size:11px;">Salary proof from previous Company.</li>
+      <li style="font-size:11px;">Relieving Letter/ No dues/ Clearance Certificate from all previous employers.</li>
+      <li style="font-size:11px;">Two references of immediate reporting person (one of current employer & one of previous employer, in case of one company need to give both references of same company).</li>
     </ol>
 
-    <p>
+    <p style="font-size:11px;">
       This offer would automatically stand revoked in the event of not reporting
       at the date specified above or if negative reference is received.
     </p>
 
-    <p>
+    <p style="font-size:11px;">
       At the time of joining, the formal appointment letter containing detailed
       terms & conditions will be issued to you.
     </p>
 
-    <p>
+    <p style="font-size:11px;">
       We take this opportunity to welcome you to our company and look forward
       to a long and mutually beneficial association with you.
     </p>
 
-    <p>
+    <p style="font-size:11px;">
       Please confirm your acceptance of this offer by signing and returning a copy.
     </p>
   </div>
 
   <!-- SIGNATURE -->
-  <div class="signature-section">
+  <!-- <div class="signature-section">
     <div>
-      <p>Thanks & Regards</p>
-      <img src="assets/sign.png" class="sign" />
-      <p><b>Human Resource Dept</b></p>
+      <p style="font-size:11px;">Thanks & Regards</p>
+       ________________________________________________________________________
+      <p style="font-size:11px;"><b>Human Resource Dept</b></p>
     </div>
 
     <div class="accepted">
-      <p>Agreed & Accepted</p>
-      <p><b>{{personalDetails?.firstName}} {{personalDetails?.lastName}}</b></p>
+      <p style="font-size:11px;">Agreed & Accepted</p>
+      <p style="font-size:11px;"><b>{{personalDetails?.firstName}} {{personalDetails?.lastName}}</b></p>
     </div>
-  </div>
+  </div> -->
 
   <!-- FOOTER -->
-  <div class="footer">
+  <!-- <div class="footer" style="display: flex;">
     <div class="footer-left">
       <p>
         Quaere Technologies Private Limited<br />
@@ -115,6 +143,51 @@
       <img src="/assets/img/logo/Picture1.jpg" alt="SOC2" style="height:40px;">
       <img src="/assets/img/logo/Picture2.png" alt="UPDESCO" style="height:40px;">
     </div>
-  </div>
+  </div> -->
+  <table width="100%" style="margin-top:40px; font-size:11px;">
+  <tr>
 
+    <!-- LEFT SIDE -->
+    <td style="width:50%; vertical-align:top;">
+      <p>Thanks & Regards</p>
+
+      <p style="margin:20px 0;">
+        _________________________________
+      </p>
+
+      <p><b>Human Resource Dept</b></p>
+    </td>
+
+    <!-- RIGHT SIDE -->
+    <td style="width:50%; text-align:right; vertical-align:top;">
+      <p>Agreed & Accepted</p>
+
+      <p style="margin-top:40px;">
+        <b>{{personalDetails?.firstName}} {{personalDetails?.lastName}}</b>
+      </p>
+    </td>
+
+  </tr>
+</table>
+<div class="footer">
+  <table width="100%" style=" font-size:12px;">
+    <tr>
+
+      <!-- LEFT TEXT -->
+      <td style="width:50%; vertical-align:top;">
+        Quaere Technologies Private Limited<br />
+        7th Floor, Cyber Tower, Vibhuti Khand,<br />
+        Gomti Nagar, Lucknow - 226010<br />
+         Email: info&#64;quaeretech.com <br>
+      </td>
+
+      <!-- RIGHT LOGOS -->
+      <td style="width:50%; text-align:right; vertical-align:middle;">
+        <img src="/assets/img/logo/Picture1.jpg" style="height:40px; margin-right:5px;" />
+        <img src="/assets/img/logo/Picture2.png" style="height:40px;" />
+      </td>
+
+    </tr>
+  </table>
+</div>
 </div>

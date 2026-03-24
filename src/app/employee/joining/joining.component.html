@@ -9,7 +9,7 @@
           </button>
         </h5>
 
-       
+
         <div class="card-body">
           <div class="row">
             <div class="col-md-3">
@@ -159,6 +159,16 @@
                 [(ngModel)]="personalDetails.motherName" name="motherName"  #motherNameRef="ngModel" />
               <small class="text-danger" *ngIf="updateFlag==false && motherNameRef.invalid && motherNameRef.touched">
                 Enter valid Mother Name
+              </small>
+            </div>
+              <div class="col-md-3">
+              <label class="col-form-label fw-bold">Guarantor Name
+                <!-- <span *ngIf="!updateFlag" style="color: red"> *</span> -->
+              </label>
+              <input type="text" class="form-control" placeholder="Enter Guarantor Name"
+                [(ngModel)]="personalDetails.guarantorName" name="guarantorName"  #guarantorNameRef="ngModel" />
+              <small class="text-danger" *ngIf="updateFlag==false && guarantorNameRef.invalid && guarantorNameRef.touched">
+                Enter valid Guarantor Name
               </small>
             </div>
             <div class="col-md-3">

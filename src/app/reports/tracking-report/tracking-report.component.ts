@@ -226,6 +226,7 @@ export class TrackingReportComponent {
       year: this.obj['year'],
       month: this.obj['month'],
       quarter: this.obj['quarter'],
+      visit_place: this.obj['visit_place'],
 
     }
     this.reportData = []
