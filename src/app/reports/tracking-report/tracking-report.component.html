@@ -174,78 +174,65 @@
               <tfoot></tfoot>
             </table> -->
 
-            <table class="datatables-basic table table-bordered table-responsive dataTable dtr-column "
-              id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
+      <table class="table table-bordered table-responsive">
 
-              <thead>
+  <thead>
+    <tr>
+      <th>#</th>
+        <th>Employee</th>
+      <th>Total Visits / Duration</th>
+      <th>Visit Date</th>
 
-                <tr>
-                  <th>#</th>
-                  <th>Employee</th>
-                  <th>Latitude</th>
-                  <th>Longitude</th>
-                  <th>Total Visits/Duration</th>
-                  <th>Visit Place</th>
-                  <th>Address</th>
-                  <th>Visit Dates</th>
-                </tr>
+      <th>Visit Place</th>
+      <th>Address</th>
+      <th>Purpose</th>
+      <th>Remark</th>
+    </tr>
+  </thead>
 
-              </thead>
+  <tbody>
 
-              <tbody>
+    <ng-container *ngFor="let item of reportData; let i = index">
 
-                <tr *ngFor="let item of reportData; let i=index">
+      <tr *ngFor="let v of item.visits; let j = index">
 
-                  <td>{{i+1}}</td>
+        <!-- Serial Number -->
+        <td *ngIf="j === 0" [attr.rowspan]="item.visits.length">
+          {{ i + 1 }}
+        </td>
+  <!-- Employee -->
+        <td *ngIf="j === 0" [attr.rowspan]="item.visits.length">
+          {{ item.emp_name }}
+        </td>
 
-                  <td>{{item.emp_name}}</td>
+        <!-- Total Visits / Duration -->
+        <td *ngIf="j === 0" [attr.rowspan]="item.visits.length">
+          <span class="badge bg-success">
+            {{ item.total_visits }}
+          </span>
+          <br>
+          {{ item.total_duration }}
+        </td>
+        <!-- Visit Date -->
+        <td>
+          {{ v.date | date:'dd MMM yyyy hh:mm a' }}
+        </td>
 
-                  <td>{{item.latitude}}</td>
 
-                  <td>{{item.longitude}}</td>
 
-                  <td>
+        <!-- Visit Details -->
+        <td>{{ v.visit_place }}</td>
+        <td>{{ v.address }}</td>
+        <td>{{ v.purpose }}</td>
+        <td>{{ v.remark }}</td>
 
-                    <span class="badge bg-success">
-                      {{item.total_visits}} / <br>
-                    </span>
-                    <span>
-                      {{item.total_duration}}
-                    </span>
+      </tr>
 
-                  </td>
-                  <td>{{item.visit_place}}</td>
-                  <td>
-                    <div *ngIf="item.address">
-                      {{item.address}}
-                    </div>
-                    <!-- <button *ngIf="!item.address" class="btn btn-sm btn-primary" (click)="viewAddress(item)">
+    </ng-container>
 
-                      View Address
+  </tbody>
 
-                    </button>
-
-                    <div *ngIf="item.address">
-                      {{item.address}}
-                    </div> -->
-
-                  </td>
-
-                  <td>
-
-                    <div *ngFor="let v of item.visits">
-
-                      {{v.date | date:'dd MMM yyyy hh:mm a'}}
-
-                    </div>
-
-                  </td>
-
-                </tr>
-
-              </tbody>
-
-            </table>
+</table>
           </div>
         </div>
         <!-- Pagination & Info -->

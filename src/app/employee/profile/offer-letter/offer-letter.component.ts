@@ -174,10 +174,23 @@ export class OfferLetterComponent {
 }
 
 downloadDoc() {
+  this.isDownload=true
   const element = document.getElementById('offer-doc');
 
   if (!element) return;
 
+    // const element = document.getElementById('offer-doc');
+    // if (!element) return;
+
+    const cloned = element.cloneNode(true) as HTMLElement;
+
+    // Replace inputs
+    const inputs = cloned.querySelectorAll('input');
+    inputs.forEach((input: any) => {
+      const span = document.createElement('span');
+      span.innerText = input.value || '';
+      input.parentNode.replaceChild(span, input);
+    });
   const images = element.getElementsByTagName('img');
   const promises: Promise<void>[] = [];
 
@@ -199,21 +212,11 @@ downloadDoc() {
           <title>Offer Letter</title>
           <style>
             body {
-              font-family: "Times New Roman", serif;
-              padding: 20px;
-              font-size: 14px;
-            }
+              font-family: "Calibri (Body)", serif;
+              margin: 2px!important;
+              font-size: 11px;
 
-            .header {
-              display: flex;
-              justify-content: space-between;
             }
-
-            .footer {
-              margin-top: 40px;
-              font-size: 12px;
-            }
-
             img {
               max-width: 150px;
             }
@@ -239,6 +242,7 @@ downloadDoc() {
     link.click();
     document.body.removeChild(link);
   });
+  // this.isDownload=false
 }
 
 convertImageToBase64(img: HTMLImageElement): Promise<void> {
