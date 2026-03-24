@@ -347,7 +347,7 @@
 }
 
 .view-map-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
   border: none;
   border-radius: 6px;
   padding: 0.5rem 1rem;
@@ -379,7 +379,7 @@
 }
 
 .view-map-btn:hover {
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  /* background: linear-gradient(135deg, #764ba2 0%, #667eea 100%); */
   transform: translateY(-3px) scale(1.05);
   box-shadow: 0 6px 16px rgba(102, 126, 234, 0.5);
 }
@@ -733,4 +733,15 @@ transform:scale(1.02);
   padding: 2px 6px;
   border-radius: 50%;
   border: 2px solid white;
+}
+
+
+.timeline .timeline-item .timeline-event {
+    position: relative;
+    border-radius: var(--bs-border-radius);
+    background-color: var(--bs-paper-bg);
+    inline-size: 100%;
+    min-block-size: 2rem;
+    padding-block: 0.5rem 0.3375rem;
+    padding-inline: 0;
 }
