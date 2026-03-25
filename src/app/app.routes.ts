@@ -75,12 +75,23 @@ import { NdaComponent } from './employee/profile/nda/nda.component';
 import { ServiceAgreementComponent } from './employee/profile/service-agreement/service-agreement.component';
 import { AppointmentLetterComponent } from './employee/profile/appointment-letter/appointment-letter.component';
 import { OfferLetterComponent } from './employee/profile/offer-letter/offer-letter.component';
+import { LandingHomeComponent } from './landing-home/landing-home.component';
+import { RecruitmentComponent } from './recruitment/recruitment.component';
+import { JobsComponent } from './recruitment/jobs/jobs.component';
+import { CandidateComponent } from './recruitment/candidate/candidate.component';
+import { PipelineBoardComponent } from './recruitment/pipeline/pipeline-board/pipeline-board.component';
+import { ScheduleInterviewComponent } from './recruitment/interviews/schedule-interview/schedule-interview.component';
+import { FeedbackFormComponent } from './recruitment/interviews/feedback-form/feedback-form.component';
+import { BgvTrackerComponent } from './recruitment/offers/bgv-tracker/bgv-tracker.component';
+import { OfferFormComponent } from './recruitment/offers/offer-form/offer-form.component';
+import { RecuiterDashboardComponent } from './recruitment/recuiter-dashboard/recuiter-dashboard.component';
 
 
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
   { path: 'Home', component: LandingPageComponent },
+  { path: 'landing-home', component: LandingHomeComponent },
   { path: 'login', component: LoginComponent },
 
   { path: 'privacy-policy', component: PrivacyPolicyComponent },
@@ -194,8 +205,39 @@ export const routes: Routes = [
       {
         path: 'tracking/live',
         component: LiveTrackingComponent
-      }
+      },
+
     ]
   },
+
+      // Add inside the 'layout' children array:
+// {
+//   path: 'recruitment',
+//   children: [
+//     { path: '', component: RecruitmentComponent },
+//     { path: 'jobs', component: JobsComponent },
+//     { path: 'candidates', component: CandidateComponent },
+//     { path: 'pipeline', component: PipelineBoardComponent },
+//     { path: 'pipeline/:applicationId/interview/schedule', component: ScheduleInterviewComponent },
+//     { path: 'pipeline/:applicationId/interview/feedback', component: FeedbackFormComponent },
+//     { path: 'offers/:applicationId', component: OfferFormComponent },
+//     { path: 'offers/:applicationId/bgv', component: BgvTrackerComponent },
+//   ]
+// },
+    {
+    path: 'recruitment',
+    component: RecruitmentComponent,
+    children: [
+    { path: 'recruitment-dashboard', component: RecuiterDashboardComponent },
+    { path: 'jobs', component: JobsComponent },
+    { path: 'candidates', component: CandidateComponent },
+    { path: 'pipeline', component: PipelineBoardComponent },
+    { path: 'pipeline/:applicationId/interview/schedule', component: ScheduleInterviewComponent },
+    { path: 'pipeline/:applicationId/interview/feedback', component: FeedbackFormComponent },
+    { path: 'offers/:applicationId', component: OfferFormComponent },
+    { path: 'offers/:applicationId/bgv', component: BgvTrackerComponent },
+    ]
+  },
+
   { path: '**', component: PageNotFoundComponent },
 ];

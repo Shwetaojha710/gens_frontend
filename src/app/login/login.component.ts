@@ -49,7 +49,7 @@ export class LoginComponent {
       next: (res) => {
 
         const data = JSON.parse(res)
-        if (data.status === true) {
+        if (data.status == true) {
           localStorage.setItem('token', data.data.token);
           localStorage.setItem("base_url", data.data.baseUrl);
           localStorage.setItem("PORT", data.data.PORT);
@@ -58,7 +58,8 @@ export class LoginComponent {
           localStorage.setItem('branch', JSON.stringify(data.data.branch));
           localStorage.setItem('currency', JSON.stringify(data.data.currencyList));
           this.notyf.success(data.message);
-          this.router.navigate(['branchwise']);
+          // this.router.navigate(['branchwise']);
+          this.router.navigate(['landing-home']);
         } else {
           this.notyf.error(data.message);
         }

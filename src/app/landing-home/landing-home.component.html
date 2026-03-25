@@ -1,0 +1,70 @@
+<div class="authentication-wrapper authentication-basic container-p-y p-4 p-sm-0"
+  style="background-image: url('/assets/img/logo/abstract-background_1409-897.jpg');background-size: cover;background-repeat: no-repeat;">
+  <div class="py-6">
+    <div class="container p-md-7 p-1">
+      <div class="app-brand justify-content-center mt-5">
+        <a href="/" class="app-brand-link gap-2">
+          <img src="/assets/img/logo/logo-quaere.png" width="250">
+        </a>
+
+      </div>
+      <div class="app-brand justify-content-center mb-10 mt-5">
+        <div class="text-center">
+          <h4 style="    font-size: 32px;
+    color: #005495;
+    font-weight: 900;">
+            {{tenantDetails?.companyName}}
+          </h4>
+          <p>
+            {{tenantDetails?.companyAddress}}
+          </p>
+        </div>
+      </div>
+      <!-- /Logo -->
+
+      <div class="row g-3 mb-12">
+        <div class="col-md-12">
+          <div class="row justify-content-center g-3">
+            <div class="col">
+              <div class="card card-100 text-center" style="padding: 40px 20px;">
+                <div class="card-body">
+                  <div class="mb-4">
+                    <img src="/assets/img/logo/icomoon-free_office.svg" width="60">
+                  </div>
+                  <h5 class="card-title">Recruitment</h5>
+                  <p class="card-text">
+                    Central administration and monitoring access.
+                  </p>
+
+                  <button class="btn btn-primary waves-effect waves-light" (click)="goToOnboarding()">
+                    Go to Recruitment
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card card-100 text-center" style="padding: 40px 20px;">
+                <div class="card-body">
+                  <div class="mb-4">
+                    <img src="/assets/img/logo/icomoon-free_office.svg" width="60">
+                  </div>
+                  <h5 class="card-title">Employee Management</h5>
+                  <p class="card-text">
+                    Central administration and monitoring access.'
+                  </p>
+
+                  <button class="btn btn-primary waves-effect waves-light" (click)="goToEmployeeManagement()">
+                    Go to Employee Management
+                  </button>
+                </div>
+              </div>
+            </div>
+
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
