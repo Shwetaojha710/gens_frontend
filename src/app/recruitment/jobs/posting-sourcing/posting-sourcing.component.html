@@ -1,0 +1,132 @@
+<!-- <div class="jobs-grid" >
+    <div *ngFor="let j of jobs" class="job-card">
+      <div class="job-card-header">
+        <div>
+          <div class="job-title">{{ j.title }}</div>
+          <div class="job-dept">{{ j.departmentData?.["name"] || 'No department' }}</div>
+        </div>
+        <span class="job-status" [class]="j.status">{{ j.status }}</span>
+      </div>
+      <div class="job-meta">
+        <span>📍 {{ j.location || 'Remote' }}</span>
+        <span>⏱ {{ j.employment_type?.replace('_',' ') }}</span>
+      </div>
+      <div class="job-salary" *ngIf="j.salary_min || j.salary_max">
+        💰 {{ j.salary_min | number }} – {{ j.salary_max | number }} {{ j.currency }}
+      </div>
+      <div class="job-footer">
+        <span class="apps-count">{{ j.active_applications || 0 }} active / {{ j.total_applications || 0 }} total</span>
+        <a [routerLink]="['/jobs', j.id]" class="view-link">View →</a>
+      </div>
+    </div>
+  <div class="empty-full" *ngIf="!jobs.length">No positions found</div>
+</div> -->
+<div class="container-fluid mt-3">
+  <div class="row">
+    <div class="col-md-3" *ngFor="let item of jobs">
+      <div class="card mb-6 border border-2 border-primary">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start text-capitalize">
+            <!-- <span class="badge bg-label-primary rounded-pill">{{item?.job_title}}</span> -->
+            <h5 class="text-primary mb-0">
+              {{item?.job_title}}
+            </h5>
+
+          </div>
+
+
+
+
+          <ul class="list-unstyled g-2 my-3">
+            <li class="mb-2 d-flex align-items-center"><i
+                class="icon-base ri ri-circle-fill icon-10px text-body me-2"></i><strong>📍 Job Location </strong>
+              :<span class="text-success"> {{item?.location}}</span></li>
+            <li class="mb-2 d-flex align-items-center"><i
+                class="icon-base ri ri-circle-fill icon-10px text-body me-2"></i><span><strong>No Of Opening </strong> :
+                {{item?.no_of_opening}}</span></li>
+
+            <li class="mb-2 d-flex align-items-center"><i
+                class="icon-base ri ri-circle-fill icon-10px text-body me-2"></i><span><strong>Notice Period </strong> :
+                {{item?.notice_period}}</span></li>
+
+          </ul>
+
+          <div class="d-flex justify-content-between align-items-center mb-1 fw-medium text-heading">
+            Skills Required : <br>
+
+          </div>
+
+
+          <p> {{item?.skills}}</p>
+
+          <div class="d-flex justify-content-between align-items-center mb-1 fw-medium text-heading">
+            Job Description : <br>
+
+          </div>
+
+
+          <p> {{item?.job_description}}</p>
+          <div>
+            <button type="button" class="btn btn-secondary btn-buy-now waves-effect waves-light w-100"
+              (click)="publish(item)">
+              Publish
+            </button>
+            <!-- <a href="#" target="_blank"
+            class="btn btn-secondary btn-buy-now waves-effect waves-light w-100" (click)="view(item)">Publish</a> -->
+            <!-- <a class="btn btn-secondary btn-buy-now waves-effect waves-light w-100" (click)="view(item)">Publish</a> -->
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+
+<!--
+<div class="modal fade" id="SalaryModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Link configuration</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <hr>
+
+
+               <div class="row g-3">
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-4">
+              <label for="defaultFormControlInput" class="col-form-label fw-bold">Base URL <span  style="color: red"> *</span></label>
+              <input type="text" name="Base Url" value="baseUrl" placeholder="https://careers.yourcompany.com/apply" class="form-control"
+                [(ngModel)]="obj['baseUrl']" />
+            </div>
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-4">
+              <label for="defaultFormControlInput" class="col-form-label fw-bold">Job slug (auto-filled)<span  style="color: red"> *</span></label>
+              <input type="text" name="slug" value="slug" placeholder="Job slug (auto-filled)" class="form-control"
+                [(ngModel)]="obj['slug']" />
+            </div>
+            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-4">
+              <label for="defaultFormControlInput" class="col-form-label fw-bold">Expires after (days)<span  style="color: red"> *</span></label>
+                 <ng-select [items]="expireDays" bindLabel="label" bindValue="value" [(ngModel)]="obj['expiresDays']"
+                [multiple]="false" placeholder="Expires after (days)" name="country" id="select2Danger"
+                #departmentRef="ngModel">
+              </ng-select>
+
+            </div>
+            </div>
+
+
+          <div class="form-actions">
+            <button class="btn-primary" (click)="generate()" [disabled]="!job || job.status !== 'open' || generating">
+              {{ generating ? 'Generating…' : 'Generate Link' }}
+            </button>
+          </div>
+
+      </div>
+    </div>
+  </div>
+</div> -->

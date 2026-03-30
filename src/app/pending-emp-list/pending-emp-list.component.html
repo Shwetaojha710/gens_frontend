@@ -1,4 +1,4 @@
-<div class="container-fluid mt-5">
+<div class="container-xxl mt-5">
   <div class="row mb-6" *ngIf="createFlag">
     <div class="col-xxl">
       <div class="card">
@@ -83,7 +83,7 @@
               </label>
 
               <input type="email" class="form-control" placeholder="Enter Email" [(ngModel)]="personalDetails.email"
-                name="email" required  #emailRef="ngModel" />
+                name="email" required #emailRef="ngModel" />
               <small class="text-danger" *ngIf="updateFlag==false && emailRef.invalid && emailRef.touched">
                 Enter valid Email
               </small>
@@ -107,7 +107,7 @@
               </label>
               <input type="text" class="form-control text-uppercase" placeholder="Enter PAN Number"
                 [(ngModel)]="personalDetails.panNo" (ngModelChange)="toUppercase()" name="pan"
-                pattern="^[A-Z]{5}[0-9]{4}[A-Z]{1}$" maxlength="10"  #panRef="ngModel" />
+                pattern="^[A-Z]{5}[0-9]{4}[A-Z]{1}$" maxlength="10" #panRef="ngModel" />
               <small class="text-danger" *ngIf="updateFlag==false && panRef.invalid && panRef.touched">
                 Enter valid PAN (e.g., ABCDE1234F)
               </small>
@@ -117,7 +117,7 @@
                 <!-- <span *ngIf="!updateFlag" style="color: red"> *</span> -->
               </label>
               <input type="text" class="form-control" placeholder="Enter Blood Group"
-                [(ngModel)]="personalDetails.bloodGroup" name="bloodGroup"  #bloodGroupRef="ngModel" />
+                [(ngModel)]="personalDetails.bloodGroup" name="bloodGroup" #bloodGroupRef="ngModel" />
               <small class="text-danger" *ngIf="updateFlag==false && bloodGroupRef.invalid && bloodGroupRef.touched">
                 Enter valid First Name
               </small>
@@ -136,7 +136,7 @@
                 <!-- <span *ngIf="!updateFlag" style="color: red"> *</span> -->
               </label>
               <input type="date" class="form-control" placeholder="Select Joining Date"
-                [(ngModel)]="personalDetails.joiningDate" name="joiningDate"  #joiningDateRef="ngModel" />
+                [(ngModel)]="personalDetails.joiningDate" name="joiningDate" #joiningDateRef="ngModel" />
               <small class="text-danger" *ngIf="updateFlag==false && joiningDateRef.invalid && joiningDateRef.touched">
                 Select valid joining Date
               </small>
@@ -146,7 +146,7 @@
                 <!-- <span *ngIf="!updateFlag" style="color: red"> *</span> -->
               </label>
               <input type="text" class="form-control" placeholder="Enter Father Name"
-                [(ngModel)]="personalDetails.fatherName" name="fatherName"  #fatherNameRef="ngModel" />
+                [(ngModel)]="personalDetails.fatherName" name="fatherName" #fatherNameRef="ngModel" />
               <small class="text-danger" *ngIf="updateFlag==false && fatherNameRef.invalid && fatherNameRef.touched">
                 Enter valid Father Name
               </small>
@@ -156,18 +156,19 @@
                 <!-- <span *ngIf="!updateFlag" style="color: red"> *</span> -->
               </label>
               <input type="text" class="form-control" placeholder="Enter Mother Name"
-                [(ngModel)]="personalDetails.motherName" name="motherName"  #motherNameRef="ngModel" />
+                [(ngModel)]="personalDetails.motherName" name="motherName" #motherNameRef="ngModel" />
               <small class="text-danger" *ngIf="updateFlag==false && motherNameRef.invalid && motherNameRef.touched">
                 Enter valid Mother Name
               </small>
             </div>
-              <div class="col-md-3">
+            <div class="col-md-3">
               <label class="col-form-label fw-bold">Guarantor Name
                 <!-- <span *ngIf="!updateFlag" style="color: red"> *</span> -->
               </label>
               <input type="text" class="form-control" placeholder="Enter Guarantor Name"
-                [(ngModel)]="personalDetails.guarantorName" name="guarantorName"  #guarantorNameRef="ngModel" />
-              <small class="text-danger" *ngIf="updateFlag==false && guarantorNameRef.invalid && guarantorNameRef.touched">
+                [(ngModel)]="personalDetails.guarantorName" name="guarantorName" #guarantorNameRef="ngModel" />
+              <small class="text-danger"
+                *ngIf="updateFlag==false && guarantorNameRef.invalid && guarantorNameRef.touched">
                 Enter valid Guarantor Name
               </small>
             </div>
@@ -176,7 +177,7 @@
                 <!-- <span *ngIf="!updateFlag" style="color: red"> *</span> -->
               </label>
               <input type="text" class="form-control" placeholder="Enter Nationality"
-                [(ngModel)]="personalDetails.nationality" name="nationality"  #nationalityRef="ngModel" />
+                [(ngModel)]="personalDetails.nationality" name="nationality" #nationalityRef="ngModel" />
               <small class="text-danger" *ngIf="updateFlag==false && nationalityRef.invalid && nationalityRef.touched">
                 Enter valid NationalityRef
               </small>
@@ -186,7 +187,7 @@
                 <span *ngIf="!updateFlag" style="color: red"> *</span>
               </label>
               <input type="date" class="form-control" [(ngModel)]="personalDetails.dateOfBirth" [max]="maxDate"
-                name="dateOfBirth"  #dateOfBirthRef="ngModel" (ngModelChange)="calculateAge($event)" />
+                name="dateOfBirth" #dateOfBirthRef="ngModel" (ngModelChange)="calculateAge($event)" />
 
               <small class="text-danger" *ngIf="updateFlag==false && dateOfBirthRef.invalid && dateOfBirthRef.touched">
                 Enter valid DOB
@@ -197,7 +198,7 @@
                 <!-- <span *ngIf="!updateFlag" style="color: red"> *</span> -->
               </label>
               <input type="number" class="form-control" placeholder="Enter Age" [(ngModel)]="personalDetails.age"
-                name="age"  #ageRef="ngModel" disabled />
+                name="age" #ageRef="ngModel" disabled />
               <small class="text-danger" *ngIf="updateFlag==false && ageRef.invalid && ageRef.touched">
                 Enter valid Age
               </small>
@@ -301,7 +302,7 @@
                 <!-- <span *ngIf="!updateFlag" style="color: red"> *</span> -->
               </label>
               <input type="text" class="form-control" placeholder="Enter PIN Code" [(ngModel)]="personalDetails.pinCode"
-                name="pinCode"  #pinCodeRef="ngModel" pattern="^[1-9][0-9]{5}$" maxlength="6" />
+                name="pinCode" #pinCodeRef="ngModel" pattern="^[1-9][0-9]{5}$" maxlength="6" />
 
               <small class="text-danger" *ngIf="pinCodeRef.invalid && pinCodeRef.touched">
                 Please enter a valid 6-digit PIN code.
@@ -322,7 +323,7 @@
                   <!-- <span *ngIf="!updateFlag" style="color: red">*</span> -->
                 </label>
                 <input type="text" class="form-control" placeholder="Enter Employee Code"
-                  [(ngModel)]="personalDetails.empCode" name="firstName"  #firstNameRef="ngModel" />
+                  [(ngModel)]="personalDetails.empCode" name="firstName" #firstNameRef="ngModel" />
                 <small class="text-danger" *ngIf="firstNameRef.invalid && firstNameRef.touched">
                   Enter valid First Name
                 </small>
@@ -353,13 +354,13 @@
           <!-- Submit -->
           <div class="row mb-4 justify-content-end">
             <div class="col-sm-12">
-              <button *ngIf="updateFlag == false && createFlag == true" type="button" class="btn btn-primary"
+              <!-- <button *ngIf="updateFlag == false && createFlag == true" type="button" class="btn btn-primary"
                 (click)="submitForm()">
                 Submit
-              </button>
+              </button> -->
               <button *ngIf="updateFlag == true && createFlag == true" type="button" class="btn btn-primary"
                 (click)="updateform()">
-                Update
+                Approved
               </button>
             </div>
           </div>
@@ -367,326 +368,100 @@
       </div>
     </div>
   </div>
-
-  <!--Header-->
-  <div *ngIf="!createFlag"
-    class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center mb-6 row-gap-4">
-    <div class="d-flex flex-column justify-content-center">
-      <h5 class="mb-1">Employee List</h5>
-      <nav>
-        <ol class="breadcrumb mb-0">
-          <li class="breadcrumb-item">
-            <a href="#"><i class="ri ri-home-smile-line"></i></a>
-          </li>
-          <li class="breadcrumb-item active" aria-current="page">
-            Employee List
-          </li>
-        </ol>
-      </nav>
-    </div>
-    <!-- <div class="d-flex align-content-center flex-wrap gap-4">
-        <button class="btn btn-outline-secondary waves-effect">Discard</button>
-        <button class="btn btn-outline-primary waves-effect">Save draft</button>
-        <button type="submit" class="btn btn-primary waves-effect waves-light">Publish product</button>
-      </div> -->
-  </div>
-  <!--Header-->
-
-  <div class="row g-3 mb-6" *ngIf="!createFlag">
-    <div class="col-lg-3 col-sm-6"  (click)="checkTotalEmp()">
-      
-
-      <div class="card card-border-shadow-primary h-100">
-        <div class="card-body">
-          <div class="d-flex align-items-center mb-2">
-            <div class="avatar me-4">
-              <span class="avatar-initial rounded-3 bg-label-primary"><i class="icon-base ri ri-user-star-line icon-24px"></i></span>
-            </div>
-            <h4 class="mb-0">{{cardData?.['totalEmployee']}}</h4>
-          </div>
-          <h6 class="mb-0 fw-normal">Total Employee</h6>
-          <p class="mb-0">
-            <span class="me-1 fw-medium">+2 </span>
-            <small class="text-body-secondary">New Employee added last months</small>
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-sm-6" (click)="checkActiveStatus()">
-      
-
-      <div class="card card-border-shadow-success h-100">
-        <div class="card-body">
-          <div class="d-flex align-items-center mb-2">
-            <div class="avatar me-4">
-              <span class="avatar-initial rounded-3 bg-label-success"><i class="icon-base ri ri-pie-chart-2-line icon-24px"></i></span>
-            </div>
-            <h4 class="mb-0">{{cardData?.['ActiveEmployee']}}</h4>
-          </div>
-          <h6 class="mb-0 fw-normal">Total Active Employee</h6>
-          <p class="mb-0">
-            <span class="me-1 fw-medium">+2 </span>
-            <small class="text-body-secondary">New Employee added last months</small>
-          </p>
-        </div>
-      </div>
-    </div>
-    <div class="col-lg-3 col-sm-6" (click)="checkStatus()">
-
-      
-
-      <div class="card card-border-shadow-danger h-100">
-        <div class="card-body">
-          <div class="d-flex align-items-center mb-2">
-            <div class="avatar me-4">
-              <span class="avatar-initial rounded-3 bg-label-danger"><i class="icon-base ri ri-pie-chart-2-line icon-24px"></i></span>
-            </div>
-            <h4 class="mb-0">{{cardData?.['InactiveEmployee']}}</h4>
-          </div>
-          <h6 class="mb-0 fw-normal">Total InActive Employee</h6>
-          <p class="mb-0">
-            <span class="me-1 fw-medium">-5 </span>
-            <small class="text-body-secondary">In active Employees last months</small>
-          </p>
-        </div>
-      </div>
-
-     
-    </div>
-    <div class="col-lg-3 col-sm-6" (click)="checknewJoiner()">
-
- <div class="card card-border-shadow-info h-100">
-        <div class="card-body">
-          <div class="d-flex align-items-center mb-2">
-            <div class="avatar me-4">
-              <span class="avatar-initial rounded-3 bg-label-info"><i class="icon-base ri ri-pie-chart-2-line icon-24px"></i></span>
-            </div>
-            <h4 class="mb-0">{{cardData?.['newJoiners']}}</h4>
-          </div>
-          <h6 class="mb-0 fw-normal">Total New Joiners Employee</h6>
-          <p class="mb-0">
-            <span class="me-1 fw-medium">+1 </span>
-            <small class="text-body-secondary">New Employee added last months</small>
-          </p>
-        </div>
-      </div>
-      
-      
-    </div>
-  </div>
-
   <div class="row mb-6" *ngIf="!createFlag">
+
     <div class="col-md">
       <div class="card">
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <span style="font-weight: bold">Employee List</span>
-          <button *ngIf="createFlag == false" type="button" class="btn btn-xs btn-primary float-end"
-            (click)="opencreate()">
-            <i class="fa-solid fa-plus"></i>&nbsp;Add
-          </button>
-        </div>
+        <h5 class="card-header d-flex justify-content-between align-items-center mb-0">
+          <span>Employee List</span>
+          <!-- <button type="button" class="btn btn-xs btn-primary float-end" (click)="create()">
+            <i class="fa-solid fa-plus"></i>&nbsp;Create
+          </button> -->
+        </h5>
+        <div class="card-body">
+          <app-search-pagination [totalItems]="employees.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
+            (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
+            <div class="table-responsive">
+              <table class="table dataTable">
+                <thead>
+                  <tr>
+                    <th style="width: 10px!important;">SI.NO </th>
 
-        <app-search-pagination [totalItems]="employees.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
-          (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
-          <div class="table-responsive">
-            <table class="table dataTable">
-              <thead>
-                <tr>
-                  <th style="width: 10px!important;">SI.NO </th>
+                    <th>Name/Email/Gender</th>
+                    <th>Phone</th>
+                    <th>Aadhaar No.</th>
+                    <th>DOB</th>
+                    <th>Status</th>
+                    <!-- <th>Location</th>
+                <th>Atten.</th>
+                <th>All Time Atten.</th> -->
+                    <th>Actions</th>
+                  </tr>
 
-                  <th>Name / Designation</th>
-                  <th>Gender</th>
-                  <th>Phone / Email</th>
-                  <th>Aadhaar No.</th>
-                  <th>DOB</th>
-                  <th>Status</th>
-                  <th>Location</th>
-                  <th>Atten.</th>
-                  <th>All Time Atten.</th>
-                  <th>Actions</th>
-                </tr>
+                </thead>
+                <tbody class="table-border-bottom-0">
+                  <tr *ngFor="let item of filteredDesignation; let i = index">
+                    <td style="width: 10px!important;">{{item?.si_no}}</td>
 
-              </thead>
-              <tbody class="table-border-bottom-0">
-                <tr *ngFor="let item of filteredDesignation; let i = index">
-                  <td style="width: 10px!important;">{{item?.si_no}}</td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="avatar avatar-sm me-4">
 
-                  <td>
-                    <div class="d-flex align-items-center" (click)="view(item)">
-                      <div class="avatar avatar-sm me-4">
+                          <img [src]="item?.profileImage" width="100" height="auto" alt="Avatar"
+                            class="rounded-circle" />
 
-                        <img [src]="item?.profileImage" width="100" height="auto" alt="Avatar" class="rounded-circle" />
-
-                      </div>
-                      <div>
-                        <h6 class="mb-0 text-truncate link-primary">
-                          {{ item["firstName"] }} {{ item["lastName"] }}
-                        </h6>
-                        <small class="text-truncate">{{item?.['designation']}}</small>
-                          
+                        </div>
+                        <div>
+                          <h6 class="mb-0 text-truncate link-primary">
+                            {{ item["firstName"] }} {{ item["lastName"] }}
+                          </h6>
+                          <small class="text-truncate">{{item?.['designation']}}</small>
+                          <small class="text-truncate"> {{ item["email"] }}</small>
                           <br>
-                        <small class="text-truncate">{{item?.empCode}}</small>
-                        
-                        
+                          <small class="text-truncate">{{item?.empCode}}</small>
+                          <br>
+                          <small class="text-truncate">{{item?.gender}}</small>
 
 
+
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td>
-                   <small class="text-truncate">{{item?.gender}}</small>
+                    </td>
 
-                  </td>
-                  <td>
-                    {{ item["mobile"] }}<br><small class="text-truncate">  {{ item["email"] }}</small>
-                  </td>
-                  <td>
-                    {{ item["adhaarNo"] }}
-                  </td>
-                  <td>
-                    {{ item["dateOfBirth"] | date : "dd-MM-yyyy" }}
-                  </td>
+                    <td>
+                      {{ item["mobile"] }}
+                    </td>
+                    <td>
+                      {{ item["adhaarNo"] }}
+                    </td>
+                    <td>
+                      {{ item["dateOfBirth"] | date : "dd-MM-yyyy" }}
+                    </td>
 
-                  <td>
-                       <span
-                    class="badge badge-outline-success px-2"
-                    [ngClass]="getUserStatusClass(item.status)"
-                  >
-                    {{ item.status =='active' ? 'Active' : 'InActive' }}
-                  </span>
-                  </td>
-                  <td>
-                       <span
-                    class="badge badge-outline-success px-2"
-                    [ngClass]="getStatusClass(item.isLocation)"
-                  >
-                    {{ item.isLocation ? 'Active' : 'Inactive' }}
-                  </span>
-                  </td>
-                  <td>
-                      <span
-                    class="badge badge-outline-success px-2"
-                    [ngClass]="getStatusClass(item.isofflineAtt)"
-                  >
-                    {{ item.isofflineAtt ? 'Active' : 'Inactive' }}
-                  </span>
-                  </td>
-                  <td>
-                     <span
-                    class="badge badge-outline-success px-2"
-                    [ngClass]="getStatusClass(item.isofflineAllTimeAtt)"
-                  >
-                   {{ item.isofflineAllTimeAtt ? 'Active' : 'Inactive' }}
-                  </span>
+                    <td>
+                      <span class="badge badge-outline-success px-2" [ngClass]="getUserStatusClass(item.emp_status)">
+                        {{ item.emp_status}}
+                      </span>
+                    </td>
 
-                    <!-- {{ item.isofflineAllTimeAtt ? 'Active' : 'Inactive' }} -->
-                  </td>
-                  <td>
-
-                     <button type="button" class="badge badge-center bg-label-primary" title="All Time Attendance"
-                      (click)="enableDisableLoc(item,'attendanceAllTime')">
-                      <!-- Attendance All Time -->
-                      <i class="fa-solid fa-calendar-check"></i>
-                    </button>&nbsp;
-
-                    <button type="button" class="badge badge-center bg-label-warning" title="Attendance"
-                      (click)="enableDisableLoc(item,'attendance')">
-                      <!-- Offline Attendance -->
-
-<!--                       <i class="fa fa-clock"></i> -->
-
-                      <i class="fa-regular fa-clock"></i>
-                      <!-- <i class="fas fa-location"></i> -->
-
-                    </button>&nbsp;
-                    <button type="button" class="badge badge-center bg-label-primary"  title="Location"
-                      (click)="enableDisableLoc(item,'location')">
-                      <i class="fas fa-location"></i></button>&nbsp;
-                    <button type="button" class="badge badge-center bg-label-secondary"  title="View Details" (click)="view(item)">
-                      <i class="far fa-eye"></i></button>&nbsp;
-                    <button type="button" class="badge badge-center bg-label-info"  title="Update" (click)="update(item)">
-                      <i class="fas fa-edit"></i>
-                    </button>
-                    &nbsp;
-                    <button type="button" class="badge badge-center bg-label-danger"  title="Delete" (click)="delete(item)">
-                      <i class="fas fa-trash-alt"></i>
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </app-search-pagination>
-
-        <!-- <app-search-pagination *ngIf="inActiveFlag" [totalItems]="employees.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
-          (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
-          <table class="table table-striped dataTable">
-            <thead>
-              <tr>
-                <th>SI.NO </th>
-
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Aadhaar Number</th>
-                <th>Date of Birth</th>
-                <th>Gender</th>
-                <th>Actions</th>
-              </tr>
-
-            </thead>
-            <tbody class="table-border-bottom-0">
-              <tr *ngFor="let item of filteredDesignation; let i = index">
-                <td>{{item?.si_no}}</td>
-
-                <td>
-                  <div class="d-flex align-items-center" (click)="view(item)">
-                    <div class="avatar avatar-sm me-4">
-
-                      <img [src]="item?.profileImage" width="100" height="auto" alt="Avatar" class="rounded-circle" />
-
-                    </div>
-                    <div>
-                      <h6 class="mb-0 text-truncate link-primary">
-                        {{ item["firstName"] }} {{ item["lastName"] }}
-                      </h6>
-                      <small class="text-truncate">{{item?.['designation']}}</small>
-                      <small class="text-truncate">{{item?.empCode}}</small>
-                    </div>
-                  </div>
-                </td>
-                <td>
-                  {{ item["email"] }}
-                </td>
-                <td>
-                  {{ item["mobile"] }}
-                </td>
-                <td>
-                  {{ item["adhaarNo"] }}
-                </td>
-                <td>
-                  {{ item["dateOfBirth"] | date : "dd-MM-yyyy" }}
-                </td>
-                <td>
-                  {{ item["gender"] }}
-                </td>
-                <td>
-                  <button type="button" class="badge badge-center bg-label-secondary" (click)="view(item)">
-                    <i class="far fa-eye"></i></button>&nbsp;
-                  <button type="button" class="badge badge-center bg-label-primary" (click)="update(item)">
-                    <i class="fas fa-edit"></i>
-                  </button>
-                  &nbsp;
-                  <button type="button" class="badge badge-center bg-label-danger" (click)="delete(item)">
-                    <i class="fas fa-trash-alt"></i>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </app-search-pagination> -->
-
+                    <td>
+                      <!-- <button type="button" class="badge badge-center bg-label-secondary"  title="Approved"
+                      (click)="changeStatus(item)">
+                      <i class="fas fa-location"></i></button>&nbsp; -->
+                      <button type="button" class="badge badge-center bg-label-danger" title="Edit"
+                        (click)="update(item)">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </app-search-pagination>
+        </div>
       </div>
+
+
     </div>
   </div>
 </div>
