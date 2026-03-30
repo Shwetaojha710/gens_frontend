@@ -1,4 +1,4 @@
-<div class="container-xxl  mt-5">
+<div class="container-fluid  mt-5">
   <div class="row mb-6" *ngIf="createFlag">
     <div class="col-md">
       <div class="card">
@@ -236,7 +236,7 @@
                   <th>To Date</th>
                   <th>Days</th>
                   <th>Duration Type</th>
-                  <th>Reason</th>
+                  <th style="width: 28%;">Reason</th>
                   <th>Status</th>
                   <th>createdAt</th>
                   <th>Actions</th>
@@ -252,7 +252,7 @@
                     </span>
                   </td>
                   <td>{{ item["leaveName"] }}
-                    <br>
+                    
                     <span class="badge rounded-pill bg-label-primary">
                       {{item["leaveCode"]}}
                     </span>
