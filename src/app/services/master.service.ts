@@ -24,6 +24,9 @@ export class MasterService {
   getDesignations(): Observable<any> {
     return this.http.post(`${this.baseUrl}getDesignations`, {});
   }
+  AppEmpList(): Observable<any> {
+    return this.http.post(`${this.baseUrl}app-emp-list`, {});
+  }
   getEmploymentTypes(obj:any): Observable<any> {
     return this.http.post(`${this.baseUrl}getEmpTypeDD`, obj);
   }

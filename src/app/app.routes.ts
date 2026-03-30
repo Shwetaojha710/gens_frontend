@@ -85,7 +85,9 @@ import { FeedbackFormComponent } from './recruitment/interviews/feedback-form/fe
 import { BgvTrackerComponent } from './recruitment/offers/bgv-tracker/bgv-tracker.component';
 import { OfferFormComponent } from './recruitment/offers/offer-form/offer-form.component';
 import { RecuiterDashboardComponent } from './recruitment/recuiter-dashboard/recuiter-dashboard.component';
-
+import { JobRequirementComponent } from './recruitment/jobs/job-requirement/job-requirement.component';
+import { PostingSourcingComponent } from './recruitment/jobs/posting-sourcing/posting-sourcing.component';
+import { PendingEmpListComponent } from './pending-emp-list/pending-emp-list.component';
 
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -97,6 +99,7 @@ export const routes: Routes = [
   { path: 'privacy-policy', component: PrivacyPolicyComponent },
 
   { path: 'branchwise', component: BranchwiseComponent },
+  { path: 'pending-emp-list', component: PendingEmpListComponent },
 
   { path: 'company-reg', component: CompanyRegComponent },
   { path: 'branchwise', component: BranchwiseComponent },
@@ -209,27 +212,19 @@ export const routes: Routes = [
 
     ]
   },
-
-      // Add inside the 'layout' children array:
-// {
-//   path: 'recruitment',
-//   children: [
-//     { path: '', component: RecruitmentComponent },
-//     { path: 'jobs', component: JobsComponent },
-//     { path: 'candidates', component: CandidateComponent },
-//     { path: 'pipeline', component: PipelineBoardComponent },
-//     { path: 'pipeline/:applicationId/interview/schedule', component: ScheduleInterviewComponent },
-//     { path: 'pipeline/:applicationId/interview/feedback', component: FeedbackFormComponent },
-//     { path: 'offers/:applicationId', component: OfferFormComponent },
-//     { path: 'offers/:applicationId/bgv', component: BgvTrackerComponent },
-//   ]
-// },
-    {
+  {
     path: 'recruitment',
     component: RecruitmentComponent,
     children: [
     { path: 'recruitment-dashboard', component: RecuiterDashboardComponent },
-    { path: 'jobs', component: JobsComponent },
+    {
+      path: 'jobs',
+      component: JobsComponent,
+      children:[
+        { path: 'job-requirement', component: JobRequirementComponent },
+        { path: 'posting-sourcing', component: PostingSourcingComponent },
+      ]
+    },
     { path: 'candidates', component: CandidateComponent },
     { path: 'pipeline', component: PipelineBoardComponent },
     { path: 'pipeline/:applicationId/interview/schedule', component: ScheduleInterviewComponent },

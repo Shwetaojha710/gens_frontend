@@ -1,220 +1,96 @@
-/* ─── Vertical sidebar layout ─────────────────────────────────────── */
-
-.layout-menu {
-  position: fixed;
-  inset-block-start: 0;
-  inset-inline-start: 0;
-  block-size: 100vh;
-  inline-size: 16.25rem;           /* 260px — matches Materialize sidebar width */
-  z-index: 1080;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--bs-menu-bg);
-  box-shadow: var(--bs-box-shadow-xs);
-  /* transition: inline-size 0.3s ease, transform 0.3s ease; */
-   width: 260px;
-  transition: all 0.3s ease;
+@media (min-width: 1200px) {
+    .layout-menu-fixed:not(.layout-navbar-hidden) .layout-horizontal .layout-page .menu-horizontal, .layout-menu-fixed-offcanvas:not(.layout-navbar-hidden) .layout-horizontal .layout-page .menu-horizontal {
+        position: fixed;
+        inset-block-start: 4rem;
+    }
+}
+.layout-menu-horizontal {
+    z-index: 1079;
+    background-color: var(--bs-menu-bg);
+    box-shadow: var(--bs-box-shadow-xs);
+}
+.layout-page, .content-wrapper, .content-wrapper > *, .layout-menu {
+    min-block-size: 1px;
+}
+.menu-horizontal {
+    flex-direction: row;
+    inline-size: 100%;
 }
 
-.layout-menu.collapsed {
-  width: 70px;
+.menu {
+    display: flex;
+    background-color: var(--bs-menu-bg);
 }
-/* Hide text when collapsed */
-.layout-menu.collapsed .menu-text,
-.layout-menu.collapsed .menu-sub,
-.layout-menu.collapsed .app-brand-text {
-  display: none;
+.flex-grow-0 {
+    flex-grow: 0 !important;
 }
-
-/* Center icons */
-.layout-menu.collapsed .menu-link {
-  justify-content: center;
+*, *::before, *::after {
+    box-sizing: border-box;
 }
-
-/* Allow the menu-inner list to scroll when content overflows */
-.menu-inner {
-  flex: 1 1 auto;
-  overflow-y: auto;
-  overflow-x: hidden;
-  padding-block: 0.25rem;
+aside {
+    display: block;
+    unicode-bidi: isolate;
 }
-
-/* ─── Brand / logo area ────────────────────────────────────────────── */
-
-.app-brand {
-  display: flex;
-  align-items: center;
-  padding: 1.125rem 1.5rem;
-  min-block-size: 3.75rem;
-  flex-shrink: 0;
+.menu-horizontal .menu-inner .menu-item.active > .menu-link.menu-toggle::after {
+    background-color: var(--bs-menu-active-color);
 }
-
-.app-brand-text {
-  font-size: 1.125rem;
-  letter-spacing: 0.01em;
-  white-space: nowrap;
+.menu-horizontal .menu-inner > .menu-item > .menu-toggle::after {
+    transform: translateY(-50%) rotate(90deg);
 }
-
-/* ─── Top-level menu items ─────────────────────────────────────────── */
-
-.menu-item {
-  list-style: none;
-  margin: 0;
-  padding: 0;
+.menu-horizontal .menu-item .menu-toggle::after {
+    inset-inline-end: calc(1rem - 0.2rem);
 }
-
-.menu-link {
-  display: flex;
-  align-items: center;
-  gap: 0.625rem;
-  padding: 0.625rem 1.5rem;
-  cursor: pointer;
-  position: relative;
-  white-space: nowrap;
-  color: var(--bs-menu-color, #697a8d);
-  text-decoration: none;
-  transition: color 0.15s, background-color 0.15s;
-  border-radius: 0;
-}
-
-.menu-link:hover {
-  color: var(--bs-menu-hover-color, #566a7f);
-  background-color: var(--bs-menu-hover-bg, rgba(67, 89, 113, 0.06));
-}
-
-.menu-link.active,
-.menu-item.active > .menu-link {
-  color: var(--bs-menu-active-color, #696cff);
-  background-color: var(--bs-menu-active-bg, rgba(105, 108, 255, 0.08));
-  font-weight: 500;
-}
-
-/* ─── Menu icon ────────────────────────────────────────────────────── */
-
-.menu-icon {
-  font-size: 1.25rem;
-  flex-shrink: 0;
-  inline-size: 1.375rem;
-  text-align: center;
-  color: var(--bs-menu-item-icon-color, #8592a3);
-}
-
-.menu-link.active .menu-icon,
-.menu-item.active > .menu-link .menu-icon {
-  color: var(--bs-menu-active-color, #696cff);
-}
-
-/* ─── Toggle arrow (chevron) ───────────────────────────────────────── */
-
 .menu-toggle::after {
-  content: '';
-  position: absolute;
-  inset-inline-end: 1.25rem;
-  inset-block-start: 50%;
-  transform: translateY(-50%) rotate(0deg);
+    position: absolute;
+    display: block;
+    background-color: var(--bs-menu-item-icon-color);
+    content: "";
+    inset-block-start: 50%;
+    /* mask-image: url(data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='m13.172 12l-4.95-4.95l1.414-1.413L16 12l-6.364 6.364l-1.414-1.415z'/%3E%3C/svg%3E); */
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+    transform: translateY(-50%);
+    block-size: 1.375rem;
+    font-size: 1.375rem;
+    inline-size: 1.375rem;
+}
+/* .menu-item:hover {
+  position: relative;
+}
+
+.menu-item:hover > .menu-sub {
   display: block;
-  inline-size: 1.125rem;
-  block-size: 1.125rem;
-  background-color: var(--bs-menu-item-icon-color, #8592a3);
-  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' d='m13.172 12l-4.95-4.95l1.414-1.413L16 12l-6.364 6.364l-1.414-1.415z'/%3E%3C/svg%3E");
-  mask-repeat: no-repeat;
-  mask-size: 100%;
-  transition: transform 0.2s ease;
-}
-
-/* Arrow points down when menu is open */
-.menu-item.open > .menu-link.menu-toggle::after {
-  transform: translateY(-50%) rotate(90deg);
-  background-color: var(--bs-menu-active-color, #696cff);
-}
-
-.menu-item.active > .menu-link.menu-toggle::after {
-  background-color: var(--bs-menu-active-color, #696cff);
-}
-
-/* ─── Submenu ──────────────────────────────────────────────────────── */
+} */
 
 .menu-sub {
   display: none;
-  padding: 0;
-  margin: 0;
-  list-style: none;
-  /* Indent children */
-  padding-inline-start: 0;
+}
+
+.menu-item {
+    align-items: flex-start;
+    justify-content: flex-start;
+}
+.menu.menu-horizontal .menu-inner > .menu-item:first-child {
+    margin-inline-start: 0;
+}
+.menu.menu-horizontal .menu-inner > .menu-item {
+    margin-block: 0.6375rem;
+    margin-inline: 0;
+}
+.menu-item, .menu-header, .menu-divider, .menu-block {
+    flex: 0 0 auto;
+    flex-direction: column;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+}
+
+li {
+    display: list-item;
+    text-align: -webkit-match-parent;
+    unicode-bidi: isolate;
 }
 
 .menu-item.open > .menu-sub {
   display: block;
 }
-
-/* Submenu items get left-padding to show hierarchy */
-.menu-sub .menu-link {
-  padding-inline-start: 3rem;
-  font-size: 0.9375rem;
-}
-
-/* Third-level nesting */
-.menu-sub .menu-sub .menu-link {
-  padding-inline-start: 4.25rem;
-}
-
-/* Active/hover states for submenu items */
-.menu-sub .menu-item.active > .menu-link,
-.menu-sub .menu-link.active {
-  color: var(--bs-menu-active-color, #696cff);
-  background-color: var(--bs-menu-active-bg, rgba(105, 108, 255, 0.08));
-  font-weight: 500;
-}
-
-/* ─── Inner shadow (decorative fade at top of scroll area) ─────────── */
-
-.menu-inner-shadow {
-  block-size: 2rem;
-  inline-size: 100%;
-  flex-shrink: 0;
-  margin-block-start: -2rem;
-  pointer-events: none;
-}
-
-/* ─── Mobile: hide sidebar off-screen, show on toggle ─────────────── */
-
-@media (max-width: 1199.98px) {
-  .layout-menu {
-    transform: translateX(-100%);
-  }
-
-  .layout-menu-open .layout-menu {
-    transform: translateX(0);
-  }
-}
-
-/* ─── Push main content to the right of the sidebar ───────────────── */
-
-@media (min-width: 1200px) {
-  .layout-page {
-    margin-inline-start: 16.25rem;
-    transition: margin-inline-start 0.3s ease;
-  }
-}
-
-/* ─── Collapsed sidebar (optional, triggered by a toggle button) ───── */
-
-.layout-menu-collapsed .layout-menu {
-  inline-size: 4.5rem;
-}
-
-.layout-menu-collapsed .app-brand-text,
-.layout-menu-collapsed .menu-link > div,
-.layout-menu-collapsed .menu-toggle::after {
-  display: none;
-}
-
-.layout-menu-collapsed .layout-page {
-  margin-inline-start: 4.5rem;
-}
-
-.layout-menu-collapsed .menu-icon {
-  margin-inline: auto;
-}
-

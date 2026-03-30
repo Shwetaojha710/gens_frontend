@@ -1,9 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, ElementRef } from '@angular/core';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
-import { filter } from 'rxjs/operators';
 import { MenuItem } from './navigation';
-
 @Component({
   selector: 'app-navbar',
   standalone: true,
@@ -11,142 +9,178 @@ import { MenuItem } from './navigation';
   templateUrl: './navbar.component.html',
   styleUrls: ['./navbar.component.css']
 })
-export class NavbarComponent implements OnInit {
-
-  // Tracks which top-level (or nested) menu title is currently open
+export class NavbarComponent {
   openMenu: string | null = null;
 
-  constructor(private router: Router) {}
-
-  ngOnInit(): void {
-    // On every route change, auto-expand the parent menu of the active route
-    this.router.events
-      .pipe(filter(e => e instanceof NavigationEnd))
-      .subscribe(() => this.expandActiveMenu());
-
-    // Also run on first load
-    this.expandActiveMenu();
-  }
-
-  /** Toggle a menu open/close. Clicking an already-open menu closes it. */
-  toggleMenu(title: string): void {
-    this.openMenu = this.openMenu === title ? null : title;
-  }
-
-  /** Returns true if the given routerLink matches the current URL exactly */
-  isLinkActive(link?: string): boolean {
-    if (!link) return false;
-    return this.router.url === link || this.router.url.startsWith(link + '/');
-  }
-
-  /** Returns true if any child (recursively) has an active link */
-  isAnyChildActive(children?: MenuItem[]): boolean {
-    if (!children) return false;
-    return children.some(child =>
-      this.isLinkActive(child.link) || this.isAnyChildActive(child.children)
-    );
-  }
-
-  isCollapsed = false;
-
-toggleSidebar() {
-  this.isCollapsed = !this.isCollapsed;
-}
-  /** On navigation, find and open the parent menu containing the active route */
-  private expandActiveMenu(): void {
-    for (const item of this.menuItems) {
-      if (item.children && this.isAnyChildActive(item.children)) {
-        this.openMenu = item.title;
-        return;
-      }
-    }
-  }
+  constructor(private router: Router, private elRef: ElementRef) { }
 
   logout(): void {
     localStorage.clear();
     this.router.navigate(['/login']);
   }
+  async ngAfterViewInit() {
+    const items = document.querySelectorAll('.menu-item');
+    items.forEach((item: Element) => {
+      item.addEventListener('mouseenter', () => {
+        item.classList.add('open');
+      });
 
+      item.addEventListener('mouseleave', () => {
+        item.classList.remove('open');
+      });
+    });
+
+  }
   menuItems: MenuItem[] = [
     {
-      title: 'Dashboard',
+      title: 'Dashboards',
       icon: 'ri-home-smile-line',
+      active: true,
       link: '/layout/dashboard'
     },
+    // {
+    //   title: 'Branchwise',
+    //   icon: 'ri-home-smile-line',
+    //   active: true,
+    //   link: '/branchwise'
+    // },
     {
       title: 'Employee Management',
-      icon: 'ri-group-line',
+      icon: 'ri-layout-2-line',
       children: [
-        { title: 'Add Employee',  icon: 'ri-user-add-line',    link: '/layout/employee/joining' },
-        { title: 'Apply Leave',   icon: 'ri-file-list-2-line', link: '/layout/employee/apply-leave' },
+        // { title: 'Employee List', icon: 'ri-file-list-2-line', link: '/layout/employee/list' },
+        { title: 'Add Employee', icon: 'ri-user-add-line', link: '/layout/employee/joining' },
+        { title: 'Apply Leave', icon: 'ri-file-list-2-line', link: '/layout/employee/apply-leave' },
       ]
     },
+
     {
       title: 'Attendance & Shift',
       icon: 'ri-calendar-check-line',
       children: [
-        { title: 'Shift Master',         icon: 'ri-user-3-line',        link: '/layout/attendance/shift' },
-        { title: 'Date Wise Attendance', icon: 'ri-calendar-line',      link: '/layout/attendance/date-wise-attendance' },
-        { title: 'Holiday',              icon: 'ri-barricade-fill',     link: '/layout/attendance/holiday' },
-        { title: 'Attendance Logs',      icon: 'ri-calendar-line',      link: '/layout/attendance/logs' },
-        { title: 'Leaves',               icon: 'ri-leaf-line',          link: '/layout/attendance/leaves' },
-        { title: 'Upload Attendance',    icon: 'ri-upload-cloud-line',  link: '/layout/attendance/upload-attendance' },
-        { title: 'Regularize',           icon: 'ri-refresh-line',       link: '/layout/attendance/regularize' },
-        { title: 'Weekend Emp List',     icon: 'ri-team-line',          link: '/layout/attendance/weekend-emp-list' },
-        { title: 'Add Comp Off',         icon: 'ri-rest-time-line',     link: '/layout/attendance/add-comp-off' },
+        { title: 'Shift Master', icon: 'ri ri-user-3-line', link: '/layout/attendance/shift' },
+        { title: 'Date Wise Attendance', icon: 'ri-calendar-line', link: '/layout/attendance/date-wise-attendance' },
+        { title: 'Holiday', icon: 'ri-barricade-fill', link: '/layout/attendance/holiday' },
+        { title: 'Attendance Logs', icon: 'ri-calendar-line', link: '/layout/attendance/logs' },
+        { title: 'Leaves', icon: 'ri-leaf-line', link: '/layout/attendance/leaves' },
+        { title: 'Upload Attendance', icon: 'ri-upload-cloud-line', link: '/layout/attendance/upload-attendance' },
+        { title: 'Regularize', icon: 'ri-upload-cloud-line', link: '/layout/attendance/regularize' },
+        { title: 'Weekend Employee List', icon: 'ri-upload-cloud-line', link: '/layout/attendance/weekend-emp-list' },
+        { title: 'Add Comp Off', icon: 'ri-upload-cloud-line', link: '/layout/attendance/add-comp-off' }
+
       ]
     },
     {
       title: 'Payroll & Compensation',
       icon: 'ri-money-cny-circle-line',
       children: [
-        { title: 'Generate Salary',       icon: 'ri-money-rupee-circle-line', link: '/layout/payroll/full-time' },
-        { title: 'Generated Salary List', icon: 'ri-suitcase-line',           link: '/layout/payroll/generated-salary' },
-        { title: 'Reimbursement',         icon: 'ri-refund-line',             link: '/layout/payroll/reimbursement' },
+        { title: 'Generate Salary', icon: 'ri-money-rupee-circle-line', link: '/layout/payroll/full-time' },
+        { title: 'Generated Salary List', icon: 'ri-suitcase-line', link: '/layout/payroll/generated-salary' },
+        { title: 'Reimbursement', icon: 'ri-refund-line', link: '/layout/payroll/reimbursement' },
+        // { title: 'Part Time Salary Master', icon: 'ri-time-line', link: '/layout/payroll/part-time' },
+        // // { title: 'Allowances Master', icon: 'ri-gift-line', link: '/layout/payroll/allowances' },
+        // { title: 'Deductions', icon: 'ri-subtract-line', link: '/layout/payroll/deductions' }
       ]
     },
     {
-      title: 'Recruitment',
-      icon: 'ri-user-search-line',
+      title: 'Reports',
+      icon: 'ri-bar-chart-line',
       children: [
-        { title: 'Job Postings', icon: 'ri-briefcase-line',   link: '/layout/recruitment/jobs' },
-        { title: 'Candidates',   icon: 'ri-contacts-line',    link: '/layout/recruitment/candidates' },
-        { title: 'Pipeline',     icon: 'ri-kanban-view',      link: '/layout/recruitment/pipeline' },
-        { title: 'Offers & BGV', icon: 'ri-file-text-line',   link: '/layout/recruitment/offers' },
+        { title: 'Employee Report', icon: 'ri-file-user-line', link: '/layout/reports/employee' },
+        { title: 'Payroll Report', icon: 'ri-file-paper-line', link: '/layout/reports/payroll' },
+        { title: 'Attendance Report', icon: 'ri-file-list-3-line', link: '/layout/reports/attendance' },
+        { title: 'Tracking Report', icon: 'ri-file-list-3-line', link: '/layout/reports/tracking-report' },
       ]
     },
     {
       title: 'Master',
       icon: 'ri-settings-3-line',
       children: [
-        { title: 'Department',       icon: 'ri-building-line',         link: '/layout/master/department' },
-        { title: 'Designation',      icon: 'ri-award-line',            link: '/layout/master/designation' },
-        { title: 'Employment Type',  icon: 'ri-id-card-line',          link: '/layout/master/employment-type' },
-        { title: 'Documents',        icon: 'ri-file-copy-line',        link: '/layout/master/documents' },
-        { title: 'Holiday Type',     icon: 'ri-calendar-event-line',   link: '/layout/master/holiday-type' },
-        { title: 'Prefix',           icon: 'ri-text',                  link: '/layout/master/prefix' },
-        { title: 'Salary Component', icon: 'ri-money-dollar-box-line', link: '/layout/master/salary-component' },
-        { title: 'Currency',         icon: 'ri-currency-line',         link: '/layout/master/currency' },
-        { title: 'Pay Slip Order',   icon: 'ri-file-list-3-line',      link: '/layout/master/pay-slip' },
-        { title: 'Branch',           icon: 'ri-git-branch-line',       link: '/layout/master/branch' },
+        { title: 'Designation Master', icon: 'ri-team-line', link: '/layout/master/designation' },
+        { title: 'Department Master', icon: 'ri-building-4-line', link: '/layout/master/department' },
+        { title: 'Employment Type', icon: 'ri-briefcase-4-line', link: '/layout/master/employment-type' },
+        { title: 'Documents', icon: 'ri-file-text-line', link: '/layout/master/documents' },
+        { title: 'Holiday Types', icon: 'ri-suitcase-line', link: '/layout/master/holiday-type' },
+        // { title: 'Company Prefix', icon: 'ri-info-card-line', link: '/layout/master/prefix' },
+        { title: 'Salary Component', icon: 'ri-wallet-2-line', link: '/layout/master/salary-component' },
+        // { title: 'Currency', icon: 'ri-copper-coin-line', link: '/layout/master/currency' },
+        { title: 'Pay Slip Setup', icon: 'ri-file-pdf-2-line', link: '/layout/master/pay-slip' },
+        { title: 'Branch', icon: 'ri-file-pdf-2-line', link: '/layout/master/branch' },
+
+        // {title: 'Attendance Master11', icon: 'ri-file-line', link: '/layout/master/salary-master'}
+
       ]
     },
     {
-      title: 'Reports',
-      icon: 'ri-bar-chart-2-line',
+      title: 'Setting',
+      icon: 'ri-settings-3-line',
       children: [
-        { title: 'Employee Report',  icon: 'ri-group-2-line',          link: '/layout/reports/employee' },
-        { title: 'Payroll Report',   icon: 'ri-money-rupee-circle-line', link: '/layout/reports/payroll' },
-        { title: 'Attendance Report',icon: 'ri-calendar-2-line',       link: '/layout/reports/attendance' },
-        { title: 'Tracking Report',  icon: 'ri-route-line',            link: '/layout/reports/tracking-report' },
+        { title: 'Attendance Master', icon: 'ri-calendar-line', link: '/layout/attendance/salary-master' },
+        { title: 'Currency', icon: 'ri-copper-coin-line', link: '/layout/master/currency' },
+        { title: 'Company Prefix', icon: 'ri-info-card-line', link: '/layout/master/prefix' },
+        // { title: 'Date Format', icon: 'ri-building-4-line', link: '/layout/master/date-format' },
+        // { title: 'Time Zone', icon: 'ri-briefcase-4-line', link: '/layout/master/time-zone' },
+        // { title: 'SMS', icon: 'ri-file-text-line', link: '/layout/master/SMS' },
+        // { title: 'EMAIL', icon: 'ri-suitcase-line', link: '/layout/master/email' },
+
+
       ]
     },
-    {
-      title: 'Tracking',
-      icon: 'ri-map-pin-line',
-      children: [
-        { title: 'Live Tracking', icon: 'ri-live-line', link: '/layout/tracking/live' },
-      ]
-    },
+    //  {
+    //   title: 'Tracking',
+    //   icon: 'ri-settings-3-line',
+    //     link: '/layout/tracking'
+    // }
   ];
+  toggleMenu(menu: any): void {
+    // this.menuItems.forEach(m => {
+    //   if (m !== menu) m.active = false;
+    // });
+    // menu.active = !menu.active;
+    this.menuItems.forEach(m => {
+      if (m.title === menu.title) {
+        m.active = true;
+      } else {
+        m.active = false;
+      }
+    })
+  }
+
+  ngOnInit() {
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.setActiveMenuItem(event.urlAfterRedirects);
+      }
+    });
+
+    // Also run once on init
+    this.setActiveMenuItem(this.router.url);
+  }
+  // Checks if any child in the given array is active (used in navbar.component.html)
+  isAnyChildActive(children: any[]): boolean {
+    if (!children) return false;
+    return children.some(child => child.active || (child.children && this.isAnyChildActive(child.children)));
+  }
+
+
+  async setActiveMenuItem(currentUrl: string) {
+    const markActive = (items: MenuItem[]): boolean => {
+      let anyActive = false;
+
+      items.forEach(item => {
+        item.active = item.link === currentUrl;
+        if (item.children?.length) {
+          const childActive = markActive(item.children);
+          item.active = item.active || childActive;
+        }
+        anyActive ||= item.active;
+      });
+
+      return anyActive;
+    };
+
+    markActive(this.menuItems);
+  }
+
+
 }

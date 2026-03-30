@@ -1,95 +1,93 @@
-<!-- Vertical Sidebar Menu -->
-<aside id="layout-menu" class="layout-menu menu-vertical menu"   [ngClass]="{ 'collapsed': isCollapsed }">
+<div class="layout-page">
+  <!-- Content wrapper -->
+  <div class="content-wrapper">
+    <aside
+      id="layout-menu"
+      class="layout-menu-horizontal menu-horizontal menu flex-grow-0"
+      style="
+        touch-action: none;
+        user-select: none;
+        -webkit-user-drag: none;
+        -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+      "
+    >
+      <div class="container-fluid d-flex h-100">
+        <a href="#" class="menu-horizontal-prev d-none"></a>
+        <div class="menu-horizontal-wrapper">
+          <ul class="menu-inner">
+            <ng-container *ngFor="let menu of menuItems">
+              <li
+                class="menu-item"
+                [ngClass]="{
+                  active: menu.active
+                }"
 
-  <!-- Brand Logo -->
-<div class="app-brand demo">
-  <a routerLink="/layout/dashboard" class="app-brand-link">
-    <span class="app-brand-logo demo">
-      <i class="ri ri-briefcase-4-line" style="font-size: 1.5rem; color: var(--bs-primary);"></i>
-    </span>
-    <span class="app-brand-text demo menu-text fw-semibold ms-2">HRMS</span>
-  </a>
+              >
+                <a
+                  href="javascript:void(0)"
+                  class="menu-link menu-toggle"
+                  [routerLink]="menu.link"
+                  routerLinkActive="active"
+                >
+                  <i class="menu-icon ri" [ngClass]="menu.icon"></i>
+                  <div>{{ menu.title }}</div>
+                </a>
 
-  <!-- Toggle Button -->
-  <a href="javascript:void(0);"
-     class="layout-menu-toggle menu-link text-large ms-auto"
-     (click)="toggleSidebar()">
-    <i class="ri"
-       [ngClass]="isCollapsed ? 'ri-menu-unfold-line' : 'ri-menu-fold-line'">
-    </i>
-  </a>
-</div>
-
-  <div class="menu-inner-shadow"></div>
-
-  <!-- Menu Items -->
-  <ul class="menu-inner py-1">
-    <ng-container *ngFor="let menu of menuItems">
-
-      <!-- Menu Item with no children -->
-      <ng-container *ngIf="!menu.children || !menu.children.length">
-        <li class="menu-item" [class.active]="isLinkActive(menu.link)">
-          <a class="menu-link" [routerLink]="menu.link" routerLinkActive="active">
-            <i class="menu-icon icon-base ri" [ngClass]="menu.icon"></i>
-            <div>{{ menu.title }}</div>
-          </a>
-        </li>
-      </ng-container>
-
-      <!-- Menu Item with children (collapsible) -->
-      <ng-container *ngIf="menu.children && menu.children.length">
-        <li class="menu-item"
-            [class.active]="isAnyChildActive(menu.children)"
-            [class.open]="openMenu === menu.title">
-          <a href="javascript:void(0);"
-             class="menu-link menu-toggle"
-             (click)="toggleMenu(menu.title)">
-            <i class="menu-icon icon-base ri" [ngClass]="menu.icon"></i>
-            <div>{{ menu.title }}</div>
-          </a>
-          <ul class="menu-sub">
-            <ng-container
-              *ngTemplateOutlet="renderSubmenu; context: { $implicit: menu.children, parentTitle: menu.title }">
+                <ng-container *ngIf="menu.children && menu.children.length">
+                  <ul class="menu-sub">
+                    <ng-container
+                      *ngTemplateOutlet="
+                        renderSubmenu;
+                        context: { $implicit: menu.children }
+                      "
+                    ></ng-container>
+                  </ul>
+                </ng-container>
+              </li>
             </ng-container>
           </ul>
-        </li>
-      </ng-container>
 
-    </ng-container>
-  </ul>
+          <!-- Template for recursive submenu -->
+          <ng-template #renderSubmenu let-submenus>
+            <ng-container *ngFor="let sub of submenus">
+              <li
+                class="menu-item"
+                [ngClass]="{
+                  active: sub.active,
+                  open: isAnyChildActive(sub.children)
+                }"
+              >
+                <ng-container *ngIf="!sub.children">
+                  <a
+                    class="menu-link"
+                    [routerLink]="sub.link"
+                    routerLinkActive="active"
+                  >
+                    <i class="menu-icon ri" [ngClass]="sub.icon"></i>
+                    <div>{{ sub.title }}</div>
+                  </a>
+                </ng-container>
 
-  <!-- Recursive submenu template -->
-  <ng-template #renderSubmenu let-submenus let-parentTitle="parentTitle">
-    <ng-container *ngFor="let sub of submenus">
-
-      <!-- Leaf item (no children) -->
-      <li class="menu-item" *ngIf="!sub.children || !sub.children.length"
-          [class.active]="isLinkActive(sub.link)">
-        <a class="menu-link" [routerLink]="sub.link" routerLinkActive="active">
-          <i class="menu-icon icon-base ri" [ngClass]="sub.icon"></i>
-          <div>{{ sub.title }}</div>
-        </a>
-      </li>
-
-      <!-- Sub-item with nested children -->
-      <li class="menu-item"
-          *ngIf="sub.children && sub.children.length"
-          [class.active]="isAnyChildActive(sub.children)"
-          [class.open]="openMenu === sub.title">
-        <a href="javascript:void(0);"
-           class="menu-link menu-toggle"
-           (click)="toggleMenu(sub.title)">
-          <i class="menu-icon icon-base ri" [ngClass]="sub.icon"></i>
-          <div>{{ sub.title }}</div>
-        </a>
-        <ul class="menu-sub">
-          <ng-container
-            *ngTemplateOutlet="renderSubmenu; context: { $implicit: sub.children, parentTitle: sub.title }">
-          </ng-container>
-        </ul>
-      </li>
-
-    </ng-container>
-  </ng-template>
-
-</aside>
+                <ng-container *ngIf="sub.children && sub.children.length">
+                  <a class="menu-link menu-toggle" href="javascript:void(0)">
+                    <i class="menu-icon ri" [ngClass]="sub.icon"></i>
+                    <div>{{ sub.title }}</div>
+                  </a>
+                  <ul class="menu-sub">
+                    <ng-container
+                      *ngTemplateOutlet="
+                        renderSubmenu;
+                        context: { $implicit: sub.children }
+                      "
+                    ></ng-container>
+                  </ul>
+                </ng-container>
+              </li>
+            </ng-container>
+          </ng-template>
+        </div>
+        <a href="#" class="menu-horizontal-next d-none"></a>
+      </div>
+    </aside>
+  </div>
+</div>
