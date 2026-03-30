@@ -4,11 +4,7 @@
       <a href="/Home" class="app-brand-link gap-2"> </a>
       <span class="app-brand-logo demo">
         <span class="text-primary">
-          <img
-                    [src]="tenantDetails?.image"
-                    alt="Document"
-                   alt="Logo" class="logo" width="20%"
-                  />
+          <img [src]="tenantDetails?.image" alt="Document" alt="Logo" class="logo" width="20%" />
           <!-- <img src="assets/img/logo/logo-quaere.png" alt="Logo" class="logo" width="20%" /> -->
         </span>
       </span>
@@ -31,27 +27,20 @@
         </li>
 
         <!-- /Search -->
-<li><a href="branchwise" class="btn btn-primary waves-effect waves-light me-sm-2 me-2 ">  <i class="fa-solid fa-street-view text-white me-2"></i> Go To Branch</a></li>
+        <li><a href="branchwise" class="btn btn-primary waves-effect waves-light me-sm-2 me-2 "> <i
+              class="fa-solid fa-street-view text-white me-2"></i> Go To Branch</a></li>
 
         <!-- <div class="row"> -->
-      <!-- <div class="col-4"> -->
-              <!-- <label for="defaultFormControlInput" class="form-label">Select Branch</label> -->
-                <strong></strong><ng-select
-      [items]="branchList"
-      bindLabel="name"
-      style="width: 120px;"
-      bindValue="id"
-      placeholder="Select Branch"
-      class=" me-sm-2 mx-1"
-      name="branch"
-      [(ngModel)]="obj['branchId']"
-      (ngModelChange)="onBranchChange($event)"
-      #branchIdRef="ngModel">
-    </ng-select>
-            <!-- </div> -->
-  <!-- </div> -->
+        <!-- <div class="col-4"> -->
+        <!-- <label for="defaultFormControlInput" class="form-label">Select Branch</label> -->
+        <strong></strong><ng-select [items]="branchList" bindLabel="name" style="width: 120px;" bindValue="id"
+          placeholder="Select Branch" class=" me-sm-2 mx-1" name="branch" [(ngModel)]="obj['branchId']"
+          (ngModelChange)="onBranchChange($event)" #branchIdRef="ngModel">
+        </ng-select>
+        <!-- </div> -->
+        <!-- </div> -->
 
-          <!-- <select class="form-select form-select-md p-2" style="width: 200px;">
+        <!-- <select class="form-select form-select-md p-2" style="width: 200px;">
             <option selected>Select Branch</option>
             <option value="1">Lucknow</option>
             <option value="2">Varanasi</option>
@@ -59,9 +48,10 @@
           </select> -->
 
 
-<li><a href="/layout/tracking" class="btn btn-primary waves-effect waves-light me-sm-2 me-2 ">  <i class="fa-solid fa-street-view text-white me-2"></i> Location</a></li>
+        <li><a href="/layout/tracking" class="btn btn-primary waves-effect waves-light me-sm-2 me-2 "> <i
+              class="fa-solid fa-street-view text-white me-2"></i> Location</a></li>
 
-<!-- <a href="/layout/tracking" class="btn btn-primary waves-effect waves-light me-sm-2 ">  <i class="fas fa-map-marker-alt text-white me-2"></i> Track Location</a> -->
+        <!-- <a href="/layout/tracking" class="btn btn-primary waves-effect waves-light me-sm-2 ">  <i class="fas fa-map-marker-alt text-white me-2"></i> Track Location</a> -->
 
         <!-- <li class="nav-item dropdown-language dropdown me-sm-2 me-xl-0">
           <a class="nav-link dropdown-toggle hide-arrow btn btn-icon btn-text-secondary rounded-pill"

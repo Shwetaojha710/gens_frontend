@@ -10,7 +10,47 @@ import { CommonModule } from '@angular/common';
 import { MasterService } from '../services/master.service';
 import { firstValueFrom } from 'rxjs';
 import { GoogleroadService } from '../services/googleroad.service';
+// tracking.component.ts
+import {
+  AfterViewInit,
+  ViewChild,
+  ElementRef,
+  NgZone,
+} from '@angular/core';
+import { trigger, transition, style, animate } from '@angular/animations';
 
+// ─── Types ───────────────────────────────────────────────────────────────────
+
+export interface LocationCoords {
+  latitude: number;
+  longitude: number;
+  altitude: number;
+  accuracy: number;
+  altitudeAccuracy: number;
+  heading: number;
+  speed: number;
+}
+
+export interface LocationPoint {
+  coords: LocationCoords;
+  timestamp: number;
+  mode: 'foreground' | 'background';
+  Deviceid: string;
+  deviceOs: string;
+  location_type: 'normal' | 'pinned';
+  address: string | null;
+}
+
+export interface MapStyle {
+  id: string;
+  label: string;
+  url: string;
+}
+
+// ─── Google Maps type stubs (replace with @types/google.maps in real app) ────
+declare const google: any;
+
+// ─── Component ───────────────────────────────────────────────────────────────
 @Component({
   selector: 'app-tracking',
   templateUrl: './tracking.component.html',
@@ -24,11 +64,11 @@ export class TrackingComponent implements OnInit, OnDestroy {
   playbackIndex = 0;
   playbackMarker!: L.Marker;
 
-  map!: L.Map;
-  markers: L.Marker[] = [];
-  arrowMarkers: L.Marker[] = [];
-  polyline!: L.Polyline;
-  currentTileLayer!: L.TileLayer;
+  map!: any;
+  markers: any[] = [];
+  arrowMarkers: any[] = [];
+  polyline: any = null;
+  currentTileLayer!: any;
   trafficLayer: L.TileLayer | null = null;
   mapType: string = 'osm';
   isTrafficEnabled: boolean = false;
@@ -40,7 +80,7 @@ export class TrackingComponent implements OnInit, OnDestroy {
   fullScreenControl: any = null;
   trafficControl: any = null;
   zoomControl: any = null;
-  constructor(private googleRoadService: GoogleroadService, private locationService: LocationService, public statusService: StatusService, private router: Router, private master: MasterService,) {
+  constructor(private ngZone: NgZone,private googleRoadService: GoogleroadService, private locationService: LocationService, public statusService: StatusService, private router: Router, private master: MasterService,) {
   }
   formatMinutesToHHMM(minutes: number): string {
     const h = Math.floor(minutes / 60);
@@ -51,6 +91,10 @@ export class TrackingComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.activeTrackingUsers();
     this.baseurl = this.master.getBaseUrl();
+       this.loadLocationData();
+    this.deriveLocations();
+    this.applyFilters();
+    this.calculateStats();
   }
   pageSize = 10;
   currentPage = 1;
@@ -296,21 +340,21 @@ export class TrackingComponent implements OnInit, OnDestroy {
   filteredDesignation: any = []
   searchText: any = ''
   originalList: any = []
-  applyFilters() {
-    let data = [...this.ActiveUsers];
-    const value = this.searchTerm || '';
-    this.searchText = value.trim();
-    if (this.searchText === '') {
-      this.ActiveUsers = [...this.originalList];
-    } else {
-      this.ActiveUsers = this.originalList.filter((item: any) =>
-        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
-      );
-    }
-    const start = (this.currentPage - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    this.filteredDesignation = data.slice(start, end);
-  }
+  // applyFilters() {
+  //   let data = [...this.ActiveUsers];
+  //   const value = this.searchTerm || '';
+  //   this.searchText = value.trim();
+  //   if (this.searchText === '') {
+  //     this.ActiveUsers = [...this.originalList];
+  //   } else {
+  //     this.ActiveUsers = this.originalList.filter((item: any) =>
+  //       JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
+  //     );
+  //   }
+  //   const start = (this.currentPage - 1) * this.pageSize;
+  //   const end = start + this.pageSize;
+  //   this.filteredDesignation = data.slice(start, end);
+  // }
   baseurl: any;
   ActiveUsers: any = [];
   viewLiveTracking: boolean = true;
@@ -367,38 +411,38 @@ export class TrackingComponent implements OnInit, OnDestroy {
 
   }
 
-  initMap() {
-    const mapElement = document.getElementById('map');
-    if (!mapElement) {
-      console.error('Map container not found');
-      return;
-    }
+  // initMap() {
+  //   const mapElement = document.getElementById('map');
+  //   if (!mapElement) {
+  //     console.error('Map container not found');
+  //     return;
+  //   }
 
-    if (this.map) {
-      this.map.remove();
-    }
+  //   if (this.map) {
+  //     this.map.remove();
+  //   }
 
-    this.map = L.map('map', {
-      minZoom: 2,
-      maxZoom: 30,
-      zoomControl: false,
-      preferCanvas: false,
-      fadeAnimation: true,
-      zoomAnimation: true,
-      zoomAnimationThreshold: 4
-    }).setView([26.8687564, 81.006653], 5);
+  //   this.map = L.map('map', {
+  //     minZoom: 2,
+  //     maxZoom: 30,
+  //     zoomControl: false,
+  //     preferCanvas: false,
+  //     fadeAnimation: true,
+  //     zoomAnimation: true,
+  //     zoomAnimationThreshold: 4
+  //   }).setView([26.8687564, 81.006653], 5);
 
-    this.addTileLayer(this.mapType);
-    this.addFullScreenControl();
-    this.addTrafficControl();
-    this.addCustomZoomControl();
+  //   this.addTileLayer(this.mapType);
+  //   this.addFullScreenControl();
+  //   this.addTrafficControl();
+  //   this.addCustomZoomControl();
 
-    setTimeout(() => {
-      if (this.map) {
-        this.map.invalidateSize();
-      }
-    }, 100);
-  }
+  //   setTimeout(() => {
+  //     if (this.map) {
+  //       this.map.invalidateSize();
+  //     }
+  //   }, 100);
+  // }
 
   addFullScreenControl() {
     if (this.fullScreenControl) {
@@ -1569,17 +1613,503 @@ border:2px solid white;
     }
   }
 
-  ngOnDestroy() {
-    this.stopLiveTracking();
-    if (this.trafficLayer && this.map) {
-      this.map.removeLayer(this.trafficLayer);
-      this.trafficLayer = null;
-    }
-  }
+  // ngOnDestroy() {
+  //   this.stopLiveTracking();
+  //   if (this.trafficLayer && this.map) {
+  //     this.map.removeLayer(this.trafficLayer);
+  //     this.trafficLayer = null;
+  //   }
+  // }
   pinnedMarker() {
 
 
     this.addPinnedMarkers(this.map, this.pinned);
 
+  }
+   @ViewChild('mapContainer') mapContainer!: ElementRef;
+  @ViewChild('timelineList') timelineList!: ElementRef;
+
+  // ── Raw Data ────────────────────────────────────────────────────────────────
+  locationData: LocationPoint[] = [];
+
+  // ── Filtered/derived ────────────────────────────────────────────────────────
+  filteredLocations: LocationPoint[] = [];
+  // pinnedLocations: LocationPoint[] = [];
+  normalLocations: LocationPoint[] = [];
+  selectedLocation: LocationPoint | null = null;
+
+  // ── Filter state ────────────────────────────────────────────────────────────
+  filterStartDate = '';
+  filterEndDate   = '';
+  filterStartTime = '';
+  filterEndTime   = '';
+  filterType: 'all' | 'pinned' | 'normal' = 'all';
+
+  // ── UI State ────────────────────────────────────────────────────────────────
+  isPanelCollapsed = false;
+  isLiveTracking   = false;
+  currentMapStyle  = 'standard';
+
+  mapStyles: MapStyle[] = [
+    { id: 'standard',  label: 'Standard',  url: '' },
+    { id: 'satellite', label: 'Satellite', url: '' },
+    { id: 'terrain',   label: 'Terrain',   url: '' },
+    { id: 'dark',      label: 'Dark',      url: '' },
+    { id: 'streets',   label: 'Streets',   url: '' },
+  ];
+
+  // ── Map internals ────────────────────────────────────────────────────────────
+  // private map: any = null;
+  // private markers: any[] = [];
+  // private polyline: any = null;
+  private liveInterval: any = null;
+  private liveIndex = 0;
+
+  // ── Stats ────────────────────────────────────────────────────────────────────
+  totalDistance   = 0;
+  trackingDuration = '--:--';
+  avgSpeed         = 0;
+  bestAccuracy     = 0;
+
+  // ─── Lifecycle ───────────────────────────────────────────────────────────────
+
+  // constructor(private ngZone: NgZone) {}
+
+  // ngOnInit(): void {
+  //   this.loadLocationData();
+  //   this.deriveLocations();
+  //   this.applyFilters();
+  //   this.calculateStats();
+  // }
+
+  ngAfterViewInit(): void {
+    this.initMap();
+  }
+
+  ngOnDestroy(): void {
+    this.stopLive();
+  }
+
+  // ─── Data Loading ─────────────────────────────────────────────────────────────
+
+  /**
+   * In a real app, inject a service and call an API:
+   *   this.trackingService.getLocations(deviceId, from, to).subscribe(data => { ... })
+   * Here we parse from the JSON provided or use a static import.
+   */
+  private loadLocationData(): void {
+    // ⬇ Replace with API call in production
+    // this.locationData = LOCATION_JSON as LocationPoint[];
+    // For now, data is expected to be injected via @Input() or a service.
+    // This method is the hook to populate `this.locationData`.
+    this.locationData = this.getSampleData();
+  }
+
+  private deriveLocations(): void {
+    this.pinnedLocations = this.locationData.filter(l => l.location_type === 'pinned');
+    this.normalLocations  = this.locationData.filter(l => l.location_type === 'normal');
+  }
+
+  // ─── Filters ──────────────────────────────────────────────────────────────────
+
+  applyFilters(): void {
+    let result = [...this.locationData];
+
+    // Type filter
+    if (this.filterType !== 'all') {
+      result = result.filter(l => l.location_type === this.filterType);
+    }
+
+    // Date + time filters
+    if (this.filterStartDate) {
+      const start = this.buildTimestamp(this.filterStartDate, this.filterStartTime || '00:00');
+      result = result.filter(l => l.timestamp >= start);
+    }
+
+    if (this.filterEndDate) {
+      const end = this.buildTimestamp(this.filterEndDate, this.filterEndTime || '23:59');
+      result = result.filter(l => l.timestamp <= end);
+    }
+
+    this.filteredLocations = result;
+    this.refreshMapMarkers();
+  }
+
+  private buildTimestamp(date: string, time: string): number {
+    return new Date(`${date}T${time}:00`).getTime();
+  }
+
+  setFilterType(type: 'all' | 'pinned' | 'normal'): void {
+    this.filterType = type;
+    this.applyFilters();
+  }
+
+  resetFilters(): void {
+    this.filterStartDate = '';
+    this.filterEndDate   = '';
+    this.filterStartTime = '';
+    this.filterEndTime   = '';
+    this.filterType      = 'all';
+    this.applyFilters();
+  }
+
+  // ─── Map Initialization ───────────────────────────────────────────────────────
+
+  private initMap(): void {
+    if (typeof google === 'undefined') {
+      console.warn('Google Maps not loaded. Add the script to index.html.');
+      this.renderFallbackMap();
+      return;
+    }
+
+    const center = this.getMapCenter();
+
+    this.map = new google.maps.Map(this.mapContainer.nativeElement, {
+      center,
+      zoom: 14,
+      mapTypeId: 'roadmap',
+      disableDefaultUI: false,
+      zoomControl: true,
+      mapTypeControl: false,
+      streetViewControl: false,
+      fullscreenControl: false,
+      styles: this.getMapStyle(this.currentMapStyle),
+    });
+
+    this.renderRoute();
+    this.refreshMapMarkers();
+  }
+
+  /** Draws the polyline path through ALL location points (sorted by time). */
+private renderRoute(): void {
+  if (!this.map) return;
+
+  // Clear old polyline
+  if (this.polyline) {
+    if (typeof this.polyline.setMap === 'function') {
+      this.polyline.setMap(null);
+    } else if (typeof this.polyline.remove === 'function') {
+      this.polyline.remove();
+    }
+    this.polyline = null;
+  }
+
+    const sorted = [...this.locationData].sort((a, b) => a.timestamp - b.timestamp);
+    const path = sorted.map(l => ({
+      lat: l.coords.latitude,
+      lng: l.coords.longitude,
+    }));
+
+    this.polyline = new google.maps.Polyline({
+      path,
+      geodesic: true,
+      strokeColor: '#2563EB',
+      strokeOpacity: 0.85,
+      strokeWeight: 3,
+      map: this.map,
+    });
+  }
+
+  /** Places markers for filtered locations + always shows Start/End. */
+  private refreshMapMarkers(): void {
+    if (!this.map) return;
+
+    // Clear existing markers
+    this.markers.forEach(m => m.setMap(null));
+    this.markers = [];
+
+    const sorted = [...this.filteredLocations].sort((a, b) => a.timestamp - b.timestamp);
+
+    sorted.forEach((loc, i) => {
+      const isStart  = i === 0;
+      const isEnd    = i === sorted.length - 1;
+      const isPinned = loc.location_type === 'pinned';
+
+      const marker = new google.maps.Marker({
+        position: { lat: loc.coords.latitude, lng: loc.coords.longitude },
+        map: this.map,
+        title: isPinned ? '📌 Visit Point' : isStart ? 'Start' : isEnd ? 'End' : 'Track',
+        icon: this.getMarkerIcon(loc, isStart, isEnd),
+        zIndex: isPinned ? 100 : isStart || isEnd ? 50 : 1,
+        animation: isPinned ? google.maps.Animation.DROP : null,
+      });
+
+      marker.addListener('click', () => {
+        this.ngZone.run(() => {
+          this.selectLocation(loc);
+          this.scrollTimelineToItem(i);
+        });
+      });
+
+      this.markers.push(marker);
+    });
+  }
+
+  private getMarkerIcon(loc: LocationPoint, isStart: boolean, isEnd: boolean): any {
+    if (loc.location_type === 'pinned') {
+      return {
+        url: this.createSvgMarker('📌', '#F59E0B', '#FFFBEB'),
+        scaledSize: new google.maps.Size(44, 44),
+        anchor: new google.maps.Point(22, 44),
+      };
+    }
+    if (isStart) {
+      return {
+        url: this.createCircleMarker('#16A34A', 'S'),
+        scaledSize: new google.maps.Size(36, 36),
+        anchor: new google.maps.Point(18, 18),
+      };
+    }
+    if (isEnd) {
+      return {
+        url: this.createCircleMarker('#DC2626', 'E'),
+        scaledSize: new google.maps.Size(36, 36),
+        anchor: new google.maps.Point(18, 18),
+      };
+    }
+    return {
+      url: this.createCircleMarker('#3B82F6', ''),
+      scaledSize: new google.maps.Size(16, 16),
+      anchor: new google.maps.Point(8, 8),
+    };
+  }
+
+  /** SVG data-URI for custom map markers */
+  private createCircleMarker(color: string, label: string): string {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
+      <circle cx="18" cy="18" r="16" fill="${color}" stroke="white" stroke-width="2"/>
+      <text x="18" y="23" text-anchor="middle" fill="white" font-size="14" font-weight="bold">${label}</text>
+    </svg>`;
+    return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+  }
+
+  private createSvgMarker(emoji: string, borderColor: string, bgColor: string): string {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="44" height="44" viewBox="0 0 44 44">
+      <circle cx="22" cy="22" r="20" fill="${bgColor}" stroke="${borderColor}" stroke-width="2.5"/>
+      <text x="22" y="28" text-anchor="middle" font-size="20">${emoji}</text>
+    </svg>`;
+    return 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent(svg);
+  }
+
+  // ─── Map Style ────────────────────────────────────────────────────────────────
+
+  changeMapStyle(styleId: string): void {
+    this.currentMapStyle = styleId;
+    if (!this.map) return;
+
+    if (styleId === 'satellite') {
+      this.map.setMapTypeId('satellite');
+      this.map.setOptions({ styles: [] });
+    } else if (styleId === 'terrain') {
+      this.map.setMapTypeId('terrain');
+      this.map.setOptions({ styles: [] });
+    } else {
+      this.map.setMapTypeId('roadmap');
+      this.map.setOptions({ styles: this.getMapStyle(styleId) });
+    }
+  }
+
+  private getMapStyle(id: string): any[] {
+    const styles: { [key: string]: any[] } = {
+      standard: [],
+      dark: [
+        { elementType: 'geometry', stylers: [{ color: '#1a1a2e' }] },
+        { elementType: 'labels.text.fill', stylers: [{ color: '#6B7280' }] },
+        { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#16213E' }] },
+        { featureType: 'road', elementType: 'geometry.stroke', stylers: [{ color: '#0F3460' }] },
+        { featureType: 'water', elementType: 'geometry', stylers: [{ color: '#0F3460' }] },
+      ],
+      streets: [
+        { featureType: 'poi', elementType: 'labels', stylers: [{ visibility: 'off' }] },
+        { featureType: 'transit', stylers: [{ visibility: 'off' }] },
+        { featureType: 'road', elementType: 'geometry', stylers: [{ color: '#f5f5f5' }] },
+      ],
+    };
+    return styles[id] || [];
+  }
+
+  // ─── Live Tracking ────────────────────────────────────────────────────────────
+
+  // toggleLiveTracking(): void {
+  //   this.isLiveTracking = !this.isLiveTracking;
+  //   if (this.isLiveTracking) this.startLive();
+  //   else this.stopLive();
+  // }
+
+  private startLive(): void {
+    this.liveIndex = 0;
+    const sorted = [...this.locationData].sort((a, b) => a.timestamp - b.timestamp);
+
+    this.liveInterval = setInterval(() => {
+      if (this.liveIndex >= sorted.length) {
+        this.stopLive();
+        this.isLiveTracking = false;
+        return;
+      }
+      const loc = sorted[this.liveIndex++];
+      if (this.map) {
+        this.map.panTo({ lat: loc.coords.latitude, lng: loc.coords.longitude });
+      }
+    }, 800);
+  }
+
+  private stopLive(): void {
+    if (this.liveInterval) {
+      clearInterval(this.liveInterval);
+      this.liveInterval = null;
+    }
+  }
+
+  // ─── Selection ────────────────────────────────────────────────────────────────
+
+  selectLocation(loc: LocationPoint): void {
+    this.selectedLocation = loc;
+    if (this.map) {
+      this.map.panTo({ lat: loc.coords.latitude, lng: loc.coords.longitude });
+      if (loc.location_type === 'pinned') this.map.setZoom(17);
+    }
+  }
+
+  clearSelection(): void {
+    this.selectedLocation = null;
+  }
+
+  private scrollTimelineToItem(index: number): void {
+    if (!this.timelineList) return;
+    const items = this.timelineList.nativeElement.querySelectorAll('.timeline-item');
+    if (items[index]) {
+      items[index].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }
+
+  // ─── Stats ────────────────────────────────────────────────────────────────────
+
+  private calculateStats(): void {
+    if (this.locationData.length < 2) return;
+
+    const sorted = [...this.locationData].sort((a, b) => a.timestamp - b.timestamp);
+
+    // Distance (Haversine)
+    let dist = 0;
+    for (let i = 1; i < sorted.length; i++) {
+      dist += this.haversine(
+        sorted[i - 1].coords.latitude, sorted[i - 1].coords.longitude,
+        sorted[i].coords.latitude, sorted[i].coords.longitude,
+      );
+    }
+    this.totalDistance = dist;
+
+    // Duration
+    const ms = sorted[sorted.length - 1].timestamp - sorted[0].timestamp;
+    const hrs  = Math.floor(ms / 3_600_000);
+    const mins = Math.floor((ms % 3_600_000) / 60_000);
+    this.trackingDuration = `${hrs}h ${mins}m`;
+
+    // Avg speed from points that have speed data
+    const speedPoints = sorted.filter(l => l.coords.speed > 0);
+    this.avgSpeed = speedPoints.length
+      ? (speedPoints.reduce((sum, l) => sum + l.coords.speed, 0) / speedPoints.length) * 3.6
+      : 0;
+
+    // Best accuracy (lowest number = best)
+    const accs = sorted.map(l => l.coords.accuracy).filter(a => a > 0);
+    this.bestAccuracy = accs.length ? Math.min(...accs) : 0;
+  }
+
+  private haversine(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const R    = 6371;
+    const dLat = this.deg2rad(lat2 - lat1);
+    const dLon = this.deg2rad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) ** 2 +
+      Math.cos(this.deg2rad(lat1)) * Math.cos(this.deg2rad(lat2)) * Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  private deg2rad(deg: number): number {
+    return deg * (Math.PI / 180);
+  }
+
+  // ─── Helpers ──────────────────────────────────────────────────────────────────
+
+  private getMapCenter(): { lat: number; lng: number } {
+    if (!this.locationData.length) return { lat: 26.85, lng: 81.01 };
+    const lats = this.locationData.map(l => l.coords.latitude);
+    const lngs = this.locationData.map(l => l.coords.longitude);
+    return {
+      lat: (Math.min(...lats) + Math.max(...lats)) / 2,
+      lng: (Math.min(...lngs) + Math.max(...lngs)) / 2,
+    };
+  }
+
+  formatTime(ts: number): string {
+    return new Date(ts).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  }
+
+  formatDate(ts: number): string {
+    return new Date(ts).toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+
+  formatDateTime(ts: number): string {
+    return new Date(ts).toLocaleString('en-IN', {
+      day: '2-digit', month: 'short', year: 'numeric',
+      hour: '2-digit', minute: '2-digit',
+    });
+  }
+
+  openInMaps(loc: LocationPoint): void {
+    const url = `https://www.google.com/maps?q=${loc.coords.latitude},${loc.coords.longitude}`;
+    window.open(url, '_blank');
+  }
+
+  async copyCoords(loc: LocationPoint): Promise<void> {
+    const text = `${loc.coords.latitude}, ${loc.coords.longitude}`;
+    await navigator.clipboard.writeText(text);
+    // Toast feedback can be added here
+  }
+
+  trackByIndex(index: number): number {
+    return index;
+  }
+
+  goBack(): void {
+    window.history.back();
+  }
+
+  togglePanel(): void {
+    this.isPanelCollapsed = !this.isPanelCollapsed;
+  }
+
+  // ─── Fallback (no Google Maps loaded) ────────────────────────────────────────
+
+  private renderFallbackMap(): void {
+    if (!this.mapContainer) return;
+    const el = this.mapContainer.nativeElement as HTMLElement;
+    el.innerHTML = `
+      <div style="
+        width:100%;height:100%;display:flex;flex-direction:column;
+        align-items:center;justify-content:center;background:#1e293b;
+        color:#94a3b8;font-family:monospace;gap:12px;">
+        <div style="font-size:48px;">🗺</div>
+        <div style="font-size:16px;font-weight:600;color:#e2e8f0;">Google Maps Not Loaded</div>
+        <div style="font-size:12px;text-align:center;max-width:300px;">
+          Add your Google Maps API key to <code>index.html</code>:<br><br>
+          <code style="background:#0f172a;padding:8px 12px;border-radius:6px;display:inline-block;">
+            &lt;script src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY"&gt;
+          </code>
+        </div>
+        <div style="font-size:11px;color:#475569;margin-top:8px;">
+          ${this.locationData.length} location points loaded •
+          ${this.pinnedLocations.length} visit pins detected
+        </div>
+      </div>`;
+  }
+
+  // ─── Sample Data ──────────────────────────────────────────────────────────────
+  // Replace with real API in production. Keeping a small subset for demo.
+  private getSampleData(): LocationPoint[] {
+    // Paste the full JSON array here or load from a service
+    return [] as LocationPoint[];
+    // In real app: return this.trackingService.locations;
   }
 }

@@ -108,8 +108,342 @@
     </div>
   </div>
 
+<!-- tracking.component.html -->
+<div class="tracking-wrapper" *ngIf="!viewLiveTracking" [class.fullscreen-mode]="isFullScreen">
 
-  <div *ngIf="!viewLiveTracking" [class.fullscreen-mode]="isFullScreen">
+  <!-- ═══ HEADER BAR ═══ -->
+  <div class="header-bar">
+    <div class="header-left">
+      <button class="btn-back" (click)="goBack()">
+        <span class="icon">←</span> Back to List
+      </button>
+      <div class="page-title">
+        <span class="title-icon">📍</span>
+        <span>Live Map Tracking</span>
+      </div>
+    </div>
+
+    <div class="header-right">
+      <div class="stats-pill">
+        <span class="stat-item">
+          <span class="dot dot-pinned"></span>
+          {{ pinnedLocations.length }} Pinned
+        </span>
+        <span class="divider">|</span>
+        <span class="stat-item">
+          <span class="dot dot-normal"></span>
+          {{ normalLocations.length }} Tracked
+        </span>
+        <span class="divider">|</span>
+        <span class="stat-item total">
+          <span class="dot dot-total"></span>
+          {{ locationData.length }} Total
+        </span>
+      </div>
+
+      <!-- Map Style Toggle -->
+      <div class="map-style-toggle">
+        <button
+          *ngFor="let style of mapStyles"
+          [class.active]="currentMapStyle === style.id"
+          (click)="changeMapStyle(style.id)"
+          class="style-btn">
+          {{ style.label }}
+        </button>
+      </div>
+
+      <!-- Live Tracking Toggle -->
+      <button
+        class="btn-live"
+        [class.live-active]="isLiveTracking"
+        (click)="toggleLiveTracking()">
+        <span class="pulse-dot" *ngIf="isLiveTracking"></span>
+        {{ isLiveTracking ? '⏸ Pause Live' : '▶ Live Tracking' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- ═══ MAIN CONTENT ═══ -->
+  <div class="main-content">
+
+    <!-- ── LEFT PANEL: Timeline / Visit Log ── -->
+    <div class="left-panel" [class.collapsed]="isPanelCollapsed">
+
+      <!-- Panel Toggle -->
+      <button class="panel-toggle" (click)="togglePanel()">
+        <span>{{ isPanelCollapsed ? '▶' : '◀' }}</span>
+      </button>
+
+      <div class="panel-inner" *ngIf="!isPanelCollapsed">
+
+        <!-- Filter Section -->
+        <div class="filter-section">
+          <h3 class="section-title">
+            <span>🔍</span> Filter Visits
+          </h3>
+
+          <div class="filter-group">
+            <label>Start Date</label>
+            <input
+              type="date"
+              [(ngModel)]="filterStartDate"
+              (change)="applyFilters()"
+              class="filter-input" />
+          </div>
+
+          <div class="filter-group">
+            <label>End Date</label>
+            <input
+              type="date"
+              [(ngModel)]="filterEndDate"
+              (change)="applyFilters()"
+              class="filter-input" />
+          </div>
+
+          <div class="filter-row">
+            <div class="filter-group half">
+              <label>Start Time</label>
+              <input
+                type="time"
+                [(ngModel)]="filterStartTime"
+                (change)="applyFilters()"
+                class="filter-input" />
+            </div>
+            <div class="filter-group half">
+              <label>End Time</label>
+              <input
+                type="time"
+                [(ngModel)]="filterEndTime"
+                (change)="applyFilters()"
+                class="filter-input" />
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <label>Location Type</label>
+            <div class="chip-group">
+              <span
+                class="chip"
+                [class.active]="filterType === 'all'"
+                (click)="setFilterType('all')">All</span>
+              <span
+                class="chip chip-pinned"
+                [class.active]="filterType === 'pinned'"
+                (click)="setFilterType('pinned')">📌 Pinned</span>
+              <span
+                class="chip chip-normal"
+                [class.active]="filterType === 'normal'"
+                (click)="setFilterType('normal')">🔵 Normal</span>
+            </div>
+          </div>
+
+          <button class="btn-reset" (click)="resetFilters()">
+            ↺ Reset Filters
+          </button>
+        </div>
+
+        <!-- Visit Timeline -->
+        <div class="timeline-section">
+          <h3 class="section-title">
+            <span>🗓</span> Visit Timeline
+            <span class="count-badge">{{ filteredLocations.length }}</span>
+          </h3>
+
+          <div class="timeline-list" #timelineList>
+            <div
+              *ngFor="let loc of filteredLocations; let i = index; trackBy: trackByIndex"
+              class="timeline-item"
+              [class.pinned-item]="loc.location_type === 'pinned'"
+              [class.active-item]="selectedLocation?.timestamp === loc.timestamp"
+              (click)="selectLocation(loc)">
+
+              <!-- Timeline connector line -->
+              <div class="timeline-line" *ngIf="i < filteredLocations.length - 1"></div>
+
+              <!-- Marker dot -->
+              <div class="timeline-dot" [class.dot-pinned-type]="loc.location_type === 'pinned'">
+                <span>{{ loc.location_type === 'pinned' ? '📌' : '●' }}</span>
+              </div>
+
+              <!-- Card -->
+              <div class="timeline-card">
+                <div class="card-header">
+                  <span class="location-type-badge"
+                    [class.badge-pinned]="loc.location_type === 'pinned'">
+                    {{ loc.location_type === 'pinned' ? '📌 Visit Point' : '🔵 Track Point' }}
+                  </span>
+                  <span class="card-time">{{ formatTime(loc.timestamp) }}</span>
+                </div>
+
+                <div class="card-coords">
+                  <span class="coord-label">LAT</span>
+                  <span class="coord-val">{{ loc.coords.latitude | number:'1.4-6' }}</span>
+                  <span class="coord-sep">·</span>
+                  <span class="coord-label">LNG</span>
+                  <span class="coord-val">{{ loc.coords.longitude | number:'1.4-6' }}</span>
+                </div>
+
+                <div class="card-meta" *ngIf="loc.location_type === 'pinned'">
+                  <span class="meta-chip">
+                    🎯 Accuracy: {{ loc.coords.accuracy | number:'1.0-0' }}m
+                  </span>
+                  <span class="meta-chip" *ngIf="loc.coords.speed > 0">
+                    🚀 {{ (loc.coords.speed * 3.6) | number:'1.1-1' }} km/h
+                  </span>
+                  <span class="meta-chip">
+                    {{ loc.mode === 'foreground' ? '👁 FG' : '⚙ BG' }}
+                  </span>
+                </div>
+
+                <div class="card-date">
+                  📅 {{ formatDate(loc.timestamp) }}
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Empty state -->
+            <div class="empty-state" *ngIf="filteredLocations.length === 0">
+              <span class="empty-icon">🗺</span>
+              <p>No locations match your filter.</p>
+              <button class="btn-reset small" (click)="resetFilters()">Clear Filters</button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── MAP CONTAINER ── -->
+    <div class="map-area">
+
+      <!-- Map placeholder / Google Maps integration point -->
+      <div class="map-container" #mapContainer id="trackingMap">
+        <!-- Google Maps renders here via JS -->
+              <div id="map" [class.fullscreen-map]="isFullScreen"
+          [style.height]="isFullScreen ? '100vh' : 'calc(100vh - 200px)'" style="width: 100%; border: 1px solid #ccc;">
+        </div>
+      </div>
+
+      <!-- ── FLOATING VISIT CARD (shows on pin click) ── -->
+      <div class="visit-popup" *ngIf="selectedLocation" [@slideIn]>
+        <button class="popup-close" (click)="clearSelection()">✕</button>
+
+        <div class="popup-header"
+          [class.popup-pinned]="selectedLocation.location_type === 'pinned'">
+          <span class="popup-icon">
+            {{ selectedLocation.location_type === 'pinned' ? '📌' : '📍' }}
+          </span>
+          <div>
+            <div class="popup-type">
+              {{ selectedLocation.location_type === 'pinned' ? 'Visit / Purpose Point' : 'Tracked Location' }}
+            </div>
+            <div class="popup-time">{{ formatDateTime(selectedLocation.timestamp) }}</div>
+          </div>
+        </div>
+
+        <div class="popup-body">
+          <div class="popup-row">
+            <span class="popup-label">Latitude</span>
+            <span class="popup-value">{{ selectedLocation.coords.latitude | number:'1.6-6' }}</span>
+          </div>
+          <div class="popup-row">
+            <span class="popup-label">Longitude</span>
+            <span class="popup-value">{{ selectedLocation.coords.longitude | number:'1.6-6' }}</span>
+          </div>
+          <div class="popup-row">
+            <span class="popup-label">Altitude</span>
+            <span class="popup-value">{{ selectedLocation.coords.altitude | number:'1.1-1' }} m</span>
+          </div>
+          <div class="popup-row">
+            <span class="popup-label">Accuracy</span>
+            <span class="popup-value"
+              [class.accuracy-good]="selectedLocation.coords.accuracy < 30"
+              [class.accuracy-avg]="selectedLocation.coords.accuracy >= 30 && selectedLocation.coords.accuracy < 100"
+              [class.accuracy-poor]="selectedLocation.coords.accuracy >= 100">
+              {{ selectedLocation.coords.accuracy | number:'1.0-0' }} m
+              <span class="accuracy-icon">
+                {{ selectedLocation.coords.accuracy < 30 ? '🟢' : selectedLocation.coords.accuracy < 100 ? '🟡' : '🔴' }}
+              </span>
+            </span>
+          </div>
+          <div class="popup-row" *ngIf="selectedLocation.coords.speed > 0">
+            <span class="popup-label">Speed</span>
+            <span class="popup-value">{{ (selectedLocation.coords.speed * 3.6) | number:'1.1-1' }} km/h</span>
+          </div>
+          <div class="popup-row" *ngIf="selectedLocation.coords.heading > 0">
+            <span class="popup-label">Heading</span>
+            <span class="popup-value">{{ selectedLocation.coords.heading }}°</span>
+          </div>
+          <div class="popup-row">
+            <span class="popup-label">Mode</span>
+            <span class="popup-value mode-badge"
+              [class.mode-fg]="selectedLocation.mode === 'foreground'"
+              [class.mode-bg]="selectedLocation.mode === 'background'">
+              {{ selectedLocation.mode }}
+            </span>
+          </div>
+        </div>
+
+        <div class="popup-footer">
+          <button class="btn-navigate" (click)="openInMaps(selectedLocation)">
+            🗺 Open in Maps
+          </button>
+          <button class="btn-copy" (click)="copyCoords(selectedLocation)">
+            📋 Copy Coords
+          </button>
+        </div>
+      </div>
+
+      <!-- ── LEGEND ── -->
+      <div class="map-legend">
+        <div class="legend-title">Legend</div>
+        <div class="legend-item">
+          <span class="legend-dot start-dot"></span> Start Point
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot end-dot"></span> End Point
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot pinned-dot"></span> 📌 Visit / Pinned
+        </div>
+        <div class="legend-item">
+          <span class="legend-dot normal-dot"></span> Track Point
+        </div>
+        <div class="legend-item legend-line-item">
+          <span class="legend-line"></span> Route Path
+        </div>
+      </div>
+
+      <!-- ── BOTTOM STATS BAR ── -->
+      <div class="bottom-stats">
+        <div class="stat-box">
+          <span class="stat-label">📌 Total Visits</span>
+          <span class="stat-number">{{ pinnedLocations.length }}</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">📏 Distance</span>
+          <span class="stat-number">{{ totalDistance | number:'1.2-2' }} km</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">⏱ Duration</span>
+          <span class="stat-number">{{ trackingDuration }}</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">🏎 Avg Speed</span>
+          <span class="stat-number">{{ avgSpeed | number:'1.1-1' }} km/h</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">📡 Accuracy</span>
+          <span class="stat-number">{{ bestAccuracy | number:'1.0-0' }} m best</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+  <!-- <div *ngIf="!viewLiveTracking" [class.fullscreen-mode]="isFullScreen">
     <div class="card mb-3 mt-3" [class.d-none]="isFullScreen">
       <div class="card-body">
         <div class="d-flex justify-content-between align-items-center">
@@ -199,43 +533,7 @@ View Address
 
               </div>
 
-              <!-- <div class="col-3"   *ngFor="let pin of pinnedLocationList; let i = index">
 
-
-  <div
-    class="pin-card"
-    (click)="zoomToPin(pin)"
-  >
-
-    <div class="fw-bold">
-      Pinned Location ({{pin.count}} times)
-    </div>
-
-    <div class="text-muted">
-
-      <a
-        type="button"
-        class="text-primary"
-        (click)="viewAddress(pin, i); $event.stopPropagation()"
-      >
-        View Address
-    </a>
-
-      <div *ngIf="pin.address">
-        {{ pin.address }}
-      </div>
-
-
-    </div>
-
-    <div class="small">
-      {{ pin.timestamp | date:'medium' }}
-    </div>
-
-  </div>
-
-
-              </div> -->
 
             </div>
 
@@ -304,10 +602,7 @@ View Address
 
             </div>
 
-            <!-- <div class="text-center text-muted py-4">
-            <i class="fas fa-map-marker-alt fa-2x mb-2"></i>
-            <p>No location data available</p>
-          </div> -->
+
 
           </div>
         </div>
@@ -315,5 +610,5 @@ View Address
       </div>
     </div>
 
-  </div>
+  </div> -->
 </div>

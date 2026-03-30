@@ -11,12 +11,12 @@ import { MasterService } from '../../../services/master.service';
 import { MessagingService } from '../../../services/messaging.service';
 import { StatusService } from '../../../services/status.service';
 import { JobService } from '../../../services/job.service';
-
+import { TagInputModule } from 'ngx-chips';
 
 @Component({
   selector: 'app-job-requirement',
   imports: [NgSelectModule,
-    FormsModule, CommonModule, SearchPaginationComponent],
+    FormsModule, CommonModule, SearchPaginationComponent, TagInputModule],
   templateUrl: './job-requirement.component.html',
   styleUrl: './job-requirement.component.css'
 })
@@ -93,6 +93,23 @@ export class JobRequirementComponent {
       default: return 'bg-light-secondary';
     }
   }
+
+  skills: string[] = [];
+
+addSkill(event: any) {
+  event.preventDefault();
+  const value = event.target.value.trim();
+
+  if (value && !this.skills.includes(value)) {
+    this.skills.push(value);
+  }
+
+  event.target.value = '';
+}
+
+removeSkill(index: number) {
+  this.skills.splice(index, 1);
+}
   departmentDD: any = []
   async DepartmentDD() {
 
@@ -357,6 +374,7 @@ export class JobRequirementComponent {
 
   onSubmit() {
 
+    this.obj['skills'] = this.skills
     console.log(this.obj);
 
     this.jobService.ApplyJobRequirement(this.obj).subscribe({
@@ -550,6 +568,7 @@ export class JobRequirementComponent {
     this.createFlag = false
     this.obj = {}
     this.editingId = null;
+    this.skills = []
   }
   isInvalid(field: string): boolean {
     const control = this.EmployeeForm.get(field);
