@@ -1,4 +1,4 @@
-<div class="container-xxl  mt-5">
+<div class="container-fluid  mt-5">
   <div class="row mb-6" *ngIf="createFlag">
     <div class="col-md">
       <div class="card">
@@ -163,7 +163,7 @@
     <div class="col-md">
       <div class="card">
 
-        <div class="row mb-2 align-items-center">
+        <!-- <div class="row mb-2 align-items-center">
         <div class="col-md-8">
           <h5 class="card-header d-flex justify-content-between align-items-center" >Holiday List</h5>
         </div>
@@ -194,15 +194,21 @@
             </button>
           </div>
         </div>
-      </div>
+      </div> -->
 
-        <!-- <h5 class="card-header d-flex justify-content-between align-items-center">
+         <h5 class="card-header d-flex justify-content-between align-items-center">
           <span>Holiday List</span>
-          <button *ngIf="createFlag == false" type="button" class="btn btn-xs btn-primary float-end"
-            (click)="opencreate()">
-            <i class="fa-solid fa-plus"></i>&nbsp;Add
-          </button>
-        </h5> -->
+          <div class="d-flex justify-content-between align-items-center w-0">
+            <ng-select [items]="yearList" bindLabel="label" bindValue="value" [(ngModel)]="NewObj['year']"
+              [multiple]="false" placeholder="Select Year" name="state" id="select2Danger" class="w-100 mx-1" required
+              #enCashableRef="ngModel" (change)="fetchHoliday()">
+            </ng-select>
+            <button *ngIf="createFlag == false" type="button" class="btn btn-xs btn-block btn-primary mx-2"
+              (click)="opencreate()">
+              <i class="fa-solid fa-plus"></i>&nbsp;Add
+            </button>
+          </div>
+        </h5>
 
         <app-search-pagination [totalItems]="HolidayList.length" [pageSize]="itemsPerPage" [currentPage]="currentPage"
           (search)="onSearch($event)" (pageChange)="onPageChange($event)" (pageSizeChange)="onPageSizeChange($event)">
