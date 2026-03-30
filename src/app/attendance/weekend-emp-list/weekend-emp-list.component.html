@@ -1,4 +1,4 @@
-<div class="container-xxl  mt-5">
+<div class="container-fluid  mt-5">
   <div class="row mb-6">
     <div class="col-md">
       <div class="card">
@@ -64,9 +64,9 @@
           <div class="d-md-flex justify-content-end align-items-center dt-layout-end col-md-auto mt-0">
             <div class="dt-buttons btn-group flex-wrap">
               <div class="btn-group">
-                <button class="btn buttons-collection btn-label-primary me-4 waves-effect border-none"
-                  tabindex="0" aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog"
-                  aria-expanded="false" (click)="correctAll()">
+                <button class="btn buttons-collection btn-label-primary me-4 waves-effect border-none" tabindex="0"
+                  aria-controls="DataTables_Table_0" type="button" aria-haspopup="dialog" aria-expanded="false"
+                  (click)="correctAll()">
                   <span><span class="d-flex align-items-center gap-2">
                       <span class="d-none d-sm-inline-block">Approve All</span></span></span>
                 </button>
@@ -102,8 +102,9 @@
               id="DataTables_Table_0" aria-describedby="DataTables_Table_0_info">
               <thead>
                 <tr role="row">
-                  <th style="width: 20px; font-size: 12px" >
-                    <input type="checkbox" [(ngModel)]="masterSelected" (change)="checkUncheckAll()"  [disabled]="obj['is_comp_off_approve']"/>
+                  <th style="width: 20px; font-size: 12px">
+                    <input type="checkbox" [(ngModel)]="masterSelected" (change)="checkUncheckAll()"
+                      [disabled]="obj['is_comp_off_approve']" />
                   </th>
                   <th style="width: 120px; font-size: 12px">Employee</th>
 
