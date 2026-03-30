@@ -125,4 +125,8 @@ createFlag = false;
     this.router.navigate(['pending-emp-list']);
   }
 
+  gotoback(){
+    this.router.navigate(['landing-home']);
+  }
+
 }
