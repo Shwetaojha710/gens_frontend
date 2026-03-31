@@ -32,8 +32,8 @@ export class JobService {
   PublishJob(dept: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}publishJob`, dept);
   }
-  getJobRequirements(obj: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}getJobRequirements`, obj);
+  getJobRequirements(): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}getJobRequirements`, {});
   }
   deleteJobRequirement(dept: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}deleteJobRequirement`, dept);

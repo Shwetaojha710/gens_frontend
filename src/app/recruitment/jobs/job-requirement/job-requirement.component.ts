@@ -12,6 +12,7 @@ import { MessagingService } from '../../../services/messaging.service';
 import { StatusService } from '../../../services/status.service';
 import { JobService } from '../../../services/job.service';
 import { TagInputModule } from 'ngx-chips';
+import { InterviewService } from '../../../services/interview.service';
 
 @Component({
   selector: 'app-job-requirement',
@@ -30,8 +31,18 @@ export class JobRequirementComponent {
     this.createFlag = false
 
   }
+   getCandidatePreferenceLabel(value: any): string {
+  const preference = this.candidatePreferenceOptions.find(
+    (item: any) => item.value === value
+  );
+  return preference?.label || value || '-';
+}
   status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
-
+ candidatePreferenceOptions: any = [
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+    { value: 'both', label: 'Both' }
+  ]
   EmployeeForm!: FormGroup;
   EmployeeList = [];
   editingId: number | null = null;
@@ -41,6 +52,7 @@ export class JobRequirementComponent {
     private master: MasterService,
     public statusService: StatusService,
     public jobService: JobService,
+    private interviewService: InterviewService,
     private router: Router,
     public messagingService: MessagingService
   ) {
@@ -84,6 +96,7 @@ export class JobRequirementComponent {
     await this.DepartmentDD()
     await this.skillsDD()
     await this.getEmploymentTypes();
+    await this.getInterviewRounds();
   }
   getUserStatusClass(status: any): string {
     switch (status) {
@@ -141,6 +154,7 @@ removeSkill(index: number) {
     });
   }
   employmentTypes: any[] = [];
+  interviewRounds: any[] = [];
   async getEmploymentTypes() {
     let obj: any = {}
     // obj["branchId"]=this.personalDetails["branchId"]
@@ -153,6 +167,32 @@ removeSkill(index: number) {
         this.notyf.error(error?.error?.message)
         // alert('Failed to load employees. Please try again.');
       });
+  }
+  async getInterviewRounds() {
+    this.interviewRounds = [];
+    this.interviewService.getInterviewRound().subscribe({
+      next: (response: any) => {
+        if (response?.status === true) {
+          this.interviewRounds = (response.data || []).map((item: any) => ({
+            label: item.round_name,
+            value: item.id,
+            round_type: item['roundTypeData.name'] || item.round_type
+          }));
+          return;
+        }
+
+        if (response?.status === 'expired') {
+          this.router.navigate(['login']);
+          return;
+        }
+
+        this.notyf.error(response?.message || 'Unable to load interview rounds');
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.notyf.error(err?.error?.message || 'Unable to load interview rounds');
+      }
+    });
   }
   skillDD: any = []
   async skillsDD() {
@@ -174,7 +214,7 @@ removeSkill(index: number) {
         }
 
         else {
-          this.notyf.error(message)
+          // this.notyf.error(message)
         }
 
       },
@@ -244,6 +284,7 @@ removeSkill(index: number) {
     this.createFlag = false;
     this.listflag = true;
     this.updateFlag = false;
+    this.syncInterviewRoundPayload();
 
     this.jobService.updateJobRequirement(this.obj).subscribe(
       (response) => {
@@ -281,6 +322,7 @@ removeSkill(index: number) {
   async update(data: any) {
 
     this.obj = Object.assign({}, data)
+    this.obj['interview_round_ids'] = this.extractInterviewRoundIds(data);
     this.createFlag = true;
     this.updateFlag = true;
   }
@@ -312,7 +354,7 @@ removeSkill(index: number) {
     this.JobRequirementsList = []
     this.originalList = []
     this.filteredDesignation = []
-    this.jobService.getJobRequirements(this.obj).subscribe({
+    this.jobService.getJobRequirements().subscribe({
       next: (response: any) => {
         console.log('response', response);
 
@@ -325,8 +367,10 @@ removeSkill(index: number) {
 
 
           // this.notyf.success(message)
-          this.JobRequirementsList = response.data
-          this.originalList = response.data
+          this.JobRequirementsList = (response.data || []).map((item: any) =>
+            this.normalizeJobRequirement(item)
+          )
+          this.originalList = [...this.JobRequirementsList]
           // pagination
           const start = (this.currentPage - 1) * this.pageSize;
           const end = start + this.pageSize;
@@ -375,6 +419,7 @@ removeSkill(index: number) {
   onSubmit() {
 
     this.obj['skills'] = this.skills
+    this.syncInterviewRoundPayload();
     console.log(this.obj);
 
     this.jobService.ApplyJobRequirement(this.obj).subscribe({
@@ -408,6 +453,60 @@ removeSkill(index: number) {
     });
 
 
+  }
+
+  private normalizeJobRequirement(item: any) {
+    const interviewRoundIds = this.extractInterviewRoundIds(item);
+    return {
+      ...item,
+      interview_round_ids: interviewRoundIds,
+      interview_round_names: this.getInterviewRoundNames(item, interviewRoundIds),
+
+    };
+  }
+
+  private getInterviewRoundNames(item: any, interviewRoundIds: any[]): string[] {
+    if (Array.isArray(item?.interview_rounds)) {
+      return item.interview_rounds
+        .map((round: any) => round?.round_name || round?.name || round)
+        .filter(Boolean);
+    }
+
+    if (typeof item?.interview_rounds === 'string' && item.interview_rounds.trim()) {
+      return item.interview_rounds
+        .split(',')
+        .map((name: string) => name.trim())
+        .filter(Boolean);
+    }
+
+    return interviewRoundIds
+      .map((id: any) => this.interviewRounds.find((round: any) => round.value === id)?.label)
+      .filter(Boolean);
+  }
+
+  private syncInterviewRoundPayload() {
+    const roundIds = Array.isArray(this.obj['interview_round_ids'])
+      ? this.obj['interview_round_ids']
+      : [];
+
+    this.obj['interview_round_ids'] = roundIds;
+    this.obj['interview_rounds'] = roundIds;
+  }
+
+  private extractInterviewRoundIds(data: any): any[] {
+    if (Array.isArray(data?.interview_round_ids)) {
+      return [...data.interview_round_ids];
+    }
+
+    if (Array.isArray(data?.interview_rounds)) {
+      return data.interview_rounds.map((item: any) => item?.id || item).filter(Boolean);
+    }
+
+    if (typeof data?.interview_round_ids === 'string' && data.interview_round_ids.trim()) {
+      return data.interview_round_ids.split(',').map((id: string) => id.trim()).filter(Boolean);
+    }
+
+    return [];
   }
 
   statuschange(item: any, status: any) {

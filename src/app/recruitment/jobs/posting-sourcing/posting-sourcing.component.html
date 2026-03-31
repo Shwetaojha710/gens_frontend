@@ -1,26 +1,4 @@
-<!-- <div class="jobs-grid" >
-    <div *ngFor="let j of jobs" class="job-card">
-      <div class="job-card-header">
-        <div>
-          <div class="job-title">{{ j.title }}</div>
-          <div class="job-dept">{{ j.departmentData?.["name"] || 'No department' }}</div>
-        </div>
-        <span class="job-status" [class]="j.status">{{ j.status }}</span>
-      </div>
-      <div class="job-meta">
-        <span>📍 {{ j.location || 'Remote' }}</span>
-        <span>⏱ {{ j.employment_type?.replace('_',' ') }}</span>
-      </div>
-      <div class="job-salary" *ngIf="j.salary_min || j.salary_max">
-        💰 {{ j.salary_min | number }} – {{ j.salary_max | number }} {{ j.currency }}
-      </div>
-      <div class="job-footer">
-        <span class="apps-count">{{ j.active_applications || 0 }} active / {{ j.total_applications || 0 }} total</span>
-        <a [routerLink]="['/jobs', j.id]" class="view-link">View →</a>
-      </div>
-    </div>
-  <div class="empty-full" *ngIf="!jobs.length">No positions found</div>
-</div> -->
+
 <div class="container-fluid mt-3">
   <div class="row">
     <div class="col-md-3" *ngFor="let item of jobs">
@@ -67,13 +45,14 @@
 
           <p> {{item?.job_description}}</p>
           <div>
-            <button type="button" class="btn btn-secondary btn-buy-now waves-effect waves-light w-100"
-              (click)="publish(item)">
+            <button *ngIf="item.status!='open'" type="button" class="btn btn-secondary btn-buy-now waves-effect waves-light w-100"
+              (click)="publish(item,'open')">
               Publish
             </button>
-            <!-- <a href="#" target="_blank"
-            class="btn btn-secondary btn-buy-now waves-effect waves-light w-100" (click)="view(item)">Publish</a> -->
-            <!-- <a class="btn btn-secondary btn-buy-now waves-effect waves-light w-100" (click)="view(item)">Publish</a> -->
+               <button *ngIf="item.status=='open'" type="button" class="btn btn-outline-danger btn-buy-now waves-effect waves-light w-100"
+              (click)="publish(item,'close')">
+              Close
+            </button>
 
           </div>
         </div>

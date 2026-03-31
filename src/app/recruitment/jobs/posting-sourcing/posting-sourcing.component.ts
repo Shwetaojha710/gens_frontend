@@ -77,7 +77,7 @@ export class PostingSourcingComponent {
   //   this.modal.show();
   // }
 
-  publish(data: any) {
+  publish(data: any,status:any) {
     let Enable;
 
 
@@ -86,12 +86,12 @@ export class PostingSourcingComponent {
       text: `Do you Want to Publish this`,
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: `Yes,  Publish  it!`,
+      confirmButtonText: `Yes,  ${status == 'open' ? 'Publish' : 'Close'}  it!`,
       cancelButtonText: "No, cancel!",
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
-        this.OpenJob(data);
+        this.OpenJob(data,status);
       } else if (result.dismiss === Swal.DismissReason.cancel) {
 
       }
@@ -100,14 +100,14 @@ export class PostingSourcingComponent {
 
 
   }
-  OpenJob(data: any) {
+  OpenJob(data: any,status:any) {
 
 
     let obj = Object.assign({}, data)
 
     const payload={
       id:obj.id,
-      status:'open'
+      status:status
     }
     this.jobService.PublishJob(payload).subscribe(
       (response) => {
@@ -172,7 +172,7 @@ export class PostingSourcingComponent {
     this.originalList = []
     this.jobs = []
     this.filteredDesignation = []
-    this.jobService.getJobRequirements(this.obj).subscribe({
+    this.jobService.getJobRequirements().subscribe({
       next: (response: any) => {
         console.log('response', response);
 

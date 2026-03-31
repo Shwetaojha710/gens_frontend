@@ -88,6 +88,8 @@ import { RecuiterDashboardComponent } from './recruitment/recuiter-dashboard/rec
 import { JobRequirementComponent } from './recruitment/jobs/job-requirement/job-requirement.component';
 import { PostingSourcingComponent } from './recruitment/jobs/posting-sourcing/posting-sourcing.component';
 import { PendingEmpListComponent } from './pending-emp-list/pending-emp-list.component';
+import { InterviewRoundsComponent } from './recruitment/master/interview-rounds/interview-rounds.component';
+import { RoundTypeComponent } from './recruitment/master/round-type/round-type.component';
 
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -231,6 +233,14 @@ export const routes: Routes = [
     { path: 'pipeline/:applicationId/interview/feedback', component: FeedbackFormComponent },
     { path: 'offers/:applicationId', component: OfferFormComponent },
     { path: 'offers/:applicationId/bgv', component: BgvTrackerComponent },
+    {
+        path: 'master',
+        children: [
+          { path: 'interview-round', component: InterviewRoundsComponent },
+          { path: 'round-type', component: RoundTypeComponent },
+
+        ]
+      },
     ]
   },
 
