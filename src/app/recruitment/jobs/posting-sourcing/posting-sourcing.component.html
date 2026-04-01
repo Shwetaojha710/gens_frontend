@@ -1,37 +1,16 @@
-<!-- <div class="jobs-grid" >
-    <div *ngFor="let j of jobs" class="job-card">
-      <div class="job-card-header">
-        <div>
-          <div class="job-title">{{ j.title }}</div>
-          <div class="job-dept">{{ j.departmentData?.["name"] || 'No department' }}</div>
-        </div>
-        <span class="job-status" [class]="j.status">{{ j.status }}</span>
-      </div>
-      <div class="job-meta">
-        <span>📍 {{ j.location || 'Remote' }}</span>
-        <span>⏱ {{ j.employment_type?.replace('_',' ') }}</span>
-      </div>
-      <div class="job-salary" *ngIf="j.salary_min || j.salary_max">
-        💰 {{ j.salary_min | number }} – {{ j.salary_max | number }} {{ j.currency }}
-      </div>
-      <div class="job-footer">
-        <span class="apps-count">{{ j.active_applications || 0 }} active / {{ j.total_applications || 0 }} total</span>
-        <a [routerLink]="['/jobs', j.id]" class="view-link">View →</a>
-      </div>
-    </div>
-  <div class="empty-full" *ngIf="!jobs.length">No positions found</div>
-</div> -->
+
 <div class="container-fluid mt-3">
   <div class="row">
     <div class="col-md-3" *ngFor="let item of jobs">
-      <div class="card mb-6 border border-2 border-primary">
+      <div class="card mb-6 border border-2" [ngClass]="getCardBorderClass(item?.status)">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-start text-capitalize">
-            <!-- <span class="badge bg-label-primary rounded-pill">{{item?.job_title}}</span> -->
             <h5 class="text-primary mb-0">
               {{item?.job_title}}
             </h5>
-
+            <span class="badge rounded-pill px-3 py-2 text-uppercase" [ngClass]="getStatusBadgeClass(item?.status)">
+              {{ getStatusLabel(item?.status) }}
+            </span>
           </div>
 
 
@@ -57,24 +36,33 @@
           </div>
 
 
-          <p> {{item?.skills}}</p>
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <span
+              *ngFor="let skill of getSkillsList(item?.skills)"
+              class="badge rounded-pill bg-label-primary"
+            >
+              {{ skill }}
+            </span>
+            <span *ngIf="!getSkillsList(item?.skills).length" class="text-muted">-</span>
+          </div>
 
           <div class="d-flex justify-content-between align-items-center mb-1 fw-medium text-heading">
             Job Description : <br>
 
           </div>
 
-
           <p> {{item?.job_description}}</p>
-          <div>
-            <button type="button" class="btn btn-secondary btn-buy-now waves-effect waves-light w-100"
-              (click)="publish(item)">
-              Publish
+          <div class="job-action-row">
+            <button *ngIf="canPublish(item)" type="button" class="job-action-btn publish-btn"
+              (click)="publish(item,'open')">
+              <i class="ri-rocket-line"></i>
+              <span>Publish</span>
             </button>
-            <!-- <a href="#" target="_blank"
-            class="btn btn-secondary btn-buy-now waves-effect waves-light w-100" (click)="view(item)">Publish</a> -->
-            <!-- <a class="btn btn-secondary btn-buy-now waves-effect waves-light w-100" (click)="view(item)">Publish</a> -->
-
+            <button *ngIf="canClose(item)" type="button" class="job-action-btn close-btn"
+              (click)="publish(item,'close')">
+              <i class="ri-lock-line"></i>
+              <span>Close</span>
+            </button>
           </div>
         </div>
       </div>

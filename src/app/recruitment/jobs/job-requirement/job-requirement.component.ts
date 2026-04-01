@@ -11,12 +11,13 @@ import { MasterService } from '../../../services/master.service';
 import { MessagingService } from '../../../services/messaging.service';
 import { StatusService } from '../../../services/status.service';
 import { JobService } from '../../../services/job.service';
-
+import { TagInputModule } from 'ngx-chips';
+import { InterviewService } from '../../../services/interview.service';
 
 @Component({
   selector: 'app-job-requirement',
   imports: [NgSelectModule,
-    FormsModule, CommonModule, SearchPaginationComponent],
+    FormsModule, CommonModule, SearchPaginationComponent, TagInputModule],
   templateUrl: './job-requirement.component.html',
   styleUrl: './job-requirement.component.css'
 })
@@ -30,8 +31,33 @@ export class JobRequirementComponent {
     this.createFlag = false
 
   }
-  status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
+  getCandidatePreferenceLabel(value: any): string {
+    const preference = this.candidatePreferenceOptions.find(
+      (item: any) => item.value === value
+    );
+    return preference?.label || value || '-';
+  }
 
+  getInterviewRoundDisplay(item: any): string {
+    if (Array.isArray(item?.interview_round_data) && item.interview_round_data.length) {
+      return item.interview_round_data
+        .map((round: any) => round?.round_name)
+        .filter(Boolean)
+        .join(', ');
+    }
+
+    if (Array.isArray(item?.interview_round_names) && item.interview_round_names.length) {
+      return item.interview_round_names.join(', ');
+    }
+
+    return '-';
+  }
+  status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
+  candidatePreferenceOptions: any = [
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+    { value: 'both', label: 'Both' }
+  ]
   EmployeeForm!: FormGroup;
   EmployeeList = [];
   editingId: number | null = null;
@@ -41,6 +67,7 @@ export class JobRequirementComponent {
     private master: MasterService,
     public statusService: StatusService,
     public jobService: JobService,
+    private interviewService: InterviewService,
     private router: Router,
     public messagingService: MessagingService
   ) {
@@ -84,6 +111,7 @@ export class JobRequirementComponent {
     await this.DepartmentDD()
     await this.skillsDD()
     await this.getEmploymentTypes();
+    await this.getInterviewRounds();
   }
   getUserStatusClass(status: any): string {
     switch (status) {
@@ -92,6 +120,23 @@ export class JobRequirementComponent {
       case 'open': return 'bg-light-success';
       default: return 'bg-light-secondary';
     }
+  }
+
+  skills: string[] = [];
+
+  addSkill(event: any) {
+    event.preventDefault();
+    const value = event.target.value.trim();
+
+    if (value && !this.skills.includes(value)) {
+      this.skills.push(value);
+    }
+
+    event.target.value = '';
+  }
+
+  removeSkill(index: number) {
+    this.skills.splice(index, 1);
   }
   departmentDD: any = []
   async DepartmentDD() {
@@ -124,6 +169,7 @@ export class JobRequirementComponent {
     });
   }
   employmentTypes: any[] = [];
+  interviewRounds: any[] = [];
   async getEmploymentTypes() {
     let obj: any = {}
     // obj["branchId"]=this.personalDetails["branchId"]
@@ -136,6 +182,32 @@ export class JobRequirementComponent {
         this.notyf.error(error?.error?.message)
         // alert('Failed to load employees. Please try again.');
       });
+  }
+  async getInterviewRounds() {
+    this.interviewRounds = [];
+    this.interviewService.getInterviewRound().subscribe({
+      next: (response: any) => {
+        if (response?.status === true) {
+          this.interviewRounds = (response.data || []).map((item: any) => ({
+            label: item.round_name,
+            value: item.id,
+            round_type: item['roundTypeData.name'] || item.round_type
+          }));
+          return;
+        }
+
+        if (response?.status === 'expired') {
+          this.router.navigate(['login']);
+          return;
+        }
+
+        this.notyf.error(response?.message || 'Unable to load interview rounds');
+      },
+      error: (err) => {
+        console.error('Error:', err);
+        this.notyf.error(err?.error?.message || 'Unable to load interview rounds');
+      }
+    });
   }
   skillDD: any = []
   async skillsDD() {
@@ -157,7 +229,7 @@ export class JobRequirementComponent {
         }
 
         else {
-          this.notyf.error(message)
+          // this.notyf.error(message)
         }
 
       },
@@ -227,6 +299,7 @@ export class JobRequirementComponent {
     this.createFlag = false;
     this.listflag = true;
     this.updateFlag = false;
+    this.syncInterviewRoundPayload();
 
     this.jobService.updateJobRequirement(this.obj).subscribe(
       (response) => {
@@ -264,6 +337,7 @@ export class JobRequirementComponent {
   async update(data: any) {
 
     this.obj = Object.assign({}, data)
+    this.obj['interview_round_ids'] = this.extractInterviewRoundIds(data);
     this.createFlag = true;
     this.updateFlag = true;
   }
@@ -295,7 +369,7 @@ export class JobRequirementComponent {
     this.JobRequirementsList = []
     this.originalList = []
     this.filteredDesignation = []
-    this.jobService.getJobRequirements(this.obj).subscribe({
+    this.jobService.getJobRequirements().subscribe({
       next: (response: any) => {
         console.log('response', response);
 
@@ -308,8 +382,10 @@ export class JobRequirementComponent {
 
 
           // this.notyf.success(message)
-          this.JobRequirementsList = response.data
-          this.originalList = response.data
+          this.JobRequirementsList = (response.data || []).map((item: any) =>
+            this.normalizeJobRequirement(item)
+          )
+          this.originalList = [...this.JobRequirementsList]
           // pagination
           const start = (this.currentPage - 1) * this.pageSize;
           const end = start + this.pageSize;
@@ -357,6 +433,8 @@ export class JobRequirementComponent {
 
   onSubmit() {
 
+    this.obj['skills'] = this.skills
+    this.syncInterviewRoundPayload();
     console.log(this.obj);
 
     this.jobService.ApplyJobRequirement(this.obj).subscribe({
@@ -390,6 +468,60 @@ export class JobRequirementComponent {
     });
 
 
+  }
+
+  private normalizeJobRequirement(item: any) {
+    const interviewRoundIds = this.extractInterviewRoundIds(item);
+    return {
+      ...item,
+      interview_round_ids: interviewRoundIds,
+      interview_round_names: this.getInterviewRoundNames(item, interviewRoundIds),
+
+    };
+  }
+
+  private getInterviewRoundNames(item: any, interviewRoundIds: any[]): string[] {
+    if (Array.isArray(item?.interview_rounds)) {
+      return item.interview_rounds
+        .map((round: any) => round?.round_name || round?.name || round)
+        .filter(Boolean);
+    }
+
+    if (typeof item?.interview_rounds === 'string' && item.interview_rounds.trim()) {
+      return item.interview_rounds
+        .split(',')
+        .map((name: string) => name.trim())
+        .filter(Boolean);
+    }
+
+    return interviewRoundIds
+      .map((id: any) => this.interviewRounds.find((round: any) => round.value === id)?.label)
+      .filter(Boolean);
+  }
+
+  private syncInterviewRoundPayload() {
+    const roundIds = Array.isArray(this.obj['interview_round_ids'])
+      ? this.obj['interview_round_ids']
+      : [];
+
+    this.obj['interview_round_ids'] = roundIds;
+    this.obj['interview_rounds'] = roundIds;
+  }
+
+  private extractInterviewRoundIds(data: any): any[] {
+    if (Array.isArray(data?.interview_round_ids)) {
+      return [...data.interview_round_ids];
+    }
+
+    if (Array.isArray(data?.interview_rounds)) {
+      return data.interview_rounds.map((item: any) => item?.id || item).filter(Boolean);
+    }
+
+    if (typeof data?.interview_round_ids === 'string' && data.interview_round_ids.trim()) {
+      return data.interview_round_ids.split(',').map((id: string) => id.trim()).filter(Boolean);
+    }
+
+    return [];
   }
 
   statuschange(item: any, status: any) {
@@ -550,6 +682,7 @@ export class JobRequirementComponent {
     this.createFlag = false
     this.obj = {}
     this.editingId = null;
+    this.skills = []
   }
   isInvalid(field: string): boolean {
     const control = this.EmployeeForm.get(field);

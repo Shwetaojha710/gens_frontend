@@ -1,1585 +1,1019 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component, OnInit, OnDestroy, AfterViewInit,
+  ViewChild, ElementRef, NgZone,
+  ChangeDetectionStrategy, ChangeDetectorRef
+} from '@angular/core';
 import * as L from 'leaflet';
-import { LocationService } from '../services/location.service';
-import { StatusService } from '../services/status.service';
-import { Router } from '@angular/router';
-import { FormsModule } from '@angular/forms';
-import { NgSelectModule } from '@ng-select/ng-select';
+import { LocationService }        from '../services/location.service';
+import { StatusService }          from '../services/status.service';
+import { Router }                 from '@angular/router';
+import { FormsModule }            from '@angular/forms';
+import { NgSelectModule }         from '@ng-select/ng-select';
 import { SearchPaginationComponent } from '../master/search-pagination/search-pagination.component';
-import { CommonModule } from '@angular/common';
-import { MasterService } from '../services/master.service';
-import { firstValueFrom } from 'rxjs';
-import { GoogleroadService } from '../services/googleroad.service';
+import { CommonModule }           from '@angular/common';
+import { MasterService }          from '../services/master.service';
+import { LiveTrackingComponent } from './live-tracking/live-tracking.component';
+
+// ─── Interfaces ───────────────────────────────────────────────────────────────
+
+export interface LocationCoords {
+  latitude: number; longitude: number; altitude: number;
+  accuracy: number; altitudeAccuracy: number; heading: number; speed: number;
+}
+
+export interface LocationPoint {
+  coords: LocationCoords;
+  timestamp: number;
+  mode: 'foreground' | 'background';
+  Deviceid: string; deviceOs: string;
+  location_type: 'normal' | 'pinned';
+  address:      string | null;
+  visit_place:  string | null;   // Name of the place the employee visited
+  purpose:      string | null;   // Purpose of the visit (meeting, delivery, etc.)
+  remark:       string | null;   // Any additional remarks / notes
+}
+
+// ─── Module-level constants (computed once at import time) ────────────────────
+const DEG2RAD = Math.PI / 180;
+const EARTH_R  = 6371000;
+
+// ─── Component ────────────────────────────────────────────────────────────────
 
 @Component({
   selector: 'app-tracking',
   templateUrl: './tracking.component.html',
   styleUrls: ['./tracking.component.css'],
-  imports: [FormsModule, CommonModule, NgSelectModule, SearchPaginationComponent]
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [FormsModule, CommonModule, NgSelectModule, SearchPaginationComponent, LiveTrackingComponent]
 })
-export class TrackingComponent implements OnInit, OnDestroy {
-  staySummary: any[] = [];
-  totalDistanceMeters = 0;
-  totalStayMinutes = 0;
-  playbackIndex = 0;
-  playbackMarker!: L.Marker;
+export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
 
+  // ── Map ───────────────────────────────────────────────────────────────────
   map!: L.Map;
-  markers: L.Marker[] = [];
-  arrowMarkers: L.Marker[] = [];
-  polyline!: L.Polyline;
+  markers:        L.Layer[] = [];   // start/end markers (always visible)
+  normalMarkers:  L.Layer[] = [];   // normal track-point markers (toggled by filter)
+  pinnedMarkers:  L.Layer[] = [];   // pinned visit markers (toggled by filter)
+  stayLayers:     L.Layer[] = [];   // stay circles + markers
+  polyline:       L.Polyline | null = null;   // full route polyline
+  normalPolyline: L.Polyline | null = null;   // polyline drawn from normal-only points
+  pinnedPolyline: L.Polyline | null = null;   // polyline drawn between pinned points only
   currentTileLayer!: L.TileLayer;
   trafficLayer: L.TileLayer | null = null;
-  mapType: string = 'osm';
-  isTrafficEnabled: boolean = false;
-  isLiveTrackingEnabled: boolean = false;
-  liveTrackingInterval: any = null;
-  currentTrackingUser: any = null;
-  liveTrackingIntervalSeconds: number = 5;
-  isFullScreen: boolean = false;
   fullScreenControl: any = null;
-  trafficControl: any = null;
-  zoomControl: any = null;
-  constructor(private googleRoadService: GoogleroadService, private locationService: LocationService, public statusService: StatusService, private router: Router, private master: MasterService,) {
-  }
-  formatMinutesToHHMM(minutes: number): string {
-    const h = Math.floor(minutes / 60);
-    const m = minutes % 60;
-    return h > 0 ? `${h}h ${m}m` : `${m}m`;
+  trafficControl:    any = null;
+  zoomControl:       any = null;
+
+  mapType:          string  = 'osm';
+  isTrafficEnabled: boolean = false;
+  isFullScreen:     boolean = false;
+  private mapReady: boolean = false;
+
+  // ── Tracking ──────────────────────────────────────────────────────────────
+  isLiveTrackingEnabled:       boolean = false;
+  liveTrackingInterval:        any     = null;
+  liveTrackingIntervalSeconds: number  = 30;
+  currentTrackingUser:         any     = null;
+  viewLiveTracking:            boolean = true;   // true = employee list
+  viewLivePage:                boolean = false;  // true = live tracking page
+  isLoading:                   boolean = false;
+
+  // ── Data ──────────────────────────────────────────────────────────────────
+  locationData:       LocationPoint[] = [];   // raw (used for timeline + stats)
+  filteredLocations:  LocationPoint[] = [];   // after type-filter (drives timeline)
+  pinnedLocations:    LocationPoint[] = [];
+  normalLocations:    LocationPoint[] = [];
+  selectedLocation:   LocationPoint | null = null;
+  pinned:             any[] = [];
+  pinnedLocationList: any[] = [];
+  pinnedCount:        number = 0;
+  staySummary:        any[]  = [];
+  totalStayMinutes:   number = 0;
+
+  // ── Stats ─────────────────────────────────────────────────────────────────
+  totalDistanceMeters: number = 0;
+  trackingDuration:    string = '--:--';
+  avgSpeed:            number = 0;
+  bestAccuracy:        number = 0;
+
+  // ── Filters ───────────────────────────────────────────────────────────────
+  filterType: 'all' | 'pinned' | 'normal' = 'all';
+  obj:     any = {};
+  minDate: any;
+
+  // ── UI ────────────────────────────────────────────────────────────────────
+  isPanelCollapsed: boolean = false;
+
+  // ── Employee list ─────────────────────────────────────────────────────────
+  ActiveUsers:  any[]   = [];
+  originalList: any[]   = [];
+  baseurl:      any;
+  currentPage:  number  = 1;
+  itemsPerPage: number  = 10;
+  pageSize:     number  = 10;
+  searchTerm:   string  = '';
+  searchText:   any     = '';
+
+  @ViewChild('timelineList') timelineList!: ElementRef;
+
+  // ── Pre-built date formatters (constructing Intl.DateTimeFormat is expensive) ─
+  private readonly _timeFmt = new Intl.DateTimeFormat('en-IN', { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false });
+  private readonly _dateFmt = new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+  private readonly _dtFmt   = new Intl.DateTimeFormat('en-IN', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false });
+
+  // ── Address cache: never hit the same co-ordinate twice ───────────────────
+  private readonly _addrCache = new Map<string, string>();
+
+  constructor(
+    private ngZone:          NgZone,
+    private cdr:             ChangeDetectorRef,
+    private locationService: LocationService,
+    public  statusService:   StatusService,
+    private router:          Router,
+    private master:          MasterService
+  ) {}
+
+  // ─── Lifecycle ─────────────────────────────────────────────────────────────
+
+  ngOnInit():      void { this.baseurl = this.master.getBaseUrl(); this.activeTrackingUsers(); }
+  ngAfterViewInit(): void {}
+  ngOnDestroy():   void {
+    this.stopLiveTracking();
+    if (this.trafficLayer && this.map) this.map.removeLayer(this.trafficLayer);
+    if (this.map) this.map.remove();
   }
 
-  ngOnInit(): void {
-    this.activeTrackingUsers();
-    this.baseurl = this.master.getBaseUrl();
+  // ─── Employee List ──────────────────────────────────────────────────────────
+
+  activeTrackingUsers(): void {
+    this.locationService.getActiveTrackingUsers().subscribe({
+      next: (res: any) => {
+        const status = this.statusService.handleResponseStatus(res.status, res.message || 'OK');
+        if (status === true) {
+          this.ActiveUsers = res.data.map((item: any, i: number) => ({
+            ...item,
+            si_no: i + 1,
+            profileImage: item.profileImage
+              ? `${this.baseurl}${item.profileImage}`
+              : item.gender === 'Female' ? '../../assets/img/avatars/2.png' : '../../assets/img/avatars/1.png'
+          }));
+          this.originalList = [...this.ActiveUsers];
+        } else if (status === 'expired') {
+          this.router.navigate(['login']);
+        }
+        this.cdr.markForCheck();
+      },
+      error: () => this.cdr.markForCheck()
+    });
   }
-  pageSize = 10;
-  currentPage = 1;
-  itemsPerPage = 10;
-  searchTerm = '';
-  onSearch(term: string) {
-    if (!term) {
-      this.searchText = ''
-      this.activeTrackingUsers()
-    } else {
-      this.searchTerm = term.toLowerCase();
-      this.currentPage = 1;
-      this.applyFilters();
+
+  onSearch(term: string): void {
+    if (!term) { this.searchText = ''; this.ActiveUsers = [...this.originalList]; }
+    else {
+      const q = term.toLowerCase();
+      this.searchTerm = q; this.currentPage = 1;
+      this.ActiveUsers = this.originalList.filter((x: any) =>
+        `${x.firstName} ${x.lastName} ${x.email} ${x.mobile} ${x.empCode} ${x.designation}`.toLowerCase().includes(q)
+      );
     }
-
+    this.cdr.markForCheck();
   }
 
-  viewTrackingOnMap(user: any) {
-    if (!user) {
-      console.warn('User is undefined');
-      return;
-    }
-    this.obj = {}
+  onPageChange(p: number):   void { this.currentPage = p; this.cdr.markForCheck(); }
+  onPageSizeChange(s: number): void { this.pageSize = s; this.currentPage = 1; this.cdr.markForCheck(); }
+
+  maskAadhaarNumber(n: string): string {
+    if (!n || n.length < 4) return n || '';
+    const c = n.replace(/\s+/g, '');
+    return c.length <= 4 ? 'XXXX XXXX ' + c : `${c.substring(0,4)} XXXX ${c.substring(c.length-4)}`;
+  }
+
+  // ─── View Switch ────────────────────────────────────────────────────────────
+
+  viewTrackingOnMap(user: any): void {
+    if (!user) return;
+    this.obj = {};
     this.viewLiveTracking = false;
+    this.viewLivePage = false;          // ensure live page is closed
     this.currentTrackingUser = user;
     this.isLiveTrackingEnabled = false;
     this.stopLiveTracking();
+    this.cdr.markForCheck();
 
-    setTimeout(() => {
-      const mapElement = document.getElementById('map');
-      if (!mapElement) {
-        console.error('Map container not found');
-        return;
-      }
-
-      if (!this.map) {
-        this.initMap();
-        setTimeout(() => {
-          this.loadAndPlotData(user);
-        }, 200);
-      } else {
-        this.initMap();
-        if (!this.fullScreenControl) {
-          this.addFullScreenControl();
-        }
-        if (!this.trafficControl) {
-          this.addTrafficControl();
-        }
-        if (!this.zoomControl) {
-          this.addCustomZoomControl();
-        }
-        this.map.invalidateSize();
-        setTimeout(() => {
-          this.loadAndPlotData(user);
-        }, 100);
-      }
-    }, 100);
-  }
-
-  clearMap() {
-    if (!this.map) return;
-
-    this.markers.forEach(m => this.map.removeLayer(m));
-    this.markers = [];
-
-    this.arrowMarkers.forEach(m => this.map.removeLayer(m));
-    this.arrowMarkers = [];
-
-    if (this.polyline) {
-      this.map.removeLayer(this.polyline);
-      this.polyline = null!;
-    }
-
-    if (this.playbackMarker) {
-      this.map.removeLayer(this.playbackMarker);
-      this.playbackMarker = null!;
-    }
-  }
-
-  createCustomIcon(
-    color: string,
-    label: string | number
-  ): L.DivIcon {
-    const size = 30;
-    const textColor = 'white';
-
-    const displayLabel =
-      typeof label == 'number'
-        ? this.formatMinutesToHHMM(label)
-        : label == 'START'
-          ? 'S'
-          : label == 'END'
-            ? 'E'
-            : label == 'STAY'
-              ? 'ST'
-              : '';
-
-    return L.divIcon({
-      className: 'custom-marker',
-      html: `
-      <div style="
-        background-color: ${color};
-        width: ${size}px;
-        height: ${size}px;
-        border-radius: 50% 50% 50% 0;
-        transform: rotate(-45deg);
-        border: 3px solid white;
-        box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-      ">
-        <div style="
-          transform: rotate(45deg);
-          color: ${textColor};
-          font-weight: bold;
-          font-size: 12px;
-          line-height: 1;
-        ">
-          ${displayLabel}
-        </div>
-      </div>
-    `,
-      iconSize: [size, size],
-      iconAnchor: [size / 2, size + 6]
-    });
-  }
-
-
-  // createCustomIcon(color: string, label: string): L.DivIcon {
-  //   const size = label === 'START' ? 30 : 30;
-  //   const bgColor = color;
-  //   const textColor = 'white';
-  // //  if(label !== 'START' && label !== 'END'){
-  // //   label = '';
-  // //   }
-  //   if(label === 'START'){
-  //     label = 'S';
-  //   } else if(label === 'END'){
-  //     label = 'E';
-  //   }
-  //   else if(label === 'STAY'){
-  //     label = 'ST';
-  //   }
-  //   return L.divIcon({
-  //     className: 'custom-marker',
-  //     html: `
-  //       <div style="
-  //         background-color: ${bgColor};
-  //         width: ${size}px;
-  //         height: ${size}px;
-  //         border-radius: 50% 50% 50% 0;
-  //         transform: rotate(-45deg);
-  //         border: 3px solid white;
-  //         box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-  //         display: flex;
-  //         align-items: center;
-  //         justify-content: center;
-  //       ">
-  //         <div style="
-  //           transform: rotate(45deg);
-  //           color: ${textColor};
-  //           font-weight: bold;
-  //           font-size: 12px;
-  //           text-align: center;
-  //         ">${label}</div>
-  //       </div>
-  //     `,
-  //     iconSize: [size, size],
-  //     iconAnchor: [size / 2, size]
-  //   });
-  // }
-
-
-  createArrowIcon(bearing: number): L.DivIcon {
-    const rotation = bearing - 90;
-
-    const uniqueId = 'arrowGlow' + Math.random().toString(36).substr(2, 9);
-
-    const arrowSvg = `
-      <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <filter id="${uniqueId}">
-            <feGaussianBlur stdDeviation="1" result="coloredBlur"/>
-            <feMerge>
-              <feMergeNode in="coloredBlur"/>
-              <feMergeNode in="SourceGraphic"/>
-            </feMerge>
-          </filter>
-        </defs>
-        <g transform="rotate(${rotation} 9 9)">
-          <path d="M 3 9 L 15 9 M 9 3 L 15 9 L 9 15"
-                stroke="#ff4500"
-                stroke-width="2.5"
-                fill="none"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                filter="url(#${uniqueId})"/>
-        </g>
-      </svg>
-    `;
-
-    return L.divIcon({
-      className: 'arrow-marker',
-      html: `
-        <div style="
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          filter: drop-shadow(0 0 2px rgba(255,255,255,0.9));
-        ">${arrowSvg}</div>
-      `,
-      iconSize: [18, 18],
-      iconAnchor: [9, 9]
-    });
-  }
-
-  calculateBearing(lat1: number, lon1: number, lat2: number, lon2: number): number {
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const lat1Rad = lat1 * Math.PI / 180;
-    const lat2Rad = lat2 * Math.PI / 180;
-
-    const y = Math.sin(dLon) * Math.cos(lat2Rad);
-    const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) -
-      Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
-
-    let bearing = Math.atan2(y, x) * 180 / Math.PI;
-    bearing = (bearing + 360) % 360;
-
-    return bearing;
-  }
-
-  onPageChange(page: number) {
-    this.currentPage = page;
-    this.applyFilters();
-  }
-
-  onPageSizeChange(size: number) {
-    this.pageSize = size;
-    this.currentPage = 1;
-    this.applyFilters();
-  }
-  filteredDesignation: any = []
-  searchText: any = ''
-  originalList: any = []
-  applyFilters() {
-    let data = [...this.ActiveUsers];
-    const value = this.searchTerm || '';
-    this.searchText = value.trim();
-    if (this.searchText === '') {
-      this.ActiveUsers = [...this.originalList];
+    if (!this.mapReady) {
+      setTimeout(() => { this.initMap(); this.mapReady = true; setTimeout(() => this.loadAndPlotData(user), 80); }, 60);
     } else {
-      this.ActiveUsers = this.originalList.filter((item: any) =>
-        JSON.stringify(item).toLowerCase().includes(this.searchText.toLowerCase())
-      );
+      setTimeout(() => { this.map?.invalidateSize(); this.loadAndPlotData(user); }, 60);
     }
-    const start = (this.currentPage - 1) * this.pageSize;
-    const end = start + this.pageSize;
-    this.filteredDesignation = data.slice(start, end);
-  }
-  baseurl: any;
-  ActiveUsers: any = [];
-  viewLiveTracking: boolean = true;
-
-  maskAadhaarNumber(aadhaar: string): string {
-    if (!aadhaar || aadhaar.length < 4) {
-      return aadhaar || '';
-    }
-
-    const cleaned = aadhaar.replace(/\s+/g, '');
-
-    if (cleaned.length <= 4) {
-      return 'XXXX XXXX ' + cleaned;
-    }
-
-    const first4 = cleaned.substring(0, 4);
-    const last4 = cleaned.substring(cleaned.length - 4);
-    const middle = 'XXXX';
-
-    return `${first4} ${middle} ${last4}`;
-  }
-  activeTrackingUsers() {
-    this.ActiveUsers = [];
-    this.locationService.getActiveTrackingUsers().subscribe({
-      next: (response: any) => {
-        let message = response.message ? response.message : 'Data found Successfully';
-        let status = this.statusService.handleResponseStatus(response.status, message);
-        if (status === true) {
-          this.ActiveUsers = [];
-          response.data = response.data.map((item: any, index: any) => {
-            return {
-              ...item,
-              si_no: index + 1,
-              profileImage: item.profileImage ? `${this.baseurl}${item?.profileImage}` : item.gender == 'Female' ? "../../assets/img/avatars/2.png" : '../../assets/img/avatars/1.png'
-
-            }
-          }
-          );
-          this.ActiveUsers = response.data;
-          this.originalList = [...response.data];
-          console.log(this.ActiveUsers);
-        }
-        else if (status === "expired") {
-          this.router.navigate(["login"]);
-        }
-        else {
-        }
-      },
-      error: (err) => {
-        console.error('Error:', err);
-      }
-    });
-
-
   }
 
-  initMap() {
-    const mapElement = document.getElementById('map');
-    if (!mapElement) {
-      console.error('Map container not found');
-      return;
-    }
+  goBack(): void {
+    this.viewLiveTracking = true;
+    this.viewLivePage = false;
+    this.stopLiveTracking();
+    this.clearMap();
+    this.locationData = this.filteredLocations = this.pinnedLocations = this.normalLocations = [];
+    this.staySummary = []; this.selectedLocation = null;
+    this.cdr.markForCheck();
+  }
 
-    if (this.map) {
-      this.map.remove();
-    }
+  /** Called from employee list row — opens full live tracking page for this user */
+  goLive(user: any): void {
+    if (!user) return;
+    this.currentTrackingUser = user;
+    this.viewLiveTracking = false;
+    this.viewLivePage = true;
+    this.cdr.markForCheck();
+  }
+
+  goBackFromLive(): void {
+    this.viewLivePage = false;
+    this.viewLiveTracking = true;
+    this.currentTrackingUser = null;
+    this.cdr.markForCheck();
+  }
+
+  // ─── Map Init (ONCE) ────────────────────────────────────────────────────────
+
+  initMap(): void {
+    if (!document.getElementById('map') || this.mapReady) return;
 
     this.map = L.map('map', {
-      minZoom: 2,
-      maxZoom: 30,
+      minZoom: 2, maxZoom: 19,
       zoomControl: false,
-      preferCanvas: false,
-      fadeAnimation: true,
+      preferCanvas: true,        // ← renders markers on <canvas> → much faster
+      fadeAnimation: false,
       zoomAnimation: true,
-      zoomAnimationThreshold: 4
-    }).setView([26.8687564, 81.006653], 5);
+      markerZoomAnimation: false
+    }).setView([26.8687, 81.0066], 5);
 
     this.addTileLayer(this.mapType);
-    this.addFullScreenControl();
-    this.addTrafficControl();
-    this.addCustomZoomControl();
+    this.buildMapControls();
 
-    setTimeout(() => {
-      if (this.map) {
-        this.map.invalidateSize();
-      }
-    }, 100);
-  }
-
-  addFullScreenControl() {
-    if (this.fullScreenControl) {
-      this.map.removeControl(this.fullScreenControl);
-    }
-
-    const self = this;
-    const FullScreenControl = L.Control.extend({
-      onAdd: (map: L.Map) => {
-        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-        const link = L.DomUtil.create('a', 'leaflet-control-fullscreen', container);
-        link.href = '#';
-        link.title = 'Toggle Full Screen';
-        link.setAttribute('role', 'button');
-        link.setAttribute('aria-label', 'Toggle Full Screen');
-
-        const icon = L.DomUtil.create('i', 'fas', link);
-        icon.className = `fas ${self.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
-
-        const updateIcon = () => {
-          icon.className = `fas ${self.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
-          link.setAttribute('title', self.isFullScreen ? 'Exit Full Screen' : 'Toggle Full Screen');
-        };
-
-        L.DomEvent.disableClickPropagation(container);
-        L.DomEvent.on(link, 'click', (e) => {
-          L.DomEvent.stopPropagation(e);
-          L.DomEvent.preventDefault(e);
-          self.toggleFullScreen();
-          setTimeout(updateIcon, 100);
-        });
-
-        return container;
-      },
-      onRemove: (map: L.Map) => {
-      }
+    // Run ALL Leaflet events outside Angular zone — prevents CD on every pan/zoom
+    this.ngZone.runOutsideAngular(() => {
+      this.map.on('click', () => this.ngZone.run(() => { this.selectedLocation = null; this.cdr.markForCheck(); }));
     });
 
-    this.fullScreenControl = new FullScreenControl({ position: 'topright' });
-    this.fullScreenControl.addTo(this.map);
+    setTimeout(() => this.map?.invalidateSize(), 100);
   }
 
-  addTrafficControl() {
-    if (this.trafficControl) {
-      this.map.removeControl(this.trafficControl);
-    }
+  // ─── Tile Layer ─────────────────────────────────────────────────────────────
 
+  addTileLayer(type: string): void {
+    if (this.currentTileLayer) this.map.removeLayer(this.currentTileLayer);
+    const T: Record<string, [string, string]> = {
+      osm:       ['https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',                                                     '© OpenStreetMap'],
+      satellite: ['https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',          '© Esri'],
+      terrain:   ['https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',                                                       '© OpenTopoMap'],
+      dark:      ['https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',                                          '© CARTO'],
+      streets:   ['https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',                                                  '© HOT']
+    };
+    const [url, attr] = T[type] || T['osm'];
+    this.currentTileLayer = L.tileLayer(url, { attribution: attr, minZoom: 2, maxZoom: 19, keepBuffer: 4 }).addTo(this.map);
+  }
+
+  changeMapType(type: string): void { this.mapType = type; this.addTileLayer(type); }
+
+  // ─── Map Controls ───────────────────────────────────────────────────────────
+
+  buildMapControls(): void {
     const self = this;
-    const TrafficControl = L.Control.extend({
-      onAdd: (map: L.Map) => {
-        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-        const link = L.DomUtil.create('a', 'leaflet-control-traffic', container);
-        link.href = '#';
-        link.title = 'Toggle Traffic';
-        link.setAttribute('role', 'button');
-        link.setAttribute('aria-label', 'Toggle Traffic');
+    const mkBtn = (cls: string, icon: string, pos: L.ControlPosition, cb: () => void) => {
+      const C = L.Control.extend({
+        onAdd() {
+          const c = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+          const a = L.DomUtil.create('a', cls, c); a.href = '#';
+          const i = L.DomUtil.create('i', icon, a);
+          L.DomEvent.disableClickPropagation(c);
+          L.DomEvent.on(a, 'click', (e: Event) => {
+            L.DomEvent.preventDefault(e as MouseEvent); L.DomEvent.stopPropagation(e as MouseEvent);
+            cb();
+            if (cls === 'leaflet-ctrl-fs') i.className = `fas ${self.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
+          });
+          return c;
+        }, onRemove() {}
+      });
+      return new C({ position: pos }).addTo(self.map);
+    };
 
-        const icon = L.DomUtil.create('i', 'fas', link);
-        icon.className = `fas fa-traffic-light`;
-        if (self.isTrafficEnabled) {
-          link.style.backgroundColor = '#ffc107';
-          link.style.color = '#000';
-        }
+    this.fullScreenControl = mkBtn('leaflet-ctrl-fs',     'fas fa-expand',        'topright', () => this.toggleFullScreen());
+    this.trafficControl    = mkBtn('leaflet-ctrl-traffic', 'fas fa-traffic-light', 'topright', () => this.toggleTraffic());
 
-        L.DomEvent.disableClickPropagation(container);
-        L.DomEvent.on(link, 'click', (e) => {
-          L.DomEvent.stopPropagation(e);
-          L.DomEvent.preventDefault(e);
-          self.toggleTraffic();
-          if (self.isTrafficEnabled) {
-            link.style.backgroundColor = '#ffc107';
-            link.style.color = '#000';
-          } else {
-            link.style.backgroundColor = '';
-            link.style.color = '';
-          }
-        });
-
-        return container;
-      },
-      onRemove: (map: L.Map) => {
-      }
+    const ZC = L.Control.extend({
+      onAdd() {
+        const c = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+        c.style.cssText = 'display:flex;flex-direction:column';
+        const zi = L.DomUtil.create('a', 'leaflet-ctrl-zoom-in',  c); zi.href = '#'; L.DomUtil.create('i', 'fas fa-plus',  zi);
+        const zo = L.DomUtil.create('a', 'leaflet-ctrl-zoom-out', c); zo.href = '#'; L.DomUtil.create('i', 'fas fa-minus', zo);
+        L.DomEvent.disableClickPropagation(zi); L.DomEvent.on(zi, 'click', (e: Event) => { L.DomEvent.preventDefault(e as MouseEvent); self.zoomIn(); });
+        L.DomEvent.disableClickPropagation(zo); L.DomEvent.on(zo, 'click', (e: Event) => { L.DomEvent.preventDefault(e as MouseEvent); self.zoomOut(); });
+        return c;
+      }, onRemove() {}
     });
-
-    this.trafficControl = new TrafficControl({ position: 'topright' });
-    this.trafficControl.addTo(this.map);
+    this.zoomControl = new ZC({ position: 'topright' }).addTo(this.map);
   }
 
-  addCustomZoomControl() {
-    if (this.zoomControl) {
-      this.map.removeControl(this.zoomControl);
-    }
-
-    const self = this;
-    const CustomZoomControl = L.Control.extend({
-      onAdd: (map: L.Map) => {
-        const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
-        container.style.display = 'flex';
-        container.style.flexDirection = 'column';
-
-        const zoomInLink = L.DomUtil.create('a', 'leaflet-control-zoom-in', container);
-        zoomInLink.href = '#';
-        zoomInLink.title = 'Zoom In';
-        zoomInLink.setAttribute('role', 'button');
-        zoomInLink.setAttribute('aria-label', 'Zoom In');
-
-        const zoomInIcon = L.DomUtil.create('i', 'fas fa-plus', zoomInLink);
-
-        L.DomEvent.disableClickPropagation(zoomInLink);
-        L.DomEvent.on(zoomInLink, 'click', (e) => {
-          L.DomEvent.stopPropagation(e);
-          L.DomEvent.preventDefault(e);
-          self.zoomIn();
-        });
-
-        const zoomOutLink = L.DomUtil.create('a', 'leaflet-control-zoom-out', container);
-        zoomOutLink.href = '#';
-        zoomOutLink.title = 'Zoom Out';
-        zoomOutLink.setAttribute('role', 'button');
-        zoomOutLink.setAttribute('aria-label', 'Zoom Out');
-
-        const zoomOutIcon = L.DomUtil.create('i', 'fas fa-minus', zoomOutLink);
-
-        L.DomEvent.disableClickPropagation(zoomOutLink);
-        L.DomEvent.on(zoomOutLink, 'click', (e) => {
-          L.DomEvent.stopPropagation(e);
-          L.DomEvent.preventDefault(e);
-          self.zoomOut();
-        });
-
-        return container;
-      },
-      onRemove: (map: L.Map) => {
-      }
-    });
-
-    this.zoomControl = new CustomZoomControl({ position: 'topright' });
-    this.zoomControl.addTo(this.map);
-  }
-
-  addTileLayer(mapType: string) {
-    if (this.currentTileLayer) {
-      this.map.removeLayer(this.currentTileLayer);
-    }
-
-    let tileLayerUrl = '';
-    let attribution = '';
-
-    switch (mapType) {
-      case 'osm':
-        tileLayerUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-        attribution = '© OpenStreetMap';
-        break;
-      case 'satellite':
-        tileLayerUrl = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
-        attribution = '© Esri';
-        break;
-      case 'terrain':
-        tileLayerUrl = 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png';
-        attribution = '© OpenTopoMap';
-        break;
-      case 'dark':
-        tileLayerUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-        attribution = '© CARTO';
-        break;
-      case 'streets':
-        tileLayerUrl = 'https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png';
-        attribution = '© OpenStreetMap HOT';
-        break;
-      default:
-        tileLayerUrl = 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-        attribution = '© OpenStreetMap';
-    }
-
-    this.currentTileLayer = L.tileLayer(tileLayerUrl, {
-      attribution: attribution,
-      minZoom: 2,
-      maxZoom: 30
-    }).addTo(this.map);
-  }
-
-  changeMapType(mapType: string) {
-    this.mapType = mapType;
-    this.addTileLayer(mapType);
-    if (this.isTrafficEnabled && this.map) {
-      this.toggleTraffic();
-      this.toggleTraffic();
-    }
-  }
-
-  toggleTraffic() {
+  toggleTraffic(): void {
     this.isTrafficEnabled = !this.isTrafficEnabled;
-
-    if (!this.map) {
-      return;
-    }
-
+    if (!this.map) return;
     if (this.isTrafficEnabled) {
-      if (this.trafficLayer) {
-        this.map.removeLayer(this.trafficLayer);
-        this.trafficLayer = null;
-      }
-
-      this.trafficLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=m@221097413,traffic&x={x}&y={y}&z={z}', {
-        maxZoom: 20,
-        minZoom: 2,
-        subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-        attribution: 'Traffic data &copy; Google',
-        opacity: 0.65,
-        pane: 'overlayPane',
-        zIndex: 1000
-      });
-
-      this.trafficLayer.addTo(this.map);
-
-      setTimeout(() => {
-        if (this.map) {
-          this.map.invalidateSize();
-        }
-      }, 100);
-    } else {
-      if (this.trafficLayer) {
-        this.map.removeLayer(this.trafficLayer);
-        this.trafficLayer = null;
-      }
-    }
-
-    const trafficButton = document.querySelector('.leaflet-control-traffic');
-    if (trafficButton) {
-      if (this.isTrafficEnabled) {
-        (trafficButton as HTMLElement).style.backgroundColor = '#ffc107';
-        (trafficButton as HTMLElement).style.color = '#000';
-      } else {
-        (trafficButton as HTMLElement).style.backgroundColor = '';
-        (trafficButton as HTMLElement).style.color = '';
-      }
-    }
+      this.trafficLayer = L.tileLayer('https://{s}.google.com/vt/lyrs=m@221097413,traffic&x={x}&y={y}&z={z}',
+        { maxZoom: 20, subdomains: ['mt0','mt1','mt2','mt3'], opacity: 0.65 }).addTo(this.map);
+    } else if (this.trafficLayer) { this.map.removeLayer(this.trafficLayer); this.trafficLayer = null; }
   }
 
-  async addLocationName(point: any): Promise<string> {
-    try {
-      const res: any = await this.locationService.getAddressFromCoords(point.coords.latitude, point.coords.longitude)
-      // .toPromise();
-
-      return res?.display_name || 'Unknown Location';
-    } catch {
-      return 'Unknown Location';
-    }
-  }
-  address: any
-  async viewAddress(pin: any, index: number) {
-
-    const lat = pin.latitude ?? pin.coords?.latitude;
-    const lng = pin.longitude ?? pin.coords?.longitude;
-
-    const address = await this.getAddressFromAPI(lat, lng);
-
-    this.pinned[index].address = address;
-pin.address=address
-  }
-  async getAddressFromAPI(lat: number, lng: number): Promise<string | null> {
-    try {
-      // const response: any = await firstValueFrom(await this.locationService.getAddressFromGlobalVTS(lat, lng));
-      const response: any = await this.locationService.getAddressFromGlobalVTS(lat, lng);
-      console.log(response);
-
-
-      if (response && response.address && typeof response.address == 'string' && response.address.trim() !== '') {
-        return response.address;
-      }
-
-      return null;
-    } catch (error) {
-      console.error('Error fetching address from API:', error);
-      return null;
-    }
+  toggleFullScreen(): void {
+    this.isFullScreen = !this.isFullScreen;
+    document.body.style.overflow = this.isFullScreen ? 'hidden' : '';
+    this.cdr.markForCheck();
+    setTimeout(() => this.map?.invalidateSize(), 250);
   }
 
-  bindMarkerPopupWithAddress(marker: L.Marker, label: string, lat: number, lng: number, timestamp: number) {
-    const initialContent = `
-      <b>${label}</b><br/>
-      <small>Loading address...</small><br/>
-      <b>Lat:</b> ${lat.toFixed(6)}<br/>
-      <b>Lng:</b> ${lng.toFixed(6)}<br/>
-      <b>Time:</b> ${new Date(timestamp).toLocaleString()}
-    `;
+  zoomIn():  void { this.map?.zoomIn(); }
+  zoomOut(): void { this.map?.zoomOut(); }
 
-    marker.bindPopup(initialContent);
+  // ─── Clear Map ──────────────────────────────────────────────────────────────
 
-    this.getAddressFromAPI(lat, lng).then(address => {
-      let popupContent = `
-        <b>${label}</b><br/>
-      `;
-
-      if (address) {
-        popupContent += `<b>Address:</b> ${address}<br/>`;
-      }
-
-      popupContent += `
-        <b>Lat:</b> ${lat.toFixed(6)}<br/>
-        <b>Lng:</b> ${lng.toFixed(6)}<br/>
-        <b>Time:</b> ${new Date(timestamp).toLocaleString()}
-      `;
-
-      marker.setPopupContent(popupContent);
-    }).catch(error => {
-      const fallbackContent = `
-        <b>${label}</b><br/>
-        <b>Lat:</b> ${lat.toFixed(6)}<br/>
-        <b>Lng:</b> ${lng.toFixed(6)}<br/>
-        <b>Time:</b> ${new Date(timestamp).toLocaleString()}
-      `;
-      marker.setPopupContent(fallbackContent);
-    });
-  }
-  getDistanceInMeters(
-    lat1: number,
-    lon1: number,
-    lat2: number,
-    lon2: number
-  ): number {
-    const R = 6371000; // meters
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(lat1 * Math.PI / 180) *
-      Math.cos(lat2 * Math.PI / 180) *
-      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-
-    return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+  clearMap(): void {
+    if (!this.map) return;
+    const all = [...this.markers, ...this.normalMarkers, ...this.pinnedMarkers, ...this.stayLayers];
+    for (const l of all) this.map.removeLayer(l);
+    this.markers = []; this.normalMarkers = []; this.pinnedMarkers = []; this.stayLayers = [];
+    if (this.polyline)        { this.map.removeLayer(this.polyline);        this.polyline        = null; }
+    if (this.normalPolyline)  { this.map.removeLayer(this.normalPolyline);  this.normalPolyline  = null; }
+    if (this.pinnedPolyline)  { this.map.removeLayer(this.pinnedPolyline);  this.pinnedPolyline  = null; }
   }
 
-  filterNearbyPoints(
-    points: any[],
-    maxDistanceMeters = 100,
-    maxTimeDiffSeconds = 60
-  ) {
-    if (!points || points.length === 0) return [];
+  // ─── MAIN LOAD ──────────────────────────────────────────────────────────────
 
-    const cleaned: any[] = [];
-
-    for (const point of points) {
-      const lat = point.latitude ?? point.coords?.latitude;
-      const lng = point.longitude ?? point.coords?.longitude;
-      const timestamp = point.timestamp;
-
-      if (lat == null || lng == null || !timestamp) continue;
-
-      if (cleaned.length === 0) {
-        cleaned.push({ lat, lng, timestamp });
-        continue;
-      }
-
-      const last = cleaned[cleaned.length - 1];
-
-      const distance = this.getDistanceInMeters(
-        last.lat,
-        last.lng,
-        lat,
-        lng
-      );
-
-      const timeDiff =
-        Math.abs(timestamp - last.timestamp) / 1000; // seconds
-
-      // ❌ Skip if inside 100m AND within duration
-      if (
-        distance <= maxDistanceMeters &&
-        timeDiff <= maxTimeDiffSeconds
-      ) {
-        continue;
-      }
-
-      // ✅ Keep point
-      cleaned.push({ lat, lng, timestamp });
-    }
-
-    return cleaned;
-  }
-  // commented old version
-  // getDistanceInMeters(
-  //   lat1: number,
-  //   lon1: number,
-  //   lat2: number,
-  //   lon2: number
-  // ): number {
-  //   const R = 6371000; // meters
-  //   const dLat = (lat2 - lat1) * Math.PI / 180;
-  //   const dLon = (lon2 - lon1) * Math.PI / 180;
-
-  //   const a =
-  //     Math.sin(dLat / 2) ** 2 +
-  //     Math.cos(lat1 * Math.PI / 180) *
-  //     Math.cos(lat2 * Math.PI / 180) *
-  //     Math.sin(dLon / 2) ** 2;
-
-  //   return 2 * R * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  // }
-
-  detectStays(points: any[]) {
-    const STAY_DISTANCE = 100; // meters
-    const STAY_TIME = 5 * 60 * 1000; // 5 minutes
-
-    const stays: any[] = [];
-    let stayStart: any = null;
-
-    for (let i = 1; i < points.length; i++) {
-      const prev = points[i - 1];
-      const curr = points[i];
-
-      const distance = this.getDistanceInMeters(
-        prev.coords.latitude,
-        prev.coords.longitude,
-        curr.coords.latitude,
-        curr.coords.longitude
-      );
-
-      if (distance <= STAY_DISTANCE) {
-        if (!stayStart) stayStart = prev;
-      } else {
-        if (stayStart) {
-          const stayDuration = prev.timestamp - stayStart.timestamp;
-
-          if (stayDuration >= STAY_TIME) {
-            stays.push({
-              latitude: stayStart.coords.latitude,
-              longitude: stayStart.coords.longitude,
-              duration: stayDuration,
-              from: stayStart.timestamp,
-              to: prev.timestamp
-            });
-          }
-          stayStart = null;
-        }
-      }
-    }
-
-    if (stayStart) {
-      const lastPoint = points[points.length - 1];
-      const stayDuration = lastPoint.timestamp - stayStart.timestamp;
-
-      if (stayDuration >= STAY_TIME) {
-        stays.push({
-          latitude: stayStart.coords.latitude,
-          longitude: stayStart.coords.longitude,
-          duration: stayDuration,
-          from: stayStart.timestamp,
-          to: lastPoint.timestamp
-        });
-      }
-    }
-
-    return stays;
-  }
-
-  removeSameLocationPoints(data: any, minDistance = 5) {
-    if (!data.length) return [];
-
-    const filtered = [data[0]];
-
-    for (let i = 1; i < data.length; i++) {
-      const prev = filtered[filtered.length - 1];
-      const curr = data[i];
-
-      const dist = this.getDistanceInMeters(
-        prev.coords.latitude,
-        prev.coords.longitude,
-        curr.coords.latitude,
-        curr.coords.longitude
-      );
-
-      // keep only if moved more than X meters
-      if (dist >= minDistance) {
-        filtered.push(curr);
-      }
-    }
-
-    return filtered;
-  }
-
-  drawStartEndMarkers(points: any[]) {
-    const start = points[0];
-    const end = points[points.length - 1];
-
-    const startMarker = L.marker(
-      [start.coords.latitude, start.coords.longitude],
-      {
-        icon: this.createCustomIcon('#28a745', 'START'),
-        zIndexOffset: 1000 // 🔥 important
-      }
-    ).addTo(this.map);
-
-    const endMarker = L.marker(
-      [end.coords.latitude, end.coords.longitude],
-      {
-        icon: this.createCustomIcon('#dc3545', 'END'),
-        zIndexOffset: 1000
-      }
-    ).addTo(this.map);
-
-    //  (startMarker as any).bringToFront();
-    // (endMarker as any).bringToFront();
-
-
-    this.bindMarkerPopupWithAddress(
-      startMarker,
-      'START',
-      start.coords.latitude,
-      start.coords.longitude,
-      start.timestamp
-    );
-
-    this.bindMarkerPopupWithAddress(
-      endMarker,
-      'END',
-      end.coords.latitude,
-      end.coords.longitude,
-      end.timestamp
-    );
-
-    this.markers.push(startMarker, endMarker);
-  }
-  async drawStayMarkers(stays: any[]) {
-    this.staySummary = [];
-    this.totalStayMinutes = 0;
-
-    for (const stay of stays) {
-      const minutes = Math.max(1, Math.floor(stay.duration / 60000));
-      this.totalStayMinutes += minutes;
-
-      const color =
-        minutes >= 60 ? '#6f42c1' :
-          minutes >= 30 ? '#dc35c6' :
-            minutes >= 10 ? '#fd7e14' :
-              '#ffc107';
-
-      const address = await this.getAddressFromAPI(
-        stay.latitude,
-        stay.longitude
-      );
-
-      const marker = L.marker(
-        [stay.latitude, stay.longitude],
-        {
-          icon: this.createCustomIcon(color, minutes),
-          zIndexOffset: 900
-        }
-      ).addTo(this.map);
-
-      // Circle
-      L.circle([stay.latitude, stay.longitude], {
-        radius: Math.min(120, minutes * 2),
-        color,
-        fillColor: color,
-        fillOpacity: 0.25,
-        weight: 1
-      }).addTo(this.map);
-
-      marker.bindPopup(`
-      <b>Stay Location</b><br/>
-      <b>Duration:</b> ${this.formatMinutesToHHMM(minutes)}<br/>
-      <b>From:</b> ${new Date(stay.from).toLocaleTimeString()}<br/>
-      <b>To:</b> ${new Date(stay.to).toLocaleTimeString()}<br/>
-      <b>Address:</b> ${address || 'Unknown'}
-    `);
-
-      // 📊 Sidebar data
-      this.staySummary.push({
-        minutes: this.formatMinutesToHHMM(minutes),
-        durationText: this.formatMinutesToHHMM(minutes),
-        address,
-        from: stay.from,
-        to: stay.to
-      });
-
-      this.markers.push(marker);
-    }
-  }
-  zoomToPin(pin: any) {
-
-    const lat = pin.latitude ?? pin.coords?.latitude;
-    const lng = pin.longitude ?? pin.coords?.longitude;
-
-    // this.map.setView([lat, lng], 17);
-    this.map.setView([lat, lng], 17, {
-      animate: true,
-      duration: 1
-    });
-
-
-  }
-
-  calculateTotalDistance(points: any[]): number {
-    let total = 0;
-
-    for (let i = 1; i < points.length; i++) {
-      total += this.getDistanceInMeters(
-        points[i - 1].coords.latitude,
-        points[i - 1].coords.longitude,
-        points[i].coords.latitude,
-        points[i].coords.longitude
-      );
-    }
-
-    return total;
-  }
-
-  async startPlayback(points: any[]) {
-    if (!points.length) return;
-
-    if (this.playbackMarker) {
-      this.map.removeLayer(this.playbackMarker);
-    }
-
-    this.playbackIndex = 0;
-
-    this.playbackMarker = L.marker(
-      [points[0].coords.latitude, points[0].coords.longitude],
-      { icon: this.createCustomIcon('#0d6efd', '▶') }
-    ).addTo(this.map);
-
-    const interval = setInterval(() => {
-      if (this.playbackIndex >= points.length) {
-        clearInterval(interval);
-        return;
-      }
-
-      const p = points[this.playbackIndex];
-      this.playbackMarker.setLatLng([
-        p.coords.latitude,
-        p.coords.longitude
-      ]);
-
-      this.playbackIndex++;
-    }, 600); // speed (ms)
-  }
-  pinnedCount: any
-  pinned: any = []
-  pinnedLocationList: any = []
-  loadAndPlotData(user: any) {
+  loadAndPlotData(user: any): void {
+    if (!user) return;
+    this.isLoading = true;
     this.clearMap();
-    this.pinned = []
-    this.pinnedLocationList = []
+    this.pinned = []; this.pinnedLocationList = [];
+    this.staySummary = []; this.locationData = []; this.totalStayMinutes = 0;
+    this.cdr.markForCheck();
+
     const payload: any = { employeeId: user.id };
-    if (this.obj.startDate) payload.start_date = this.obj.startDate;
-    if (this.obj.endDate) payload.end_date = this.obj.endDate;
-    if (this.obj.startTime) payload.start_time = this.obj.startTime;
-    if (this.obj.endTime) payload.end_time = this.obj.endTime;
-    this.pinnedCount = 0
-    this.locationService.getLatestLocations(payload).subscribe(res => {
-      if (!res?.data?.length) {
-        this.clearMap();
-        return;
+    if (this.obj.startDate)  payload.start_date = this.obj.startDate;
+    if (this.obj.endDate)    payload.end_date   = this.obj.endDate;
+    if (this.obj.startTime)  payload.start_time = this.obj.startTime;
+    if (this.obj.endTime)    payload.end_time   = this.obj.endTime;
+
+    this.locationService.getLatestLocations(payload).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        if (!res?.data?.length) { this.cdr.markForCheck(); return; }
+
+        // ── Step 1: sort by timestamp (once, reused everywhere) ──────────────
+        const raw: LocationPoint[] = res.data.sort((a: any, b: any) => a.timestamp - b.timestamp);
+
+        // ── Step 2: DEDUPLICATE — the core fix for map slowness ──────────────
+        // Removes redundant GPS points that are within 50 m AND within 60 s.
+        // Pinned points are ALWAYS kept regardless of distance.
+        // Result: 500 raw points → typically 40–80 meaningful points.
+        const pts = this.deduplicatePoints(raw, { radiusMeters: 50, windowSeconds: 60 });
+
+        // ── Step 3: single-pass stats (no extra allocations) ─────────────────
+        this.computeStats(pts);
+
+        // ── Step 4: store for timeline (use deduped data) ─────────────────────
+        this.locationData = pts;
+        this.deriveLocations();
+        this.applyFilters();
+
+        // ── Step 5: render map layers outside Angular zone ────────────────────
+        this.ngZone.runOutsideAngular(() => {
+          this.renderLayers(pts, raw);
+          this.ngZone.run(() => this.cdr.markForCheck());
+        });
+
+        // ── Step 6: stay detection + lazy address fetch ───────────────────────
+        const stays = this.detectStays(pts);
+        this.renderStaysWithLazyAddresses(stays);
+      },
+      error: () => { this.isLoading = false; this.cdr.markForCheck(); }
+    });
+  }
+
+  // ═══════════════════════════════════════════════════════════════════════════
+  // DEDUPLICATION — Heart of the performance fix
+  // ═══════════════════════════════════════════════════════════════════════════
+
+  /**
+   * TWO-PASS GPS cleaning:
+   *
+   * PASS 1 — Hard filter (remove clearly bad points):
+   *   a. accuracy > 200m → discard (GPS not locked) unless pinned
+   *   b. "teleport" detection: if a normal point is > 2 km from BOTH the
+   *      previous AND next valid point it's a ghost coordinate → discard
+   *      (this kills the 26.7903314/81.0162834 junk points in your data)
+   *
+   * PASS 2 — Cluster collapse (remove duplicate stationary readings):
+   *   • If a point is within 50 m of the last kept point AND within 60 s
+   *     → discard (GPS drift while stationary)
+   *   • If within 50 m but > 60 s apart → replace anchor (device stayed)
+   *   • Pinned points always kept regardless
+   */
+  deduplicatePoints(
+    sorted: LocationPoint[],
+    opts: { radiusMeters: number; windowSeconds: number } = { radiusMeters: 50, windowSeconds: 60 }
+  ): LocationPoint[] {
+    if (!sorted.length) return [];
+
+    // ── PASS 1: hard filter ──────────────────────────────────────────────────
+    const pass1: LocationPoint[] = [];
+
+    for (let i = 0; i < sorted.length; i++) {
+      const p = sorted[i];
+
+      // Always keep pinned — user explicitly marked this
+      if (p.location_type === 'pinned') { pass1.push(p); continue; }
+
+      // Discard very inaccurate fixes (GPS not locked)
+      // From real data: ghost coords always have accuracy >= 200m
+      if (p.coords.accuracy > 200) continue;
+
+      // Teleport detection:
+      // Look at the nearest valid points before and after.
+      // If this point is extremely far from both neighbours it's a ghost.
+      if (pass1.length > 0) {
+        const prev = pass1[pass1.length - 1];
+        const dPrev = this.dist(
+          prev.coords.latitude, prev.coords.longitude,
+          p.coords.latitude,    p.coords.longitude
+        );
+
+        // Find next valid-accuracy point
+        let dNext = 0;
+        for (let j = i + 1; j < sorted.length; j++) {
+          const n = sorted[j];
+          if (n.location_type === 'pinned' || n.coords.accuracy <= 200) {
+            dNext = this.dist(p.coords.latitude, p.coords.longitude, n.coords.latitude, n.coords.longitude);
+            break;
+          }
+        }
+
+        // If point is > 2 km from previous AND > 2 km from next valid point
+        // it's an isolated junk coordinate — drop it
+        if (dPrev > 2000 && dNext > 2000) continue;
+
+        // Also drop if speed implied by distance/time is impossibly high
+        // (> 200 km/h for a field tracking app)
+        const timeSec = (p.timestamp - prev.timestamp) / 1000;
+        if (timeSec > 0 && (dPrev / timeSec) > 55) { // 55 m/s ≈ 200 km/h
+          // could be legitimate fast travel — only reject if also low accuracy
+          if (p.coords.accuracy > 100) continue;
+        }
       }
 
-      this.clearMap();
+      pass1.push(p);
+    }
 
+    if (!pass1.length) return [];
 
-      const rawPoints = res.data.sort(
-        (a: any, b: any) => a.timestamp - b.timestamp
-      );
+    // ── PASS 2: collapse stationary clusters ─────────────────────────────────
+    const kept: LocationPoint[] = [];
 
+    for (const p of pass1) {
+      // Always keep first and pinned
+      if (kept.length === 0) { kept.push(p); continue; }
+      if (p.location_type === 'pinned') { kept.push(p); continue; }
 
-      const cleanedPoints = this.cleanGpsPointsAdvanced(rawPoints);
+      const last    = kept[kept.length - 1];
+      const distM   = this.dist(last.coords.latitude, last.coords.longitude, p.coords.latitude, p.coords.longitude);
+      const timeSec = (p.timestamp - last.timestamp) / 1000;
 
+      if (distM < opts.radiusMeters && timeSec < opts.windowSeconds) {
+        // GPS drift while stationary — discard
+        continue;
+      }
 
-      const latLngs = cleanedPoints.map(p => [
-        p.lat ?? p.coords.latitude,
-        p.lng ?? p.coords.longitude
-      ]);
+      if (distM < opts.radiusMeters && timeSec >= opts.windowSeconds) {
+        // Device stayed — update anchor to newest timestamp
+        kept[kept.length - 1] = p;
+        continue;
+      }
 
-      this.polyline = L.polyline(latLngs, {
-        color: '#1c68b4',
-        weight: 6,
-        opacity: 0.9,
-        smoothFactor: 2
-      }).addTo(this.map);
+      kept.push(p);
+    }
 
-      this.map.fitBounds(this.polyline.getBounds(), {
-        padding: [40, 40],
-        maxZoom: 16
+    // Always ensure the true last raw-pinned/valid point is included as End
+    const last = pass1[pass1.length - 1];
+    if (kept.length > 0 && kept[kept.length - 1].timestamp !== last.timestamp) {
+      kept.push(last);
+    }
+
+    return kept;
+  }
+
+  // ─── Render Layers (outside NgZone) ─────────────────────────────────────────
+
+  private renderLayers(pts: LocationPoint[], raw: LocationPoint[]): void {
+
+    // ── 1. Build all three polylines ──────────────────────────────────────────
+
+    // All-points polyline (used for "all" filter view)
+    const allLls = pts.map(p => [p.coords.latitude, p.coords.longitude] as L.LatLngTuple);
+
+    // Normal-only polyline (used for "normal" filter view)
+    const normalPts = pts.filter(p => p.location_type !== 'pinned');
+    const normalLls = normalPts.map(p => [p.coords.latitude, p.coords.longitude] as L.LatLngTuple);
+
+    // Pinned-only polyline — connect pinned points in chronological order
+    const pinnedRaw = raw.filter(p => p.location_type === 'pinned');
+    const pinnedLls = pinnedRaw.map(p => [p.coords.latitude, p.coords.longitude] as L.LatLngTuple);
+
+    const polylineStyle = {
+      color: '#3b82f6', weight: 5, opacity: 0.9,
+      smoothFactor: 2, lineCap: 'round' as L.LineCapShape, lineJoin: 'round' as L.LineJoinShape
+    };
+
+    if (allLls.length >= 2) {
+      this.polyline = L.polyline(allLls, polylineStyle);
+    }
+    if (normalLls.length >= 2) {
+      this.normalPolyline = L.polyline(normalLls, { ...polylineStyle, color: '#3b82f6' });
+    }
+    if (pinnedLls.length >= 2) {
+      this.pinnedPolyline = L.polyline(pinnedLls, { ...polylineStyle, color: '#f59e0b', dashArray: '8 6' });
+    }
+
+    // ── 2. Start / End markers (always visible regardless of filter) ──────────
+
+    const startPt = raw[0];
+    const endPt   = raw[raw.length - 1];
+
+    const sm = L.marker([startPt.coords.latitude, startPt.coords.longitude],
+      { icon: this.divIcon('#22c55e', 'S', 30), zIndexOffset: 1000 });
+    sm.bindPopup(() => this.lazyAddrPopup('START', startPt.coords.latitude, startPt.coords.longitude, startPt.timestamp));
+    this.markers.push(sm);
+
+    const em = L.marker([endPt.coords.latitude, endPt.coords.longitude],
+      { icon: this.divIcon('#ef4444', 'E', 30), zIndexOffset: 1000 });
+    em.bindPopup(() => this.lazyAddrPopup('END', endPt.coords.latitude, endPt.coords.longitude, endPt.timestamp));
+    this.markers.push(em);
+
+    // ── 3. Normal track-point markers (small dots along the route) ────────────
+
+    for (const p of normalPts) {
+      const nm = L.circleMarker([p.coords.latitude, p.coords.longitude], {
+        radius: 4, color: '#3b82f6', fillColor: '#3b82f6',
+        fillOpacity: 0.7, weight: 1.5
       });
+      nm.bindPopup(() => this.lazyAddrPopup(
+        '📍 Track Point',
+        p.coords.latitude, p.coords.longitude, p.timestamp
+      ));
+      this.normalMarkers.push(nm);
+    }
 
-      this.drawStartEndMarkers(rawPoints);
+    // ── 4. Pinned visit markers ───────────────────────────────────────────────
 
+    this.pinned             = raw.filter(p => p.location_type === 'pinned');
+    this.pinnedCount        = this.pinned.length;
+    this.pinnedLocationList = this.groupPinnedLocations(this.pinned);
 
-      this.pinned = rawPoints.filter((p: any) => p.location_type == 'pinned');
-      this.pinnedCount = this.pinned.length;
-      console.log(this.pinned, "Pinned data");
+    for (const pin of this.pinnedLocationList) {
+      const m = L.marker([pin.latitude, pin.longitude],
+        { icon: this.pinCountIcon(pin.count), zIndexOffset: 900 });
+      m.bindPopup(() => this.lazyPinPopup(pin));
+      m.on('click', () => this.ngZone.run(() => {
+        this.selectedLocation = pin.visits[pin.visits.length - 1] ?? null;
+        this.cdr.markForCheck();
+      }));
+      this.pinnedMarkers.push(m);
+    }
 
-      this.pinnedLocationList = this.groupPinnedLocations(this.pinned);
+    // ── 5. Apply the current filter to decide what to show on map ─────────────
+    this.applyMapFilter();
+  }
 
-      // this.addPinnedMarkers(this.map, this.pinned);
+  // ─── Apply map filter — show/hide layers based on filterType ────────────────
 
-      // ✅ new (clean route)
-      // await this.drawSnappedRoute(points);
+  private applyMapFilter(): void {
+    if (!this.map) return;
 
+    const showAll    = this.filterType === 'all';
+    const showNormal = this.filterType === 'all' || this.filterType === 'normal';
+    const showPinned = this.filterType === 'all' || this.filterType === 'pinned';
 
-      // 2️⃣ Start / End markers
-      this.drawStartEndMarkers(rawPoints);
+    // ── Polylines ──────────────────────────────────────────────────────────────
+    // all filter → show full polyline
+    // normal filter → show normal-only polyline
+    // pinned filter → show pinned-connecting polyline (dashed amber)
 
-      // 3️⃣ Detect stays
-      const stays = this.detectStays(rawPoints);
+    if (this.polyline) {
+      if (showAll) this.map.addLayer(this.polyline);
+      else         this.map.removeLayer(this.polyline);
+    }
+    if (this.normalPolyline) {
+      if (showNormal && !showAll) this.map.addLayer(this.normalPolyline);
+      else                        this.map.removeLayer(this.normalPolyline);
+    }
+    if (this.pinnedPolyline) {
+      if (showPinned && !showAll) this.map.addLayer(this.pinnedPolyline);
+      else                        this.map.removeLayer(this.pinnedPolyline);
+    }
 
-      // 4️⃣ Draw stay markers
-      this.drawStayMarkers(stays);
-      //  await this.startPlayback(points);
+    // ── Start / End markers always visible ────────────────────────────────────
+    for (const m of this.markers) {
+      if (!this.map.hasLayer(m)) this.map.addLayer(m);
+    }
+
+    // ── Normal track-point markers ────────────────────────────────────────────
+    for (const m of this.normalMarkers) {
+      if (showNormal) { if (!this.map.hasLayer(m)) this.map.addLayer(m); }
+      else            { if (this.map.hasLayer(m))  this.map.removeLayer(m); }
+    }
+
+    // ── Pinned markers ────────────────────────────────────────────────────────
+    for (const m of this.pinnedMarkers) {
+      if (showPinned) { if (!this.map.hasLayer(m)) this.map.addLayer(m); }
+      else            { if (this.map.hasLayer(m))  this.map.removeLayer(m); }
+    }
+
+    // ── Stay layers: show when normal or all (stays are from normal movement) ─
+    for (const l of this.stayLayers) {
+      if (showNormal) { if (!this.map.hasLayer(l)) this.map.addLayer(l); }
+      else            { if (this.map.hasLayer(l))  this.map.removeLayer(l); }
+    }
+
+    // ── Fit map bounds to visible layers ──────────────────────────────────────
+    try {
+      const activePolyline = showAll ? this.polyline
+        : showNormal ? this.normalPolyline
+        : this.pinnedPolyline;
+
+      if (activePolyline) {
+        this.map.fitBounds(activePolyline.getBounds(), { padding: [40, 40], maxZoom: 16 });
+      } else if (showPinned && this.pinnedMarkers.length) {
+        // Only pinned — fit to pinned marker positions
+        const group = L.featureGroup(this.pinnedMarkers);
+        this.map.fitBounds(group.getBounds(), { padding: [60, 60], maxZoom: 16 });
+      }
+    } catch (_) { /* bounds can fail if empty */ }
+  }
+
+  // ─── Lazy Popup Builders ────────────────────────────────────────────────────
+  // Content built only on click — never on load
+
+  private lazyAddrPopup(label: string, lat: number, lng: number, ts: number): HTMLElement {
+    const d = document.createElement('div');
+    d.style.minWidth = '160px';
+    d.innerHTML = `<b style="color:#3b82f6">${label}</b><br>
+      <small class="atxt" style="color:#94a3b8">Loading address…</small><br>
+      <b>Lat:</b> ${lat.toFixed(6)}<br><b>Lng:</b> ${lng.toFixed(6)}<br>
+      <b>Time:</b> ${new Date(ts).toLocaleString()}`;
+    this.getAddressFromAPI(lat, lng).then(a => {
+      const el = d.querySelector('.atxt'); if (el) el.textContent = a || '—';
     });
+    return d;
   }
-  showHolds: boolean = false;
-  pinnedLocations: any[] = [];
-  toggleHolds() {
-    this.showHolds = true;
-    this.clearMap()
-    this.pinnedMarker()
 
+  private lazyPinPopup(pin: any): HTMLElement {
+    const d = document.createElement('div');
+    d.style.cssText = 'min-width:240px;max-width:290px;font-size:12px;line-height:1.6';
+
+    const rows = pin.visits.slice(0, 5).map((v: any, i: number) => {
+      const time    = new Date(v.timestamp).toLocaleString('en-IN', { day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit', hour12: true });
+      const place   = v.visit_place ? `<div style="color:#f59e0b;font-weight:600;margin-top:2px">🏢 ${v.visit_place}</div>` : '';
+      const purpose = v.purpose     ? `<div><span style="color:#64748b">Purpose:</span> <span style="color:#cbd5e1">${v.purpose}</span></div>` : '';
+      const remark  = v.remark      ? `<div><span style="color:#64748b">Remark:</span> <span style="color:#cbd5e1">${v.remark}</span></div>` : '';
+      const empty   = (!v.visit_place && !v.purpose && !v.remark)
+        ? `<div style="color:#475569;font-style:italic;font-size:11px">No details recorded</div>` : '';
+      return `<div style="margin:5px 0;padding:6px 8px;background:#0f172a;border-radius:6px;border-left:3px solid #f59e0b">
+          <div style="color:#94a3b8;font-size:11px"><b style="color:#f8fafc">#${i+1}</b>&nbsp; 🕐 ${time}</div>
+          ${place}${purpose}${remark}${empty}
+        </div>`;
+    }).join('');
+
+    d.innerHTML = `
+      <div style="padding:2px 0 6px">
+        <b style="color:#f59e0b;font-size:13px">📌 Pinned Location</b>
+      </div>
+      <small class="atxt" style="color:#94a3b8;display:block;margin-bottom:6px">${pin.address || 'Loading address…'}</small>
+      <span style="background:#1e3a5f;color:#60a5fa;padding:2px 9px;border-radius:10px;font-size:11px;font-weight:600">
+        ${pin.count} visit${pin.count !== 1 ? 's' : ''}
+      </span>
+      <div style="margin-top:8px;border-top:1px solid #334155;padding-top:4px;max-height:230px;overflow-y:auto">
+        ${rows}
+        ${pin.count > 5 ? `<div style="text-align:center;color:#475569;font-size:11px;padding:4px 0">+${pin.count-5} more visits</div>` : ''}
+      </div>`;
+
+    if (!pin.address) {
+      this.getAddressFromAPI(pin.latitude, pin.longitude).then(a => {
+        const el = d.querySelector('.atxt');
+        if (el && a) { el.textContent = a; pin.address = a; }
+      });
+    }
+    return d;
   }
-  // addPinnedMarkers(map: L.Map, pinned: any[]) {
 
-  //   if (!pinned?.length) return;
+  // ─── Stay Zones ─────────────────────────────────────────────────────────────
 
-  //   const pinIcon = L.icon({
-  //     iconUrl: 'assets/img/icons/pinned.png',
-  //     iconSize: [36, 36],
-  //     iconAnchor: [18, 36],
-  //     popupAnchor: [0, -36]
-  //   });
+  private renderStaysWithLazyAddresses(stays: any[]): void {
+    this.staySummary = []; this.totalStayMinutes = 0;
 
-  //   pinned.forEach((p: any, index: number) => {
+    this.ngZone.runOutsideAngular(() => {
+      for (const stay of stays) {
+        const mins = Math.max(1, Math.floor(stay.duration / 60000));
+        this.totalStayMinutes += mins;
+        const col = mins >= 60 ? '#7c3aed' : mins >= 30 ? '#8b5cf6' : mins >= 10 ? '#a78bfa' : '#c4b5fd';
+        const circle = L.circleMarker([stay.latitude, stay.longitude], {
+          radius: Math.min(22, 10 + mins / 5), color: col, fillColor: col, fillOpacity: 0.25, weight: 2
+        });
+        circle.bindTooltip(`Stay: ${this.formatMinutesToHHMM(mins)}`, { direction: 'top' });
+        const m = L.marker([stay.latitude, stay.longitude],
+          { icon: this.divIcon(col, 'ST', 26), zIndexOffset: 800 });
+        m.bindPopup(() => this.lazyStayPopup(stay, mins));
+        // Store in stayLayers — applyMapFilter will decide whether to add to map
+        this.stayLayers.push(circle, m);
+      }
 
-  //     const lat = p.latitude ?? p.coords?.latitude;
-  //     const lng = p.longitude ?? p.coords?.longitude;
-
-  //     if (!lat || !lng) return;
-
-  //     const marker = L.marker([lat, lng], {
-  //       icon: pinIcon,
-  //       zIndexOffset: 2000
-  //     }).addTo(map);
-
-  //     marker.bindPopup(`
-  //     <b>Pinned Location</b><br/>
-  //     ${new Date(p.timestamp).toLocaleString()}
-  //   `);
-
-  //     this.markers.push(marker);
-
-  //   });
-
-  // }
-  //   addPinnedMarkers(map: L.Map, pinned: any[]) {
-  //     if (!pinned || !pinned.length) return;
-
-  //     const pinIcon = L.icon({
-  //       iconUrl: 'assets/img/icons/pinned.png',   // 👈 your pin image
-  //       iconSize: [36, 36],
-  //       iconAnchor: [18, 36],                 // 🔥 EXACT point on coordinate
-  //       popupAnchor: [0, -36]
-  //     });
-
-  //     pinned.forEach(async (p, index) => {
-
-  //   let lat = p.lat ?? p.coords?.latitude;
-  //   let lng = p.lng ?? p.coords?.longitude;
-
-  //   if (lat == null || lng == null) return;
-
-  //   // offset overlapping markers
-  //   lat = lat + (index * 0.00002);
-  //   lng = lng + (index * 0.00002);
-
-  //   const marker = L.marker([lat, lng], {
-  //     icon: pinIcon,
-  //     zIndexOffset: 2000
-  //   }).addTo(map);
-
-  //   // const address = await this.getAddressFromAPI(lat, lng);
-
-  //   marker.bindPopup(`
-  //     <b>Pinned Location</b><br/>
-  //     #${index + 1}<br/>
-
-  //     <b>Lat:</b> ${lat.toFixed(6)}<br/>
-  //     <b>Lng:</b> ${lng.toFixed(6)}<br/>
-  //     <b>From:</b> ${new Date(p.timestamp).toLocaleTimeString()}
-  //   `);
-
-  //   this.markers.push(marker);
-
-  // });;
-  //   }
-
-  addPinnedMarkers(map: L.Map, pinned: any[]) {
-
-    if (!pinned || !pinned.length) return;
-
-    const groupedPins: any = this.groupPinnedLocations(pinned);
-
-    groupedPins.forEach((pin: any, index: number) => {
-
-      const lat = pin.latitude;
-      const lng = pin.longitude;
-
-      // ✅ create icon using count
-      const pinIcon = this.createPinIcon(pin.count);
-
-      const marker = L.marker([lat, lng], {
-        icon: pinIcon,
-        zIndexOffset: 2000
-      }).addTo(map);
-
-     const visitsHtml = pin.visits.map((v: any, i: number) => {
-
-  const d = new Date(v.timestamp);
-
-  return `
-  <div style="margin-bottom:4px">
-   <b>${i+1}</b> - ${d.toLocaleDateString()} ${d.toLocaleTimeString()}
-  </div>
-  `;
-
-}).join("");
-
-      marker.bindPopup(`
-      <b>Pinned Location</b><br/>
-      <b>Visits:</b> ${pin.count} times<br/>
-      <br/>
-      <b>Visit Times:</b><br/>
-      ${visitsHtml}
-    `);
-
-      this.markers.push(marker);
-
-    });
-
-  }
-  createPinIcon(count: number) {
-
-    return L.divIcon({
-      className: 'pin-count',
-      html: `
-<div style="position:relative">
-
-<img src="assets/img/icons/pinned.png"
-style="width:36px;height:36px"/>
-
-<span style="
-position:absolute;
-top:-6px;
-right:-6px;
-background:red;
-color:white;
-font-size:11px;
-padding:2px 6px;
-border-radius:50%;
-border:2px solid white;
-">${count}</span>
-
-</div>
-`,
-      iconSize: [36, 36],
-      iconAnchor: [15, 30]
+      // Now apply the current filter so stay visibility respects the active chip
+      this.applyMapFilter();
     });
 
+    this.staySummary = stays.map(stay => ({
+      minutes: Math.max(1, Math.floor(stay.duration / 60000)),
+      durationText: this.formatMinutesToHHMM(Math.max(1, Math.floor(stay.duration / 60000))),
+      address: null as string | null,
+      from: stay.from, to: stay.to, lat: stay.latitude, lng: stay.longitude
+    }));
+    this.cdr.markForCheck();
+
+    // All address fetches in parallel — one CD update at the end
+    Promise.allSettled(
+      this.staySummary.map((s, i) =>
+        this.getAddressFromAPI(s.lat, s.lng).then(a => { this.staySummary[i].address = a; })
+      )
+    ).then(() => this.ngZone.run(() => this.cdr.markForCheck()));
   }
-  groupPinnedLocations(pinned: any[]) {
 
-    const grouped: any = {};
+  private lazyStayPopup(stay: any, mins: number): HTMLElement {
+    const d = document.createElement('div');
+    d.innerHTML = `<b>Stay Zone</b><br>
+      <b>Duration:</b> ${this.formatMinutesToHHMM(mins)}<br>
+      <b>From:</b> ${new Date(stay.from).toLocaleTimeString()}<br>
+      <b>To:</b> ${new Date(stay.to).toLocaleTimeString()}<br>
+      <small class="atxt" style="color:#94a3b8">Loading address…</small>`;
+    this.getAddressFromAPI(stay.latitude, stay.longitude).then(a => {
+      const el = d.querySelector('.atxt');
+      if (el && a) el.outerHTML = `<span><b>Address:</b> ${a}</span>`;
+    });
+    return d;
+  }
 
-    pinned.forEach((p: any) => {
+  // ─── Stats (single pass) ────────────────────────────────────────────────────
 
+  private computeStats(sorted: LocationPoint[]): void {
+    if (sorted.length < 2) return;
+    let dist = 0, speedSum = 0, speedCnt = 0, bestAcc = Infinity;
+    for (let i = 1; i < sorted.length; i++) {
+      dist += this.dist(sorted[i-1].coords.latitude, sorted[i-1].coords.longitude,
+                        sorted[i].coords.latitude,   sorted[i].coords.longitude);
+    }
+    for (const p of sorted) {
+      if (p.coords.speed > 0) { speedSum += p.coords.speed; speedCnt++; }
+      const a = p.coords.accuracy;
+      if (a > 0 && a < 300 && a < bestAcc) bestAcc = a;
+    }
+    this.totalDistanceMeters = dist;
+    this.avgSpeed     = speedCnt > 0 ? (speedSum / speedCnt) * 3.6 : 0;
+    this.bestAccuracy = bestAcc === Infinity ? 0 : bestAcc;
+    const ms = sorted[sorted.length-1].timestamp - sorted[0].timestamp;
+    const h = Math.floor(ms / 3_600_000), m = Math.floor((ms % 3_600_000) / 60_000);
+    this.trackingDuration = h > 0 ? `${h}h ${m}m` : `${m}m`;
+  }
+
+  // ─── Derive & Filter ────────────────────────────────────────────────────────
+
+  deriveLocations(): void {
+    this.pinnedLocations = []; this.normalLocations = [];
+    for (const l of this.locationData)
+      (l.location_type === 'pinned' ? this.pinnedLocations : this.normalLocations).push(l);
+  }
+
+  applyFilters(): void {
+    this.filteredLocations = this.filterType === 'all'
+      ? this.locationData
+      : this.locationData.filter(l => l.location_type === this.filterType);
+    this.cdr.markForCheck();
+  }
+
+  setFilterType(type: 'all' | 'pinned' | 'normal'): void {
+    this.filterType = type;
+    this.applyFilters();            // update timeline sidebar
+    this.ngZone.runOutsideAngular(() => {
+      this.applyMapFilter();        // update map layers — outside zone so no CD overhead
+    });
+  }
+
+  resetTrackingFilters(): void {
+    this.filterType = 'all'; this.obj = {};
+    if (this.currentTrackingUser) this.loadAndPlotData(this.currentTrackingUser);
+  }
+
+  // ─── Stay Detection ─────────────────────────────────────────────────────────
+
+  detectStays(pts: LocationPoint[]): any[] {
+    const D = 100, T = 5 * 60_000;
+    const out: any[] = [];
+    let start: LocationPoint | null = null;
+    for (let i = 1; i < pts.length; i++) {
+      const d = this.dist(pts[i-1].coords.latitude, pts[i-1].coords.longitude, pts[i].coords.latitude, pts[i].coords.longitude);
+      if (d <= D) { if (!start) start = pts[i-1]; }
+      else {
+        if (start) {
+          const dur = pts[i-1].timestamp - start.timestamp;
+          if (dur >= T) out.push({ latitude: start.coords.latitude, longitude: start.coords.longitude, duration: dur, from: start.timestamp, to: pts[i-1].timestamp });
+          start = null;
+        }
+      }
+    }
+    if (start && pts.length) {
+      const last = pts[pts.length-1], dur = last.timestamp - start.timestamp;
+      if (dur >= T) out.push({ latitude: start.coords.latitude, longitude: start.coords.longitude, duration: dur, from: start.timestamp, to: last.timestamp });
+    }
+    return out;
+  }
+
+  // ─── Group Pinned ───────────────────────────────────────────────────────────
+
+  groupPinnedLocations(pinned: any[]): any[] {
+    const g: Record<string, any> = {};
+    for (const p of pinned) {
       const lat = p.lat ?? p.coords?.latitude;
       const lng = p.lng ?? p.coords?.longitude;
-
-      if (!lat || !lng) return;
-
-      const key = lat.toFixed(5) + "_" + lng.toFixed(5);
-
-      if (!grouped[key]) {
-        grouped[key] = {
-          latitude: lat,
-          longitude: lng,
-          address: p.address,
-          count: 0,
-          visits: []
-        };
-      }
-
-      grouped[key].count++;
-      grouped[key].visits.push(p);
-
-    });
-
-    return Object.values(grouped);
-
-  }
-  // loadAndPlotData(user: any) {
-  //   const payload: any = {};
-  //   if (user?.id) payload.employeeId = user.id;
-  //   if (this.obj.startDate) payload.start_date = this.obj.startDate;
-  //   if (this.obj.endDate) payload.end_date = this.obj.endDate;
-
-  //   this.locationService.getLatestLocations(payload).subscribe(async res => {
-  //     if (!res?.status || !res.data?.length) {
-  //       this.clearMap();
-  //       return;
-  //     }
-
-  //     const points = res.data.sort((a:any, b:any) => a.timestamp - b.timestamp);
-
-  //     this.clearMap();
-  // // const cleanedData = this.removeSameLocationPoints(points, 5);
-
-  // // const polylinePath = cleanedData.map(p => ({
-  // //   lat: p.coords.latitude,
-  // //   lng: p.coords.longitude
-  // // }));
-  //     // 1️⃣ Draw route
-  //     const polyline = this.drawPolyline(points);
-  //     if (polyline) {
-  //       polyline.addTo(this.map);
-  //       this.polyline = polyline;
-  //       this.map.fitBounds(polyline.getBounds(), { padding: [40, 40] });
-  //     }
-
-
-  // // ✅ new (clean route)
-  // // await this.drawSnappedRoute(points);
-
-
-  //     // 2️⃣ Start / End markers
-  //     this.drawStartEndMarkers(points);
-
-  //     // 3️⃣ Detect stays
-  //     const stays = this.detectStays(points);
-
-  //     // 4️⃣ Draw stay markers
-  //     await this.drawStayMarkers(stays);
-  //   //  await this.startPlayback(points);
-
-  //   });
-  // }
-
-  getBearing(lat1: number, lng1: number, lat2: number, lng2: number): number {
-    const toRad = (v: number) => (v * Math.PI) / 180;
-
-    const y = Math.sin(toRad(lng2 - lng1)) * Math.cos(toRad(lat2));
-    const x =
-      Math.cos(toRad(lat1)) * Math.sin(toRad(lat2)) -
-      Math.sin(toRad(lat1)) *
-      Math.cos(toRad(lat2)) *
-      Math.cos(toRad(lng2 - lng1));
-
-    return ((Math.atan2(y, x) * 180) / Math.PI + 360) % 360;
-  }
-
-  cleanGpsPointsAdvanced(
-    rawPoints: any[],
-    options = {
-      minDistance: 50,        // meters
-      minSpeed: 5,            // km/h
-      minTime: 20,            // seconds
-      maxBearingChange: 45    // degrees (zigzag killer)
+      if (!lat || !lng) continue;
+      const k = lat.toFixed(4) + '_' + lng.toFixed(4);
+      if (!g[k]) g[k] = { latitude: lat, longitude: lng, address: p.address, count: 0, visits: [] };
+      g[k].count++;
+      // Store each visit with its full detail fields
+      g[k].visits.push({
+        timestamp:   p.timestamp,
+        visit_place: p.visit_place ?? null,
+        purpose:     p.purpose     ?? null,
+        remark:      p.remark      ?? null,
+        address:     p.address     ?? null,
+        coords:      p.coords
+      });
     }
-  ) {
-    const cleaned: any[] = [];
-
-    for (const p of rawPoints) {
-      const lat = p.latitude ?? p.coords?.latitude;
-      const lng = p.longitude ?? p.coords?.longitude;
-      const timestamp = p.timestamp;
-
-      if (!lat || !lng || !timestamp) continue;
-
-      if (cleaned.length < 2) {
-        cleaned.push({ lat, lng, timestamp });
-        continue;
-      }
-
-      const last = cleaned[cleaned.length - 1];
-      const prev = cleaned[cleaned.length - 2];
-
-      const distance = this.getDistanceInMeters(last.lat, last.lng, lat, lng);
-      const timeDiff = (timestamp - last.timestamp) / 1000;
-      const speed = this.getSpeedKmph(distance, timeDiff);
-
-      const bearing1 = this.getBearing(prev.lat, prev.lng, last.lat, last.lng);
-      const bearing2 = this.getBearing(last.lat, last.lng, lat, lng);
-      const bearingDiff = Math.abs(bearing1 - bearing2);
-
-      // ❌ Remove jitter / zigzag
-      if (
-        distance < options.minDistance ||
-        speed < options.minSpeed ||
-        timeDiff < options.minTime ||
-        bearingDiff > options.maxBearingChange
-      ) {
-        // keep latest point only
-        cleaned[cleaned.length - 1] = { lat, lng, timestamp };
-        continue;
-      }
-
-      cleaned.push({ lat, lng, timestamp });
-    }
-
-    return cleaned;
-  }
-  getSpeedKmph(
-    distanceMeters: number,
-    timeSeconds: number
-  ): number {
-    if (timeSeconds <= 0) return 0;
-    return (distanceMeters / timeSeconds) * 3.6;
+    return Object.values(g);
   }
 
+  // ─── Geometry ───────────────────────────────────────────────────────────────
 
+  dist(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    const dLat = (lat2 - lat1) * DEG2RAD;
+    const dLon = (lon2 - lon1) * DEG2RAD;
+    const sl = Math.sin(dLat / 2), so = Math.sin(dLon / 2);
+    const a = sl*sl + Math.cos(lat1*DEG2RAD) * Math.cos(lat2*DEG2RAD) * so*so;
+    return EARTH_R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
 
-  drawPolyline(points: any[]): L.Polyline | null {
-    if (!points || points.length < 2) return null;
+  getDistanceInMeters(lat1: number, lon1: number, lat2: number, lon2: number): number {
+    return this.dist(lat1, lon1, lat2, lon2);
+  }
 
-    const cleaned = this.cleanGpsPointsAdvanced(points);
+  calculateTotalDistance(pts: LocationPoint[]): number {
+    let t = 0;
+    for (let i = 1; i < pts.length; i++)
+      t += this.dist(pts[i-1].coords.latitude, pts[i-1].coords.longitude, pts[i].coords.latitude, pts[i].coords.longitude);
+    return t;
+  }
 
-    if (cleaned.length < 2) return null;
+  // ─── Address API + Cache ─────────────────────────────────────────────────────
 
-    const latLngs: L.LatLngExpression[] = cleaned.map(p => [
-      p.lat,
-      p.lng
-    ]);
+  async getAddressFromAPI(lat: number, lng: number): Promise<string | null> {
+    const k = `${lat.toFixed(4)}_${lng.toFixed(4)}`;
+    if (this._addrCache.has(k)) return this._addrCache.get(k)!;
+    try {
+      const res: any = await this.locationService.getAddressFromGlobalVTS(lat, lng);
+      const a = res?.address?.trim() || null;
+      if (a) this._addrCache.set(k, a);
+      return a;
+    } catch { return null; }
+  }
 
-    return L.polyline(latLngs, {
-      color: '#1c68b4',
-      weight: 6,
-      opacity: 0.9,
-      smoothFactor: 2,   // smooths tiny curves
-      lineCap: 'round',
-      lineJoin: 'round'
+  async viewAddress(pin: any, index: number): Promise<void> {
+    const lat = pin.latitude ?? pin.coords?.latitude;
+    const lng = pin.longitude ?? pin.coords?.longitude;
+    const a = await this.getAddressFromAPI(lat, lng);
+    this.pinnedLocationList[index].address = pin.address = a;
+    this.cdr.markForCheck();
+  }
+
+  // ─── Icons ──────────────────────────────────────────────────────────────────
+
+  divIcon(color: string, label: string, size = 28): L.DivIcon {
+    return L.divIcon({
+      className: '',
+      html: `<div style="width:${size}px;height:${size}px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:${color};border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center"><span style="transform:rotate(45deg);color:#fff;font-size:10px;font-weight:700;line-height:1">${label}</span></div>`,
+      iconSize: [size, size], iconAnchor: [size/2, size+3]
     });
   }
 
-  async drawSnappedRoute(points: any[]) {
-    // prepare coords for API
-    const coords = points.map(p => ({
-      latitude: p.coords.latitude,
-      longitude: p.coords.longitude
-    }));
-
-    // 🔥 call backend → Google Roads API
-    this.locationService.snapToRoads(coords).subscribe(snapped => {
-      if (!snapped || snapped.length < 2) return;
-
-      // draw snapped polyline
-      const polyline = this.drawPolyline(snapped);
-      if (polyline) {
-        polyline.addTo(this.map);
-        this.polyline = polyline;
-        this.map.fitBounds(polyline.getBounds(), { padding: [40, 40] });
-      }
+  pinCountIcon(count: number): L.DivIcon {
+    return L.divIcon({
+      className: '',
+      html: `<div style="position:relative;display:inline-block"><div style="width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#f59e0b;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center"><span style="transform:rotate(45deg);color:#fff;font-size:10px;font-weight:700">P</span></div>${count>1?`<span style="position:absolute;top:-5px;right:-5px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:8px;border:1.5px solid #fff">${count}</span>`:''}</div>`,
+      iconSize: [28, 28], iconAnchor: [14, 31]
     });
   }
 
+  // ─── Selection ──────────────────────────────────────────────────────────────
 
-  toggleLiveTracking() {
-    if (!this.currentTrackingUser) {
-      console.warn('No user selected for live tracking');
-      return;
+  selectLocation(loc: LocationPoint): void {
+    this.selectedLocation = loc;
+    if (this.map) {
+      this.ngZone.runOutsideAngular(() =>
+        this.map.setView([loc.coords.latitude, loc.coords.longitude], 17, { animate: true })
+      );
     }
-
-    const employeeData = encodeURIComponent(JSON.stringify(this.currentTrackingUser));
-
-    console.log(employeeData, "employeeData");
-
-    this.router.navigate(['/layout/tracking/live'], {
-      queryParams: { employee: employeeData }
-    });
+    this.cdr.markForCheck();
   }
 
-  DateWiseTracking() {
-    this.showHolds = false
-    this.currentTrackingUser['start_date'] = this.obj['startDate']
-    this.currentTrackingUser['end_date'] = this.obj['endDate']
-    this.currentTrackingUser['start_time'] = this.obj['startTime']
-    this.currentTrackingUser['end_time'] = this.obj['endTime']
-    this.loadAndPlotData(this.currentTrackingUser);
+  clearSelection(): void { this.selectedLocation = null; this.cdr.markForCheck(); }
+
+  scrollTimelineToItem(index: number): void {
+    if (!this.timelineList) return;
+    const items = this.timelineList.nativeElement.querySelectorAll('.tl-item');
+    if (items[index]) items[index].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 
-  startLiveTracking() {
-    if (!this.currentTrackingUser) {
-      console.warn('No user selected for live tracking');
-      return;
-    }
+  // ─── Live Tracking ──────────────────────────────────────────────────────────
 
+  toggleLiveTracking(): void {
+    if (!this.currentTrackingUser) return;
+    this.isLiveTrackingEnabled ? this.stopLiveTracking() : this.startLiveTracking();
+  }
+
+  startLiveTracking(): void {
     this.isLiveTrackingEnabled = true;
-
     this.loadAndPlotData(this.currentTrackingUser);
-
     this.liveTrackingInterval = setInterval(() => {
-      if (this.isLiveTrackingEnabled && this.currentTrackingUser) {
-        this.loadAndPlotData(this.currentTrackingUser);
-      }
+      if (this.isLiveTrackingEnabled && this.currentTrackingUser) this.loadAndPlotData(this.currentTrackingUser);
     }, this.liveTrackingIntervalSeconds * 1000);
+    this.cdr.markForCheck();
   }
 
-  setMinToDate() {
-    if (this.obj['startDate']) {
-      const fromDate = new Date(this.obj['startDate']);
-
-      if (!isNaN(fromDate.getTime())) {
-        this.minDate = fromDate.toISOString().split('T')[0];
-      }
-    }
-    this.obj['endDate'] = null
-  }
-  minDate: any
-  getToDateMin(): string {
-    return this.obj['startDate'] || this.minDate;
-  }
-
-  stopLiveTracking() {
+  stopLiveTracking(): void {
     this.isLiveTrackingEnabled = false;
-    if (this.liveTrackingInterval) {
-      clearInterval(this.liveTrackingInterval);
-      this.liveTrackingInterval = null;
-    }
-  }
-  obj: any = {}
-  toggleFullScreen() {
-    this.isFullScreen = !this.isFullScreen;
-
-    if (this.isFullScreen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-
-    const fullscreenIcon = document.querySelector('.leaflet-control-fullscreen i');
-    if (fullscreenIcon) {
-      fullscreenIcon.className = `fas ${this.isFullScreen ? 'fa-compress' : 'fa-expand'}`;
-    }
-
-    const fullscreenLink = document.querySelector('.leaflet-control-fullscreen');
-    if (fullscreenLink) {
-      fullscreenLink.setAttribute('title', this.isFullScreen ? 'Exit Full Screen' : 'Toggle Full Screen');
-    }
-
-    setTimeout(() => {
-      if (this.map) {
-        this.map.invalidateSize();
-        setTimeout(() => {
-          if (this.map) {
-            this.map.invalidateSize();
-          }
-        }, 100);
-      }
-    }, 200);
+    if (this.liveTrackingInterval) { clearInterval(this.liveTrackingInterval); this.liveTrackingInterval = null; }
+    this.cdr.markForCheck();
   }
 
-  zoomIn() {
-    if (this.map) {
-      this.map.zoomIn();
+  // ─── Date helpers ───────────────────────────────────────────────────────────
+
+  setMinToDate(): void {
+    if (this.obj['startDate']) {
+      const d = new Date(this.obj['startDate']);
+      if (!isNaN(d.getTime())) this.minDate = d.toISOString().split('T')[0];
+    }
+    this.obj['endDate'] = null;
+  }
+
+  getToDateMin(): string { return this.obj['startDate'] || this.minDate; }
+
+  DateWiseTracking(): void {
+    if (this.currentTrackingUser) {
+      Object.assign(this.currentTrackingUser, {
+        start_date: this.obj['startDate'], end_date: this.obj['endDate'],
+        start_time: this.obj['startTime'], end_time: this.obj['endTime']
+      });
+      this.loadAndPlotData(this.currentTrackingUser);
     }
   }
 
-  zoomOut() {
-    if (this.map) {
-      this.map.zoomOut();
-    }
+  // ─── Utilities ──────────────────────────────────────────────────────────────
+
+  zoomToPin(pin: any): void {
+    const lat = pin.latitude ?? pin.coords?.latitude;
+    const lng = pin.longitude ?? pin.coords?.longitude;
+    this.ngZone.runOutsideAngular(() => this.map?.setView([lat, lng], 17, { animate: true }));
   }
 
-  ngOnDestroy() {
-    this.stopLiveTracking();
-    if (this.trafficLayer && this.map) {
-      this.map.removeLayer(this.trafficLayer);
-      this.trafficLayer = null;
-    }
+  formatMinutesToHHMM(m: number): string {
+    const h = Math.floor(m / 60), min = m % 60;
+    return h > 0 ? `${h}h ${min}m` : `${min}m`;
   }
-  pinnedMarker() {
 
+  formatTime(ts: number):     string { return this._timeFmt.format(new Date(ts)); }
+  formatDate(ts: number):     string { return this._dateFmt.format(new Date(ts)); }
+  formatDateTime(ts: number): string { return this._dtFmt.format(new Date(ts));   }
 
-    this.addPinnedMarkers(this.map, this.pinned);
-
+  openInMaps(loc: LocationPoint): void {
+    window.open(`https://www.google.com/maps?q=${loc.coords.latitude},${loc.coords.longitude}`, '_blank');
   }
+
+  async copyCoords(loc: LocationPoint): Promise<void> {
+    if (navigator.clipboard) await navigator.clipboard.writeText(`${loc.coords.latitude}, ${loc.coords.longitude}`);
+  }
+
+  trackByTimestamp(_: number, item: LocationPoint): number { return item.timestamp; }
+  trackByIndex(index: number): number { return index; }
+
+  togglePanel(): void { this.isPanelCollapsed = !this.isPanelCollapsed; this.cdr.markForCheck(); }
 }
