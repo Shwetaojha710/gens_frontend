@@ -1,876 +1,672 @@
 <div class="container-xxl mt-5">
-  <!-- <div class="row">
-      <div class="col-4">
-              <label for="defaultFormControlInput" class="form-label">Select Branch</label>
-                <ng-select
-      [items]="branchList"
-      bindLabel="label"
-      bindValue="value"
-      placeholder="Select Branch"
-      name="branch"
-      [(ngModel)]="obj['branchId']"
-      (ngModelChange)="onBranchChange($event)"
-      #branchIdRef="ngModel">
-    </ng-select>
-            </div>
+  <!-- Breadcrumb -->
+  <div class="row align-items-center  mb-4">
+    <div class="col-md-6">
+      <h4 class="mb-0">Dashboard</h4>
+    </div>
+    <div class="col-md-6">
+      <div class="demo-inline-spacing text-end">
+        <button type="button" class="btn  bg-white waves-effect waves-light"><i class="fa-regular fa-calendar mx-1"></i>
+          Last 30 days <i class="fa-solid fa-angle-right fs-10 mx-1"></i>
+        </button>
+        <button type="button" class="btn btn-primary waves-effect waves-light me-sm-2 me-2"><img
+            src="../../../assets/img/icon/Vector.png" class="mx-2"> Reports</button>
+
+      </div>
+    </div>
   </div>
-  <br> -->
-  <div class="row g-6">
-    <div class="col-sm-6 col-lg-3" *ngFor="let item of stats">
-      <div class="card h-100" [style.background-color]="item.color" style="border-width: 2px; border-style: solid">
-        <div class="card-body" [routerLink]="item.linkurl" style="cursor: pointer"
-          [queryParams]="{ fromDashboard: true }">
-          <div class="d-flex align-items-center mb-2">
-            <div class="avatar me-4">
 
-              <span class="avatar-initial img-fluid rounded-circle w-auto h-auto bg-label-primary">
-                <i class="icon-base ri icon-24px" [ngClass]="item.icon"></i>
-              </span>
+
+  <!-- Row 1 -->
+  <div class="row mb-3">
+    <div class="col-lg-6">
+      <div class="card h-100"
+        style="background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));border: 2px solid #fff;">
+        <div class="card-header border-0" style="margin-bottom: 0px;">
+          <div class="d-flex justify-content-between">
+            <h5 class="mb-1">Employee Overview</h5>
+            <div>
+              <div class="badge bg-label-primary bg-white text-secondary rounded-pill mx-10 px-4">Late Check-ins <span
+                  class="mb-0 fw-medium text-danger">11 <i class="icon-base ri ri-arrow-up-s-line"></i></span></div>
+              <div class="badge bg-label-primary bg-white text-secondary rounded-pill px-4">Total 854 <span
+                  class="mb-0 fw-medium text-success">+18 <i class="icon-base ri ri-arrow-up-s-line"></i></span></div>
             </div>
-            <h4 class="mb-0 text-white">{{ item.value }}</h4>
           </div>
-          <h6 class="mb-0 fw-normal text-white">{{ item.title }}</h6>
-          <p class="mb-0 text-end">
 
-          </p>
+        </div>
+        <div class="card-body d-flex justify-content-between flex-wrap gap-4">
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar">
+              <div class="avatar-initial bg-label-success rounded">
+                <i class="icon-base ri ri-user-star-line icon-24px"></i>
+              </div>
+            </div>
+            <div class="card-info">
+              <div class="d-flex align-items-center text-success">
+                <h5 class="mb-0">812 </h5>
+                <div class="d-flex align-items-center text-success mx-1">
+                  <p class="mb-0 fw-medium">+13% Up</p>
+
+                </div>
+              </div>
+
+
+              <p class="mb-0">Present Today</p>
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar">
+              <div class="avatar-initial bg-label-warning rounded">
+                <i class="icon-base ri ri-pie-chart-2-line icon-24px"></i>
+              </div>
+            </div>
+            <div class="card-info">
+              <div class="d-flex align-items-center text-success">
+                <h5 class="mb-0">32 </h5>
+                <div class="d-flex align-items-center text-warning mx-1">
+                  <p class="mb-0 fw-medium">-2 Less</p>
+
+                </div>
+              </div>
+
+
+              <p class="mb-0">On Leave</p>
+            </div>
+          </div>
+          <div class="d-flex align-items-center gap-3">
+            <div class="avatar">
+              <div class="avatar-initial bg-label-danger rounded">
+                <i class="icon-base ri ri-arrow-left-right-line icon-24px"></i>
+              </div>
+            </div>
+            <div class="card-info">
+              <div class="d-flex align-items-center text-success">
+                <h5 class="mb-0">11 </h5>
+                <div class="d-flex align-items-center text-danger mx-1">
+                  <p class="mb-0 fw-medium">+2% Often</p>
+
+                </div>
+              </div>
+
+
+              <p class="mb-0">Emergency leave</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- <div class="col-md-6 col-xxl-4  order-xxl-1">
-      <div class="card h-100">
-        <div class="card-header d-flex justify-content-between">
-          <div class="card-title mb-0">
-            <h5 class="m-0 me-2">Select Branch</h5>
+    <div class="col-lg-3 col-sm-6">
+      <div class="card h-100"
+        style="background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));border: 2px solid #fff;">
+        <div class="row">
+          <div class="col-6">
+            <div class="card-body">
+              <div class="card-info mb-5">
+                <h6 class="mb-2 text-nowrap" style="color: #3C4056;">On Field Employees (GPS)</h6>
+                <div class="badge bg-label-primary bg-white text-black rounded-pill lh-xs"><span
+                    class="text-danger me-2"><i class="icon-base ri ri-circle-fill icon-12px"></i></span> Live Tracking
+                </div>
+              </div>
+              <div class="d-flex align-items-center">
+                <h4 class="mb-0 me-2">127
+                </h4>
+                <div class="tracking">4&nbsp;Employees
+                  Offline</div>
+              </div>
+            </div>
           </div>
-
+          <div class="col-6 text-end d-flex align-items-end">
+            <div class="card-body pb-0 px-0">
+              <img src="../../../assets/img/avatars/gps-tracking.png" alt="Ratings" class="" width="150" />
+            </div>
+          </div>
         </div>
-
       </div>
-    </div> -->
+    </div>
 
-
-
-      <div class="col-lg-4 col-xxl-4 order-xxl-1">
-      <div class="card h-100">
-        <div class="card-header d-flex align-items-center justify-content-between">
-          <div class="card-title mb-0">
-            <h5 class="m-0 me-2 mb-1">Employees</h5>
+    <div class="col-lg-3 col-sm-6">
+      <div class="card h-100"
+        style="background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));border: 2px solid #fff;">
+        <div class="row">
+          <div class="col-6">
+            <div class="card-body">
+              <div class="card-info mb-5">
+                <h6 class="mb-2 text-nowrap" style="color: #3C4056;">On Field Employees (GPS)</h6>
+                <div class="badge bg-label-primary bg-white text-black rounded-pill lh-xs"><span
+                    class="text-danger me-2"><i class="icon-base ri ri-circle-fill icon-12px"></i></span> Live Tracking
+                </div>
+              </div>
+              <div class="d-flex align-items-center">
+                <h4 class="mb-0 me-2">127
+                </h4>
+                <div class="tracking">4&nbsp;Employees
+                  Offline</div>
+              </div>
+            </div>
           </div>
-          <div class="btn-group">
-            <button type="button" class="btn btn-xs btn-primary waves-effect waves-light"
-              routerLink="/layout/employee/joining">
-              View All
-            </button>
+          <div class="col-6 text-end d-flex align-items-end">
+            <div class="card-body pb-0 px-0">
+              <img src="../../../assets/img/avatars/gps-tracking.png" alt="Ratings" class="" width="150" />
+            </div>
           </div>
         </div>
-        <div class="card-body" style="overflow-y: scroll;height: 225px;">
-          <ul class="p-0 m-0">
-            <li class="d-flex align-items-center mb-6" *ngFor="let item of employeeList">
-              <div class="avatar flex-shrink-0 me-4">
-                <!-- <img [src]="item['profileImage']" alt="Document" width="100" height="auto" style="cursor: pointer" /> -->
-                <!-- <img [src]="item['profileImage'] ? item['profileImage'] : '../../assets/img/avatars/4.png'" alt="avatar"
-                  class="rounded-3" /> -->
-                <img [src]="item?.profileImage" (error)="onImageError($event,item, 'profileImage')" alt="avatar"
-                  class="rounded-3" />
+      </div>
+    </div>
+  </div>
+  <!-- Row 2 -->
+  <div class="row mb-2">
+    <div class="col-md-6">
+      <div class="ai-card">
+        <div class="ai-content">
+          <h2 class="title">
+            Artificial Intelligence ✨ <span>(Coming Soon)</span>
+          </h2>
 
-                <!-- 322 -->
-                <!-- <img src="../../assets/img/avatars/5.png" alt="avatar" class="img-fluid rounded-circle w-auto h-auto" /> -->
-              </div>
-              <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                <div class="me-2">
-                  <h6 class="mb-0">{{ item.name }}</h6>
-                  <small class="d-flex align-items-center">
-                    <span class="text-{{ item.badgeColor }} fw-medium">{{
-                      item.role
-                      }}</span>
-                  </small>
-                </div>
-                <div class="badge bg-label-{{ item.badgeColor }} rounded-pill">
-                  {{ item?.joiningDate || 'NA'}}
-                </div>
-              </div>
+          <div class="analysis-box">
+            <h3>AI Analysis & prediction</h3>
+            <ul>
+              <li>3 Employees At Risk Of Being Absent Tomorrow</li>
+              <li>Attendance Improved By 8% ▼ Today</li>
+              <li>2 Employees Frequently Late This Week</li>
+            </ul>
+          </div>
+
+          <div class="btn-group">
+            <button class="btn-outline-ai">Predict Attendance Trends</button>
+            <button class="btn-outline-ai">Detect Late-Coming Patterns</button>
+          </div>
+
+          <div class="input-box">
+            <button class="icon-btn mic">🎤</button>
+            <input type="text" placeholder="Ask Now..." />
+            <button class="icon-btn send">➤</button>
+          </div>
+        </div>
+
+        <div class="ai-image">
+          <img src="robot.png" alt="AI Robot" />
+        </div>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="ai-chat">
+        <img src="../../../assets/img/bg-login/card-ai.png" width="100%">
+      </div>
+    </div>
+  </div>
+  <!-- Row 3 -->
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card mb-2"
+        style="background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));border: 2px solid #fff;">
+        <div class="card-header d-flex justify-content-between mb-0 align-items-center p-2" style="margin-bottom: 0px;">
+          <h5 class="mb-0 ml-2">Celebrations</h5>
+          <ul class="nav nav-pills bg-white p-1" style="border-radius: 5px;" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button type="button" class="nav-link active waves-effect waves-light" role="tab" data-bs-toggle="tab"
+                data-bs-target="#navs-pills-top-home" aria-controls="navs-pills-top-home" aria-selected="true">
+                All
+              </button>
             </li>
+            <li class="nav-item" role="presentation">
+              <button type="button" class="nav-link waves-effect waves-light" role="tab" data-bs-toggle="tab"
+                data-bs-target="#navs-pills-top-profile" aria-controls="navs-pills-top-profile" aria-selected="false"
+                tabindex="-1">
+                Upcoming
+              </button>
+            </li>
+
           </ul>
         </div>
-      </div>
-    </div>
+        <div class="card-body">
+          <div class="tab-content p-0">
+            <div class="tab-pane fade show active" id="navs-pills-top-home" role="tabpanel">
+              <div class="row">
+                <div class="col-6">
+                  <div class="birthday-card"
+                    style="background-image: url('../../../assets/img/avatars/birthday-bg.png');background-size: cover;background-position: center;background-repeat: no-repeat;width: 100%;height: 180px;">
+                    <div class="celebration-card text-center">
 
-    <!-- On route vehicles Table -->
-    <div class="col-md-6 col-xxl-8  order-xxl-1">
-      <div class="card">
-
-        <div class="card-header d-flex justify-content-between align-items-center">
-          <span style="font-weight: bold">Leave Request</span>
-          <button type="button" class="btn btn-xs btn-primary waves-effect waves-light"
-            routerLink="/layout/employee/apply-leave">
-            View All
-          </button>
-        </div>
-        <div class="card-datatable table-responsive">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Employee Name</th>
-                <th>Leave Type</th>
-                <th>Leave From</th>
-                <th>Leave To</th>
-                <th>Days</th>
-                <th>Status</th>
-                <!-- <th>Details</th> -->
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let item of leaveList; let i = index">
-                <td>{{ item?.empCode }}</td>
-                <td>{{ item?.name }}</td>
-                <td>{{ item?.type }}</td>
-                <td>{{ item?.fromDate | date : "dd-MM-YYYY" }}</td>
-                <td>{{ item?.toDate | date : "dd-MM-YYYY" }}</td>
-                <td>{{ item?.days }}</td>
-                <td>{{ item?.status }}</td>
-                <!-- <td><a href="#">Details</a></td> -->
-              </tr>
-
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-    <div class="col-md-6 col-xxl-4  order-xxl-1">
-      <div class="card h-100">
-        <div class="card-header d-flex justify-content-between">
-          <div class="card-title mb-0">
-            <h5 class="m-0 me-2">Events</h5>
-          </div>
-          <div class="btn-group">
-            <button type="button" class="btn btn-xs btn-primary waves-effect waves-light">
-              View All
-            </button>
-          </div>
-        </div>
-        <div class="card-body p-0">
-          <div class="nav-align-top">
-            <ul class="nav nav-tabs nav-fill" role="tablist">
-              <li class="nav-item">
-                <button type="button" class="nav-link active" role="tab" data-bs-toggle="tab"
-                  data-bs-target="#navs-justified-new" aria-controls="navs-justified-new" aria-selected="true">
-                  Birthdays
-                </button>
-              </li>
-
-              <li class="nav-item">
-                <button type="button" class="nav-link" role="tab" data-bs-toggle="tab"
-                  data-bs-target="#navs-justified-link-shipping" aria-controls="navs-justified-link-shipping"
-                  aria-selected="false">
-                  Work Anniversary
-                </button>
-              </li>
-            </ul>
-            <div class="tab-content border-0 pb-0 px-6 mx-1" style="overflow-y: scroll;height: 332px;">
-              <div class="tab-pane fade show active" id="navs-justified-new" role="tabpanel">
-                <ul class="p-0 m-0">
-                  <li class="d-flex align-items-center mb-4 pb-2" *ngFor="let emp of Event.birthdays">
-                    <div class="avatar flex-shrink-0 me-4">
-                      <!-- <img [src]="emp?.profileImage ? emp.profileImage : '../../assets/img/avatars/4.png'" alt="avatar"
-                        class="rounded-3" /> -->
-                      <img [src]="emp?.profileImage || 'assets/img/avatars/4.png'"
-                        (error)="onImageError($event,emp,'profileImage')" alt="avatar" class="rounded-3" />
+                      <img src="../../../assets/img/avatars/dainik.png" alt="emp-img" width="80">
+                      <p class="mb-0">10/20/2025</p>
+                      <h4>Danial Kumar</h4>
+                      <h2>Birthday</h2>
                     </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="birthday-card"
+                    style="background-image: url('../../../assets/img/avatars/birthday-bg.png');background-size: cover;background-position: center;width: 100%;height: 180px;">
+                    <div class="celebration-card text-center">
 
-                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                      <div class="me-2">
-                        <h6 class="mb-0">
-                          {{ emp.firstName }} {{ emp.lastName }}
-                        </h6>
-                        <small class="d-flex align-items-center">
-                          <i class="icon-base ri ri-calendar-line icon-16px"></i>
-                          <span class="ms-2">{{
-                            emp.designationName || "No Designation"
-                            }}</span>
-                        </small>
-                      </div>
-
-                      <div class="badge bg-label-{{ emp.badgeColor }} rounded-pill">
-                        {{ emp.dateOfBirth | date : "dd MMMM yyyy" }}
-                      </div>
+                      <img src="../../../assets/img/avatars/abhi.png" alt="emp-img" width="80">
+                      <p class="mb-0">10/20/2025</p>
+                      <h4>Abhishek's Shukla</h4>
+                      <h2>Anniversary</h2>
                     </div>
-                  </li>
-
-                </ul>
+                  </div>
+                </div>
               </div>
-              <div class="tab-pane fade" id="navs-justified-link-preparing" role="tabpanel">
-                <ul class="p-0 m-0">
-                  <li class="d-flex align-items-center mb-4 pb-2">
-                    <div class="avatar flex-shrink-0 me-4">
-                      <img src="../../assets/img/avatars/4.png" alt="avatar" class="rounded-3" />
-                    </div>
-                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                      <div class="me-2">
-                        <h6 class="mb-0">Himanshu Kumar</h6>
-                        <small class="d-flex align-items-center">
-                          <span class="ms-2">UI/UX Designer</span>
-                        </small>
-                      </div>
-                      <div class="badge bg-label-primary rounded-pill">
-                        05/06/2025
-                      </div>
-                    </div>
-                  </li>
-                  <li class="d-flex align-items-center mb-4 pb-2">
-                    <div class="avatar flex-shrink-0 me-4">
-                      <img src="../../assets/img/avatars/5.png" alt="avatar" class="rounded-3" />
-                    </div>
-                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                      <div class="me-2">
-                        <h6 class="mb-0">Bharti Verma</h6>
-                        <small class="d-flex align-items-center">
-                          <i class="icon-base ri ri-calendar-line icon-16px"></i>
-                          <span class="ms-2">React Developer</span>
-                        </small>
-                      </div>
-                      <div class="badge bg-label-warning rounded-pill">
-                        01/07/2025
-                      </div>
-                    </div>
-                  </li>
-                  <li class="d-flex align-items-center mb-4 pb-2">
-                    <div class="avatar flex-shrink-0 me-4">
-                      <img src="../../assets/img/avatars/3.png" alt="avatar" class="rounded-3" />
-                    </div>
-                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                      <div class="me-2">
-                        <h6 class="mb-0">Shashank Pandey</h6>
-                        <small class="d-flex align-items-center">
-                          <i class="icon-base ri ri-calendar-line icon-16px"></i>
-                          <span class="ms-2">UI/UX Designer</span>
-                        </small>
-                      </div>
-                      <div class="badge bg-label-secondary rounded-pill">
-                        30/09/2025
-                      </div>
-                    </div>
-                  </li>
-                  <li class="d-flex align-items-center mb-4 pb-2">
-                    <div class="avatar flex-shrink-0 me-4">
-                      <img src="../../assets/img/avatars/14.png" alt="avatar" class="rounded-3" />
-                    </div>
-                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                      <div class="me-2">
-                        <h6 class="mb-0">Shewta Ojha</h6>
-                        <small class="d-flex align-items-center">
-                          <i class="icon-base ri ri-calendar-line icon-16px"></i>
-                          <span class="ms-2">Software Developer</span>
-                        </small>
-                      </div>
-                      <div class="badge bg-label-danger rounded-pill">
-                        02/10/2025
-                      </div>
-                    </div>
-                  </li>
-                  <li class="d-flex align-items-center mb-4 pb-2">
-                    <div class="avatar flex-shrink-0 me-4">
-                      <img src="../../assets/img/avatars/8.png" alt="avatar" class="rounded-3" />
-                    </div>
-                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                      <div class="me-2">
-                        <h6 class="mb-0">Ekta Srivastava</h6>
-                        <small class="d-flex align-items-center">
-                          <i class="icon-base ri ri-calendar-line icon-16px"></i>
-                          <span class="ms-2">react Developer</span>
-                        </small>
-                      </div>
-                      <div class="badge bg-label-success rounded-pill">
-                        March
-                      </div>
-                    </div>
-                  </li>
-                </ul>
-              </div>
-              <div class="tab-pane fade" id="navs-justified-link-shipping" role="tabpanel">
-                <ul class="p-0 m-0">
-                  <li class="d-flex align-items-center mb-4 pb-2" *ngFor="let emp of Event.anniversaries">
-                    <div class="avatar flex-shrink-0 me-4">
-                      <img src="../../assets/img/avatars/4.png" alt="avatar" class="rounded-3" />
+            </div>
+            <div class="tab-pane fade" id="navs-pills-top-profile" role="tabpanel">
+              <div class="row">
+                <div class="col-6">
+                  <div class="birthday-card"
+                    style="background-image: url('../../../assets/img/avatars/birthday-bg.png');background-size: cover;background-position: center;width: 100%;height: 180px;">
+                    <div class="celebration-card text-center">
 
+                      <img src="../../../assets/img/avatars/dainik.png" alt="emp-img" width="80">
+                      <p class="mb-0">10/20/2025</p>
+                      <h4>Danial Kumar</h4>
+                      <h2>Birthday</h2>
                     </div>
+                  </div>
+                </div>
+                <div class="col-6">
+                  <div class="birthday-card"
+                    style="background-image: url('../../../assets/img/avatars/birthday-bg.png');background-size: cover;background-position: center;width: 100%;height: 180px;">
+                    <div class="celebration-card text-center">
 
-                    <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                      <div class="me-2">
-                        <h6 class="mb-0">
-                          {{ emp.firstName }} {{ emp.lastName }}
-                        </h6>
-                        <small class="d-flex align-items-center">
-                          <i class="icon-base ri ri-calendar-line icon-16px"></i>
-                          <span class="ms-2">{{
-                            emp.designationName || "No Designation"
-                            }}</span>
-                        </small>
-                      </div>
-
-                      <div class="badge bg-label-{{ emp.badgeColor }} rounded-pill">
-                        {{ emp.joiningDate | date : "dd/MM/yyyy" }}
-                      </div>
+                      <img src="../../../assets/img/avatars/abhi.png" alt="emp-img" width="80">
+                      <p class="mb-0">10/20/2025</p>
+                      <h4>Abhishek's Shukla</h4>
+                      <h2>Anniversary</h2>
                     </div>
-                  </li>
-
-                </ul>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
+
         </div>
       </div>
-    </div>
-  <div class="col-lg-4 col-xxl-4 order-xxl-1">
-      <div class="card h-100" >
-        <div class="card-header d-flex align-items-center justify-content-between">
-          <div class="card-title mb-0">
-            <h5 class="m-0 me-2 mb-1">Tracking List</h5>
-          </div>
-          <div class="btn-group">
-            <button type="button" class="btn btn-xs btn-primary waves-effect waves-light"
-              routerLink="/layout/tracking">
-              View All
-            </button>
-          </div>
+
+      <div class="card p-2"
+        style="background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));border: 2px solid #fff;">
+        <div class="card-header d-flex align-items-center justify-content-between p-2 mb-0"
+          style="margin-bottom: 0px !important;padding-bottom: 0px;">
+          <h5 class="card-title m-0 me-2">Upcoming Events</h5>
+
         </div>
-      <div class="card-body" style="overflow-y: scroll;height:225px;">
-  <ul class="p-0 m-0">
-
-    <li class="d-flex align-items-center mb-4" *ngFor="let item of trackingList">
-
-      <!-- Avatar -->
-      <div class="avatar avatar-md flex-shrink-0 me-3">
-        <img
-          src="assets/img/avatars/1.png"
-          class="rounded-circle"
-          width="40"
-        />
-      </div>
-
-      <!-- Employee Info -->
-      <div class="d-flex w-100 justify-content-between align-items-center">
-
-        <div>
-          <h6 class="mb-1">{{ item.employeeName }}</h6>
-
-          <small
-            [ngClass]="{
-              'text-success': item.status === 'live',
-              'text-danger': item.status === 'offline'
-            }"
-          >
-            {{ item.status === 'live' ? 'Live Tracking' : 'Offline' }}
-          </small>
+        <div class="d-flex justify-content-between p-4 border-bottom" style="background: #F5F5F7;">
+          <p class="mb-0 fs-xsmall">Event Name</p>
+          <p class="mb-0 fs-xsmall">Date</p>
         </div>
-
-        <!-- Last update -->
-        <div class="badge bg-label-primary rounded-pill">
-          {{ item.lastUpdate ? (item.lastUpdate | date:'shortTime') : '-' }}
-        </div>
-
-      </div>
-
-    </li>
-
-  </ul>
-</div>
-      </div>
-    </div>
-
-    <div class="col-lg-4 col-xxl-4  order-xxl-1">
-      <div class="card h-100">
-        <div class="card-header d-flex align-items-center justify-content-between">
-          <div class="card-title mb-0">
-            <h5 class="m-0 me-2 mb-1">Employees By Department</h5>
-          </div>
-          <div class="btn-group">
-            <button type="button" class="btn btn-xs btn-primary waves-effect waves-light"
-              routerLink="/layout/master/department">
-              View All
-            </button>
-          </div>
-        </div>
-        <div class="card-body">
-          <div id="chart">
-            <apx-chart #chart [series]="chartOptions.series!" [chart]="chartOptions.chart!"
-              [xaxis]="chartOptions.xaxis!" [dataLabels]="chartOptions.dataLabels!"
-              [plotOptions]="chartOptions.plotOptions!"></apx-chart>
-          </div>
-        </div>
-      </div>
-    </div>
-
-
-  <div class="col-lg-4 col-xxl-4 order-xxl-1">
-      <div class="card h-100" >
-        <div class="card-header d-flex align-items-center justify-content-between">
-          <div class="card-title mb-0">
-            <h5 class="m-0 me-2 mb-1">Holiday List</h5>
-          </div>
-          <div class="btn-group">
-            <button type="button" class="btn btn-xs btn-primary waves-effect waves-light"
-              routerLink="/layout/attendance/holiday">
-              View All
-            </button>
-          </div>
-        </div>
-        <div class="card-body"  style="overflow-y: scroll;height: 225px;">
+        <div class="card-body bg-white p-2">
           <ul class="p-0 m-0">
-            <li class="d-flex align-items-center mb-6" *ngFor="let item of holidayList">
+            <li class="d-flex align-items-center mb-2">
               <div class="avatar avatar-md flex-shrink-0 me-4">
-                <div class="avatar-initial bg-lightest img-fluid rounded-circle w-auto h-auto">
-
-
-                  <!--                     <img [src]="item['image']" alt="Document" width="100" height="auto" style="cursor: pointer" /> -->
-
-
+                <div class="avatar-initial bg-lightest rounded-3">
                   <div>
-                    <img [src]="item?.image || 'assets/img/avatars/calendar.png'" width="100" height="auto"
-                      style="cursor: pointer" (error)="onImageError($event,item, 'holidayImage')" alt="avatar"
-                      class="rounded-3" />
-
-                    <!-- <img [src]="item['image']" alt="Document" width="100" height="auto" style="cursor: pointer" /> -->
+                    <img src="../../assets/img/icons/misc/3d-illustration.png" alt="User" class="h-25">
                   </div>
-
                 </div>
               </div>
               <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                 <div class="me-2">
-                  <h6 class="mb-1">{{ item?.name }}</h6>
-                  <small>{{ item?.type }}</small>
+                  <h6 class="mb-1">Vijayadashami</h6>
                 </div>
-                <div class="badge bg-label-primary rounded-pill">
-                  {{ item?.date }}
-                </div>
+                <div class="text">Tue, 20 Oct, 2026</div>
               </div>
             </li>
+            <li class="d-flex align-items-center mb-2">
+              <div class="avatar avatar-md flex-shrink-0 me-4">
+                <div class="avatar-initial bg-lightest rounded-3">
+                  <div>
+                    <img src="../../assets/img/icons/misc/3d-illustration.png" alt="User" class="h-25">
+                  </div>
+                </div>
+              </div>
+              <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
+                <div class="me-2">
+                  <h6 class="mb-1">Vijayadashami</h6>
+
+                </div>
+                <div class="text">Tue, 20 Oct, 2026</div>
+              </div>
+            </li>
+
           </ul>
         </div>
       </div>
+
     </div>
 
+    <div class="col-xl-8 col-md-6">
+      <div class="card overflow-hidden"
+        style="background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));border: 2px solid #fff;">
+        <div class="card-header d-flex align-items-center justify-content-between" style="margin: 0px !important;">
+          <h5 class="card-title me-2">Employee Table</h5>
+          <ul class="nav nav-pills bg-white p-1" style="border-radius: 5px;" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button type="button" class="nav-link active waves-effect waves-light approve" role="tab"
+                data-bs-toggle="tab" data-bs-target="#navs-pills-top-emp-info" aria-controls="navs-pills-top-emp-info"
+                aria-selected="true">
+                Employee Info
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button type="button" class="nav-link waves-effect waves-light approve" role="tab" data-bs-toggle="tab"
+                data-bs-target="#navs-pills-top-leave" aria-controls="navs-pills-top-leave" aria-selected="false"
+                tabindex="-1">
+                Employee Leave Info
+              </button>
+            </li>
 
 
-
-
-
-    <!-- <div class="col-lg-3 col-xxl-4  order-xxl-4">
-      <div class="card h-100">
-        <div
-          class="card-header d-flex align-items-center justify-content-between"
-        >
-          <div class="card-title mb-0">
-            <h5 class="m-0 me-2 mb-1">Leave List</h5>
-          </div>
-          <div class="btn-group">
-            <button
-              type="button"
-              class="btn btn-xs btn-primary waves-effect waves-light"
-            >
-              View All
-            </button>
-          </div>
+          </ul>
         </div>
-        <div class="card-body">
-          <div>
-            <ul class="timeline mb-0" *ngFor="let item of leaveTypes">
-              <li class="timeline-item ps-6 border-transparent">
-                <span
-                  class="timeline-indicator-advanced text-primary border-0 shadow-none"
-                >
-                  <i class="icon-base ri ri-map-pin-line"></i>
-                </span>
-                <div class="timeline-event ps-1">
-                  <div class="timeline-header">
-                    <small class="text-primary text-uppercase fw-medium">{{
-                      item?.leaveName
-                    }}</small>
-                  </div>
-                  <div
-                    class="d-flex justify-content-between align-items-center"
-                  >
-                    <h6 class="my-50 leave type">{{ item?.leaveCode }}</h6>
-                    <small
-                      class="text-success text-uppercase fw-medium text-end"
-                      >{{ item?.description }}</small
-                    >
-                  </div>
-                  <p class="mb-0 small">{{ item?.description }}</p>
-                </div>
-              </li>
-              <div class="border-1 border-light border-dashed mb-2"></div>
-            </ul>
+
+        <div class="tab-content p-0">
+          <div class="tab-pane fade show active" id="navs-pills-top-emp-info" role="tabpanel">
+            <div class="table-responsive ">
+              <table class="table table-sm bg-white">
+                <thead>
+                  <tr>
+                    <th class="text-truncate">ID</th>
+                    <th class="text-truncate">Employee Info</th>
+                    <th class="text-truncate">Contact Info</th>
+                    <th class="text-truncate">Leave Info</th>
+                    <th class="text-truncate">Status</th>
+                    <th class="text-truncate">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>QTPL0315</td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="avatar avatar-sm me-4">
+                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                        </div>
+                        <div>
+                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                          <small class="text-truncate"> HR Mangaer</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
+                        888293842</span>
+                    </td>
+                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                    <td class="text-truncate">
+                      <span class="badge bg-label-warning rounded-pill">Pending</span>
+                    </td>
+                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+                  </tr>
+                  <tr>
+                    <td>QTPL0315</td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="avatar avatar-sm me-4">
+                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                        </div>
+                        <div>
+                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                          <small class="text-truncate"> HR Mangaer</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
+                        888293842</span>
+                    </td>
+                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                    <td class="text-truncate">
+                      <span class="badge bg-label-warning rounded-pill">Pending</span>
+                    </td>
+                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+                  </tr>
+                  <tr>
+                    <td>QTPL0315</td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="avatar avatar-sm me-4">
+                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                        </div>
+                        <div>
+                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                          <small class="text-truncate"> HR Mangaer</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
+                        888293842</span>
+                    </td>
+                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                    <td class="text-truncate">
+                      <span class="badge bg-label-warning rounded-pill">Pending</span>
+                    </td>
+                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+                  </tr>
+                  <tr>
+                    <td>QTPL0315</td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="avatar avatar-sm me-4">
+                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                        </div>
+                        <div>
+                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                          <small class="text-truncate"> HR Mangaer</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
+                        888293842</span>
+                    </td>
+                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                    <td class="text-truncate">
+                      <span class="badge bg-label-warning rounded-pill">Pending</span>
+                    </td>
+                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+                  </tr>
+                  <tr>
+                    <td>QTPL0315</td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="avatar avatar-sm me-4">
+                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                        </div>
+                        <div>
+                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                          <small class="text-truncate"> HR Mangaer</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
+                        888293842</span>
+                    </td>
+                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                    <td class="text-truncate">
+                      <span class="badge bg-label-warning rounded-pill">Pending</span>
+                    </td>
+                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+                  </tr>
+                  <tr>
+                    <td>QTPL0315</td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="avatar avatar-sm me-4">
+                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                        </div>
+                        <div>
+                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                          <small class="text-truncate"> HR Mangaer</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
+                        888293842</span>
+                    </td>
+                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                    <td class="text-truncate">
+                      <span class="badge bg-label-warning rounded-pill">Pending</span>
+                    </td>
+                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+                  </tr>
+                  <tr>
+                    <td>QTPL0315</td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="avatar avatar-sm me-4">
+                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                        </div>
+                        <div>
+                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                          <small class="text-truncate"> HR Mangaer</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
+                        888293842</span>
+                    </td>
+                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                    <td class="text-truncate">
+                      <span class="badge bg-label-warning rounded-pill">Pending</span>
+                    </td>
+                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+                  </tr>
+
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
-      </div>
-    </div> -->
+          <div class="tab-pane fade" id="navs-pills-top-leave" role="tabpanel">
+            <div class="table-responsive ">
+              <table class="table table-sm bg-white">
+                <thead>
+                  <tr>
+                    <th class="text-truncate">ID</th>
+                    <th class="text-truncate">Employee Info</th>
+                    <th class="text-truncate">Contact Info</th>
+                    <th class="text-truncate">Leave Info</th>
+                    <th class="text-truncate">Status</th>
+                    <th class="text-truncate">Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>QTPL0315</td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="avatar avatar-sm me-4">
+                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                        </div>
+                        <div>
+                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                          <small class="text-truncate"> HR Mangaer</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
+                        888293842</span>
+                    </td>
+                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                    <td class="text-truncate">
+                      <span class="badge bg-label-warning rounded-pill">Pending</span>
+                    </td>
+                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+                  </tr>
+                  <tr>
+                    <td>QTPL0315</td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="avatar avatar-sm me-4">
+                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                        </div>
+                        <div>
+                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                          <small class="text-truncate"> HR Mangaer</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
+                        888293842</span>
+                    </td>
+                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                    <td class="text-truncate">
+                      <span class="badge bg-label-warning rounded-pill">Pending</span>
+                    </td>
+                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+                  </tr>
+                  <tr>
+                    <td>QTPL0315</td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="avatar avatar-sm me-4">
+                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                        </div>
+                        <div>
+                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                          <small class="text-truncate"> HR Mangaer</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
+                        888293842</span>
+                    </td>
+                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                    <td class="text-truncate">
+                      <span class="badge bg-label-warning rounded-pill">Pending</span>
+                    </td>
+                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+                  </tr>
+                  <tr>
+                    <td>QTPL0315</td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="avatar avatar-sm me-4">
+                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                        </div>
+                        <div>
+                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                          <small class="text-truncate"> HR Mangaer</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
+                        888293842</span>
+                    </td>
+                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                    <td class="text-truncate">
+                      <span class="badge bg-label-warning rounded-pill">Pending</span>
+                    </td>
+                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+                  </tr>
+                  <tr>
+                    <td>QTPL0315</td>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div class="avatar avatar-sm me-4">
+                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                        </div>
+                        <div>
+                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                          <small class="text-truncate"> HR Mangaer</small>
+                        </div>
+                      </div>
+                    </td>
+                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
+                        888293842</span>
+                    </td>
+                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                    <td class="text-truncate">
+                      <span class="badge bg-label-warning rounded-pill">Pending</span>
+                    </td>
+                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+                  </tr>
 
-    <!-- <div class="col-lg-6 col-xxl-4 order-xxl-4">
-      <div class="card h-100">
-        <div class="card-header d-flex justify-content-between">
-          <div>
-            <h5 class="card-title mb-1">Jobs Applicants</h5>
-          </div>
-          <div class="btn-group">
-            <button
-              type="button"
-              class="btn btn-xs btn-primary waves-effect waves-light"
-            >
-              View All
-            </button>
-          </div>
-        </div>
-        <div class="card-body p-0">
-          <div class="nav-align-top">
-            <ul class="nav nav-tabs nav-fill" role="tablist">
-              <li class="nav-item">
-                <button
-                  type="button"
-                  class="nav-link active"
-                  role="tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#navs-justified"
-                  aria-controls="navs-justified"
-                  aria-selected="true"
-                >
-                  Openings
-                </button>
-              </li>
-              <li class="nav-item">
-                <button
-                  type="button"
-                  class="nav-link"
-                  role="tab"
-                  data-bs-toggle="tab"
-                  data-bs-target="#navs-justified-link"
-                  aria-controls="navs-justified-link"
-                  aria-selected="false"
-                >
-                  Applicants
-                </button>
-              </li>
-            </ul>
-            <div class="tab-content border-0 pb-0 px-6 mx-1">
-              <div
-                class="tab-pane fade show active"
-                id="navs-justified"
-                role="tabpanel"
-              >
-                <div
-                  class="d-flex align-items-center justify-content-between mb-4"
-                >
-                  <div class="d-flex align-items-center">
-                    <a
-                      href="#"
-                      class="avatar overflow-hidden flex-shrink-0 bg-gray-100"
-                    >
-                      <img
-                        src="../../assets/img/avatars/1.png"
-                        class="img-fluid rounded-circle w-auto h-auto"
-                        alt="img"
-                      />
-                    </a>
-                    <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0">
-                        <a href="javascript:void(0);">Senior IOS Developer</a>
-                      </p>
-                      <span class="fs-12">No of Openings : 25 </span>
-                    </div>
-                  </div>
-                  <a
-                    href="javascript:void(0);"
-                    class="btn btn-light btn-sm p-0 btn-icon d-flex align-items-center justify-content-center"
-                    ><i class="icon-base ri ri-edit-box-line me-1"></i
-                  ></a>
-                </div>
 
-                <div class="border-1 border-light border-dashed mb-2"></div>
-
-                <div
-                  class="d-flex align-items-center justify-content-between mb-4"
-                >
-                  <div class="d-flex align-items-center">
-                    <a
-                      href="#"
-                      class="avatar overflow-hidden flex-shrink-0 bg-gray-100"
-                    >
-                      <img
-                        src="../../assets/img/avatars/1.png"
-                        class="img-fluid rounded-circle w-auto h-auto"
-                        alt="img"
-                      />
-                    </a>
-                    <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0">
-                        <a href="javascript:void(0);">Senior IOS Developer</a>
-                      </p>
-                      <span class="fs-12">No of Openings : 25 </span>
-                    </div>
-                  </div>
-                  <a
-                    href="javascript:void(0);"
-                    class="btn btn-light btn-sm p-0 btn-icon d-flex align-items-center justify-content-center"
-                    ><i class="icon-base ri ri-edit-box-line me-1"></i
-                  ></a>
-                </div>
-
-                <div class="border-1 border-light border-dashed mb-2"></div>
-
-                <div
-                  class="d-flex align-items-center justify-content-between mb-4"
-                >
-                  <div class="d-flex align-items-center">
-                    <a
-                      href="#"
-                      class="avatar overflow-hidden flex-shrink-0 bg-gray-100"
-                    >
-                      <img
-                        src="../../assets/img/avatars/1.png"
-                        class="img-fluid rounded-circle w-auto h-auto"
-                        alt="img"
-                      />
-                    </a>
-                    <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0">
-                        <a href="javascript:void(0);">Senior IOS Developer</a>
-                      </p>
-                      <span class="fs-12">No of Openings : 25 </span>
-                    </div>
-                  </div>
-                  <a
-                    href="javascript:void(0);"
-                    class="btn btn-light btn-sm p-0 btn-icon d-flex align-items-center justify-content-center"
-                    ><i class="icon-base ri ri-edit-box-line me-1"></i
-                  ></a>
-                </div>
-
-                <div class="border-1 border-light border-dashed mb-2"></div>
-
-                <div
-                  class="d-flex align-items-center justify-content-between mb-4"
-                >
-                  <div class="d-flex align-items-center">
-                    <a
-                      href="#"
-                      class="avatar overflow-hidden flex-shrink-0 bg-gray-100"
-                    >
-                      <img
-                        src="../../assets/img/avatars/1.png"
-                        class="img-fluid rounded-circle w-auto h-auto"
-                        alt="img"
-                      />
-                    </a>
-                    <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0">
-                        <a href="javascript:void(0);">Senior IOS Developer</a>
-                      </p>
-                      <span class="fs-12">No of Openings : 25 </span>
-                    </div>
-                  </div>
-                  <a
-                    href="javascript:void(0);"
-                    class="btn btn-light btn-sm p-0 btn-icon d-flex align-items-center justify-content-center"
-                    ><i class="icon-base ri ri-edit-box-line me-1"></i
-                  ></a>
-                </div>
-
-                <div class="border-1 border-light border-dashed mb-2"></div>
-
-                <div
-                  class="d-flex align-items-center justify-content-between mb-4"
-                >
-                  <div class="d-flex align-items-center">
-                    <a
-                      href="#"
-                      class="avatar overflow-hidden flex-shrink-0 bg-gray-100"
-                    >
-                      <img
-                        src="../../assets/img/avatars/1.png"
-                        class="img-fluid rounded-circle w-auto h-auto"
-                        alt="img"
-                      />
-                    </a>
-                    <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0">
-                        <a href="javascript:void(0);">Senior IOS Developer</a>
-                      </p>
-                      <span class="fs-12">No of Openings : 25 </span>
-                    </div>
-                  </div>
-                  <a
-                    href="javascript:void(0);"
-                    class="btn btn-light btn-sm p-0 btn-icon d-flex align-items-center justify-content-center"
-                    ><i class="icon-base ri ri-edit-box-line me-1"></i
-                  ></a>
-                </div>
-
-                <div class="border-1 border-light border-dashed mb-2"></div>
-              </div>
-
-              <div
-                class="tab-pane fade"
-                id="navs-justified-link"
-                role="tabpanel"
-              >
-                <div
-                  class="d-flex align-items-center justify-content-between mb-4"
-                >
-                  <div class="d-flex align-items-center">
-                    <a href="#" class="avatar overflow-hidden flex-shrink-0">
-                      <img
-                        src="../../assets/img/avatars/1.png"
-                        class="img-fluid rounded-circle"
-                        alt="img"
-                      />
-                    </a>
-                    <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0">
-                        <a href="#">Brian Villalobos</a>
-                      </p>
-                      <span class="fs-13 d-inline-flex align-items-center"
-                        >Exp : 5+ Years<i
-                          class="ti ti-circle-filled fs-4 mx-2 text-primary"
-                        ></i
-                        >USA</span
-                      >
-                    </div>
-                  </div>
-                  <span class="badge badge-secondary badge-xs"
-                    >UI/UX Designer</span
-                  >
-                </div>
-
-                <div class="border-1 border-light border-dashed mb-2"></div>
-
-                <div
-                  class="d-flex align-items-center justify-content-between mb-4"
-                >
-                  <div class="d-flex align-items-center">
-                    <a href="#" class="avatar overflow-hidden flex-shrink-0">
-                      <img
-                        src="../../assets/img/avatars/1.png"
-                        class="img-fluid rounded-circle"
-                        alt="img"
-                      />
-                    </a>
-                    <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0">
-                        <a href="#">Brian Villalobos</a>
-                      </p>
-                      <span class="fs-13 d-inline-flex align-items-center"
-                        >Exp : 5+ Years<i
-                          class="ti ti-circle-filled fs-4 mx-2 text-primary"
-                        ></i
-                        >USA</span
-                      >
-                    </div>
-                  </div>
-                  <span class="badge badge-secondary badge-xs"
-                    >UI/UX Designer</span
-                  >
-                </div>
-
-                <div class="border-1 border-light border-dashed mb-2"></div>
-
-                <div
-                  class="d-flex align-items-center justify-content-between mb-4"
-                >
-                  <div class="d-flex align-items-center">
-                    <a href="#" class="avatar overflow-hidden flex-shrink-0">
-                      <img
-                        src="../../assets/img/avatars/1.png"
-                        class="img-fluid rounded-circle"
-                        alt="img"
-                      />
-                    </a>
-                    <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0">
-                        <a href="#">Brian Villalobos</a>
-                      </p>
-                      <span class="fs-13 d-inline-flex align-items-center"
-                        >Exp : 5+ Years<i
-                          class="ti ti-circle-filled fs-4 mx-2 text-primary"
-                        ></i
-                        >USA</span
-                      >
-                    </div>
-                  </div>
-                  <span class="badge badge-secondary badge-xs"
-                    >UI/UX Designer</span
-                  >
-                </div>
-
-                <div class="border-1 border-light border-dashed mb-2"></div>
-
-                <div
-                  class="d-flex align-items-center justify-content-between mb-4"
-                >
-                  <div class="d-flex align-items-center">
-                    <a href="#" class="avatar overflow-hidden flex-shrink-0">
-                      <img
-                        src="../../assets/img/avatars/1.png"
-                        class="img-fluid rounded-circle"
-                        alt="img"
-                      />
-                    </a>
-                    <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0">
-                        <a href="#">Brian Villalobos</a>
-                      </p>
-                      <span class="fs-13 d-inline-flex align-items-center"
-                        >Exp : 5+ Years<i
-                          class="ti ti-circle-filled fs-4 mx-2 text-primary"
-                        ></i
-                        >USA</span
-                      >
-                    </div>
-                  </div>
-                  <span class="badge badge-secondary badge-xs"
-                    >UI/UX Designer</span
-                  >
-                </div>
-
-                <div class="border-1 border-light border-dashed mb-2"></div>
-
-                <div
-                  class="d-flex align-items-center justify-content-between mb-4"
-                >
-                  <div class="d-flex align-items-center">
-                    <a href="#" class="avatar overflow-hidden flex-shrink-0">
-                      <img
-                        src="../../assets/img/avatars/1.png"
-                        class="img-fluid rounded-circle"
-                        alt="img"
-                      />
-                    </a>
-                    <div class="ms-2 overflow-hidden">
-                      <p class="text-dark fw-medium text-truncate mb-0">
-                        <a href="#">Brian Villalobos</a>
-                      </p>
-                      <span class="fs-13 d-inline-flex align-items-center"
-                        >Exp : 5+ Years<i
-                          class="ti ti-circle-filled fs-4 mx-2 text-primary"
-                        ></i
-                        >USA</span
-                      >
-                    </div>
-                  </div>
-                  <span class="badge badge-secondary badge-xs"
-                    >UI/UX Designer</span
-                  >
-                </div>
-
-                <div class="border-1 border-light border-dashed mb-2"></div>
-              </div>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
-      </div>
-    </div> -->
 
-    <!-- Orders by Countries -->
+
+      </div>
+    </div>
 
   </div>
 </div>
@@ -883,7 +679,7 @@
         <script>
           document.write(new Date().getFullYear());
         </script>
-        2025
+        2026
         <a href="https://pixinvent.com" target="_blank" class="footer-link fw-medium text-primary">Quaeretech</a>
       </div>
       <div class="d-none d-lg-inline-block">
@@ -892,3 +688,170 @@
     </div>
   </div>
 </footer>
+
+
+<!-- 
+ <div class="table-responsive ">
+          <table class="table table-sm bg-white">
+            <thead>
+              <tr>
+                <th class="text-truncate">ID</th>
+                <th class="text-truncate">Employee Info</th>
+                <th class="text-truncate">Contact Info</th>
+                <th class="text-truncate">Leave Info</th>
+                <th class="text-truncate">Status</th>
+                <th class="text-truncate">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>QTPL0315</td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="avatar avatar-sm me-4">
+                      <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                    </div>
+                    <div>
+                      <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                      <small class="text-truncate"> HR Mangaer</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91- 888293842</span>
+                </td>
+                <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                <td class="text-truncate">
+                  <span class="badge bg-label-warning rounded-pill">Pending</span>
+                </td>
+                <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+              </tr>
+              <tr>
+                <td>QTPL0315</td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="avatar avatar-sm me-4">
+                      <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                    </div>
+                    <div>
+                      <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                      <small class="text-truncate"> HR Mangaer</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91- 888293842</span>
+                </td>
+                <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                <td class="text-truncate">
+                  <span class="badge bg-label-warning rounded-pill">Pending</span>
+                </td>
+                <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+              </tr>
+              <tr>
+                <td>QTPL0315</td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="avatar avatar-sm me-4">
+                      <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                    </div>
+                    <div>
+                      <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                      <small class="text-truncate"> HR Mangaer</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91- 888293842</span>
+                </td>
+                <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                <td class="text-truncate">
+                  <span class="badge bg-label-warning rounded-pill">Pending</span>
+                </td>
+                <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+              </tr>
+              <tr>
+                <td>QTPL0315</td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="avatar avatar-sm me-4">
+                      <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                    </div>
+                    <div>
+                      <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                      <small class="text-truncate"> HR Mangaer</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91- 888293842</span>
+                </td>
+                <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                <td class="text-truncate">
+                  <span class="badge bg-label-warning rounded-pill">Pending</span>
+                </td>
+                <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+              </tr>
+              <tr>
+                <td>QTPL0315</td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="avatar avatar-sm me-4">
+                      <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                    </div>
+                    <div>
+                      <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                      <small class="text-truncate"> HR Mangaer</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91- 888293842</span>
+                </td>
+                <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                <td class="text-truncate">
+                  <span class="badge bg-label-warning rounded-pill">Pending</span>
+                </td>
+                <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+              </tr>
+              <tr>
+                <td>QTPL0315</td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="avatar avatar-sm me-4">
+                      <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                    </div>
+                    <div>
+                      <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                      <small class="text-truncate"> HR Mangaer</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91- 888293842</span>
+                </td>
+                <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                <td class="text-truncate">
+                  <span class="badge bg-label-warning rounded-pill">Pending</span>
+                </td>
+                <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+              </tr>
+              <tr>
+                <td>QTPL0315</td>
+                <td>
+                  <div class="d-flex align-items-center">
+                    <div class="avatar avatar-sm me-4">
+                      <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                    </div>
+                    <div>
+                      <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
+                      <small class="text-truncate"> HR Mangaer</small>
+                    </div>
+                  </div>
+                </td>
+                <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91- 888293842</span>
+                </td>
+                <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                <td class="text-truncate">
+                  <span class="badge bg-label-warning rounded-pill">Pending</span>
+                </td>
+                <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div> -->
