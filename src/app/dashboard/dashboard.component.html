@@ -411,7 +411,7 @@
                         class="btn btn-sm approve me-1"
                         *ngIf="!['approved', 'rejected', 'self_declined'].includes(item.status)"
                       >
-                        Approve
+                        <i class="ri ri-check-line me-1"></i>
                       </a>
                       <a
                         href="javascript:void(0)"
@@ -419,7 +419,7 @@
                         class="btn btn-sm approve"
                         *ngIf="!['approved', 'rejected', 'self_declined'].includes(item.status)"
                       >
-                        Reject
+                        <i class="ri ri-close-line me-1"></i>
                       </a>
                       <span *ngIf="['approved', 'rejected', 'self_declined'].includes(item.status)">-</span>
                     </td>
