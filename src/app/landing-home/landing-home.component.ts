@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { Notyf } from 'notyf';
-import { ChartOptions } from '../dashboard/dashboard.component';
+// import { ChartOptions } from '../dashboard/dashboard.component';
 import { DashboardService } from '../services/dashboard.service';
 import { MasterService } from '../services/master.service';
 
@@ -14,7 +14,7 @@ import { MasterService } from '../services/master.service';
 })
 export class LandingHomeComponent {
   notyf: Notyf = new Notyf();
-  public chartOptions!: Partial<ChartOptions>;
+  // public chartOptions!: Partial<ChartOptions>;
   branchList: any
   obj: any = {};
   stats: any = []
@@ -50,7 +50,7 @@ export class LandingHomeComponent {
   }
   goToEmployeeManagement() {
 
-    this.router.navigate(['branchwise']);
+    this.router.navigate(['layout/dashboard']);
 
   }
 }

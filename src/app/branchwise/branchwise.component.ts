@@ -96,7 +96,8 @@ createFlag = false;
     localStorage.setItem('branchId', branch.id);
 
     // redirect to dashboard
-    this.router.navigate(['/layout/dashboard']);
+    // this.router.navigate(['/layout/dashboard']);
+    this.router.navigate(['landing-home']);
   }
 
   getStatusClass(status: any): string {
