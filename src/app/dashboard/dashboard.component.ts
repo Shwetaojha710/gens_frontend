@@ -18,6 +18,7 @@ import { Notyf } from 'notyf';
 import { MasterService } from '../services/master.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule } from '@angular/forms';
+import { EmployeeService } from '../services/employee.service';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -72,7 +73,8 @@ export class DashboardComponent {
   constructor(
     private dashboardService: DashboardService,
     private router: Router,
-    public masterService: MasterService
+    public masterService: MasterService,
+    private employeeService: EmployeeService
   ) {
     this.getBranchDD();
   }
@@ -147,7 +149,7 @@ export class DashboardComponent {
       series: this.attendanceChart.series,
       chart: {
         type: 'donut',
-        height: 180
+        height: 100
       },
       labels: this.attendanceChart.labels || [],
       colors: this.attendanceChart.colors || [],
@@ -169,7 +171,7 @@ export class DashboardComponent {
           breakpoint: 768,
           options: {
             chart: {
-              height: 160
+              height: 100
             }
           }
         }
@@ -306,6 +308,35 @@ export class DashboardComponent {
 
   onBranchChange(branchId: any) {
     localStorage.setItem('branchId', branchId);
+  }
+
+  openEmployeeProfile(item: any) {
+    this.employeeService.getEmp().subscribe({
+      next: (response: any) => {
+        if (response?.status !== true) {
+          this.notyf.error(response?.message || 'Unable to open employee profile');
+          return;
+        }
+
+        const formattedEmployees = response?.data?.formattedEmps || [];
+        const selectedEmployee =
+          formattedEmployees.find((employee: any) => employee.empCode === item?.empCode) ||
+          formattedEmployees.find((employee: any) =>
+            `${employee?.firstName || ''} ${employee?.lastName || ''}`.trim() === item?.name
+          );
+
+        if (!selectedEmployee) {
+          this.notyf.error('Selected employee data was not found');
+          return;
+        }
+
+        localStorage.setItem('employeeId', JSON.stringify(selectedEmployee));
+        this.router.navigate(['/layout/employee/add/profile/professional-info/assign-leave']);
+      },
+      error: (err: any) => {
+        this.notyf.error(err?.error?.message || 'Unable to open employee profile');
+      }
+    });
   }
 
   getBranchDD() {

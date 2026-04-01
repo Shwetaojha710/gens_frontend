@@ -100,15 +100,15 @@
         <div class="row h-100">
           <div class="col-6">
             <div class="card-body">
-              <div class="card-info mb-5">
-                <h6 class="mb-2 text-nowrap" style="color: #3C4056;">On Field Employees (GPS)</h6>
+              <div class="card-info mb-2">
+                <h6 class="mb-1 text-nowrap" style="color: #3C4056;">On Field Employees (GPS)</h6>
                 <div class="badge bg-label-primary bg-white text-black rounded-pill lh-xs">
                   <span class="text-danger me-2"><i class="icon-base ri ri-circle-fill icon-12px"></i></span>
                   Live Tracking
                 </div>
               </div>
               <div class="d-flex align-items-center">
-                <h4 class="mb-0sent me-2">{{ trackingList.length }}</h4>
+                <h4 class="mb-0 sent me-2">{{ trackingList.length }}</h4>
                 <div class="tracking">{{ offlineTrackingCount }} Employees Offline</div>
               </div>
             </div>
@@ -165,7 +165,7 @@
     </div>
   </div>
 
-  <div class="row mb-2">
+  <div class="row mb-3">
     <div class="col-md-6">
       <div class="ai-card" style="background-image: url('/assets/img/bg-login/ai-bg.png');background-size: cover;background-position: center;">
         <div class="ai-content">
@@ -280,12 +280,12 @@
           <h5 class="card-title m-0 me-2">Upcoming Events</h5>
         </div>
         <div class="d-flex justify-content-between p-4 border-bottom" style="background: #F5F5F7;">
-          <p class="mb-0 fs-xsmall">Event Name</p>
-          <p class="mb-0 fs-xsmall">Date</p>
+          <p class="mb-0" style="font-size: 14px;color:#3C4056;">Event Name</p>
+          <p class="mb-0" style="font-size: 14px;color:#3C4056;">Date</p>
         </div>
-        <div class="card-body bg-white p-2">
+        <div class="card-body bg-white p-2"  style="overflow-y:scroll;height: 147px;">
           <ul class="p-0 m-0">
-            <li class="d-flex align-items-center mb-2" *ngFor="let item of holidayList">
+            <li class="d-flex align-items-center mb-2" *ngFor="let item of holidayList" style="border-bottom:  1px solid #dadada;padding-bottom: 4px ;">
               <div class="avatar avatar-md flex-shrink-0 me-4">
                 <div class="avatar-initial bg-lightest rounded-3">
                   <div>
@@ -359,7 +359,7 @@
                     <td class="text-truncate">
                       <span class="badge rounded-pill" [ngClass]="'bg-label-' + item.badgeColor">{{ item.badge }}</span>
                     </td>
-                    <td><a href="javascript:void(0)" class="btn btn-sm approve">View</a></td>
+                    <td><a href="javascript:void(0)" (click)="openEmployeeProfile(item)" class="btn btn-sm approve">View</a></td>
                   </tr>
                 </tbody>
               </table>
@@ -371,11 +371,12 @@
               <table class="table table-sm bg-white">
                 <thead>
                   <tr>
-                    <th class="text-truncate">ID</th>
+                    <th class="text-truncate" style="width: 80px;">ID</th>
                     <th class="text-truncate">Employee Info</th>
+                    <th class="text-truncate">Contact Info</th>
                     <th class="text-truncate">Leave Info</th>
-                    <th class="text-truncate">Type</th>
-                    <th class="text-truncate">Status</th>
+                    <!-- <th class="text-truncate">Type</th> -->
+                    <th class="text-truncate" style="width: 80px;">Status</th>
                     <th class="text-truncate">Action</th>
                   </tr>
                 </thead>
@@ -389,16 +390,21 @@
                         </div>
                         <div>
                           <h6 class="mb-0 text-truncate">{{ item.name }}</h6>
-                          <small class="text-truncate">{{ item.reason | slice:0:35 }}{{ item.reason?.length > 35 ? '...' : '' }}</small>
+                          <small class="text-truncate">{{ item.designation }} </small>
+
+                          <!-- <small class="text-truncate">{{ item.reason | slice:0:35 }}{{ item.reason?.length > 35 ? '...' : '' }}</small> -->
                         </div>
                       </div>
                     </td>
-                    <td class="text-truncate">{{ item.fromDate | date:'dd MMM yyyy' }} To {{ item.toDate | date:'dd MMM yyyy' }} <br> {{ item.days }} day(s)</td>
-                    <td class="text-truncate">{{ item.type }}</td>
+                    <td class="text-truncate">{{ item.mobile  }}  <br> {{ item.email }}</td>
+
+                    <td class="text-truncate">{{ item.fromDate | date:'dd MMM yyyy' }} To {{ item.toDate | date:'dd MMM yyyy' }}  <br>
+                    {{ item.type }} -  {{ item.days }} days</td>
+                    <!-- <td class="text-truncate">{{ item.type }}</td> -->
                     <td class="text-truncate">
                       <span class="badge rounded-pill" [ngClass]="getLeaveStatusClass(item.status)">{{ item.status }}</span>
                     </td>
-                    <td><a href="javascript:void(0)" class="btn btn-sm approve">Review</a></td>
+                    <td><a href="javascript:void(0)" class="btn btn-sm approve" >Approve</a></td>
                   </tr>
                 </tbody>
               </table>

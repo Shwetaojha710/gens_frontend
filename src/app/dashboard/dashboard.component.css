@@ -1,10 +1,14 @@
+.table-sm > :not(caption) > * > * {
+    padding: 0.595rem 1rem !important;
+}
+
 .tracking {
     font-size: 12px;
     font-weight: 500;
     line-height: 14px;
     background: #fff;
     border: 1px solid #fff;
-    padding: 5px 10px;
+    padding: 5px 6px;
     border-radius: 0px 50px 50px 0px;
     color: #FF4D49;
     width: 130px;
@@ -411,7 +415,7 @@
     align-items: flex-start;
     justify-content: space-between;
     gap: 12px;
-    min-height: 250px;
+    min-height: 176px;
     flex: 1;
     padding-top: 8px;
     overflow: hidden;
@@ -454,13 +458,14 @@
 }
 
 .attendance-department-name {
-    font-size: 10px;
+      font-size: 7px;
     color: #404659;
     text-align: center;
     line-height: 1.2;
     white-space: normal;
     word-break: break-word;
     max-width: 100%;
+    margin-top: 10px;
 }
 
 .attendance-department-wrap.with-grid::before {
