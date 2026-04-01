@@ -78,7 +78,8 @@ import { OfferLetterComponent } from './employee/profile/offer-letter/offer-lett
 import { LandingHomeComponent } from './landing-home/landing-home.component';
 import { RecruitmentComponent } from './recruitment/recruitment.component';
 import { JobsComponent } from './recruitment/jobs/jobs.component';
-import { CandidateComponent } from './recruitment/candidate/candidate.component';
+// import { CandidateComponent } from './recruitment/candidate/candidate.component';
+
 import { PipelineBoardComponent } from './recruitment/pipeline/pipeline-board/pipeline-board.component';
 import { ScheduleInterviewComponent } from './recruitment/interviews/schedule-interview/schedule-interview.component';
 import { FeedbackFormComponent } from './recruitment/interviews/feedback-form/feedback-form.component';
@@ -90,6 +91,7 @@ import { PostingSourcingComponent } from './recruitment/jobs/posting-sourcing/po
 import { PendingEmpListComponent } from './pending-emp-list/pending-emp-list.component';
 import { InterviewRoundsComponent } from './recruitment/master/interview-rounds/interview-rounds.component';
 import { RoundTypeComponent } from './recruitment/master/round-type/round-type.component';
+import { CandidateComponent } from './recruitment/candidate/candidate.component';
 
 export const routes: Routes = [
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -97,6 +99,7 @@ export const routes: Routes = [
   { path: 'Home', component: LandingPageComponent },
   { path: 'landing-home', component: LandingHomeComponent },
   { path: 'login', component: LoginComponent },
+  // { path: 'candidate-application', component: CandidateComponent },
 
   { path: 'privacy-policy', component: PrivacyPolicyComponent },
 
@@ -227,7 +230,7 @@ export const routes: Routes = [
         { path: 'posting-sourcing', component: PostingSourcingComponent },
       ]
     },
-    { path: 'candidates', component: CandidateComponent },
+    // { path: 'candidates', component: CandidateComponent },
     { path: 'pipeline', component: PipelineBoardComponent },
     { path: 'pipeline/:applicationId/interview/schedule', component: ScheduleInterviewComponent },
     { path: 'pipeline/:applicationId/interview/feedback', component: FeedbackFormComponent },
@@ -244,5 +247,6 @@ export const routes: Routes = [
     ]
   },
 
+  { path: ':slug', component: CandidateComponent },
   { path: '**', component: PageNotFoundComponent },
 ];

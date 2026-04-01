@@ -77,13 +77,81 @@ export class PostingSourcingComponent {
   //   this.modal.show();
   // }
 
-  publish(data: any,status:any) {
-    let Enable;
+  getNormalizedStatus(status: string): string {
+    const normalizedStatus = (status || '').toLowerCase();
+    return normalizedStatus === 'closed' ? 'close' : normalizedStatus;
+  }
 
+  getStatusLabel(status: string): string {
+    const normalizedStatus = this.getNormalizedStatus(status);
 
+    switch (normalizedStatus) {
+      case 'open':
+        return 'Open';
+      case 'close':
+        return 'Closed';
+      case 'draft':
+        return 'Draft';
+      default:
+        return status || '-';
+    }
+  }
+
+  getStatusBadgeClass(status: string): string {
+    const normalizedStatus = this.getNormalizedStatus(status);
+
+    switch (normalizedStatus) {
+      case 'open':
+        return 'bg-success-subtle text-success border border-success-subtle';
+      case 'close':
+        return 'bg-danger-subtle text-danger border border-danger-subtle';
+      case 'draft':
+      default:
+        return 'bg-warning-subtle text-warning border border-warning-subtle';
+    }
+  }
+
+  getCardBorderClass(status: string): string {
+    const normalizedStatus = this.getNormalizedStatus(status);
+
+    switch (normalizedStatus) {
+      case 'open':
+        return 'border-success';
+      case 'close':
+        return 'border-danger';
+      case 'draft':
+      default:
+        return 'border-warning';
+    }
+  }
+
+  canPublish(item: any): boolean {
+    return this.getNormalizedStatus(item?.status) !== 'open';
+  }
+
+  canClose(item: any): boolean {
+    return this.getNormalizedStatus(item?.status) === 'open';
+  }
+
+  getSkillsList(skills: any): string[] {
+    if (Array.isArray(skills)) {
+      return skills.filter(Boolean);
+    }
+
+    if (typeof skills === 'string' && skills.trim()) {
+      return skills
+        .split(',')
+        .map((skill: string) => skill.trim())
+        .filter(Boolean);
+    }
+
+    return [];
+  }
+
+  publish(data: any, status: any) {
     Swal.fire({
       title: "Are you sure?",
-      text: `Do you Want to Publish this`,
+      text: `Do you Want to ${status == 'open' ? 'Publish' : 'Close'} this`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: `Yes,  ${status == 'open' ? 'Publish' : 'Close'}  it!`,
@@ -100,33 +168,31 @@ export class PostingSourcingComponent {
 
 
   }
-  OpenJob(data: any,status:any) {
-
-
+  OpenJob(data: any, status: any) {
     let obj = Object.assign({}, data)
 
-    const payload={
-      id:obj.id,
-      status:status
+    const payload = {
+      id: obj.id,
+      status: status
     }
     this.jobService.PublishJob(payload).subscribe(
       (response) => {
         console.log('Employee deleted successfully:', response);
         if (response && response.status === true) {
           this.getJobRequirementList();
-          this.notyf.success(response.message || 'Employee deleted successfully');
+          this.notyf.success(response.message || `Job ${status === 'open' ? 'published' : 'closed'} successfully`);
         }
         else if (response && response.status == false) {
-          this.notyf.error(response.message || 'Failed to delete employee');
+          this.notyf.error(response.message || `Failed to ${status === 'open' ? 'publish' : 'close'} job`);
         }
         else {
-          this.notyf.error('Failed to delete employee');
+          this.notyf.error(`Failed to ${status === 'open' ? 'publish' : 'close'} job`);
         }
 
       },
       (error) => {
         console.error('Error deleting employee:', error);
-        this.notyf.error('Failed to delete employee');
+        this.notyf.error(`Failed to ${status === 'open' ? 'publish' : 'close'} job`);
       }
     )
   }

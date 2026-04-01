@@ -352,7 +352,7 @@
                   <td>{{ item["mode"] }}</td>
                   <td>{{ item["location"] }}</td>
                   <td>{{ getCandidatePreferenceLabel(item["candidate_preference"]) }}</td>
-                  <td>{{ item["interview_round_data"]?.length ? item["interview_round_data"].map((item)=>item.round_name).join(', ') : '-' }}</td>
+<td>{{ getInterviewRoundDisplay(item) }}</td>
                   <td>{{ item["job_description"] }}</td>
                   <td>
                     <span class="badge badge-outline-success px-2" [ngClass]="getUserStatusClass(item.status)">

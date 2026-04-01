@@ -2,14 +2,15 @@
 <div class="container-fluid mt-3">
   <div class="row">
     <div class="col-md-3" *ngFor="let item of jobs">
-      <div class="card mb-6 border border-2 border-primary">
+      <div class="card mb-6 border border-2" [ngClass]="getCardBorderClass(item?.status)">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-start text-capitalize">
-            <!-- <span class="badge bg-label-primary rounded-pill">{{item?.job_title}}</span> -->
             <h5 class="text-primary mb-0">
               {{item?.job_title}}
             </h5>
-
+            <span class="badge rounded-pill px-3 py-2 text-uppercase" [ngClass]="getStatusBadgeClass(item?.status)">
+              {{ getStatusLabel(item?.status) }}
+            </span>
           </div>
 
 
@@ -35,25 +36,33 @@
           </div>
 
 
-          <p> {{item?.skills}}</p>
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <span
+              *ngFor="let skill of getSkillsList(item?.skills)"
+              class="badge rounded-pill bg-label-primary"
+            >
+              {{ skill }}
+            </span>
+            <span *ngIf="!getSkillsList(item?.skills).length" class="text-muted">-</span>
+          </div>
 
           <div class="d-flex justify-content-between align-items-center mb-1 fw-medium text-heading">
             Job Description : <br>
 
           </div>
 
-
           <p> {{item?.job_description}}</p>
-          <div>
-            <button *ngIf="item.status!='open'" type="button" class="btn btn-secondary btn-buy-now waves-effect waves-light w-100"
+          <div class="job-action-row">
+            <button *ngIf="canPublish(item)" type="button" class="job-action-btn publish-btn"
               (click)="publish(item,'open')">
-              Publish
+              <i class="ri-rocket-line"></i>
+              <span>Publish</span>
             </button>
-               <button *ngIf="item.status=='open'" type="button" class="btn btn-outline-danger btn-buy-now waves-effect waves-light w-100"
+            <button *ngIf="canClose(item)" type="button" class="job-action-btn close-btn"
               (click)="publish(item,'close')">
-              Close
+              <i class="ri-lock-line"></i>
+              <span>Close</span>
             </button>
-
           </div>
         </div>
       </div>

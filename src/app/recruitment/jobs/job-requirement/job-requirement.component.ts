@@ -31,14 +31,29 @@ export class JobRequirementComponent {
     this.createFlag = false
 
   }
-   getCandidatePreferenceLabel(value: any): string {
-  const preference = this.candidatePreferenceOptions.find(
-    (item: any) => item.value === value
-  );
-  return preference?.label || value || '-';
-}
+  getCandidatePreferenceLabel(value: any): string {
+    const preference = this.candidatePreferenceOptions.find(
+      (item: any) => item.value === value
+    );
+    return preference?.label || value || '-';
+  }
+
+  getInterviewRoundDisplay(item: any): string {
+    if (Array.isArray(item?.interview_round_data) && item.interview_round_data.length) {
+      return item.interview_round_data
+        .map((round: any) => round?.round_name)
+        .filter(Boolean)
+        .join(', ');
+    }
+
+    if (Array.isArray(item?.interview_round_names) && item.interview_round_names.length) {
+      return item.interview_round_names.join(', ');
+    }
+
+    return '-';
+  }
   status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
- candidatePreferenceOptions: any = [
+  candidatePreferenceOptions: any = [
     { value: 'male', label: 'Male' },
     { value: 'female', label: 'Female' },
     { value: 'both', label: 'Both' }
@@ -109,20 +124,20 @@ export class JobRequirementComponent {
 
   skills: string[] = [];
 
-addSkill(event: any) {
-  event.preventDefault();
-  const value = event.target.value.trim();
+  addSkill(event: any) {
+    event.preventDefault();
+    const value = event.target.value.trim();
 
-  if (value && !this.skills.includes(value)) {
-    this.skills.push(value);
+    if (value && !this.skills.includes(value)) {
+      this.skills.push(value);
+    }
+
+    event.target.value = '';
   }
 
-  event.target.value = '';
-}
-
-removeSkill(index: number) {
-  this.skills.splice(index, 1);
-}
+  removeSkill(index: number) {
+    this.skills.splice(index, 1);
+  }
   departmentDD: any = []
   async DepartmentDD() {
 
