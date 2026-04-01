@@ -1,17 +1,16 @@
-
 .buy-now .btn-buy-now {
     position: fixed;
     z-index: 1080;
     box-shadow: 0 1px 20px 1px #0663a9;
     inset-block-end: 5rem;
-    inset-inline-end: 55.5rem;
+    inset-inline-end: 56.5rem;
 }
 
 .quaere-text {
-        font-size: 32px;
-        color: #0663a9;
-        font-weight: 900;
-    }
+    font-size: 32px;
+    color: #0663a9;
+    font-weight: 900;
+}
 
 
 @media screen and (max-width: 480px) {
@@ -21,11 +20,12 @@
         font-weight: 900;
     }
 
-    p.pquaere-text{
-        font-size: 14px!important;
+    p.pquaere-text {
+        font-size: 14px !important;
         color: #676a7b;
     }
 }
+
 /* 
 .card-border-hover1:hover{
     border: 1px solid #005495 !important;
@@ -115,3 +115,102 @@
     background: radial-gradient(circle at 30% 40%, rgba(110, 66, 193, 0.04), transparent 50%), radial-gradient(circle at 70% 60%, rgba(66, 135, 245, 0.04), transparent 50%);
 } */
 
+
+body {
+    background: #e9edf3;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: "Segoe UI", sans-serif;
+}
+
+/* Outer white container */
+.card-wrapper {
+    background: transparent;
+    padding: 15px;
+    border-radius: 20px;
+    width: 300px;
+    background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.082) 7.01%, rgba(255, 255, 255, 0.002) 106.22%), linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));
+    border: 1px solid #fff;
+}
+
+/* Main Card */
+.city-card {
+    border-radius: 20px;
+    background: url("/assets/img/bg-login/lko-bg.png") center/cover no-repeat;
+    position: relative;
+    overflow: hidden;
+    width: 268px;
+    height: 380px;
+    opacity: 1;
+    border-radius: 16px;
+
+}
+
+/* Gradient overlay */
+.city-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    /* background: linear-gradient(180deg,
+            rgba(0, 123, 255, 0.4),
+            rgba(0, 200, 100, 0.5),
+            rgba(0, 0, 0, 0.6)); */
+}
+
+/* Inner Glass Card */
+.overlay {
+    position: absolute;
+    top: 30px;
+    left: 20px;
+    right: 20px;
+    bottom: 30px;
+    border-radius: 20px;
+    border: 1.5px solid rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(2px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    text-align: center;
+    padding: 20px;
+}
+
+/* Text */
+.overlay h2 {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 0px;
+    line-height: 20px;
+}
+
+.overlay h4 {
+    font-size: 14px;
+    margin-bottom: 15px;
+    opacity: 0.9;
+    margin-bottom: 0px;
+}
+
+.overlay p {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 25px;
+    font-weight: 300;
+}
+
+.btn-dashboard {
+    width: 149px;
+    height: 42px;
+    gap: 16px;
+    opacity: 1;
+    border-radius: 8px;
+    border-width: 1px;
+    border: 1px solid #fff;
+    background: transparent;
+    color: #fff;
+
+
+}

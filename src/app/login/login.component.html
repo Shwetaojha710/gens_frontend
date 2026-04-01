@@ -1,15 +1,10 @@
 <div class="authentication-wrapper authentication-cover">
   <!-- Logo -->
-  <a href="" class="auth-cover-brand d-flex align-items-center gap-2">
-    <span class="app-brand-logo demo">
-      <span class="text-primary">
-        <img src="../../../assets/img/logo/gens-logo-color.png" alt="Company Logo" width="30%" />
-      </span>
-    </span>
-  </a>
+
   <!-- /Logo -->
 
-  <div class="authentication-inner row m-0">
+  <div class="authentication-inner row m-0"
+    style="background-image: url('/assets/img/bg-login/Login1.png');background-size: cover;background-repeat: no-repeat;background-position: center;z-index: 0;">
     <!-- Left Section (Illustration) -->
     <div class="d-none d-lg-flex col-lg-7 col-xl-8 align-items-center justify-content-center p-12 pb-2">
       <img src="../../../assets/img/bg-login/Hero.png" class="auth-cover-illustration w-100" alt="auth-illustration" />
@@ -18,77 +13,92 @@
     </div>
 
     <!-- Login Form Section -->
-    <div
-      class="d-flex col-12 col-lg-5 col-xl-4 align-items-center authentication-bg position-relative py-sm-12 px-12 py-6" style="background-image: url('/assets/img/bg-login/card.png');background-size: cover;background-position: center;background-repeat: no-repeat;">
-      <div class="w-px-400 mx-auto pt-12 pt-lg-0">
-        <h4 class="mb-1">Welcome to GENS HR Payroll</h4>
-        <p class="mb-5">Please sign in to your account</p>
+    <div class="d-flex col-12 col-lg-5 col-xl-4 align-items-center justify-content-center position-relative py-sm-6 px-12 py-6"
+      style="background-image: url('/assets/img/bg-login/Rectangle3.png');background-size: cover;background-position: center;background-repeat: no-repeat;">
 
-        <form id="formAuthentication" class="mb-5" [formGroup]="form" (ngSubmit)="login()">
+     <div style="padding: 50px 40px;background-image: url('/assets/img/bg-login/Rectangle\ 2.png');background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));border-radius: 8px;height: 800px;z-index: 0;">
+       <div style="padding: 80px 40px;background-image: url('/assets/img/bg-login/Rectangle\ 1.png');background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));border-radius: 8px;height: 720px;z-index: 0;">
+        <div class="w-px-400 mx-auto pt-12 pt-lg-0" style="z-index: 999999;">
+          <div class="text-center mb-3">
+            <a href="" class="text-center mx-auto w-100">
 
-          <!-- Tenant ID -->
-          <div class="form-floating form-floating-outline mb-4">
-            <input type="text" class="form-control" id="company_code" formControlName="tenantId"
-              [ngClass]="{ 'is-invalid': isInvalid('tenantId') }" placeholder="Enter your company code" autofocus />
-            <label for="company_code">Company Code</label>
-            <div class="invalid-feedback">Company code is required.</div>
+              <img src="../../../assets/img/logo/gens-logo-color.png" alt="Company Logo" width="30%" />
+
+            </a>
           </div>
+          <h4 class="mb-1">Welcome to GENS HR Payroll</h4>
+          <p class="mb-5">Please sign in to your account</p>
 
-          <!-- Email -->
-          <div class="form-floating form-floating-outline mb-4">
-            <input type="email" class="form-control" id="email" formControlName="email"
-              [ngClass]="{ 'is-invalid': isInvalid('email') }" placeholder="Enter your email" />
-            <label for="email">Email</label>
-            <div class="invalid-feedback">Enter a valid email address.</div>
-          </div>
+          <form id="formAuthentication" class="mb-5" [formGroup]="form" (ngSubmit)="login()">
 
-          <!-- Password -->
-          <div class="form-floating form-floating-outline mb-4 position-relative">
-            <input [type]="passwordVisible ? 'text' : 'password'" class="form-control" id="password"
-              formControlName="password" [ngClass]="{ 'is-invalid': isInvalid('password') }"
-              placeholder="Enter your password" />
-            <label for="password">Password</label>
-
-            <!-- Eye Icon -->
-            <span class="ri" [ngClass]="passwordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
-              (click)="passwordVisible = !passwordVisible"
-              style="cursor: pointer; position: absolute; top: 50%; right: 12px; transform: translateY(-50%);"></span>
-
-            <div class="invalid-feedback">Password is required.</div>
-          </div>
-
-          <!-- Remember + Forgot -->
-          <div class="mb-4 d-flex justify-content-between align-items-center mt-4">
-            <!-- Remember Me Checkbox -->
-            <div class="form-check">
-              <input class="form-check-input" type="checkbox" id="remember-me" />
-              <label class="form-check-label" for="remember-me">Remember Me</label>
+            <!-- Tenant ID -->
+            <div class="form-floating form-floating-outline mb-4">
+              <input type="text" class="form-control" id="company_code" formControlName="tenantId"
+                [ngClass]="{ 'is-invalid': isInvalid('tenantId') }" placeholder="Enter your company code" autofocus />
+              <label for="company_code">Company Code</label>
+              <div class="invalid-feedback">Company code is required.</div>
             </div>
 
-            <!-- Forgot Password Link -->
-            <!-- <a routerLink="['/emp-profile']" class="link-info" routerLinkActive="active">
+            <!-- Email -->
+            <div class="form-floating form-floating-outline mb-4">
+              <input type="email" class="form-control" id="email" formControlName="email"
+                [ngClass]="{ 'is-invalid': isInvalid('email') }" placeholder="Enter your email" />
+              <label for="email">Email</label>
+              <div class="invalid-feedback">Enter a valid email address.</div>
+            </div>
+
+            <!-- Password -->
+            <div class="form-floating form-floating-outline mb-4 position-relative">
+              <input [type]="passwordVisible ? 'text' : 'password'" class="form-control" id="password"
+                formControlName="password" [ngClass]="{ 'is-invalid': isInvalid('password') }"
+                placeholder="Enter your password" />
+              <label for="password">Password</label>
+
+              <!-- Eye Icon -->
+              <span class="ri" [ngClass]="passwordVisible ? 'ri-eye-off-line' : 'ri-eye-line'"
+                (click)="passwordVisible = !passwordVisible"
+                style="cursor: pointer; position: absolute; top: 50%; right: 12px; transform: translateY(-50%);"></span>
+
+              <div class="invalid-feedback">Password is required.</div>
+            </div>
+
+            <!-- Remember + Forgot -->
+            <div class="mb-4 d-flex justify-content-between align-items-center mt-4">
+              <!-- Remember Me Checkbox -->
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="remember-me" />
+                <label class="form-check-label" for="remember-me">Remember Me</label>
+              </div>
+
+              <!-- Forgot Password Link -->
+              <!-- <a routerLink="['/emp-profile']" class="link-info" routerLinkActive="active">
               Forgot Password?
             </a> -->
-         <a (click)="goToEmpProfile()" class="link-info" style="cursor: pointer;">
-  Forgot Password?
-</a>
+              <a (click)="goToEmpProfile()" class="link-info" style="cursor: pointer;">
+                Forgot Password?
+              </a>
 
-          </div>
+            </div>
 
 
-          <!-- Submit Button -->
-          <button type="submit" class="btn btn-primary d-grid w-100" [disabled]="form.invalid">
-            Sign in
-          </button>
-        </form>
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary d-grid w-100" [disabled]="form.invalid">
+              Sign in
+            </button>
+          </form>
 
-        <p class="text-center">
-          <span>New on our platform?</span>
-           <a (click)="gotoRegister()" class="link-info" style="cursor: pointer;">
-            <span> Create an account</span>
-          </a>
-        </p>
+          <p class="text-center">
+            <span>New on our platform?</span>
+            <a (click)="gotoRegister()" class="link-info" style="cursor: pointer;">
+              <span> Create an account</span>
+            </a>
+          </p>
+        </div>
       </div>
+     </div>
+
+     
+
     </div>
     <!-- /Login -->
   </div>

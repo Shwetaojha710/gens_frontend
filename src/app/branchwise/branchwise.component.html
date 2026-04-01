@@ -1,116 +1,138 @@
 <div class="authentication-wrapper authentication-basic container-p-y p-4 p-sm-0"
-  style="background-image: url('/assets/img/logo/abstract-background_1409-897.jpg');background-size: cover;background-repeat: no-repeat;">
-  <div class="py-6">
-    <!-- Login -->
-    <div class="container p-md-7 p-1">
-      <!-- Logo -->
+  style="background-image: url('/assets/img/bg-login/bg-branch.jpg');background-size: cover;background-repeat: no-repeat;">
+  <div
+    style="border: 0px solid ;padding: 30px 30px;width: 1588px;background-image: url('/assets/img/bg-login/bg-branch1.pn');background-size: cover;background-position: center;border-radius: 32px;background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%), linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));">
+
+    <div class="py-6">
+      <div style="border: 0px solid ;padding: 30px 30px;width: 1394px;height: 650px;background-image: url('/assets/img/bg-login/bg-branch1.pn');background-size: cover;background-position: center;border-radius: 32px;margin: auto;background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),
+linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));
+">
+        <!-- Login -->
+        <div class="container p-md-7 p-1">
+          <!-- Logo -->
 
 
-      <div class="row mb-6">
+          <div class="row mb-6">
 
-        <div class="col-12 text-end">
-             <button type="button" class="btn btn-outline-success bg-white btn-buy-now waves-effect waves-light"
-            (click)="gotoback()">
-           Back to Dashboard
-          </button>
-          <button type="button" class="btn btn-outline-success bg-white btn-buy-now waves-effect waves-light"
-            (click)="gotoList()">
-            Pending Employee List
-          </button>
+            <!-- <div class="col-12 text-end">
+            <button type="button" class="btn btn-outline-success bg-white btn-buy-now waves-effect waves-light mx-2"
+              (click)="gotoback()">
+              Back to Dashboard
+            </button>
+            <button type="button" class="btn btn-outline-success bg-white btn-buy-now waves-effect waves-light"
+              (click)="gotoList()">
+              Pending Employee List
+            </button>
 
-        </div>
+          </div> -->
 
 
-        <div class="app-brand justify-content-center mt-5">
-          <a href="/" class="app-brand-link gap-2">
-            <img src="/assets/img/logo/logo-quaere.png" width="250">
-            <!-- <img [src]="tenantDetails?.image" alt="Document" width="250" height="auto" style="cursor: pointer" /> -->
-          </a>
+            <div class="app-brand justify-content-center">
+              <a href="/" class="app-brand-link gap-2 mb-2">
+                <img src="/assets/img/logo/logo-quaere.png" width="200">
+                <!-- <img [src]="tenantDetails?.image" alt="Document" width="250" height="auto" style="cursor: pointer" /> -->
+              </a>
 
-        </div>
-        <div class="app-brand justify-content-center mb-10 mt-5">
-          <div class="text-center">
-            <h4 style="    font-size: 32px;
-    color: #005495;
-    font-weight: 900;">
-              {{tenantDetails?.companyName}}
-              <!-- Quaere ETechnologies Pvt. Ltd. -->
-            </h4>
-            <p>
-              {{tenantDetails?.companyAddress}}
-              <!-- 7th Floor, Cyber Tower, Pickup Road, Vibhuti Khand, Gomti Nagar, Lucknow-226010 (Uttar Pradesh) -->
-            </p>
-          </div>
-        </div>
-        <!-- /Logo -->
+            </div>
+            <div class="app-brand justify-content-center">
+              <div class="text-center">
+                <h4 style="font-size: 32px; color: #005495; font-weight: 500;">
+                  {{tenantDetails?.companyName}}
+                  <!-- Quaere ETechnologies Pvt. Ltd. -->
+                </h4>
+                <p>
+                  {{tenantDetails?.companyAddress}}
+                  <!-- 7th Floor, Cyber Tower, Pickup Road, Vibhuti Khand, Gomti Nagar, Lucknow-226010 (Uttar Pradesh) -->
+                </p>
+              </div>
+            </div>
+            <!-- /Logo -->
 
 
 
 
-        <div class="row g-3 mb-12">
-          <div class="col-md-12">
-            <div class="row justify-content-center g-3">
+            <div class="row g-3 mb-8 justify-content-center">
+              <div class="col-md-12">
+                <div class="row justify-content-center g-3">
 
-              <div class="col" *ngFor="let branch of branchList">
-                <div class="card card-100 text-center" style="padding: 40px 20px;">
-                  <div class="card-body">
-                    <div class="mb-4">
-                      <img src="/assets/img/logo/icomoon-free_office.svg" width="60">
+                  <div class="col text-center" *ngFor="let branch of branchList">
+                    <!-- <div class="card card-100 text-center" style="padding: 40px 20px;">
+                      <div class="card-body">
+                        <div class="mb-4">
+                          <img src="/assets/img/logo/icomoon-free_office.svg" width="60">
+                        </div>
+
+                        <h5 class="card-title">{{ branch.name }}</h5>
+
+                        <p class="card-text">
+                          {{ branch.description || 'Central administration and monitoring access.' }}
+                        </p>
+
+                        <button class="btn btn-primary waves-effect waves-light" (click)="goToDashboard(branch)">
+                          Go to Dashboard
+                        </button>
+                      </div>
+                    </div> -->
+ <div class="card-wrapper">
+                      <div class="city-card">
+
+                        <div class="overlay">
+                          <h2 class="text-white text-uppercase">{{ branch.name }}</h2>
+                          <h4 class="text-white">OFFICE</h4>
+
+                          <p class="text-uppercase">
+                           {{ branch.description || 'Central administration and monitoring access.' }}
+                          </p>
+
+                          <button class="btn-dashboard" (click)="goToDashboard(branch)">Go To Dashboard</button>
+                        </div>
+
+                      </div>
+                    </div>
+                   
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <div class="buy-now">
+
+
+              <button type="button" class="btn btn-outline-primary bg-white btn-buy-now waves-effect waves-light"
+                data-bs-toggle="modal" data-bs-target="#exampleModal">
+                View More
+              </button>
+            </div>
+
+            <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+              aria-hidden="true">
+              <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel1">Search Branch</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="row">
+                      <div class="col-12 mt-2">
+                        <div class="input-group">
+                          <input type="text" class="form-control" placeholder="Search Branch" aria-label="Search Branch"
+                            aria-describedby="button-addon2">
+                          <button class="btn btn-outline-primary waves-effect" type="button"
+                            id="button-addon2">Search</button>
+                        </div>
+                      </div>
                     </div>
 
-                    <h5 class="card-title">{{ branch.name }}</h5>
+                  </div>
+                  <div class="modal-footer">
 
-                    <p class="card-text">
-                      {{ branch.description || 'Central administration and monitoring access.' }}
-                    </p>
-
-                    <button class="btn btn-primary waves-effect waves-light" (click)="goToDashboard(branch)">
-                      Go to Dashboard
-                    </button>
                   </div>
                 </div>
               </div>
-
             </div>
-          </div>
-        </div>
-
-        <div class="buy-now">
-
-
-          <button type="button" class="btn btn-outline-primary bg-white btn-buy-now waves-effect waves-light"
-            data-bs-toggle="modal" data-bs-target="#exampleModal">
-            View More
-          </button>
-        </div>
-
-        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-          <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel1">Search Branch</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-              </div>
-              <div class="modal-body">
-                <div class="row">
-                  <div class="col-12 mt-2">
-                    <div class="input-group">
-                      <input type="text" class="form-control" placeholder="Search Branch" aria-label="Search Branch"
-                        aria-describedby="button-addon2">
-                      <button class="btn btn-outline-primary waves-effect" type="button"
-                        id="button-addon2">Search</button>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-              <div class="modal-footer">
-
-              </div>
-            </div>
-          </div>
-        </div>
-        <!-- <div class="row mb-12 g-6">
+            <!-- <div class="row mb-12 g-6">
                 <div class="col-md-12">
                     <div class="row">
                         <div class="col-lg-4">
@@ -153,14 +175,17 @@
                 </div>
             </div> -->
 
-      </div>
+          </div>
 
 
 
-      <!-- /Login -->
-      <!-- <img alt="mask" src="/assets/img/illustrations/auth-basic-forgot-password-mask-light.png"
+          <!-- /Login -->
+          <!-- <img alt="mask" src="/assets/img/illustrations/auth-basic-forgot-password-mask-light.png"
       class="authentication-image d-none d-lg-block"
       data-app-light-img="illustrations/auth-basic-forgot-password-mask-light.png"
       data-app-dark-img="illustrations/auth-basic-forgot-password-mask-dark.png" style="visibility: visible;"> -->
+        </div>
+      </div>
     </div>
   </div>
+</div>
