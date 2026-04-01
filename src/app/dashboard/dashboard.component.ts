@@ -19,6 +19,7 @@ import { MasterService } from '../services/master.service';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { FormsModule } from '@angular/forms';
 import { EmployeeService } from '../services/employee.service';
+import Swal from 'sweetalert2';
 
 export type ChartOptions = {
   series: ApexAxisChartSeries;
@@ -340,11 +341,29 @@ export class DashboardComponent {
   }
 
   openLeaveApproval(item: any) {
-    this.updateLeaveStatus(item, 'approved');
+    this.confirmLeaveStatusChange(item, 'approved');
   }
 
   rejectLeaveApproval(item: any) {
-    this.updateLeaveStatus(item, 'rejected');
+    this.confirmLeaveStatusChange(item, 'rejected');
+  }
+
+  confirmLeaveStatusChange(item: any, status: 'approved' | 'rejected') {
+    const actionLabel = status === 'approved' ? 'approve' : 'reject';
+
+    Swal.fire({
+      title: `Are you sure?`,
+      text: `Do you want to ${actionLabel} this leave request?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: status === 'approved' ? 'Yes, approve it' : 'Yes, reject it',
+      cancelButtonText: 'Cancel',
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.updateLeaveStatus(item, status);
+      }
+    });
   }
 
   updateLeaveStatus(item: any, status: 'approved' | 'rejected') {
