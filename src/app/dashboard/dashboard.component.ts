@@ -339,6 +339,41 @@ export class DashboardComponent {
     });
   }
 
+  openLeaveApproval(item: any) {
+    this.updateLeaveStatus(item, 'approved');
+  }
+
+  rejectLeaveApproval(item: any) {
+    this.updateLeaveStatus(item, 'rejected');
+  }
+
+  updateLeaveStatus(item: any, status: 'approved' | 'rejected') {
+    const payload = {
+      ...item,
+      status
+    };
+
+    this.masterService.UpdateApplyLeaveStatus(payload).subscribe({
+      next: (response: any) => {
+        if (response?.status === true) {
+          this.notyf.success(response?.message || `Leave ${status} successfully`);
+          this.loadDashboard();
+          return;
+        }
+
+        if (response?.status === 'expired') {
+          this.router.navigate(['login']);
+          return;
+        }
+
+        this.notyf.error(response?.message || `Unable to ${status} leave`);
+      },
+      error: (err: any) => {
+        this.notyf.error(err?.error?.message || `Unable to ${status} leave`);
+      }
+    });
+  }
+
   getBranchDD() {
     this.branchList = [];
     this.masterService.BranchDD().subscribe((res) => {

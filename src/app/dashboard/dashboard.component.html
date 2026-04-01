@@ -404,7 +404,25 @@
                     <td class="text-truncate">
                       <span class="badge rounded-pill" [ngClass]="getLeaveStatusClass(item.status)">{{ item.status }}</span>
                     </td>
-                    <td><a href="javascript:void(0)" class="btn btn-sm approve" >Approve</a></td>
+                    <td class="text-truncate">
+                      <a
+                        href="javascript:void(0)"
+                        (click)="openLeaveApproval(item)"
+                        class="btn btn-sm approve me-1"
+                        *ngIf="!['approved', 'rejected', 'self_declined'].includes(item.status)"
+                      >
+                        Approve
+                      </a>
+                      <a
+                        href="javascript:void(0)"
+                        (click)="rejectLeaveApproval(item)"
+                        class="btn btn-sm approve"
+                        *ngIf="!['approved', 'rejected', 'self_declined'].includes(item.status)"
+                      >
+                        Reject
+                      </a>
+                      <span *ngIf="['approved', 'rejected', 'self_declined'].includes(item.status)">-</span>
+                    </td>
                   </tr>
                 </tbody>
               </table>
