@@ -14,6 +14,14 @@ baseUrl=environment.apiUrl
     getDashboardData(): Observable<any> {
     return this.http.post(`${this.baseUrl}dashboard`, {});
   }
+
+  getAttendanceChart(): Observable<any> {
+    return this.http.post(`${this.baseUrl}dashboard-attendance-chart`, {});
+  }
+
+  getAttendanceByDepartment(): Observable<any> {
+    return this.http.post(`${this.baseUrl}dashboard-attendance-by-department`, {});
+  }
   //    getDashboardData(): Observable<any> {
   //   return this.http.post(`http://192.168.23.17:3002/api/dashboard`, {});
   // }

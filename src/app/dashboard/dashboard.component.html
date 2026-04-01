@@ -1,39 +1,45 @@
 <div class="container-xxl mt-5">
-  <!-- Breadcrumb -->
-  <div class="row align-items-center  mb-4">
+  <div class="row align-items-center mb-4">
     <div class="col-md-6">
       <h4 class="mb-0">Dashboard</h4>
     </div>
     <div class="col-md-6">
       <div class="demo-inline-spacing text-end">
-        <button type="button" class="btn  bg-white waves-effect waves-light"><i class="fa-regular fa-calendar mx-1"></i>
-          Last 30 days <i class="fa-solid fa-angle-right fs-10 mx-1"></i>
+        <button type="button" class="btn bg-white waves-effect waves-light">
+          <i class="fa-regular fa-calendar mx-1"></i>
+          Last 30 days
+          <i class="fa-solid fa-angle-right fs-10 mx-1"></i>
         </button>
-        <button type="button" class="btn btn-primary waves-effect waves-light me-sm-2 me-2"><img
-            src="../../../assets/img/icon/Vector.png" class="mx-2"> Reports</button>
-
+        <button type="button" class="btn btn-primary waves-effect waves-light me-sm-2 me-2">
+          <img src="../../../assets/img/icon/Vector.png" class="mx-2"> Reports
+        </button>
       </div>
     </div>
   </div>
 
-
-  <!-- Row 1 -->
   <div class="row mb-3">
     <div class="col-lg-6">
-      <div class="card h-100"
-        style="background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));border: 2px solid #fff;">
+      <div class="card h-100 dashboard-glass-card">
         <div class="card-header border-0" style="margin-bottom: 0px;">
           <div class="d-flex justify-content-between">
             <h5 class="mb-1">Employee Overview</h5>
             <div>
-              <div class="badge bg-label-primary bg-white text-secondary rounded-pill mx-10 px-4">Late Check-ins <span
-                  class="mb-0 fw-medium text-danger">11 <i class="icon-base ri ri-arrow-up-s-line"></i></span></div>
-              <div class="badge bg-label-primary bg-white text-secondary rounded-pill px-4">Total 854 <span
-                  class="mb-0 fw-medium text-success">+18 <i class="icon-base ri ri-arrow-up-s-line"></i></span></div>
+              <div class="badge bg-label-primary bg-white text-secondary rounded-pill mx-10 px-4">
+                Late Check-ins
+                <span class="mb-0 fw-medium text-danger">
+                  {{ getStatValueByTitle('Late Check-ins') }} <i class="icon-base ri ri-arrow-up-s-line"></i>
+                </span>
+              </div>
+              <div class="badge bg-label-primary bg-white text-secondary rounded-pill px-4">
+                Total {{ getStatValueByTitle('Total Employees') }}
+                <span class="mb-0 fw-medium text-success">
+                  {{ getStatChange('Total Employees') }} <i class="icon-base ri ri-arrow-up-s-line"></i>
+                </span>
+              </div>
             </div>
           </div>
-
         </div>
+
         <div class="card-body d-flex justify-content-between flex-wrap gap-4">
           <div class="d-flex align-items-center gap-3">
             <div class="avatar">
@@ -43,17 +49,15 @@
             </div>
             <div class="card-info">
               <div class="d-flex align-items-center text-success">
-                <h5 class="mb-0">812 </h5>
+                <h5 class="mb-0">{{ getStatValueByTitle(`Today's Attendance`) }}</h5>
                 <div class="d-flex align-items-center text-success mx-1">
-                  <p class="mb-0 fw-medium">+13% Up</p>
-
+                  <p class="mb-0 fw-medium">{{ getStatChange(`Today's Attendance`) }} {{ getAttendanceTrendLabel('Present') }}</p>
                 </div>
               </div>
-
-
               <p class="mb-0">Present Today</p>
             </div>
           </div>
+
           <div class="d-flex align-items-center gap-3">
             <div class="avatar">
               <div class="avatar-initial bg-label-warning rounded">
@@ -61,18 +65,16 @@
               </div>
             </div>
             <div class="card-info">
-              <div class="d-flex align-items-center text-success">
-                <h5 class="mb-0">32 </h5>
+              <div class="d-flex align-items-center text-warning">
+                <h5 class="mb-0">{{ attendanceChart?.todayLeaveCount || '0' }}</h5>
                 <div class="d-flex align-items-center text-warning mx-1">
-                  <p class="mb-0 fw-medium">-2 Less</p>
-
+                  <p class="mb-0 fw-medium">{{ getAttendanceBreakdown('On Leave') }} {{ getAttendanceTrendLabel('On Leave') }}</p>
                 </div>
               </div>
-
-
               <p class="mb-0">On Leave</p>
             </div>
           </div>
+
           <div class="d-flex align-items-center gap-3">
             <div class="avatar">
               <div class="avatar-initial bg-label-danger rounded">
@@ -80,15 +82,12 @@
               </div>
             </div>
             <div class="card-info">
-              <div class="d-flex align-items-center text-success">
-                <h5 class="mb-0">11 </h5>
+              <div class="d-flex align-items-center text-danger">
+                <h5 class="mb-0">{{ attendanceChart?.emergencyCount || '0' }}</h5>
                 <div class="d-flex align-items-center text-danger mx-1">
-                  <p class="mb-0 fw-medium">+2% Often</p>
-
+                  <p class="mb-0 fw-medium">{{ getAttendanceBreakdown('On Emergency leave') }} {{ getAttendanceTrendLabel('On Emergency leave') }}</p>
                 </div>
               </div>
-
-
               <p class="mb-0">Emergency leave</p>
             </div>
           </div>
@@ -97,28 +96,26 @@
     </div>
 
     <div class="col-lg-3 col-sm-6">
-      <div class="card h-100"
-        style="background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));border: 2px solid #fff;">
-        <div class="row">
+      <div class="card h-100 dashboard-glass-card">
+        <div class="row h-100">
           <div class="col-6">
             <div class="card-body">
               <div class="card-info mb-5">
                 <h6 class="mb-2 text-nowrap" style="color: #3C4056;">On Field Employees (GPS)</h6>
-                <div class="badge bg-label-primary bg-white text-black rounded-pill lh-xs"><span
-                    class="text-danger me-2"><i class="icon-base ri ri-circle-fill icon-12px"></i></span> Live Tracking
+                <div class="badge bg-label-primary bg-white text-black rounded-pill lh-xs">
+                  <span class="text-danger me-2"><i class="icon-base ri ri-circle-fill icon-12px"></i></span>
+                  Live Tracking
                 </div>
               </div>
               <div class="d-flex align-items-center">
-                <h4 class="mb-0 me-2">127
-                </h4>
-                <div class="tracking">4&nbsp;Employees
-                  Offline</div>
+                <h4 class="mb-0sent me-2">{{ trackingList.length }}</h4>
+                <div class="tracking">{{ offlineTrackingCount }} Employees Offline</div>
               </div>
             </div>
           </div>
           <div class="col-6 text-end d-flex align-items-end">
             <div class="card-body pb-0 px-0">
-              <img src="../../../assets/img/avatars/gps-tracking.png" alt="Ratings" class="" width="150" />
+              <img src="../../../assets/img/avatars/gps-tracking.png" alt="Ratings" width="150" />
             </div>
           </div>
         </div>
@@ -126,35 +123,48 @@
     </div>
 
     <div class="col-lg-3 col-sm-6">
-      <div class="card h-100"
-        style="background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));border: 2px solid #fff;">
-        <div class="row">
-          <div class="col-6">
-            <div class="card-body">
-              <div class="card-info mb-5">
-                <h6 class="mb-2 text-nowrap" style="color: #3C4056;">On Field Employees (GPS)</h6>
-                <div class="badge bg-label-primary bg-white text-black rounded-pill lh-xs"><span
-                    class="text-danger me-2"><i class="icon-base ri ri-circle-fill icon-12px"></i></span> Live Tracking
-                </div>
-              </div>
-              <div class="d-flex align-items-center">
-                <h4 class="mb-0 me-2">127
-                </h4>
-                <div class="tracking">4&nbsp;Employees
-                  Offline</div>
-              </div>
+      <div class="card h-100 dashboard-glass-card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-start mb-3">
+            <div>
+              <h6 class="mb-1 text-nowrap" style="color: #3C4056;">Attendance Chart</h6>
+            </div>
+            <div class="chart-period-label">
+              <span>{{ attendanceChart?.subtitle || 'This Week' }}</span>
+              <i class="ri ri-arrow-up-s-line"></i>
             </div>
           </div>
-          <div class="col-6 text-end d-flex align-items-end">
-            <div class="card-body pb-0 px-0">
-              <img src="../../../assets/img/avatars/gps-tracking.png" alt="Ratings" class="" width="150" />
+
+          <div class="d-flex justify-content-between align-items-center gap-2">
+            <div class="attendance-legend">
+              <div class="attendance-legend-item" *ngFor="let item of attendanceChart?.breakdown || []">
+                <span class="attendance-dot" [style.background]="item.color"></span>
+                <div class="attendance-legend-text">
+                  <strong [style.color]="item.color">{{ item.value }}</strong>
+                  <span>{{ item.label }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="attendance-chart-box">
+              <apx-chart
+                *ngIf="attendanceDonutOptions.series?.length"
+                [series]="attendanceDonutOptions.series!"
+                [chart]="attendanceDonutOptions.chart!"
+                [labels]="attendanceDonutOptions.labels!"
+                [colors]="attendanceDonutOptions.colors!"
+                [dataLabels]="attendanceDonutOptions.dataLabels!"
+                [legend]="attendanceDonutOptions.legend!"
+                [plotOptions]="attendanceDonutOptions.plotOptions!"
+                [responsive]="attendanceDonutOptions.responsive!"
+              ></apx-chart>
             </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-  <!-- Row 2 -->
+
   <div class="row mb-2">
     <div class="col-md-6">
       <div class="ai-card" style="background-image: url('/assets/img/bg-login/ai-bg.png');background-size: cover;background-position: center;">
@@ -191,105 +201,83 @@
         </div> -->
       </div>
     </div>
-    <div class="col-md-6">
-      <div class="ai-chat">
-        <img src="../../../assets/img/bg-login/card-ai.png" width="100%">
-      </div>
-    </div>
-  </div>
-  <!-- Row 3 -->
-  <div class="row">
-    <div class="col-md-4">
-      <div class="card mb-2"
-        style="background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));border: 2px solid #fff;">
-        <div class="card-header d-flex justify-content-between mb-0 align-items-center p-2" style="margin-bottom: 0px;">
-          <h5 class="mb-0 ml-2">Celebrations</h5>
-          <ul class="nav nav-pills bg-white p-1" style="border-radius: 5px;" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button type="button" class="nav-link active waves-effect waves-light" role="tab" data-bs-toggle="tab"
-                data-bs-target="#navs-pills-top-home" aria-controls="navs-pills-top-home" aria-selected="true">
-                All
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button type="button" class="nav-link waves-effect waves-light" role="tab" data-bs-toggle="tab"
-                data-bs-target="#navs-pills-top-profile" aria-controls="navs-pills-top-profile" aria-selected="false"
-                tabindex="-1">
-                Upcoming
-              </button>
-            </li>
 
-          </ul>
+    <div class="col-md-6">
+      <div class="card dashboard-glass-card h-100">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h6 class="mb-0 text-nowrap" style="color: #3C4056;">Attendance by depart.</h6>
+          <div class="chart-period-label">
+            <span>This Week</span>
+            <i class="ri ri-arrow-up-s-line"></i>
+          </div>
         </div>
         <div class="card-body">
-          <div class="tab-content p-0">
-            <div class="tab-pane fade show active" id="navs-pills-top-home" role="tabpanel">
-              <div class="row">
-                <div class="col-6">
-                  <div class="birthday-card"
-                    style="background-image: url('../../../assets/img/avatars/birthday-bg.png');background-size: cover;background-position: center;background-repeat: no-repeat;width: 100%;height: 180px;">
-                    <div class="celebration-card text-center">
-
-                      <img src="../../../assets/img/avatars/dainik.png" alt="emp-img" width="80">
-                      <p class="mb-0">10/20/2025</p>
-                      <h4>Danial Kumar</h4>
-                      <h2>Birthday</h2>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-6">
-                  <div class="birthday-card"
-                    style="background-image: url('../../../assets/img/avatars/birthday-bg.png');background-size: cover;background-position: center;width: 100%;height: 180px;">
-                    <div class="celebration-card text-center">
-
-                      <img src="../../../assets/img/avatars/abhi.png" alt="emp-img" width="80">
-                      <p class="mb-0">10/20/2025</p>
-                      <h4>Abhishek's Shukla</h4>
-                      <h2>Anniversary</h2>
-                    </div>
-                  </div>
-                </div>
-              </div>
+          <div class="attendance-department-chart">
+            <div class="attendance-department-scale">
+              <span>100%</span>
+              <span>50%</span>
+              <span>75%</span>
+              <span>0</span>
             </div>
-            <div class="tab-pane fade" id="navs-pills-top-profile" role="tabpanel">
-              <div class="row">
-                <div class="col-6">
-                  <div class="birthday-card"
-                    style="background-image: url('../../../assets/img/avatars/birthday-bg.png');background-size: cover;background-position: center;width: 100%;height: 180px;">
-                    <div class="celebration-card text-center">
-
-                      <img src="../../../assets/img/avatars/dainik.png" alt="emp-img" width="80">
-                      <p class="mb-0">10/20/2025</p>
-                      <h4>Danial Kumar</h4>
-                      <h2>Birthday</h2>
-                    </div>
-                  </div>
+            <div class="attendance-department-wrap with-grid">
+              <div class="attendance-department-item" *ngFor="let item of attendanceByDepartment">
+                <span class="attendance-department-percent">{{ item.percentage }}%</span>
+                <div class="attendance-department-bar-bg">
+                  <div
+                    class="attendance-department-bar"
+                    [style.height.%]="item.percentage"
+                    [style.background]="item.color"
+                  ></div>
                 </div>
-                <div class="col-6">
-                  <div class="birthday-card"
-                    style="background-image: url('../../../assets/img/avatars/birthday-bg.png');background-size: cover;background-position: center;width: 100%;height: 180px;">
-                    <div class="celebration-card text-center">
-
-                      <img src="../../../assets/img/avatars/abhi.png" alt="emp-img" width="80">
-                      <p class="mb-0">10/20/2025</p>
-                      <h4>Abhishek's Shukla</h4>
-                      <h2>Anniversary</h2>
-                    </div>
-                  </div>
-                </div>
+                <span class="attendance-department-name">{{ item.name }}</span>
               </div>
             </div>
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card mb-2 dashboard-glass-card">
+        <div class="card-header d-flex justify-content-between mb-0 align-items-center p-2">
+          <h5 class="mb-0 ml-2">Celebrations</h5>
+          <ul class="nav nav-pills bg-white p-1" style="border-radius: 5px;" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button type="button" class="nav-link active waves-effect waves-light">All</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button type="button" class="nav-link waves-effect waves-light">Upcoming</button>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card-body">
+          <div class="row">
+            <div class="col-6" *ngFor="let item of celebrationsList">
+              <div
+                class="birthday-card"
+                style="background-image: url('../../../assets/img/avatars/birthday-bg.png');background-size: cover;background-position: center;background-repeat: no-repeat;width: 100%;height: 180px;"
+              >
+                <div class="celebration-card text-center">
+                  <img [src]="getEmployeeAvatar(item)" (error)="onImageError($event, item, 'profileImage')" alt="emp-img">
+                  <p class="mb-0">{{ item.dateLabel }}</p>
+                  <h4>{{ item.firstName }} {{ item.lastName }}</h4>
+                  <h2>{{ item.cardTitle }}</h2>
+                </div>
+              </div>
+            </div>
+            <div class="col-12" *ngIf="!celebrationsList.length">
+              <div class="text-center text-muted py-4">No celebrations available.</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="card p-2"
-        style="background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));border: 2px solid #fff;">
-        <div class="card-header d-flex align-items-center justify-content-between p-2 mb-0"
-          style="margin-bottom: 0px !important;padding-bottom: 0px;">
+      <div class="card p-2 dashboard-glass-card">
+        <div class="card-header d-flex align-items-center justify-content-between p-2 mb-0">
           <h5 class="card-title m-0 me-2">Upcoming Events</h5>
-
         </div>
         <div class="d-flex justify-content-between p-4 border-bottom" style="background: #F5F5F7;">
           <p class="mb-0 fs-xsmall">Event Name</p>
@@ -297,48 +285,29 @@
         </div>
         <div class="card-body bg-white p-2">
           <ul class="p-0 m-0">
-            <li class="d-flex align-items-center mb-2">
+            <li class="d-flex align-items-center mb-2" *ngFor="let item of holidayList">
               <div class="avatar avatar-md flex-shrink-0 me-4">
                 <div class="avatar-initial bg-lightest rounded-3">
                   <div>
-                    <img src="../../assets/img/icons/misc/3d-illustration.png" alt="User" class="h-25">
+                    <img [src]="item.image" (error)="onImageError($event, item, 'holidayImage')" alt="User" class="h-25">
                   </div>
                 </div>
               </div>
               <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
                 <div class="me-2">
-                  <h6 class="mb-1">Vijayadashami</h6>
+                  <h6 class="mb-1">{{ item.name }}</h6>
                 </div>
-                <div class="text">Tue, 20 Oct, 2026</div>
+                <div class="text">{{ item.date }}</div>
               </div>
             </li>
-            <li class="d-flex align-items-center mb-2">
-              <div class="avatar avatar-md flex-shrink-0 me-4">
-                <div class="avatar-initial bg-lightest rounded-3">
-                  <div>
-                    <img src="../../assets/img/icons/misc/3d-illustration.png" alt="User" class="h-25">
-                  </div>
-                </div>
-              </div>
-              <div class="d-flex w-100 flex-wrap align-items-center justify-content-between gap-2">
-                <div class="me-2">
-                  <h6 class="mb-1">Vijayadashami</h6>
-
-                </div>
-                <div class="text">Tue, 20 Oct, 2026</div>
-              </div>
-            </li>
-
           </ul>
         </div>
       </div>
-
     </div>
 
     <div class="col-xl-8 col-md-6">
-      <div class="card overflow-hidden"
-        style="background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));border: 2px solid #fff;">
-        <div class="card-header d-flex align-items-center justify-content-between" style="margin: 0px !important;">
+      <div class="card overflow-hidden dashboard-glass-card">
+        <div class="card-header d-flex align-items-center justify-content-between">
           <h5 class="card-title me-2">Employee Table</h5>
           <ul class="nav nav-pills bg-white p-1" style="border-radius: 5px;" role="tablist">
             <li class="nav-item" role="presentation">
@@ -349,327 +318,95 @@
               </button>
             </li>
             <li class="nav-item" role="presentation">
-              <button type="button" class="nav-link waves-effect waves-light approve" role="tab" data-bs-toggle="tab"
-                data-bs-target="#navs-pills-top-leave" aria-controls="navs-pills-top-leave" aria-selected="false"
-                tabindex="-1">
+              <button type="button" class="nav-link waves-effect waves-light approve" role="tab"
+                data-bs-toggle="tab" data-bs-target="#navs-pills-top-leave">
                 Employee Leave Info
               </button>
             </li>
-
-
           </ul>
         </div>
 
         <div class="tab-content p-0">
           <div class="tab-pane fade show active" id="navs-pills-top-emp-info" role="tabpanel">
-            <div class="table-responsive ">
+            <div class="table-responsive">
               <table class="table table-sm bg-white">
                 <thead>
                   <tr>
                     <th class="text-truncate">ID</th>
                     <th class="text-truncate">Employee Info</th>
-                    <th class="text-truncate">Contact Info</th>
-                    <th class="text-truncate">Leave Info</th>
-                    <th class="text-truncate">Status</th>
+                    <th class="text-truncate">Joining Date</th>
+                    <!-- <th class="text-truncate">Role</th> -->
+                    <th class="text-truncate">Designation</th>
                     <th class="text-truncate">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>QTPL0315</td>
+                  <tr *ngFor="let item of employeeList">
+                    <td>{{item.empCode}}</td>
                     <td>
                       <div class="d-flex align-items-center">
                         <div class="avatar avatar-sm me-4">
-                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
+                          <img [src]="item.profileImage" (error)="onImageError($event, item, 'profileImage')" alt="Avatar" class="rounded-circle">
                         </div>
                         <div>
-                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                          <small class="text-truncate"> HR Mangaer</small>
+                          <h6 class="mb-0 text-truncate">{{ item.name }}</h6>
+                          <small class="text-truncate">{{ item.gender }}</small>
                         </div>
                       </div>
                     </td>
-                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
-                        888293842</span>
-                    </td>
-                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                    <td class="text-truncate">{{ item.joiningDate }}</td>
+                    <!-- <td class="text-truncate">{{ item.role }}</td> -->
                     <td class="text-truncate">
-                      <span class="badge bg-label-warning rounded-pill">Pending</span>
+                      <span class="badge rounded-pill" [ngClass]="'bg-label-' + item.badgeColor">{{ item.badge }}</span>
                     </td>
-                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+                    <td><a href="javascript:void(0)" class="btn btn-sm approve">View</a></td>
                   </tr>
-                  <tr>
-                    <td>QTPL0315</td>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <div class="avatar avatar-sm me-4">
-                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                        </div>
-                        <div>
-                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                          <small class="text-truncate"> HR Mangaer</small>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
-                        888293842</span>
-                    </td>
-                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                    <td class="text-truncate">
-                      <span class="badge bg-label-warning rounded-pill">Pending</span>
-                    </td>
-                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-                  </tr>
-                  <tr>
-                    <td>QTPL0315</td>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <div class="avatar avatar-sm me-4">
-                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                        </div>
-                        <div>
-                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                          <small class="text-truncate"> HR Mangaer</small>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
-                        888293842</span>
-                    </td>
-                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                    <td class="text-truncate">
-                      <span class="badge bg-label-warning rounded-pill">Pending</span>
-                    </td>
-                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-                  </tr>
-                  <tr>
-                    <td>QTPL0315</td>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <div class="avatar avatar-sm me-4">
-                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                        </div>
-                        <div>
-                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                          <small class="text-truncate"> HR Mangaer</small>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
-                        888293842</span>
-                    </td>
-                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                    <td class="text-truncate">
-                      <span class="badge bg-label-warning rounded-pill">Pending</span>
-                    </td>
-                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-                  </tr>
-                  <tr>
-                    <td>QTPL0315</td>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <div class="avatar avatar-sm me-4">
-                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                        </div>
-                        <div>
-                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                          <small class="text-truncate"> HR Mangaer</small>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
-                        888293842</span>
-                    </td>
-                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                    <td class="text-truncate">
-                      <span class="badge bg-label-warning rounded-pill">Pending</span>
-                    </td>
-                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-                  </tr>
-                  <tr>
-                    <td>QTPL0315</td>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <div class="avatar avatar-sm me-4">
-                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                        </div>
-                        <div>
-                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                          <small class="text-truncate"> HR Mangaer</small>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
-                        888293842</span>
-                    </td>
-                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                    <td class="text-truncate">
-                      <span class="badge bg-label-warning rounded-pill">Pending</span>
-                    </td>
-                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-                  </tr>
-                  <tr>
-                    <td>QTPL0315</td>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <div class="avatar avatar-sm me-4">
-                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                        </div>
-                        <div>
-                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                          <small class="text-truncate"> HR Mangaer</small>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
-                        888293842</span>
-                    </td>
-                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                    <td class="text-truncate">
-                      <span class="badge bg-label-warning rounded-pill">Pending</span>
-                    </td>
-                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-                  </tr>
-
                 </tbody>
               </table>
             </div>
           </div>
+
           <div class="tab-pane fade" id="navs-pills-top-leave" role="tabpanel">
-            <div class="table-responsive ">
+            <div class="table-responsive">
               <table class="table table-sm bg-white">
                 <thead>
                   <tr>
                     <th class="text-truncate">ID</th>
                     <th class="text-truncate">Employee Info</th>
-                    <th class="text-truncate">Contact Info</th>
                     <th class="text-truncate">Leave Info</th>
+                    <th class="text-truncate">Type</th>
                     <th class="text-truncate">Status</th>
                     <th class="text-truncate">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td>QTPL0315</td>
+                  <tr *ngFor="let item of leaveList">
+                    <td>{{ item.empCode || 'NA' }}</td>
                     <td>
                       <div class="d-flex align-items-center">
                         <div class="avatar avatar-sm me-4">
                           <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
                         </div>
                         <div>
-                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                          <small class="text-truncate"> HR Mangaer</small>
+                          <h6 class="mb-0 text-truncate">{{ item.name }}</h6>
+                          <small class="text-truncate">{{ item.reason | slice:0:35 }}{{ item.reason?.length > 35 ? '...' : '' }}</small>
                         </div>
                       </div>
                     </td>
-                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
-                        888293842</span>
-                    </td>
-                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
+                    <td class="text-truncate">{{ item.fromDate | date:'dd MMM yyyy' }} To {{ item.toDate | date:'dd MMM yyyy' }} <br> {{ item.days }} day(s)</td>
+                    <td class="text-truncate">{{ item.type }}</td>
                     <td class="text-truncate">
-                      <span class="badge bg-label-warning rounded-pill">Pending</span>
+                      <span class="badge rounded-pill" [ngClass]="getLeaveStatusClass(item.status)">{{ item.status }}</span>
                     </td>
-                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
+                    <td><a href="javascript:void(0)" class="btn btn-sm approve">Review</a></td>
                   </tr>
-                  <tr>
-                    <td>QTPL0315</td>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <div class="avatar avatar-sm me-4">
-                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                        </div>
-                        <div>
-                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                          <small class="text-truncate"> HR Mangaer</small>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
-                        888293842</span>
-                    </td>
-                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                    <td class="text-truncate">
-                      <span class="badge bg-label-warning rounded-pill">Pending</span>
-                    </td>
-                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-                  </tr>
-                  <tr>
-                    <td>QTPL0315</td>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <div class="avatar avatar-sm me-4">
-                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                        </div>
-                        <div>
-                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                          <small class="text-truncate"> HR Mangaer</small>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
-                        888293842</span>
-                    </td>
-                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                    <td class="text-truncate">
-                      <span class="badge bg-label-warning rounded-pill">Pending</span>
-                    </td>
-                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-                  </tr>
-                  <tr>
-                    <td>QTPL0315</td>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <div class="avatar avatar-sm me-4">
-                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                        </div>
-                        <div>
-                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                          <small class="text-truncate"> HR Mangaer</small>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
-                        888293842</span>
-                    </td>
-                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                    <td class="text-truncate">
-                      <span class="badge bg-label-warning rounded-pill">Pending</span>
-                    </td>
-                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-                  </tr>
-                  <tr>
-                    <td>QTPL0315</td>
-                    <td>
-                      <div class="d-flex align-items-center">
-                        <div class="avatar avatar-sm me-4">
-                          <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                        </div>
-                        <div>
-                          <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                          <small class="text-truncate"> HR Mangaer</small>
-                        </div>
-                      </div>
-                    </td>
-                    <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91-
-                        888293842</span>
-                    </td>
-                    <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                    <td class="text-truncate">
-                      <span class="badge bg-label-warning rounded-pill">Pending</span>
-                    </td>
-                    <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-                  </tr>
-
-
                 </tbody>
               </table>
             </div>
           </div>
         </div>
-
-
       </div>
     </div>
-
   </div>
 </div>
 
@@ -677,183 +414,10 @@
   <div class="container-fluid">
     <div class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
       <div class="mb-2 mb-md-0">
-        ©
-        <script>
-          document.write(new Date().getFullYear());
-        </script>
-        2026
+        © 2026
         <a href="https://pixinvent.com" target="_blank" class="footer-link fw-medium text-primary">Quaeretech</a>
       </div>
-      <div class="d-none d-lg-inline-block">
-
-      </div>
+      <div class="d-none d-lg-inline-block"></div>
     </div>
   </div>
 </footer>
-
-
-<!-- 
- <div class="table-responsive ">
-          <table class="table table-sm bg-white">
-            <thead>
-              <tr>
-                <th class="text-truncate">ID</th>
-                <th class="text-truncate">Employee Info</th>
-                <th class="text-truncate">Contact Info</th>
-                <th class="text-truncate">Leave Info</th>
-                <th class="text-truncate">Status</th>
-                <th class="text-truncate">Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>QTPL0315</td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <div class="avatar avatar-sm me-4">
-                      <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                    </div>
-                    <div>
-                      <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                      <small class="text-truncate"> HR Mangaer</small>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91- 888293842</span>
-                </td>
-                <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                <td class="text-truncate">
-                  <span class="badge bg-label-warning rounded-pill">Pending</span>
-                </td>
-                <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-              </tr>
-              <tr>
-                <td>QTPL0315</td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <div class="avatar avatar-sm me-4">
-                      <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                    </div>
-                    <div>
-                      <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                      <small class="text-truncate"> HR Mangaer</small>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91- 888293842</span>
-                </td>
-                <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                <td class="text-truncate">
-                  <span class="badge bg-label-warning rounded-pill">Pending</span>
-                </td>
-                <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-              </tr>
-              <tr>
-                <td>QTPL0315</td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <div class="avatar avatar-sm me-4">
-                      <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                    </div>
-                    <div>
-                      <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                      <small class="text-truncate"> HR Mangaer</small>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91- 888293842</span>
-                </td>
-                <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                <td class="text-truncate">
-                  <span class="badge bg-label-warning rounded-pill">Pending</span>
-                </td>
-                <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-              </tr>
-              <tr>
-                <td>QTPL0315</td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <div class="avatar avatar-sm me-4">
-                      <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                    </div>
-                    <div>
-                      <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                      <small class="text-truncate"> HR Mangaer</small>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91- 888293842</span>
-                </td>
-                <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                <td class="text-truncate">
-                  <span class="badge bg-label-warning rounded-pill">Pending</span>
-                </td>
-                <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-              </tr>
-              <tr>
-                <td>QTPL0315</td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <div class="avatar avatar-sm me-4">
-                      <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                    </div>
-                    <div>
-                      <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                      <small class="text-truncate"> HR Mangaer</small>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91- 888293842</span>
-                </td>
-                <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                <td class="text-truncate">
-                  <span class="badge bg-label-warning rounded-pill">Pending</span>
-                </td>
-                <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-              </tr>
-              <tr>
-                <td>QTPL0315</td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <div class="avatar avatar-sm me-4">
-                      <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                    </div>
-                    <div>
-                      <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                      <small class="text-truncate"> HR Mangaer</small>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91- 888293842</span>
-                </td>
-                <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                <td class="text-truncate">
-                  <span class="badge bg-label-warning rounded-pill">Pending</span>
-                </td>
-                <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-              </tr>
-              <tr>
-                <td>QTPL0315</td>
-                <td>
-                  <div class="d-flex align-items-center">
-                    <div class="avatar avatar-sm me-4">
-                      <img src="../../assets/img/avatars/1.png" alt="Avatar" class="rounded-circle">
-                    </div>
-                    <div>
-                      <h6 class="mb-0 text-truncate">Sushmita Dixit</h6>
-                      <small class="text-truncate"> HR Mangaer</small>
-                    </div>
-                  </div>
-                </td>
-                <td class="text-truncate">sushmitadixitquaeretech.com <br> <span class="text-xs">+91- 888293842</span>
-                </td>
-                <td class="text-truncate">27 Aug To 29 Aug 2026 <br> Casual Type</td>
-                <td class="text-truncate">
-                  <span class="badge bg-label-warning rounded-pill">Pending</span>
-                </td>
-                <td><a href="#" class="btn btn-sm approve">Approve</a></td>
-              </tr>
-
-            </tbody>
-          </table>
-        </div> -->
