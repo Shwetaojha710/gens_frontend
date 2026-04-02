@@ -1,11 +1,16 @@
 <aside class="vertical-navbar" [class.collapsed]="isCollapsed">
   <div class="navbar-header">
       <a class="brand-wrap" routerLink="/layout/dashboard">
-       <img [src]="companyLogo" alt="Quaere" class="brand-logo brand-logo-collapsed" *ngIf="isCollapsed"/>
-        <div class="brand-copy" *ngIf="!isCollapsed">
+       <img
+        [src]="companyLogo"
+        alt="Quaere"
+        class="brand-logo"
+        [class.brand-logo-collapsed]="isCollapsed"
+      />
+        <!-- <div class="brand-copy" *ngIf="!isCollapsed">
         <span class="brand-title">Quaere</span>
         <span class="brand-subtitle">Human Resource</span>
-      </div>
+      </div> -->
     </a>
 
     <button class="toggle-btn" type="button" (click)="isCollapsed = !isCollapsed">
