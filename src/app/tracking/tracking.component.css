@@ -584,7 +584,7 @@
 }
 
 .form-ctrl:focus { outline: none; border-color: #3b82f6; }
-.form-ctrl::-webkit-calendar-picker-indicator { filter: invert(1); }
+/* .form-ctrl::-webkit-calendar-picker-indicator { filter: invert(1); } */
 
 .form-row-split { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
 
