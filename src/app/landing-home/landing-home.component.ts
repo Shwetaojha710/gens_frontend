@@ -5,12 +5,14 @@ import { Notyf } from 'notyf';
 // import { ChartOptions } from '../dashboard/dashboard.component';
 import { DashboardService } from '../services/dashboard.service';
 import { MasterService } from '../services/master.service';
-
+import { ViewEncapsulation } from '@angular/core';
 @Component({
   selector: 'app-landing-home',
   imports: [CommonModule],
+  standalone:true,
   templateUrl: './landing-home.component.html',
-  styleUrl: './landing-home.component.css'
+  styleUrls: ['./landing-home.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class LandingHomeComponent {
   notyf: Notyf = new Notyf();
