@@ -38,6 +38,7 @@ export interface LivePoint {
 export class LiveTrackingComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @Input() user: any = null;   // Employee object passed from parent
+  @Input() themeMode: 'dark' | 'light' = 'dark';
 
   // ── Map ───────────────────────────────────────────────────────────────────
   private map!: L.Map;

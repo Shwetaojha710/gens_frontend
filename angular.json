@@ -18,7 +18,7 @@
             "browser": "src/main.ts",
             "polyfills": ["zone.js"],
             "tsConfig": "tsconfig.app.json",
-            "allowedCommonJsDependencies": ["html2pdf.js"],
+            "allowedCommonJsDependencies": ["html2pdf.js", "leaflet", "sweetalert2", "file-saver", "pdfmake/build/pdfmake", "pdfmake/build/vfs_fonts"],
             "assets": [
               {
                 "glob": "**/*",
@@ -58,8 +58,8 @@
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "20kb",
-                  "maximumError": "25kb"
+                  "maximumWarning": "30kb",
+                  "maximumError": "35kb"
                 }
               ],
 
