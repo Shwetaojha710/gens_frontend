@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ViewChild } from '@angular/core';
+import { Component, HostListener, ViewChild } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { NgApexchartsModule } from 'ng-apexcharts';
 import {
@@ -70,6 +70,13 @@ export class DashboardComponent {
   attendanceByDepartment: any[] = [];
   baseurl: any;
   Event: any = [];
+  selectedEmployeeTableRange = 'This Week';
+  selectedAttendanceChartRange = 'This Week';
+  selectedAttendanceDepartmentRange = 'This Week';
+  activeEmployeeSectionTab: 'employee' | 'leave' = 'employee';
+  isEmployeeTableRangeOpen = false;
+  isAttendanceChartRangeOpen = false;
+  isAttendanceDepartmentRangeOpen = false;
 
   constructor(
     private dashboardService: DashboardService,
@@ -103,7 +110,9 @@ export class DashboardComponent {
   }
 
   loadDashboard() {
-    this.dashboardService.getDashboardData().subscribe({
+    const dashboardRange = this.activeEmployeeSectionTab === 'leave' ? this.selectedEmployeeTableRange : 'All';
+
+    this.dashboardService.getDashboardData(dashboardRange, this.activeEmployeeSectionTab).subscribe({
       next: (res: any) => {
         if (res.status === true) {
           this.stats = res.data.stats || [];
@@ -311,6 +320,27 @@ export class DashboardComponent {
     localStorage.setItem('branchId', branchId);
   }
 
+  openEmployeeListPage() {
+    this.router.navigate(['/layout/employee/joining']);
+  }
+
+  openLeaveListPage() {
+    this.router.navigate(['/layout/employee/apply-leave']);
+  }
+
+  openHolidayPage() {
+    this.router.navigate(['/layout/attendance/holiday']);
+  }
+
+  openCelebrationPage() {
+    this.router.navigate(['/layout/employee/joining']);
+  }
+
+  setEmployeeSectionTab(tab: 'employee' | 'leave') {
+    this.activeEmployeeSectionTab = tab;
+    this.loadDashboard();
+  }
+
   openEmployeeProfile(item: any) {
     this.employeeService.getEmp().subscribe({
       next: (response: any) => {
@@ -391,6 +421,95 @@ export class DashboardComponent {
         this.notyf.error(err?.error?.message || `Unable to ${status} leave`);
       }
     });
+  }
+
+  setEmployeeTableRange(range: string) {
+    this.selectedEmployeeTableRange = range;
+    this.isEmployeeTableRangeOpen = false;
+    this.loadDashboard();
+  }
+
+  toggleEmployeeTableRangeDropdown(event: Event) {
+    event.stopPropagation();
+    this.isEmployeeTableRangeOpen = !this.isEmployeeTableRangeOpen;
+    this.isAttendanceChartRangeOpen = false;
+    this.isAttendanceDepartmentRangeOpen = false;
+  }
+
+  loadAttendanceChart() {
+    this.dashboardService.getAttendanceChart(this.selectedAttendanceChartRange).subscribe({
+      next: (res: any) => {
+        if (res.status === true) {
+          this.attendanceChart = res.data || null;
+          this.setAttendanceDonutChart();
+          return;
+        }
+
+        if (res.status === 'expired') {
+          this.router.navigate(['login']);
+          return;
+        }
+
+        this.notyf.error(res.message || 'Unable to load attendance chart');
+      },
+      error: (err: any) => {
+        this.notyf.error(err?.error?.message || 'Unable to load attendance chart');
+      }
+    });
+  }
+
+  setAttendanceChartRange(range: string) {
+    this.selectedAttendanceChartRange = range;
+    this.isAttendanceChartRangeOpen = false;
+    this.loadAttendanceChart();
+  }
+
+  toggleAttendanceChartRangeDropdown(event: Event) {
+    event.stopPropagation();
+    this.isAttendanceChartRangeOpen = !this.isAttendanceChartRangeOpen;
+    this.isEmployeeTableRangeOpen = false;
+    this.isAttendanceDepartmentRangeOpen = false;
+  }
+
+  loadAttendanceByDepartment() {
+    this.dashboardService.getAttendanceByDepartment(this.selectedAttendanceDepartmentRange).subscribe({
+      next: (res: any) => {
+        if (res.status === true) {
+          this.attendanceByDepartment = res.data || [];
+          return;
+        }
+
+        if (res.status === 'expired') {
+          this.router.navigate(['login']);
+          return;
+        }
+
+        this.notyf.error(res.message || 'Unable to load attendance by department');
+      },
+      error: (err: any) => {
+        this.notyf.error(err?.error?.message || 'Unable to load attendance by department');
+      }
+    });
+  }
+
+  setAttendanceDepartmentRange(range: string) {
+    this.selectedAttendanceDepartmentRange = range;
+    this.isAttendanceDepartmentRangeOpen = false;
+    this.loadAttendanceByDepartment();
+  }
+
+  toggleAttendanceDepartmentRangeDropdown(event: Event) {
+    event.stopPropagation();
+    this.isAttendanceDepartmentRangeOpen = !this.isAttendanceDepartmentRangeOpen;
+    this.isEmployeeTableRangeOpen = false;
+    this.isAttendanceChartRangeOpen = false;
+  }
+
+  @HostListener('document:click')
+  closeDropdowns() {
+    this.isEmployeeTableRangeOpen = false;
+    this.isAttendanceChartRangeOpen = false;
+    this.isAttendanceDepartmentRangeOpen = false;
   }
 
   getBranchDD() {

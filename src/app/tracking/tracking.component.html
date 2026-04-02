@@ -136,14 +136,14 @@
       </div>
     </div>
     <!-- The live tracking component fills the rest of the height -->
-    <app-live-tracking [user]="currentTrackingUser"></app-live-tracking>
+    <app-live-tracking [user]="currentTrackingUser" [themeMode]="themeMode"></app-live-tracking>
   </div>
 
 
   <!-- ═══════════════════════════════════════════════
        TRACKING MAP VIEW
   ════════════════════════════════════════════════ -->
-  <div *ngIf="!viewLiveTracking && !viewLivePage" class="tracking-root" [class.fullscreen-mode]="isFullScreen">
+  <div *ngIf="!viewLiveTracking && !viewLivePage" class="tracking-root" [class.fullscreen-mode]="isFullScreen" [class.tracking-light]="themeMode === 'light'">
 
     <!-- ── TOP BAR ── -->
     <div class="topbar">
@@ -172,6 +172,9 @@
       </div>
 
       <div class="topbar-right">
+        <button class="btn-icon btn-theme" (click)="toggleTheme()" [title]="themeMode === 'light' ? 'Switch to dark theme' : 'Switch to light theme'">
+          <i class="fas" [class.fa-moon]="themeMode === 'light'" [class.fa-sun]="themeMode === 'dark'"></i>
+        </button>
         <button class="btn-live" [class.live-active]="isLiveTrackingEnabled" (click)="toggleLiveTracking()" [disabled]="!currentTrackingUser">
           <span class="live-pulse" *ngIf="isLiveTrackingEnabled"></span>
           <i class="fas" [class.fa-satellite-dish]="!isLiveTrackingEnabled" [class.fa-stop-circle]="isLiveTrackingEnabled"></i>

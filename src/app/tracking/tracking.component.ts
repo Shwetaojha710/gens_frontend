@@ -102,6 +102,7 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
 
   // ── UI ────────────────────────────────────────────────────────────────────
   isPanelCollapsed: boolean = false;
+  themeMode: 'dark' | 'light' = 'light';
 
   // ── Employee list ─────────────────────────────────────────────────────────
   ActiveUsers:  any[]   = [];
@@ -138,8 +139,7 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
   ngAfterViewInit(): void {}
   ngOnDestroy():   void {
     this.stopLiveTracking();
-    if (this.trafficLayer && this.map) this.map.removeLayer(this.trafficLayer);
-    if (this.map) this.map.remove();
+    this.destroyMapInstance();
   }
 
   // ─── Employee List ──────────────────────────────────────────────────────────
@@ -197,13 +197,16 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
     this.currentTrackingUser = user;
     this.isLiveTrackingEnabled = false;
     this.stopLiveTracking();
-    this.cdr.markForCheck();
+    this.destroyMapInstance();
+    this.cdr.detectChanges();
 
-    if (!this.mapReady) {
-      setTimeout(() => { this.initMap(); this.mapReady = true; setTimeout(() => this.loadAndPlotData(user), 80); }, 60);
-    } else {
-      setTimeout(() => { this.map?.invalidateSize(); this.loadAndPlotData(user); }, 60);
-    }
+    setTimeout(() => {
+      this.initMap();
+      setTimeout(() => {
+        this.map?.invalidateSize();
+        this.loadAndPlotData(user);
+      }, 120);
+    }, 0);
   }
 
   goBack(): void {
@@ -211,6 +214,7 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
     this.viewLivePage = false;
     this.stopLiveTracking();
     this.clearMap();
+    this.destroyMapInstance();
     this.locationData = this.filteredLocations = this.pinnedLocations = this.normalLocations = [];
     this.staySummary = []; this.selectedLocation = null;
     this.cdr.markForCheck();
@@ -229,13 +233,18 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
     this.viewLivePage = false;
     this.viewLiveTracking = true;
     this.currentTrackingUser = null;
+    this.destroyMapInstance();
     this.cdr.markForCheck();
   }
 
   // ─── Map Init (ONCE) ────────────────────────────────────────────────────────
 
   initMap(): void {
-    if (!document.getElementById('map') || this.mapReady) return;
+    const mapElement = document.getElementById('map');
+    if (!mapElement) return;
+
+    this.destroyMapInstance();
+    delete (mapElement as any)._leaflet_id;
 
     this.map = L.map('map', {
       minZoom: 2, maxZoom: 19,
@@ -254,7 +263,33 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
       this.map.on('click', () => this.ngZone.run(() => { this.selectedLocation = null; this.cdr.markForCheck(); }));
     });
 
+    this.mapReady = true;
     setTimeout(() => this.map?.invalidateSize(), 100);
+  }
+
+  private destroyMapInstance(): void {
+    if (this.trafficLayer && this.map) {
+      this.map.removeLayer(this.trafficLayer);
+    }
+
+    if (this.map) {
+      this.map.off();
+      this.map.remove();
+    }
+
+    this.trafficLayer = null;
+    this.currentTileLayer = undefined as any;
+    this.fullScreenControl = null;
+    this.trafficControl = null;
+    this.zoomControl = null;
+    this.mapReady = false;
+    this.map = undefined as any;
+
+    const mapElement = document.getElementById('map');
+    if (mapElement) {
+      delete (mapElement as any)._leaflet_id;
+      mapElement.innerHTML = '';
+    }
   }
 
   // ─── Tile Layer ─────────────────────────────────────────────────────────────
@@ -273,6 +308,14 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   changeMapType(type: string): void { this.mapType = type; this.addTileLayer(type); }
+
+  toggleTheme(): void {
+    this.themeMode = this.themeMode === 'dark' ? 'light' : 'dark';
+    if (this.mapReady && this.mapType === 'dark' && this.themeMode === 'light') {
+      this.changeMapType('osm');
+    }
+    this.cdr.markForCheck();
+  }
 
   // ─── Map Controls ───────────────────────────────────────────────────────────
 

@@ -1,10 +1,10 @@
+<div class="app-layout-shell">
+  <app-navbar class="app-layout-sidebar"></app-navbar>
 
-<div class="layout-wrapper layout-navbar-full layout-horizontal layout-without-menu">
-<div class="layout-container" style="background-image: linear-gradient(to top, #fff1eb 0%, #d1e8f3 100%)">
-  <app-header></app-header>
-<!-- <app-newnavbar></app-newnavbar> -->
-  <app-navbar></app-navbar>
-    <router-outlet></router-outlet>
-</div>
-
+  <div class="app-layout-main">
+    <app-header></app-header>
+    <main class="app-layout-content">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
 </div>

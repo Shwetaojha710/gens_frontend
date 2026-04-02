@@ -129,9 +129,31 @@
             <div>
               <h6 class="mb-1 text-nowrap" style="color: #3C4056;">Attendance Chart</h6>
             </div>
-            <div class="chart-period-label">
-              <span>{{ attendanceChart?.subtitle || 'This Week' }}</span>
-              <i class="ri ri-arrow-up-s-line"></i>
+            <div class="dropdown table-range-dropdown">
+              <button
+                class="btn chart-period-label"
+                type="button"
+                (click)="toggleAttendanceChartRangeDropdown($event)"
+                [attr.aria-expanded]="isAttendanceChartRangeOpen"
+              >
+                <span>{{ selectedAttendanceChartRange }}</span>
+                <i class="ri ri-arrow-up-s-line"></i>
+              </button>
+              <ul
+                class="dropdown-menu dropdown-menu-end table-range-menu"
+                [class.show]="isAttendanceChartRangeOpen"
+              >
+                <li>
+                  <button class="dropdown-item" type="button" (click)="setAttendanceChartRange('This Week')">
+                    This Week
+                  </button>
+                </li>
+                <li>
+                  <button class="dropdown-item" type="button" (click)="setAttendanceChartRange('This Month')">
+                    This Month
+                  </button>
+                </li>
+              </ul>
             </div>
           </div>
 
@@ -206,9 +228,31 @@
       <div class="card dashboard-glass-card h-100">
         <div class="card-header d-flex justify-content-between align-items-center">
           <h6 class="mb-0 text-nowrap" style="color: #3C4056;">Attendance by depart.</h6>
-          <div class="chart-period-label">
-            <span>This Week</span>
-            <i class="ri ri-arrow-up-s-line"></i>
+          <div class="dropdown table-range-dropdown">
+            <button
+              class="btn chart-period-label"
+              type="button"
+              (click)="toggleAttendanceDepartmentRangeDropdown($event)"
+              [attr.aria-expanded]="isAttendanceDepartmentRangeOpen"
+            >
+              <span>{{ selectedAttendanceDepartmentRange }}</span>
+              <i class="ri ri-arrow-up-s-line"></i>
+            </button>
+            <ul
+              class="dropdown-menu dropdown-menu-end table-range-menu"
+              [class.show]="isAttendanceDepartmentRangeOpen"
+            >
+              <li>
+                <button class="dropdown-item" type="button" (click)="setAttendanceDepartmentRange('This Week')">
+                  This Week
+                </button>
+              </li>
+              <li>
+                <button class="dropdown-item" type="button" (click)="setAttendanceDepartmentRange('This Month')">
+                  This Month
+                </button>
+              </li>
+            </ul>
           </div>
         </div>
         <div class="card-body">
@@ -222,12 +266,18 @@
             <div class="attendance-department-wrap with-grid">
               <div class="attendance-department-item" *ngFor="let item of attendanceByDepartment">
                 <span class="attendance-department-percent">{{ item.percentage }}%</span>
+                <div class="attendance-department-bar-wrapper">
+                <div class="attendance-department-tooltip">
+                  <strong>{{ item.name }}</strong>
+                  <span>{{ item.percentage }}% Attendance</span>
+                </div>
                 <div class="attendance-department-bar-bg">
                   <div
                     class="attendance-department-bar"
                     [style.height.%]="item.percentage"
                     [style.background]="item.color"
                   ></div>
+                </div>
                 </div>
                 <span class="attendance-department-name">{{ item.name }}</span>
               </div>
@@ -271,6 +321,9 @@
             <div class="col-12" *ngIf="!celebrationsList.length">
               <div class="text-center text-muted py-4">No celebrations available.</div>
             </div>
+            <!-- <div class="col-12 d-flex justify-content-end mt-2">
+              <button type="button" class="btn btn-sm approve view-all-btn" (click)="openCelebrationPage()">View All</button>
+            </div> -->
           </div>
         </div>
       </div>
@@ -278,6 +331,7 @@
       <div class="card p-2 dashboard-glass-card">
         <div class="card-header d-flex align-items-center justify-content-between p-2 mb-0">
           <h5 class="card-title m-0 me-2">Upcoming Events</h5>
+          <button type="button" class="btn btn-sm approve view-all-btn" (click)="openHolidayPage()">View All</button>
         </div>
         <div class="d-flex justify-content-between p-4 border-bottom" style="background: #F5F5F7;">
           <p class="mb-0" style="font-size: 14px;color:#3C4056;">Event Name</p>
@@ -307,23 +361,76 @@
 
     <div class="col-xl-8 col-md-6">
       <div class="card overflow-hidden dashboard-glass-card">
-        <div class="card-header d-flex align-items-center justify-content-between">
-          <h5 class="card-title me-2">Employee Table</h5>
-          <ul class="nav nav-pills bg-white p-1" style="border-radius: 5px;" role="tablist">
-            <li class="nav-item" role="presentation">
-              <button type="button" class="nav-link active waves-effect waves-light text-secondary app" role="tab"
-                data-bs-toggle="tab" data-bs-target="#navs-pills-top-emp-info" aria-controls="navs-pills-top-emp-info"
-                aria-selected="true">
-                Employee Info
-              </button>
-            </li>
-            <li class="nav-item" role="presentation">
-              <button type="button" class="nav-link waves-effect waves-light approve" role="tab"
-                data-bs-toggle="tab" data-bs-target="#navs-pills-top-leave">
-                Employee Leave Info
-              </button>
-            </li>
-          </ul>
+        <div class="card-header employee-table-header">
+          <div class="employee-table-header-top">
+            <h5 class="card-title mb-0 me-2">Employee Table</h5>
+
+            <div class="employee-table-header-actions">
+              <ul class="nav nav-pills bg-white p-1 mb-0" style="border-radius: 5px;" role="tablist">
+                <li class="nav-item" role="presentation">
+                  <button type="button" class="nav-link active waves-effect waves-light text-secondary app" role="tab"
+                    (click)="setEmployeeSectionTab('employee')"
+                    data-bs-toggle="tab" data-bs-target="#navs-pills-top-emp-info" aria-controls="navs-pills-top-emp-info"
+                    aria-selected="true">
+                    Employee Info
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button type="button" class="nav-link waves-effect waves-light approve" role="tab"
+                    (click)="setEmployeeSectionTab('leave')"
+                    data-bs-toggle="tab" data-bs-target="#navs-pills-top-leave">
+                    Employee Leave Info
+                  </button>
+                </li>
+              </ul>
+
+              <div class="dropdown table-range-dropdown" *ngIf="activeEmployeeSectionTab === 'leave'">
+                <button
+                  class="btn table-range-btn dropdown-toggle"
+                  type="button"
+                  (click)="toggleEmployeeTableRangeDropdown($event)"
+                  [attr.aria-expanded]="isEmployeeTableRangeOpen"
+                >
+                  {{ selectedEmployeeTableRange }}
+                </button>
+                <ul
+                  class="dropdown-menu dropdown-menu-end table-range-menu"
+                  [class.show]="isEmployeeTableRangeOpen"
+                >
+                  <li>
+                    <button class="dropdown-item" type="button" (click)="setEmployeeTableRange('This Week')">
+                      This Week
+                    </button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item" type="button" (click)="setEmployeeTableRange('This Month')">
+                      This Month
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="employee-table-header-bottom">
+            <button
+              *ngIf="activeEmployeeSectionTab === 'employee'"
+              type="button"
+              class="btn btn-sm approve view-all-btn"
+              (click)="openEmployeeListPage()"
+            >
+              View All Employee
+            </button>
+
+            <button
+              *ngIf="activeEmployeeSectionTab === 'leave'"
+              type="button"
+              class="btn btn-sm approve view-all-btn"
+              (click)="openLeaveListPage()"
+            >
+              View All Leave
+            </button>
+          </div>
         </div>
 
         <div class="tab-content p-0">
