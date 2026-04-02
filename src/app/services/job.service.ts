@@ -2,6 +2,11 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {
+  CandidateApplicationRecord,
+  CandidatePipelinePayload,
+  CandidateScorePayload
+} from '../recruitment/recruitment.models';
 
 @Injectable({
   providedIn: 'root'
@@ -43,15 +48,37 @@ export class JobService {
   }
 
   getPublicJobPosting(payload: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}candidate/public-job-posting`, payload);
+    return this.http.post<any>(`${this.baseUrl}public-job-posting`, payload);
   }
 
   checkDuplicateCandidateApplication(payload: any): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}candidate/check-duplicate-application`, payload);
+    return this.http.post<any>(`${this.baseUrl}check-duplicate-application`, payload);
   }
 
   submitCandidateApplication(payload: FormData): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}candidate/submit-application`, payload);
+    return this.http.post<any>(`${this.baseUrl}submit-application`, payload);
+  }
+
+  getCandidatePipeline(payload: CandidatePipelinePayload = {}): Observable<{ status: boolean; data: CandidateApplicationRecord[] }> {
+    return this.http.post<{ status: boolean; data: CandidateApplicationRecord[] }>(
+      `${this.baseUrl}admin-pipeline`,
+      payload
+    );
+  }
+
+  getCandidateApplicationById(applicationId: string): Observable<{ status: boolean; data: CandidateApplicationRecord }> {
+    return this.http.post<{ status: boolean; data: CandidateApplicationRecord }>(
+      `${this.baseUrl}application-detail`,
+      { application_id: applicationId }
+    );
+  }
+
+  saveCandidateAtsScore(payload: CandidateScorePayload): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}save-ats-score`, payload);
+  }
+
+  updateCandidateStage(payload: { application_id: string; stage: string; status?: string }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}update-stage`, payload);
   }
 
   generateLink(jobId: string, baseUrl: string, expiresDays = 21) {

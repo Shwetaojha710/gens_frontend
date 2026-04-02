@@ -6,7 +6,8 @@ import { NewnavbarComponent } from '../newnavbar/newnavbar.component';
 
 @Component({
   selector: 'app-layout',
-  imports: [NavbarComponent,NewnavbarComponent,HeaderComponent,RouterModule],
+  standalone: true,
+  imports: [NavbarComponent, NewnavbarComponent, HeaderComponent, RouterModule],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css'
 })

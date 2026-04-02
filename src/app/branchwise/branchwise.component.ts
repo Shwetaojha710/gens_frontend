@@ -94,6 +94,7 @@ createFlag = false;
   goToDashboard(branch: any) {
     // store branch id (important for future APIs)
     localStorage.setItem('branchId', branch.id);
+    console.log("reacheedd");
 
     // redirect to dashboard
     // this.router.navigate(['/layout/dashboard']);
