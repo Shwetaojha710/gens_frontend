@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef } from '@angular/core';
+import { Component, ElementRef, HostBinding } from '@angular/core';
 import { Router, RouterModule, NavigationEnd } from '@angular/router';
 import { MenuItem } from './navigation';
 @Component({
@@ -11,6 +11,19 @@ import { MenuItem } from './navigation';
 })
 export class NavbarComponent {
   openMenu: string | null = null;
+  isCollapsed = false;
+  @HostBinding('style.width') get hostWidth(): string {
+    return this.isCollapsed ? '84px' : '248px';
+  }
+
+  @HostBinding('style.minWidth') get hostMinWidth(): string {
+    return this.isCollapsed ? '84px' : '248px';
+  }
+
+  @HostBinding('style.flex')
+  get hostFlex(): string {
+    return this.isCollapsed ? '0 0 84px' : '0 0 248px';
+  }
 
   constructor(private router: Router, private elRef: ElementRef) { }
 
@@ -18,6 +31,10 @@ export class NavbarComponent {
     localStorage.clear();
     this.router.navigate(['/login']);
   }
+  get companyLogo(): string {
+    return 'assets/img/logo/logo-quaere.png';
+  }
+
   async ngAfterViewInit() {
     const items = document.querySelectorAll('.menu-item');
     items.forEach((item: Element) => {
@@ -132,6 +149,20 @@ export class NavbarComponent {
     //     link: '/layout/tracking'
     // }
   ];
+  toggleItem(menu: MenuItem): void {
+    if (this.isCollapsed) {
+      return;
+    }
+
+    this.menuItems.forEach((item) => {
+      if (item !== menu && item.children?.length) {
+        item.open = false;
+      }
+    });
+
+    menu.open = !menu.open;
+  }
+
   toggleMenu(menu: any): void {
     // this.menuItems.forEach(m => {
     //   if (m !== menu) m.active = false;
@@ -172,6 +203,7 @@ export class NavbarComponent {
         if (item.children?.length) {
           const childActive = markActive(item.children);
           item.active = item.active || childActive;
+          item.open = childActive;
         }
         anyActive ||= item.active;
       });

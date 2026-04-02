@@ -11,16 +11,16 @@ baseUrl=environment.apiUrl
     constructor(private http: HttpClient) { }
 
 
-    getDashboardData(): Observable<any> {
-    return this.http.post(`${this.baseUrl}dashboard`, {});
+    getDashboardData(range: string = 'This Week', section: 'employee' | 'leave' = 'employee'): Observable<any> {
+    return this.http.post(`${this.baseUrl}dashboard`, { range, section });
   }
 
-  getAttendanceChart(): Observable<any> {
-    return this.http.post(`${this.baseUrl}dashboard-attendance-chart`, {});
+  getAttendanceChart(range: string = 'This Week'): Observable<any> {
+    return this.http.post(`${this.baseUrl}dashboard-attendance-chart`, { range });
   }
 
-  getAttendanceByDepartment(): Observable<any> {
-    return this.http.post(`${this.baseUrl}dashboard-attendance-by-department`, {});
+  getAttendanceByDepartment(range: string = 'This Week'): Observable<any> {
+    return this.http.post(`${this.baseUrl}dashboard-attendance-by-department`, { range });
   }
   //    getDashboardData(): Observable<any> {
   //   return this.http.post(`http://192.168.23.17:3002/api/dashboard`, {});
