@@ -2,6 +2,11 @@ import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import {
+  InterviewFeedbackPayload,
+  InterviewRoundPlan,
+  InterviewSchedulePayload
+} from '../recruitment/recruitment.models';
 @Injectable({
   providedIn: 'root'
 })
@@ -45,5 +50,20 @@ export class InterviewService {
   }
   listRoundTypesDD(): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}listRoundTypesDD`, {});
+  }
+
+  getInterviewSchedule(applicationId: string): Observable<{ status: boolean; data: InterviewRoundPlan[] }> {
+    return this.http.post<{ status: boolean; data: InterviewRoundPlan[] }>(
+      `${this.baseUrl}interview-schedule-detail`,
+      { application_id: applicationId }
+    );
+  }
+
+  saveInterviewSchedule(payload: InterviewSchedulePayload): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}save-interview-schedule`, payload);
+  }
+
+  saveInterviewFeedback(payload: InterviewFeedbackPayload): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}save-interview-feedback`, payload);
   }
 }

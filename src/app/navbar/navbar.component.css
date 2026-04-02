@@ -158,7 +158,7 @@
 .menu-item.active > .menu-link .menu-icon-wrap,
 .menu-link.active-link .menu-icon-wrap,
 .menu-item.open > .menu-link.menu-toggle .menu-icon-wrap {
-  background: rgba(255, 255, 255, 0.16);
+  /* background: rgba(255, 255, 255, 0.16); */
   color: #fff;
 }
 
