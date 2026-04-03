@@ -9,7 +9,6 @@ import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Notyf } from 'notyf';
-import 'notyf/notyf.min.css';
 import { RouterModule } from '@angular/router';
 @Component({
   selector: 'app-login',

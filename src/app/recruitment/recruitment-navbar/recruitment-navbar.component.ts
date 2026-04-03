@@ -77,6 +77,10 @@ export class RecruitmentNavbarComponent {
     }
   ];
 
+    goToRecruitmentDashboard() {
+    this.router.navigate(['landing-home']);
+  }
+
   toggleItem(menu: MenuItem): void {
     if (this.isCollapsed) {
       return;

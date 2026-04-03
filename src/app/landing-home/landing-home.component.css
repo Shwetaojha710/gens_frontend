@@ -10,7 +10,7 @@
 /* Main Card */
 .city-card {
     border-radius: 20px;
-    background: url("/assets/img/bg-login/lko-bg.png") center/cover no-repeat;
+    background: url("/assets/img/bg-login/lko-bg.png") center/cover no-repeat!important;
     position: relative;
     overflow: hidden;
     height: 380px;
@@ -85,3 +85,6 @@
 
 
 }
+
+
+
