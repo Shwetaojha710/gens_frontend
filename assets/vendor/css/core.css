@@ -5504,14 +5504,8 @@ fieldset:disabled .btn {
   background-clip: border-box;
   border: var(--bs-card-border-width) solid var(--bs-card-border-color);
   border-radius: var(--bs-card-border-radius);
-  background: linear-gradient(
-      110.78deg,
-      rgba(255, 255, 255, 0.41) 7.01%,
-      rgba(255, 255, 255, 0.01) 106.22%),
-    linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 0.1),
-      rgba(255, 255, 255, 0.1)) !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 100%) !important;
+  border:2px solid #fff;
 }
 
 .card>hr {

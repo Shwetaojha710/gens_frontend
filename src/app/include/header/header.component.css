@@ -4,6 +4,7 @@
 
 .top-header {
   padding: 12px 18px 8px;
+  border-bottom: 1px solid rgba(209, 221, 241, 0.9);
 }
 
 .top-header-inner {
