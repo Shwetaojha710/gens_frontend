@@ -81,6 +81,10 @@ export class JobService {
     return this.http.post<any>(`${this.baseUrl}update-stage`, payload);
   }
 
+  updateCandidateApplication(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}update-application`, payload);
+  }
+
   generateLink(jobId: string, baseUrl: string, expiresDays = 21) {
     return this.http.post<{ url: string; token: string; expires: string }>(
       `${baseUrl}/jobs/${jobId}/generate-link`,

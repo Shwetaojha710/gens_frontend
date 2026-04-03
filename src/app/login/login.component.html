@@ -34,7 +34,8 @@
             <!-- Tenant ID -->
             <div class="form-floating form-floating-outline mb-4">
               <input type="text" class="form-control" id="company_code" formControlName="tenantId"
-                [ngClass]="{ 'is-invalid': isInvalid('tenantId') }" placeholder="Enter your company code" autofocus />
+                [ngClass]="{ 'is-invalid': isInvalid(form, 'tenantId') }" placeholder="Enter your company code" autofocus />
+
               <label for="company_code">Company Code</label>
               <div class="invalid-feedback">Company code is required.</div>
             </div>
@@ -42,7 +43,8 @@
             <!-- Email -->
             <div class="form-floating form-floating-outline mb-4">
               <input type="email" class="form-control" id="email" formControlName="email"
-                [ngClass]="{ 'is-invalid': isInvalid('email') }" placeholder="Enter your email" />
+                [ngClass]="{ 'is-invalid': isInvalid(form, 'email') }" placeholder="Enter your email" />
+
               <label for="email">Email</label>
               <div class="invalid-feedback">Enter a valid email address.</div>
             </div>
@@ -50,7 +52,7 @@
             <!-- Password -->
             <div class="form-floating form-floating-outline mb-4 position-relative">
               <input [type]="passwordVisible ? 'text' : 'password'" class="form-control" id="password"
-                formControlName="password" [ngClass]="{ 'is-invalid': isInvalid('password') }"
+                formControlName="password" [ngClass]="{ 'is-invalid': isInvalid(form, 'password') }"
                 placeholder="Enter your password" />
               <label for="password">Password</label>
 
@@ -61,6 +63,7 @@
 
               <div class="invalid-feedback">Password is required.</div>
             </div>
+
 
             <!-- Remember + Forgot -->
             <div class="mb-4 d-flex justify-content-between align-items-center mt-4">
@@ -82,9 +85,30 @@
 
 
             <!-- Submit Button -->
-            <button type="submit" class="btn btn-primary d-grid w-100" [disabled]="form.invalid">
+<button type="submit" class="btn btn-primary d-grid w-100" [disabled]="form.invalid" (click)="login()">
               Sign in
             </button>
+
+            <!-- Mobile OTP Section -->
+            <div *ngIf="isMobile" class="mt-4">
+              <div class="divider">
+                <span class="divider-text">or login with mobile</span>
+              </div>
+              <button class="btn btn-outline-primary d-grid w-100 mb-2" (click)="sendOtp()" [disabled]="phoneForm.invalid">
+                Send OTP
+              </button>
+              <div *ngIf="otpStep">
+                <input type="text" class="form-control text-center fs-3" [formControl]="otpControl" placeholder="Enter OTP" maxlength="6">
+
+                <button class="btn btn-primary d-grid w-100 mt-2" (click)="verifyOtp()" [disabled]="otpForm.invalid">
+                  Verify & Login
+                </button>
+                <small class="text-muted d-block text-center mt-1">
+                  Resend in {{ resendTimer }}s
+                </small>
+              </div>
+            </div>
+
           </form>
 
           <p class="text-center">
@@ -94,10 +118,32 @@
             </a>
           </p>
         </div>
+
+        <div class="divider my-5">
+            <div class="divider-text">or</div>
+          </div>
+          <div class="d-flex justify-content-center gap-2">
+            <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-facebook waves-effect" (click)="loginWithMobile()">
+              <!-- Login with Mobile -->
+              <i class="icon-base ri  ri-facebook-fill icon-18px"></i>
+            </a>
+
+            <!-- <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-twitter waves-effect">
+              <i class="icon-base ri  ri-twitter-fill icon-18px"></i>
+            </a>
+
+            <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-github waves-effect">
+              <i class="icon-base ri  ri-github-fill icon-18px"></i>
+            </a>
+
+            <a href="javascript:;" class="btn btn-icon rounded-circle btn-text-google-plus waves-effect">
+              <i class="icon-base ri  ri-google-fill icon-18px"></i>
+            </a> -->
+          </div>
       </div>
      </div>
 
-     
+
 
     </div>
     <!-- /Login -->
