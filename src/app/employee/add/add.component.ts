@@ -25,13 +25,14 @@ import { NdaComponent } from '../profile/nda/nda.component';
 import { OfferLetterComponent } from '../profile/offer-letter/offer-letter.component';
 import { ServiceAgreementComponent } from '../profile/service-agreement/service-agreement.component';
 import { AppointmentLetterComponent } from '../profile/appointment-letter/appointment-letter.component';
+import { RelevingLetterComponent } from '../profile/releving-letter/releving-letter.component';
 // import { DocumentRendererComponent } from '../profile/document-renderer/document-renderer.component';
 
 @Component({
   selector: 'app-add',
   standalone: true,
   imports: [CommonModule, FormsModule, AssignLeaveComponent, NgSelectModule, RouterModule, NdaComponent,QualificationComponent, ExperienceComponent,
-     BankDetailsComponent, BasicComponent, AllowancesComponent, TotalSalaryComponentComponent, DeductionsComponent, AssignLeaveComponent,OfferLetterComponent,ServiceAgreementComponent,AppointmentLetterComponent],
+     BankDetailsComponent,RelevingLetterComponent, BasicComponent, AllowancesComponent, TotalSalaryComponentComponent, DeductionsComponent, AssignLeaveComponent,OfferLetterComponent,ServiceAgreementComponent,AppointmentLetterComponent],
   templateUrl: './add.component.html',
   styleUrls: ['./add.component.css']
 })

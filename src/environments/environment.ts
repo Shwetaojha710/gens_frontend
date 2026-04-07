@@ -3,6 +3,7 @@ export const environment = {
   // apiUrl:  'http://192.168.23.11:3001/api/' //Arrhan
   //  apiUrl:  'https://gensdemo.demoquaeretech.in/api/api/', //self
    apiUrl:  'http://192.168.23.17:3002/api/', //self
+    python_apiUrl: 'https://gens.demoquaeretech.in/resume_tracker/api/v1/ats',
   //  apiUrl:  'http://192.168.23.13:3001/api/' //ABHISHEK sir
   //  apiUrl:  'http://192.168.23.13:3001/api/' //ABHISHEK sir
   //  apiUrl:   'https://gens.demoquaeretech.in/api/api/', //self

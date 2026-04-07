@@ -309,6 +309,135 @@ export class ApplicationListComponent implements OnInit {
     });
   }
 
+  // ATS Resume Evaluate (file upload)
+  atsApp: CandidateApplicationRecord | null = null;
+  atsFile: File | null = null;
+  atsFileName = '';
+  atsResult: any = null;
+  isEvaluating = false;
+
+  // ATS Evaluate by Resume URL
+  atsUrlApp: CandidateApplicationRecord | null = null;
+  atsUrlResult: any = null;
+  isUrlEvaluating = false;
+
+  openAtsModal(app: CandidateApplicationRecord): void {
+    this.atsApp = app;
+    this.atsFile = null;
+    this.atsFileName = '';
+    this.atsResult = null;
+    this.isEvaluating = false;
+    this.cdr.markForCheck();
+    const el = document.getElementById('atsEvaluateModal');
+    if (el) (window as any).bootstrap.Modal.getOrCreateInstance(el).show();
+  }
+
+  closeAtsModal(): void {
+    const el = document.getElementById('atsEvaluateModal');
+    if (el) (window as any).bootstrap.Modal.getInstance(el)?.hide();
+    this.atsApp = null;
+    this.atsFile = null;
+    this.atsFileName = '';
+    this.atsResult = null;
+    this.cdr.markForCheck();
+  }
+
+  onAtsFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] || null;
+    this.atsFile = file;
+    this.atsFileName = file?.name || '';
+    this.atsResult = null;
+    this.cdr.markForCheck();
+  }
+
+  runAtsEvaluate(): void {
+    if (!this.atsFile) {
+      this.notyf.error('Please select a resume file');
+      return;
+    }
+    this.isEvaluating = true;
+    this.atsResult = null;
+    this.cdr.markForCheck();
+
+    const jobDescription = this.atsApp ? {
+      job_title: this.atsApp.job_title,
+      department: (this.atsApp as any).department,
+      skills: this.atsApp.skills,
+      experience: this.atsApp.experience
+    } : undefined;
+
+    this.jobService.evaluateResumeFromFile(this.atsFile, {
+      candidate_id: this.atsApp?.candidate_id || this.atsApp?.id,
+      job_id: this.atsApp?.job_id,
+      job_posting_id: this.atsApp?.job_posting_id,
+      job_description: jobDescription
+    }).subscribe({
+      next: (res: any) => {
+        this.atsResult = res;
+        this.isEvaluating = false;
+        this.cdr.markForCheck();
+      },
+      error: (err: any) => {
+        this.notyf.error(err?.error?.message || 'ATS evaluation failed');
+        this.isEvaluating = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  openAtsUrlModal(app: CandidateApplicationRecord): void {
+    this.atsUrlApp = app;
+    this.atsUrlResult = null;
+    this.isUrlEvaluating = false;
+    this.cdr.markForCheck();
+    const el = document.getElementById('atsUrlEvaluateModal');
+    if (el) (window as any).bootstrap.Modal.getOrCreateInstance(el).show();
+  }
+
+  closeAtsUrlModal(): void {
+    const el = document.getElementById('atsUrlEvaluateModal');
+    if (el) (window as any).bootstrap.Modal.getInstance(el)?.hide();
+    this.atsUrlApp = null;
+    this.atsUrlResult = null;
+    this.cdr.markForCheck();
+  }
+
+  runAtsEvaluateByUrl(): void {
+    if (!this.atsUrlApp?.resume_url) {
+      this.notyf.error('No resume URL available for this candidate');
+      return;
+    }
+
+    this.isUrlEvaluating = true;
+    this.atsUrlResult = null;
+    this.cdr.markForCheck();
+
+    const jobDescription = {
+      job_title: this.atsUrlApp.job_title,
+      department: (this.atsUrlApp as any).department,
+      skills: this.atsUrlApp.skills,
+      experience: this.atsUrlApp.experience
+    };
+
+    this.jobService.evaluateResumeFromUrl({
+      job_post_id: this.atsUrlApp.job_posting_id!,
+      job_description: jobDescription,
+      resumes: [{ candidate_id: this.atsUrlApp.candidate_id || this.atsUrlApp.id, resume_url: this.atsUrlApp.resume_url! }]
+    }).subscribe({
+      next: (res: any) => {
+        this.atsUrlResult = res;
+        this.isUrlEvaluating = false;
+        this.cdr.markForCheck();
+      },
+      error: (err: any) => {
+        this.notyf.error(err?.error?.message || 'ATS URL evaluation failed');
+        this.isUrlEvaluating = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
   // Quick actions
   shortlist(app: CandidateApplicationRecord): void {
     this.updateStage(app, 'shortlisted');

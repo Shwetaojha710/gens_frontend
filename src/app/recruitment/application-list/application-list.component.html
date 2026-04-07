@@ -41,7 +41,8 @@
                 <th>Job</th>
                 <th>Applied</th>
                 <th>Experience</th>
-                <th>CTC</th>
+                <th>CTC (LPA) </th>
+                <th>Notice Period</th>
                 <th>Stage</th>
                 <th style="width: 180px">Actions</th>
               </tr>
@@ -116,6 +117,12 @@
                       target="_blank" title="Resume">
                       <i class="fas fa-file-pdf"></i>
                     </a>
+                    <button class="btn btn-sm btn-outline-warning" (click)="openAtsModal(app)" title="ATS Evaluate (Upload Resume)">
+                      <i class="fas fa-robot"></i>
+                    </button>
+                    <button class="btn btn-sm btn-outline-info" *ngIf="app.resume_url" (click)="openAtsUrlModal(app)" title="ATS Evaluate via Resume URL">
+                      <i class="fas fa-link"></i>
+                    </button>
                   </div>
                 </td>
               </tr>
@@ -512,5 +519,208 @@
         </div>
       </div>
     </div>
+    <!-- ATS Evaluate Modal -->
+    <div class="modal fade" id="atsEvaluateModal" tabindex="-1" aria-labelledby="atsEvaluateModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-warning bg-opacity-10">
+            <h5 class="modal-title" id="atsEvaluateModalLabel">
+              <i class="fas fa-robot text-warning me-2"></i>ATS Resume Evaluation
+            </h5>
+            <button type="button" class="btn-close" (click)="closeAtsModal()" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="text-muted mb-3" *ngIf="atsApp">
+              Evaluating resume for <strong>{{ atsApp.name }}</strong> — {{ atsApp.job_title }}
+            </p>
+
+            <!-- File Upload -->
+            <div class="mb-4">
+              <label class="form-label fw-semibold">Upload Resume <span class="text-danger">*</span></label>
+              <div class="border rounded p-3 text-center" style="cursor:pointer; border-style: dashed !important;">
+                <label for="atsResumeInput" style="cursor:pointer; width:100%;">
+                  <i class="fas fa-upload text-warning fa-2x mb-2 d-block"></i>
+                  <div class="fw-semibold">{{ atsFileName || 'Click to choose a resume file' }}</div>
+                  <small class="text-muted">PDF, DOC, DOCX — max 5MB</small>
+                  <input id="atsResumeInput" type="file" accept=".pdf,.doc,.docx" (change)="onAtsFileSelected($event)" hidden />
+                </label>
+              </div>
+            </div>
+
+            <!-- Result -->
+            <div *ngIf="isEvaluating" class="text-center py-4">
+              <div class="spinner-border text-warning" role="status"></div>
+              <p class="mt-2 text-muted">Evaluating resume via ATS...</p>
+            </div>
+
+            <div *ngIf="atsResult && !isEvaluating">
+              <!-- Score Summary -->
+              <div class="row g-3 mb-4 text-center">
+                <div class="col-4">
+                  <div class="card border-warning h-100">
+                    <div class="card-body py-3">
+                      <div class="fs-3 fw-bold text-warning">{{ atsResult?.data?.ats_score ?? atsResult?.ats_score ?? '—' }}</div>
+                      <small class="text-muted">ATS Score</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card border-success h-100">
+                    <div class="card-body py-3">
+                      <div class="fs-3 fw-bold text-success">{{ atsResult?.data?.match_percentage ?? atsResult?.match_percentage ?? '—' }}</div>
+                      <small class="text-muted">Match %</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card border-info h-100">
+                    <div class="card-body py-3">
+                      <div class="fs-3 fw-bold text-info">{{ atsResult?.data?.experience_years ?? atsResult?.experience_years ?? '—' }}</div>
+                      <small class="text-muted">Exp. Years</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Skills Matched -->
+              <div class="mb-3" *ngIf="(atsResult?.data?.matched_skills || atsResult?.matched_skills)?.length">
+                <label class="form-label fw-semibold text-success">Matched Skills</label>
+                <div class="d-flex flex-wrap gap-2">
+                  <span *ngFor="let s of (atsResult?.data?.matched_skills || atsResult?.matched_skills)"
+                    class="badge bg-success-subtle text-success px-2 py-1">{{ s }}</span>
+                </div>
+              </div>
+
+              <!-- Skills Missing -->
+              <div class="mb-3" *ngIf="(atsResult?.data?.missing_skills || atsResult?.missing_skills)?.length">
+                <label class="form-label fw-semibold text-danger">Missing Skills</label>
+                <div class="d-flex flex-wrap gap-2">
+                  <span *ngFor="let s of (atsResult?.data?.missing_skills || atsResult?.missing_skills)"
+                    class="badge bg-danger-subtle text-danger px-2 py-1">{{ s }}</span>
+                </div>
+              </div>
+
+              <!-- Summary / Notes -->
+              <div class="mb-2" *ngIf="atsResult?.data?.summary || atsResult?.summary">
+                <label class="form-label fw-semibold">Summary</label>
+                <p class="text-muted small p-3 bg-light rounded">{{ atsResult?.data?.summary || atsResult?.summary }}</p>
+              </div>
+
+              <!-- Raw JSON fallback -->
+              <div *ngIf="!atsResult?.data?.ats_score && !atsResult?.ats_score">
+                <label class="form-label fw-semibold">Raw Response</label>
+                <pre class="bg-light p-3 rounded small" style="max-height:200px; overflow-y:auto;">{{ atsResult | json }}</pre>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeAtsModal()">Close</button>
+            <button type="button" class="btn btn-warning text-white" (click)="runAtsEvaluate()"
+              [disabled]="!atsFile || isEvaluating">
+              <span *ngIf="isEvaluating" class="spinner-border spinner-border-sm me-1"></span>
+              {{ isEvaluating ? 'Evaluating...' : 'Evaluate Resume' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ATS Evaluate via Resume URL Modal -->
+    <div class="modal fade" id="atsUrlEvaluateModal" tabindex="-1" aria-labelledby="atsUrlEvaluateModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+          <div class="modal-header bg-info bg-opacity-10">
+            <h5 class="modal-title" id="atsUrlEvaluateModalLabel">
+              <i class="fas fa-link text-info me-2"></i>ATS Evaluate via Resume URL
+            </h5>
+            <button type="button" class="btn-close" (click)="closeAtsUrlModal()" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div *ngIf="atsUrlApp">
+              <p class="text-muted mb-1">Candidate: <strong>{{ atsUrlApp.name }}</strong> — {{ atsUrlApp.job_title }}</p>
+              <p class="text-muted mb-3">
+                Resume URL:
+                <a [href]="atsUrlApp.resume_url" target="_blank" class="text-info text-truncate d-inline-block" style="max-width:300px; vertical-align:bottom;">
+                  {{ atsUrlApp.resume_url }}
+                </a>
+              </p>
+            </div>
+
+            <div *ngIf="isUrlEvaluating" class="text-center py-4">
+              <div class="spinner-border text-info" role="status"></div>
+              <p class="mt-2 text-muted">Evaluating resume via URL...</p>
+            </div>
+
+            <div *ngIf="atsUrlResult && !isUrlEvaluating">
+              <!-- Score Summary -->
+              <div class="row g-3 mb-4 text-center">
+                <div class="col-4">
+                  <div class="card border-warning h-100">
+                    <div class="card-body py-3">
+                      <div class="fs-3 fw-bold text-warning">{{ atsUrlResult?.data?.ats_score ?? atsUrlResult?.ats_score ?? '—' }}</div>
+                      <small class="text-muted">ATS Score</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card border-success h-100">
+                    <div class="card-body py-3">
+                      <div class="fs-3 fw-bold text-success">{{ atsUrlResult?.data?.match_percentage ?? atsUrlResult?.match_percentage ?? '—' }}</div>
+                      <small class="text-muted">Match %</small>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-4">
+                  <div class="card border-info h-100">
+                    <div class="card-body py-3">
+                      <div class="fs-3 fw-bold text-info">{{ atsUrlResult?.data?.experience_years ?? atsUrlResult?.experience_years ?? '—' }}</div>
+                      <small class="text-muted">Exp. Years</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Skills Matched -->
+              <div class="mb-3" *ngIf="(atsUrlResult?.data?.matched_skills || atsUrlResult?.matched_skills)?.length">
+                <label class="form-label fw-semibold text-success">Matched Skills</label>
+                <div class="d-flex flex-wrap gap-2">
+                  <span *ngFor="let s of (atsUrlResult?.data?.matched_skills || atsUrlResult?.matched_skills)"
+                    class="badge bg-success-subtle text-success px-2 py-1">{{ s }}</span>
+                </div>
+              </div>
+
+              <!-- Skills Missing -->
+              <div class="mb-3" *ngIf="(atsUrlResult?.data?.missing_skills || atsUrlResult?.missing_skills)?.length">
+                <label class="form-label fw-semibold text-danger">Missing Skills</label>
+                <div class="d-flex flex-wrap gap-2">
+                  <span *ngFor="let s of (atsUrlResult?.data?.missing_skills || atsUrlResult?.missing_skills)"
+                    class="badge bg-danger-subtle text-danger px-2 py-1">{{ s }}</span>
+                </div>
+              </div>
+
+              <!-- Summary -->
+              <div class="mb-2" *ngIf="atsUrlResult?.data?.summary || atsUrlResult?.summary">
+                <label class="form-label fw-semibold">Summary</label>
+                <p class="text-muted small p-3 bg-light rounded">{{ atsUrlResult?.data?.summary || atsUrlResult?.summary }}</p>
+              </div>
+
+              <!-- Raw JSON fallback -->
+              <div *ngIf="!atsUrlResult?.data?.ats_score && !atsUrlResult?.ats_score">
+                <label class="form-label fw-semibold">Raw Response</label>
+                <pre class="bg-light p-3 rounded small" style="max-height:200px; overflow-y:auto;">{{ atsUrlResult | json }}</pre>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" (click)="closeAtsUrlModal()">Close</button>
+            <button type="button" class="btn btn-info text-white" (click)="runAtsEvaluateByUrl()" [disabled]="isUrlEvaluating">
+              <span *ngIf="isUrlEvaluating" class="spinner-border spinner-border-sm me-1"></span>
+              {{ isUrlEvaluating ? 'Evaluating...' : 'Evaluate via URL' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
