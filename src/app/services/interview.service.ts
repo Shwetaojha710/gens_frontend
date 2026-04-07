@@ -4,6 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import {
   InterviewFeedbackPayload,
+  InterviewPanelUser,
   InterviewRoundPlan,
   InterviewSchedulePayload
 } from '../recruitment/recruitment.models';
@@ -65,5 +66,33 @@ export class InterviewService {
 
   saveInterviewFeedback(payload: InterviewFeedbackPayload): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}save-interview-feedback`, payload);
+  }
+
+  createInterviewPanelUser(payload: InterviewPanelUser): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}createInterviewPanelUser`, payload);
+  }
+
+  updateInterviewPanelUser(payload: InterviewPanelUser): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}updateInterviewPanelUser`, payload);
+  }
+
+  listInterviewPanelUsers(): Observable<{ status: boolean; data: InterviewPanelUser[] }> {
+    return this.http.post<{ status: boolean; data: InterviewPanelUser[] }>(`${this.baseUrl}listInterviewPanelUsers`, {});
+  }
+
+  deleteInterviewPanelUser(payload: { id: string | number }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}deleteInterviewPanelUser`, payload);
+  }
+
+  assignInterviewer(payload: {
+    application_id: string;
+    panel_user_id: string | number;
+    round_id?: string | number | null;
+    scheduled_at?: string | null;
+    duration_minutes?: number | null;
+    mode?: string | null;
+    meeting_link?: string | null;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}assign-interviewer`, payload);
   }
 }

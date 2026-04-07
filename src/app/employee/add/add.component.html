@@ -113,6 +113,13 @@
                     <span class="align-middle">Bank Account</span>
                   </button>
                 </li>
+                   <li class="nav-item" role="presentation">
+                  <button class="nav-link tab-link waves-effect waves-light" data-bs-toggle="tab"
+                    data-bs-target="#relieving_letter" aria-selected="false" role="tab" tabindex="-1">
+                    <i class="icon-base ri ri-inbox-archive-line icon-sm me-2"></i>
+                    <span class="align-middle">Relieving Letter</span>
+                  </button>
+                </li>
                 <li class="nav-item" role="presentation">
                   <button class="nav-link tab-link waves-effect waves-light" data-bs-toggle="tab"
                     data-bs-target="#nda" aria-selected="false" role="tab" tabindex="-1">
@@ -432,6 +439,10 @@
           [type]="'appointment'"
           [data]="personalDetails">
         </app-document-renderer> -->
+         <div class="tab-pane fade" id="relieving_letter" role="tabpanel">
+
+                <app-releving-letter></app-releving-letter>
+              </div>
               <div class="tab-pane fade" id="nda" role="tabpanel">
 
                 <app-nda></app-nda>

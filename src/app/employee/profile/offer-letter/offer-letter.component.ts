@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Notyf } from 'notyf';
 import { DataService } from '../../../services/data.service';
@@ -6,126 +6,53 @@ import { PayrollService } from '../../../services/payroll.service';
 import { StatusService } from '../../../services/status.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+
 @Component({
   selector: 'app-offer-letter',
   imports: [DatePipe, CommonModule, FormsModule],
   templateUrl: './offer-letter.component.html',
   styleUrl: './offer-letter.component.css'
 })
-export class OfferLetterComponent {
+export class OfferLetterComponent implements OnInit {
   personalDetails: any = {}
   tenant: any = {}
   notyf: Notyf;
   minDate: any
   currency: any
-  newObj: any
   obj: any = {}
-  isDownload: any = false
+  isDownload: boolean = false
+  letterheadImage: string = '/assets/img/Letterhead-2.png'
+
   constructor(
-    public payrollService: PayrollService, private router: Router, public statusService: StatusService, public dataService: DataService
+    public payrollService: PayrollService,
+    private router: Router,
+    public statusService: StatusService,
+    public dataService: DataService
   ) {
-
     this.tenant = JSON.parse(localStorage.getItem('tenant') || '{}');
-
     this.notyf = new Notyf();
     const today = new Date();
-    this.minDate = today.toISOString().split('T')[0]; // today
-    this.notyf = new Notyf();
+    this.minDate = today.toISOString().split('T')[0];
     this.personalDetails = JSON.parse(localStorage.getItem('employeeId') || '{}');
     this.currency = JSON.parse(localStorage.getItem('currency') || '{}');
-
   }
 
-//   async downloadDoc() {
-//     this.isDownload = true;
+  ngOnInit() {
+    // Load default letterhead as base64 so it renders correctly in PDF & print
+    this.getBase64ImageFromUrl('/assets/img/Letterhead-2.png')
+      .then(base64 => { this.letterheadImage = base64; })
+      .catch(() => { /* fallback to path */ });
+  }
 
-//     const element = document.getElementById('offer-doc');
-//     if (!element) return;
-
-//     const cloned = element.cloneNode(true) as HTMLElement;
-
-//     // Replace inputs
-//     const inputs = cloned.querySelectorAll('input');
-//     inputs.forEach((input: any) => {
-//       const span = document.createElement('span');
-//       span.innerText = input.value || '';
-//       input.parentNode.replaceChild(span, input);
-//     });
-
-//     // ✅ Convert images to base64
-//     const logoBase64 = await this.getBase64ImageFromUrl('assets/img/logo/logo-quaere.png');
-//     const soc2 = await this.getBase64ImageFromUrl('assets/img/logo/Picture1.jpg');
-//     const updesco = await this.getBase64ImageFromUrl('assets/img/logo/Picture2.png');
-
-//     const html = `
-//   <html xmlns:o='urn:schemas-microsoft-com:office:office'
-//         xmlns:w='urn:schemas-microsoft-com:office:word'>
-//   <head>
-//     <meta charset='utf-8'>
-//     <style>
-//       body { font-family: 'Times New Roman'; line-height:1.6; }
-
-//       .footer {
-//         margin-top:40px;
-//         font-size:10px;
-//         border-top:1px solid #ccc;
-//         padding-top:10px;
-//         display:flex;
-//         justify-content:space-between;
-//         align-items:center;
-//       }
-
-
-//     </style>
-//   </head>
-
-//   <body>
-
-//     <!-- ✅ HEADER -->
-//     <div class="header">
-//       <div>
-// <img src="${logoBase64}" style="height:10px!important; width:10px!important;">
-//       </div>
-
-
-//     </div>
-
-//     ${cloned.innerHTML}
-
-//     <!-- ✅ FOOTER -->
-//     <div class="footer">
-//       <div>
-//         <b>Quaere Etechnologies Private Limited</b><br>
-//         7th Floor, Cyber Tower, Vibhuti Khand,<br>
-//         Gomti Nagar, Lucknow, U.P.-226010<br>
-//         Web: www.quaeretech.com <br>
-//         Email: info&#64;quaeretech.com <br>
-//         <b>GSTN- 09AAACQ1581F1ZI</b>
-//       </div>
-
-//       <div class="logos">
-//         <img src="${soc2}" style="height:40px;">
-//         <img src="${updesco}" style="height:40px;">
-//       </div>
-//     </div>
-
-//   </body>
-//   </html>
-//   `;
-
-//     const blob = new Blob(['\ufeff', html], { type: 'application/msword' });
-
-//     const url = URL.createObjectURL(blob);
-
-//     const a = document.createElement('a');
-//     a.href = url;
-//     a.download = `offer_letter_${this.personalDetails.firstName}.doc`;
-//     a.click();
-
-//     URL.revokeObjectURL(url);
-
-//     this.isDownload = false;
-//   }
+  onLetterheadUpload(event: Event) {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      this.letterheadImage = e.target?.result as string;
+    };
+    reader.readAsDataURL(input.files[0]);
+  }
 
   getBase64ImageFromUrl(url: string): Promise<string> {
     return fetch(url)
@@ -137,136 +64,129 @@ export class OfferLetterComponent {
         reader.readAsDataURL(blob);
       }));
   }
-
- printDoc() {
-  const content = document.getElementById('offer-doc')?.innerHTML;
-
-  const printWindow = window.open('', '', 'width=900,height=650');
-
-  printWindow?.document.write(`
-    <html>
-      <head>
-        <title>Offer Letter</title>
-        <style>
-          body {
-            font-family: "Times New Roman", serif;
-            padding: 20px;
-          }
-
-          .page {
-            width: 100%;
-          }
-        </style>
-      </head>
-      <body>
-        ${content}
-      </body>
-    </html>
-  `);
-
-  printWindow?.document.close();
-  printWindow?.focus();
-
-  setTimeout(() => {
-    printWindow?.print();
-    printWindow?.close();
-  }, 500);
-}
-
-downloadDoc() {
-  this.isDownload=true
-  const element = document.getElementById('offer-doc');
-
-  if (!element) return;
-
-    // const element = document.getElementById('offer-doc');
-    // if (!element) return;
-
-    const cloned = element.cloneNode(true) as HTMLElement;
-
-    // Replace inputs
-    const inputs = cloned.querySelectorAll('input');
-    inputs.forEach((input: any) => {
-      const span = document.createElement('span');
-      span.innerText = input.value || '';
-      input.parentNode.replaceChild(span, input);
-    });
-  const images = element.getElementsByTagName('img');
-  const promises: Promise<void>[] = [];
-
-  // Convert all images to base64
-  for (let img of images) {
-    const promise = this.convertImageToBase64(img);
-    promises.push(promise);
+  getBase64FromSrc(src: string): Promise<string> {
+    return fetch(src)
+      .then(r => r.blob())
+      .then(blob => new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(reader.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      }));
   }
+printDoc() {
+  this.isDownload = true;
 
-  Promise.all(promises).then(() => {
-    const content = element.innerHTML;
+  this.getBase64FromSrc('/assets/img/Letterhead-2.png')
+    .then((bgImage) => {
 
-    const html = `
-      <html xmlns:o='urn:schemas-microsoft-com:office:office'
-            xmlns:w='urn:schemas-microsoft-com:office:word'
-            xmlns='http://www.w3.org/TR/REC-html40'>
-        <head>
-          <meta charset='utf-8'>
-          <title>Offer Letter</title>
-          <style>
+      const element = document.getElementById('offer-doc');
+      if (!element) {
+        this.isDownload = false;
+        return;
+      }
+
+      const content = element.outerHTML;
+
+      const printWindow = window.open('', '_blank', 'width=900,height=700');
+      if (!printWindow) {
+        this.isDownload = false;
+        return;
+      }
+
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>Offer Letter</title>
+            <style>
+
+            * {
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
+              box-sizing: border-box;
+            }
+
             body {
-              font-family: "Calibri (Body)", serif;
-              margin: 2px!important;
-              font-size: 11px;
-
+              margin: 0;
+              font-family: "Times New Roman", serif;
             }
-            img {
-              max-width: 150px;
-            }
-          </style>
-        </head>
-        <body>
-          ${content}
-        </body>
-      </html>
-    `;
 
-    const blob = new Blob(['\ufeff', html], {
-      type: 'application/msword'
+            /* 🔥 APPLY BACKGROUND DIRECTLY TO YOUR DIV */
+            #offer-doc {
+              width: 21cm;
+              min-height: 29.7cm;
+              padding: 100px 60px;
+              position: relative;
+
+              background-image: url('${bgImage}');
+              background-repeat: no-repeat;
+              background-size: 100% 100%;
+            }
+
+            input {
+              border: none;
+              outline: none;
+              background: transparent;
+              font-family: inherit;
+              font-size: inherit;
+            }
+
+            @media print {
+              body { margin: 0; }
+              @page { margin: 0; size: A4; }
+            }
+
+            </style>
+          </head>
+
+          <body>
+            ${content}
+          </body>
+        </html>
+      `);
+
+      printWindow.document.close();
+      printWindow.focus();
+
+      setTimeout(() => {
+        printWindow.print();
+        this.isDownload = false;
+      }, 500);
+
+    })
+    .catch(err => {
+      console.error(err);
+      this.isDownload = false;
     });
-
-    const url = URL.createObjectURL(blob);
-
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'OfferLetter.doc';
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  });
-  // this.isDownload=false
 }
 
-convertImageToBase64(img: HTMLImageElement): Promise<void> {
-  return new Promise((resolve) => {
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
+  async downloadPDF() {
+    this.isDownload = true;
+    // Wait for Angular to update DOM (hide inputs, show value spans)
+    await new Promise(resolve => setTimeout(resolve, 200));
 
-    const image = new Image();
-    image.crossOrigin = 'anonymous';
-    image.src = img.src;
+    const element = document.getElementById('offer-doc');
+    if (!element) { this.isDownload = false; return; }
 
-    image.onload = () => {
-      canvas.width = image.width;
-      canvas.height = image.height;
-      context?.drawImage(image, 0, 0);
+    const html2pdfModule = await import('html2pdf.js');
+    const html2pdf = (html2pdfModule as any).default || html2pdfModule;
 
-      const dataURL = canvas.toDataURL('image/png');
-
-      img.src = dataURL; // replace src with base64
-
-      resolve();
+    const opt = {
+      margin: 0,
+      filename: `OfferLetter_${this.personalDetails.firstName || 'Employee'}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        logging: false
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
-    image.onerror = () => resolve();
-  });
-}
+    html2pdf().set(opt).from(element).save().then(() => {
+      this.isDownload = false;
+    });
+  }
 }

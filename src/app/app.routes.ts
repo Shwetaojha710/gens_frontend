@@ -92,8 +92,12 @@ import { PendingEmpListComponent } from './pending-emp-list/pending-emp-list.com
 import { InterviewRoundsComponent } from './recruitment/master/interview-rounds/interview-rounds.component';
 import { RoundTypeComponent } from './recruitment/master/round-type/round-type.component';
 import { CandidateComponent } from './recruitment/candidate/candidate.component';
+import { ApplicationListComponent } from './recruitment/application-list/application-list.component';
+import { UserComponent } from './recruitment/interview-pannel/user/user.component';
+import { InterviewerDashboardComponent } from './interviewer-dashboard/interviewer-dashboard.component';
 
 export const routes: Routes = [
+
   // { path: '', redirectTo: '/login', pathMatch: 'full' },
   { path: '', redirectTo: '/Home', pathMatch: 'full' },
   { path: 'Home', component: LandingPageComponent },
@@ -230,6 +234,11 @@ export const routes: Routes = [
         { path: 'posting-sourcing', component: PostingSourcingComponent },
       ]
     },
+    {
+      path: 'user',
+      component: UserComponent,
+    },
+      { path: 'application-list', component: ApplicationListComponent },
     // { path: 'candidates', component: CandidateComponent },
     { path: 'pipeline', component: PipelineBoardComponent },
     { path: 'pipeline/:applicationId/interview/schedule', component: ScheduleInterviewComponent },
@@ -248,5 +257,7 @@ export const routes: Routes = [
   },
 
   { path: ':slug', component: CandidateComponent },
+{ path: 'interviewer-dashboard', component: InterviewerDashboardComponent },
   { path: '**', component: PageNotFoundComponent },
 ];
+

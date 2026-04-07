@@ -7,7 +7,8 @@ export type RecruitmentStageKey =
   | 'interview_scheduled'
   | 'interview_in_progress'
   | 'offered'
-  | 'closed';
+  | 'closed'
+  | 'rejected';
 
 export interface RecruitmentStage {
   key: RecruitmentStageKey;
@@ -60,7 +61,7 @@ export interface CandidateApplicationRecord {
   current_ctc?: number | string;
   expected_ctc?: number | string;
   notice_period?: number | string;
-  skills?: string[] | string;
+  skills?: any[] | any;
   resume_url?: string;
   resume_name?: string;
   createdAt?: string;
@@ -99,4 +100,18 @@ export interface InterviewFeedbackPayload {
   strengths?: string;
   concerns?: string;
   notes?: string;
+}
+
+export interface InterviewPanelUser {
+  id?: string | number;
+  first_name: string;
+  last_name: string;
+  email: string;
+  department: string | number;
+  designation: string | number;
+  mobile_no: string;
+  status?: 'active' | 'inactive';
+  si_no?: number;
+  department_name?: string;
+  designation_name?: string;
 }

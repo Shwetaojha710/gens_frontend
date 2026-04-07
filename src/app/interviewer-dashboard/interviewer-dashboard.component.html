@@ -1,0 +1,134 @@
+<div class="container-fluid py-4">
+  <div class="row">
+    <div class="col-12">
+      <div class="card">
+        <div class="card-header pb-0">
+          <h6>Interviewer Dashboard</h6>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+              <div class="card">
+                <div class="card-body p-3">
+                  <div class="row">
+                    <div class="col-8">
+                      <div class="numbers">
+                        <p class="text-sm mb-0 text-uppercase font-weight-bold">Total Interviews</p>
+                        <h5 class="font-weight-bolder">{{ stats.total }}</h5>
+                      </div>
+                    </div>
+                    <div class="col-4 text-end">
+                      <div class="icon icon-shape bg-gradient-primary shadow-primary text-center rounded-circle">
+                        <i class="fas fa-calendar-check text-white opacity-10" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+              <div class="card">
+                <div class="card-body p-3">
+                  <div class="row">
+                    <div class="col-8">
+                      <div class="numbers">
+                        <p class="text-sm mb-0 text-uppercase font-weight-bold">Scheduled</p>
+                        <h5 class="font-weight-bolder text-warning">{{ stats.scheduled }}</h5>
+                      </div>
+                    </div>
+                    <div class="col-4 text-end">
+                      <div class="icon icon-shape bg-gradient-warning shadow-warning text-center rounded-circle">
+                        <i class="fas fa-clock text-white opacity-10" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+              <div class="card">
+                <div class="card-body p-3">
+                  <div class="row">
+                    <div class="col-8">
+                      <div class="numbers">
+                        <p class="text-sm mb-0 text-uppercase font-weight-bold">Pending Feedback</p>
+                        <h5 class="font-weight-bolder text-danger">{{ stats.pendingFeedback }}</h5>
+                      </div>
+                    </div>
+                    <div class="col-4 text-end">
+                      <div class="icon icon-shape bg-gradient-danger shadow-danger text-center rounded-circle">
+                        <i class="fas fa-exclamation-triangle text-white opacity-10" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-xl-3 col-sm-6">
+              <div class="card">
+                <div class="card-body p-3">
+                  <div class="row">
+                    <div class="col-8">
+                      <div class="numbers">
+                        <p class="text-sm mb-0 text-uppercase font-weight-bold">Completed</p>
+                        <h5 class="font-weight-bolder text-success">{{ stats.completed }}</h5>
+                      </div>
+                    </div>
+                    <div class="col-4 text-end">
+                      <div class="icon icon-shape bg-gradient-success shadow-success text-center rounded-circle">
+                        <i class="fas fa-check-circle text-white opacity-10" aria-hidden="true"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive mt-4">
+            <table class="table align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Candidate</th>
+                  <th>Job</th>
+                  <th>Round</th>
+                  <th>Date/Time</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let interview of interviews">
+                  <td>
+                    <div class="d-flex px-2">
+                      <div>
+                        <div class="avatar avatar-sm me-3">
+                          <img class="avatar-img rounded-circle" src="assets/img/avatars/1.png" alt="user1">
+                        </div>
+                      </div>
+                      <div class="my-auto">
+                        <h6 class="mb-0 text-sm">{{ interview.candidateName }}</h6>
+                      </div>
+                    </div>
+                  </td>
+                  <td>{{ interview.jobTitle }}</td>
+                  <td><span class="badge bg-info">{{ interview.roundName }}</span></td>
+                  <td>{{ interview.scheduledAt | date:'short' }}</td>
+                  <td>
+                    <span class="badge" [class]="interview.status === 'pending' ? 'bg-warning' : 'bg-success'">
+                      {{ interview.status }}
+                    </span>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-primary" *ngIf="interview.status === 'pending'">
+                      Give Feedback
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

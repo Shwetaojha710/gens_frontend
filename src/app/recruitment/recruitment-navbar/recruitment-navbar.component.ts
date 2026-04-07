@@ -68,6 +68,22 @@ export class RecruitmentNavbarComponent {
       ]
     },
     {
+      title: 'Candidate Management',
+      icon: 'ri-layout-2-line',
+      children: [
+
+        { title: 'Candidate Application', icon: 'ri-profile-line', link: '/recruitment/application-list' }
+      ]
+    },
+    {
+      title: '  Interview Management',
+      icon: 'ri-layout-2-line',
+      children: [
+
+        { title: 'Add User', icon: 'ri-profile-line', link: '/recruitment/user' }
+      ]
+    },
+    {
       title: 'Master',
       icon: 'ri-settings-3-line',
       children: [

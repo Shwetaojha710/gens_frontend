@@ -16,6 +16,21 @@ export class AuthService {
       responseType: 'text',
     });
   }
+
+  sendOtp(object: any): Observable<any> {
+    return this.http.post(`${this.baseurl}send-otp`, object, {
+      withCredentials: true,
+      responseType: 'text',
+    });
+  }
+
+  verifyOtp(object: any): Observable<any> {
+    return this.http.post(`${this.baseurl}verify-otp-login`, object, {
+      withCredentials: true,
+      responseType: 'text',
+    });
+  }
+
   CompanyRegister(object: any): Observable<any> {
     return this.http.post(`${this.baseurl}company-register`, object, {
       withCredentials: true,
