@@ -308,28 +308,38 @@ printDoc() {
 
   const cloned = element.cloneNode(true) as HTMLElement;
 
-  // Replace visible inputs with their typed values
+  // Replace inputs with their typed values
   cloned.querySelectorAll('input').forEach((input: any) => {
     const span = document.createElement('span');
     span.innerText = input.value || '';
     input.parentNode.replaceChild(span, input);
   });
 
+  // <br style="page-break-before:always"> inside <ol> is invalid HTML and breaks
+  // iframe rendering. Replace each with a proper block-level div page-break.
+  cloned.querySelectorAll('br[style*="page-break-before"]').forEach((br: any) => {
+    const div = document.createElement('div');
+    div.style.cssText = 'page-break-before:always;break-before:page;height:0;';
+    br.parentNode.replaceChild(div, br);
+  });
+
   const content = `<!DOCTYPE html><html><head><title>Appointment Letter</title><style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    * { box-sizing: border-box; }
     body { font-family: 'Times New Roman'; font-size: 14px; line-height: 1.6; padding: 40px; color: #000; background: #fff; }
-    h3, h4 { text-align: center; }
-    .title { text-align: center; font-weight: bold; text-decoration: underline; margin-bottom: 30px; }
+    h3 { text-align: center; font-weight: bold; text-decoration: underline; margin-bottom: 30px; }
+    h4 { text-align: center; }
+    h4 + *, h4 + table { page-break-before: avoid; }
     table { width: 100%; border-collapse: collapse; }
-    .header-table td { vertical-align: top; border: none; }
+    .header-table td { vertical-align: top; border: none !important; }
     .salary-table th, .salary-table td { border: 1px solid black; padding: 4px; font-size: 12px; }
+    .salary-table tr { page-break-inside: avoid; }
     ol { padding-left: 20px; margin-top: 10px; }
-    li { font-size: 14px; margin-bottom: 6px; }
+    li { font-size: 14px; margin-bottom: 6px; page-break-inside: avoid; }
     p { font-size: 12px; margin: 6px 0; }
-    br[style*="page-break-before"] { display: block; page-break-before: always; }
     @media print {
-      br[style*="page-break-before"] { display: block; page-break-before: always; }
       .salary-table th, .salary-table td { border: 1px solid black; }
+      .salary-table tr { page-break-inside: avoid; }
+      li { page-break-inside: avoid; }
     }
   </style></head><body>${cloned.innerHTML}</body></html>`;
 
