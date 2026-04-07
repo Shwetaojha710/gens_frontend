@@ -1,7 +1,10 @@
 <div class="row mb-2">
-  <div class="col-12 text-right">
-    <button type="button" class="btn btn-primary float-end" (click)="downloadDoc()">
-      <i class="fa fa-download mx-2"></i> Download
+  <div class="col-12 d-flex gap-2 justify-content-end">
+    <button type="button" class="btn btn-secondary" (click)="printDoc()">
+      <i class="fa fa-print mx-2"></i> Print
+    </button>
+    <button type="button" class="btn btn-primary" (click)="downloadDoc()">
+      <i class="fa fa-download mx-2"></i> Download Word
     </button>
   </div>
 </div>
