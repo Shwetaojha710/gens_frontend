@@ -301,4 +301,47 @@ this.isDownload=true
 
 this.isDownload=false
 }
+
+printDoc() {
+  const element = document.getElementById('appointment-doc');
+  if (!element) return;
+
+  const cloned = element.cloneNode(true) as HTMLElement;
+
+  // Replace visible inputs with their typed values
+  cloned.querySelectorAll('input').forEach((input: any) => {
+    const span = document.createElement('span');
+    span.innerText = input.value || '';
+    input.parentNode.replaceChild(span, input);
+  });
+
+  const content = `<!DOCTYPE html><html><head><title>Appointment Letter</title><style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Times New Roman'; font-size: 14px; line-height: 1.6; padding: 40px; color: #000; background: #fff; }
+    h3, h4 { text-align: center; }
+    .title { text-align: center; font-weight: bold; text-decoration: underline; margin-bottom: 30px; }
+    table { width: 100%; border-collapse: collapse; }
+    .header-table td { vertical-align: top; border: none; }
+    .salary-table th, .salary-table td { border: 1px solid black; padding: 4px; font-size: 12px; }
+    ol { padding-left: 20px; margin-top: 10px; }
+    li { font-size: 14px; margin-bottom: 6px; }
+    p { font-size: 12px; margin: 6px 0; }
+    br[style*="page-break-before"] { display: block; page-break-before: always; }
+    @media print {
+      br[style*="page-break-before"] { display: block; page-break-before: always; }
+      .salary-table th, .salary-table td { border: 1px solid black; }
+    }
+  </style></head><body>${cloned.innerHTML}</body></html>`;
+
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;';
+  iframe.setAttribute('srcdoc', content);
+  document.body.appendChild(iframe);
+
+  iframe.onload = () => {
+    iframe.contentWindow?.focus();
+    iframe.contentWindow?.print();
+    setTimeout(() => document.body.removeChild(iframe), 1000);
+  };
+}
 }

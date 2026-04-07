@@ -1,10 +1,16 @@
 <div class="row mb-2">
-  <div class="col-12 text-right">
-    <button type="button" class="btn btn-primary float-end" (click)="downloadDoc()">
-      <i class="fa fa-download mx-2"></i> Download
+  <div class="col-12 d-flex gap-2 justify-content-end">
+    <button type="button" class="btn btn-secondary" (click)="printDoc()">
+      <i class="fa fa-print mx-2"></i> Print
+    </button>
+    <!-- <button type="button" class="btn btn-danger" (click)="downloadPDF()">
+      <i class="fa fa-file-pdf-o mx-2"></i> Download PDF
+    </button> -->
+    <button type="button" class="btn btn-primary" (click)="downloadDoc()">
+      <i class="fa fa-download mx-2"></i> Download Word
     </button>
   </div>
-  </div>
+</div>
 
 <div id="nda-doc" class="nda-content">
 
@@ -15,8 +21,9 @@
   </h3>
 
   <p>
-    I <b>{{personalDetails?.firstName}} {{personalDetails?.lastName}}</b>   <span *ngIf="personalDetails.gender=='Male'"> S/O </span>
-            <span *ngIf="personalDetails.gender=='Female'"> D/O </span>  <b> {{personalDetails?.fatherName}}</b>
+    I <b>{{personalDetails?.firstName}} {{personalDetails?.lastName}}</b> <span *ngIf="personalDetails.gender=='Male'">
+      S/O </span>
+    <span *ngIf="personalDetails.gender=='Female'"> D/O </span> <b> {{personalDetails?.fatherName}}</b>
     residing at <b>{{personalDetails?.permanentAddress}}</b> do hereby agree with
     <b>{{tenant?.companyName}}</b> (here in after referred to as “Company”) having its principal office at
     <b>{{tenant?.companyAddress}}</b> .
@@ -42,12 +49,12 @@ In recognition of these benefits, I agree to the following:
   <ol>
 
     <li>
-    The Company shall be entitled to sole ownership of any intellectual property rights including but not limited
+      The Company shall be entitled to sole ownership of any intellectual property rights including but not limited
       to software programs, hardware specifications and other property rights created, developed and discovered by me
       while in the course of my employment with the Company, including all registrations for the same. </li>
 
     <li>
-    I agree that I shall promptly disclose to the Company the following: a) all software programs, inventions,
+      I agree that I shall promptly disclose to the Company the following: a) all software programs, inventions,
       improvements, discoveries and technical developments (‘Inventions’) made, created or conceived by me (either alone
       or with others) during the term of my employment, b) all Inventions which are based on proprietary information of
       the Company and are made or conceived by me (either alone or with others), c) any documentation related to the
@@ -62,7 +69,7 @@ In recognition of these benefits, I agree to the following:
     </li>
 
     <li>
-     I hereby assign to the Company my entire right, title and interest in and to such Inventions and documents,
+      I hereby assign to the Company my entire right, title and interest in and to such Inventions and documents,
       which relate in any way to or are useful in the Company’s business and in the course of my employment. I shall do
       all acts necessary and/or required by the Company to give effect to this provision. I further agrees to cooperate
       with the Company in the procurement and maintenance of patents, copyrights, and/or other protection of the
@@ -80,7 +87,7 @@ In recognition of these benefits, I agree to the following:
       was conceived by me within the scope of my employment with the Company”. </li>
 
     <li>
-     In order to safeguard the Company’s interest and the confidentiality of its business and affairs, I agree that
+      In order to safeguard the Company’s interest and the confidentiality of its business and affairs, I agree that
       during the term of my employment and from and after the actual cessation of my employment, I shall maintain strict
       confidentiality and shall not disclose any technical, business, financial or commercial information, methods,
       channels, processes, inventions (whether covered by intellectual property protection or not or whether marked
@@ -94,12 +101,12 @@ In recognition of these benefits, I agree to the following:
     </li>
 
     <li>
-    I shall not take out of the Company’s premises any technical plans, charts, drawings, software codes, design
+      I shall not take out of the Company’s premises any technical plans, charts, drawings, software codes, design
       and other materials containing technical or confidential data and information unless with the prior written
       consent or permission of the Company.</li>
 
     <li>
-     I understand that the Company's trade secret is any information, process or idea that is not generally known in
+      I understand that the Company's trade secret is any information, process or idea that is not generally known in
       the industry, that the Company considers confidential, and that gives the the Company a competitive advantage.
       Examples of trade secrets include:<ul>
         <li>Technical plans and documentation</li>
@@ -110,21 +117,21 @@ In recognition of these benefits, I agree to the following:
     </li>
 
     <li>
-    During and after my term with the Company, I shall at all times practice good discretion, ask permission and
+      During and after my term with the Company, I shall at all times practice good discretion, ask permission and
       seek prior approval from the company in the use or disclosure of any company documents – technical or business
       information, or any information which one might reasonably expect the company to regard as confidential, whether
       transmitted or acquired from the Company’s customers, suppliers, employees or other persons – to any person,
       company or entity.</li>
 
     <li>
-     I also covenant and agree that during the term of my employment with the Company and for twelve (12) months
+      I also covenant and agree that during the term of my employment with the Company and for twelve (12) months
       after the termination thereof, regardless of the reason for the employment termination, I will not, directly or
       indirectly, solicit or attempt to solicit any business from any of the the Company’s Customers, Clients, Customer
       Prospects, or Vendors with whom I had Material Contact during the last one (1) years of my employment with the
       Company.</li>
 
     <li>
-     I also covenant and agree that during the term of my employment with the Company and for twelve (12) months
+      I also covenant and agree that during the term of my employment with the Company and for twelve (12) months
       after the termination thereof, regardless of the reason for the employment termination, I will not, directly or
       indirectly, on my own behalf or on behalf of or in conjunction with any person or legal entity, recruit, solicit,
       or induce, or attempt to recruit, solicit, or induce, any non-clerical employee of the Company with whom I had
@@ -140,7 +147,7 @@ In recognition of these benefits, I agree to the following:
       with, the the Company's business at the time of any such termination.</li>
 
     <li>
-       I agree not to seek, encourage, and/or accept direct or indirect employment with any
+      I agree not to seek, encourage, and/or accept direct or indirect employment with any
       client/customer/prospective customer of the Company for a period of twelve (12) months following the termination
       of employment or membership with the Company.</li>
 
@@ -158,7 +165,7 @@ In recognition of these benefits, I agree to the following:
     </li>
 
     <li>
-     This Agreement may not be modified on behalf of the Company in whole or in part except by a statement in
+      This Agreement may not be modified on behalf of the Company in whole or in part except by a statement in
       writing signed by an executive officer of the Company Pvt.Ltd. </li>
 
   </ol>

@@ -42,9 +42,68 @@ export class NdaComponent {
     this.isEdit = !this.isEdit;
   }
 
+  private readonly ndaPrintStyles = `
+    body { font-family: 'Times New Roman'; line-height: 1.6; padding: 40px; color: #000; background: #fff; }
+    h3 { text-align: center; text-decoration: underline; }
+    ol { padding-left: 20px; }
+    ul { padding-left: 20px; }
+    table { width: 100%; border-collapse: collapse; }
+    p { margin: 8px 0; }
+  `;
+
+  private replaceInputsWithText(el: HTMLElement): void {
+    el.querySelectorAll('input').forEach((input: any) => {
+      const span = document.createElement('span');
+      span.innerText = input.value || '';
+      input.parentNode.replaceChild(span, input);
+    });
+  }
+
   downloadPDF() {
-    const element:any = document.getElementById('nda-doc');
-    html2pdf().from(element).save(this.documentName + '.pdf');
+    const element = document.getElementById('nda-doc');
+    if (!element) return;
+
+    const cloned = element.cloneNode(true) as HTMLElement;
+    this.replaceInputsWithText(cloned);
+
+    html2pdf().from(cloned).set({
+      margin: 10,
+      filename: this.documentName + '.pdf',
+      html2canvas: {
+        scale: 2,
+        // Strip Bootstrap/app stylesheets that use CSS color() unsupported by html2canvas
+        onclone: (clonedDoc: Document) => {
+          Array.from(clonedDoc.querySelectorAll('link[rel="stylesheet"], style')).forEach(s => s.remove());
+          const style = clonedDoc.createElement('style');
+          style.textContent = this.ndaPrintStyles;
+          clonedDoc.head.appendChild(style);
+        }
+      } as any,
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    }).save();
+  }
+
+  printDoc() {
+    const element = document.getElementById('nda-doc');
+    if (!element) return;
+
+    const cloned = element.cloneNode(true) as HTMLElement;
+    this.replaceInputsWithText(cloned);
+
+    const content = `<!DOCTYPE html><html><head><title>NDA</title>
+      <style>${this.ndaPrintStyles}</style>
+    </head><body>${cloned.innerHTML}</body></html>`;
+
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'position:fixed;top:-9999px;left:-9999px;width:1px;height:1px;border:0;';
+    iframe.setAttribute('srcdoc', content);
+    document.body.appendChild(iframe);
+
+    iframe.onload = () => {
+      iframe.contentWindow?.focus();
+      iframe.contentWindow?.print();
+      setTimeout(() => document.body.removeChild(iframe), 1000);
+    };
   }
 downloadDoc() {
   const element = document.getElementById('nda-doc');
