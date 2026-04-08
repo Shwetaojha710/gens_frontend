@@ -21,7 +21,7 @@
 <!-- Offer Letter Document -->
 <div id="offer-doc">
 
-    <table style="width:100%; font-size:11px; border: none;    margin-top: 50px;">
+    <table style="width:100%; font-size:11px; border: none;    margin-top: 50px; color: #000;">
       <tr>
         <td>
           <b>Ref: Quaere/Emp/Offer/
@@ -31,7 +31,7 @@
             <span *ngIf="isDownload">{{personalDetails.refNo}}</span>
           </b>
         </td>
-        <td style="text-align:right;">
+        <td style="text-align:right; color: #000;">
           <b>Dated:
             <span *ngIf="!isDownload">
               <input type="date" [(ngModel)]="personalDetails.offerDate" class="form-control d-inline-block" style="width:140px; height:24px; font-size:12px;" />
@@ -43,7 +43,7 @@
     </table>
 
     <!-- ADDRESS -->
-    <div class="address" style="margin: 30px 0; line-height: 1.8; font-size: 11px;">
+    <div class="address" style="margin: 30px 0; line-height: 1.8; font-size: 11px; color: #000;">
       <b>{{personalDetails.firstName}} {{personalDetails.lastName}}</b><br>
       <span *ngIf="personalDetails.gender=='Male'">S/O</span>
       <span *ngIf="personalDetails.gender=='Female'">D/O</span> {{personalDetails.fatherName}}<br>
@@ -54,7 +54,7 @@
     <p style="margin: 30px 0 20px 0; font-weight: bold;">Dear {{personalDetails.firstName}} {{personalDetails.lastName}},</p>
 
     <!-- BODY -->
-    <div style="font-size: 11px; line-height: 1.6;">
+    <div style="font-size: 11px; line-height: 1.6; color: #000;">
       <p>With reference to your application and subsequent interview with us, we are pleased to offer you employment in our Company as <b>{{personalDetails.designation}}</b> in the <b>{{personalDetails.department}}</b> at our Head Office &ndash; {{personalDetails.location}}, as per the mutually agreed terms and conditions discussed with you at the time of interview.</p>
 
       <p>You are requested to report for joining on or before <b>{{personalDetails.joiningDate}}</b>.</p>
@@ -77,7 +77,7 @@
     </div>
 
     <!-- SIGNATURE TABLE -->
-    <table width="100%" style="margin-top:40px; font-size:11px;">
+    <table width="100%" style="margin-top:40px; font-size:11px;  color: #000;">
       <tr>
         <td style="width:50%; vertical-align:top;">
           <p>Thanks &amp; Regards</p>

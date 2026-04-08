@@ -6,6 +6,8 @@ import { PayrollService } from '../../../services/payroll.service';
 import { StatusService } from '../../../services/status.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { PageBreak } from 'docx';
+
 
 @Component({
   selector: 'app-offer-letter',
@@ -21,7 +23,7 @@ export class OfferLetterComponent implements OnInit {
   currency: any
   obj: any = {}
   isDownload: boolean = false
-  letterheadImage: string = '/assets/img/Letterhead-2.png'
+  letterheadImage: string = '/assets/img/Letterhead-1.png'
 
   constructor(
     public payrollService: PayrollService,
@@ -163,29 +165,52 @@ printDoc() {
 
   async downloadPDF() {
     this.isDownload = true;
-    // Wait for Angular to update DOM (hide inputs, show value spans)
-    await new Promise(resolve => setTimeout(resolve, 200));
+
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    const bgImage = await this.getBase64FromSrc('/assets/img/Letterhead-2.png');
 
     const element = document.getElementById('offer-doc');
-    if (!element) { this.isDownload = false; return; }
+    if (!element) {
+      this.isDownload = false;
+      return;
+    }
+
+    // Clone element and apply letterhead background (matching printDoc)
+    const cloned = element.cloneNode(true) as HTMLElement;
+    cloned.style.width = '21cm';
+    cloned.style.minHeight = '29.5cm';
+    cloned.style.padding = '100px 60px';
+    cloned.style.position = 'relative';
+    cloned.style.backgroundImage = `url(${bgImage})`;
+    cloned.style.backgroundRepeat = 'no-repeat';
+    cloned.style.backgroundSize = '100% 100%';
+    cloned.style.boxSizing = 'border-box';
 
     const html2pdfModule = await import('html2pdf.js');
     const html2pdf = (html2pdfModule as any).default || html2pdfModule;
 
     const opt = {
-      margin: 0,
+      margin: [0, 0, 0, 0],
       filename: `OfferLetter_${this.personalDetails.firstName || 'Employee'}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
+      image: { type: 'jpeg', quality: 1},
       html2canvas: {
         scale: 2,
         useCORS: true,
         allowTaint: true,
         logging: false
       },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      jsPDF: {
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait',
+        pagesplit: false,
+        PageBreak: 'avoid-all',
+
+      }
     };
 
-    html2pdf().set(opt).from(element).save().then(() => {
+    html2pdf().set(opt).from(cloned).save().then(() => {
       this.isDownload = false;
     });
   }

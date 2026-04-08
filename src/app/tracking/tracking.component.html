@@ -422,11 +422,11 @@
                 <div class="tl-card">
                   <div class="tl-card-head">
                     <span class="tl-badge"
-                      [class.tb-start]="i === 0"
-                      [class.tb-end]="i === filteredLocations.length - 1"
-                      [class.tb-pin]="loc.location_type === 'pinned' && i !== 0 && i !== filteredLocations.length - 1"
-                      [class.tb-normal]="loc.location_type === 'normal' && i !== 0 && i !== filteredLocations.length - 1">
-                      {{ i === 0 ? 'Start' : i === filteredLocations.length - 1 ? 'End' : loc.location_type === 'pinned' ? 'Pinned Visit' : 'Track Point' }}
+                      [class.tb-start]="i == 0"
+                      [class.tb-end]="i == filteredLocations.length - 1"
+                      [class.tb-pin]="loc.location_type == 'pinned' && i != 0 && i !== filteredLocations.length - 1"
+                      [class.tb-normal]="loc.location_type == 'normal' && i != 0 && i !== filteredLocations.length - 1">
+                      {{ i == 0 ? 'Start' : i == filteredLocations.length - 1 ? 'End' : loc.location_type == 'pinned' ? 'Pinned Visit' : 'Track Point' }}
                     </span>
                     <span class="tl-time">{{ formatTime(loc.timestamp) }}</span>
                   </div>
@@ -438,9 +438,9 @@
                   <div class="tl-meta">
                     <span><i class="fas fa-bullseye me-1"></i>{{ loc.coords.accuracy | number:'1.0-0' }}m</span>
                     <span *ngIf="loc.coords.speed > 0"><i class="fas fa-tachometer-alt me-1"></i>{{ (loc.coords.speed * 3.6) | number:'1.1-1' }} km/h</span>
-                    <span class="mode-tag" [class.fg-mode]="loc.mode === 'foreground'">{{ loc.mode }}</span>
+                    <span class="mode-tag" [class.fg-mode]="loc.mode == 'foreground'">{{ loc.mode }}</span>
                   </div>
-                  <div class="tl-purpose" *ngIf="loc.location_type === 'pinned'">
+                  <div class="tl-purpose" *ngIf="loc.location_type == 'pinned'">
                     <!-- Visit Place -->
                     <div *ngIf="loc.visit_place" class="tl-visit-place">
                       <i class="fas fa-building me-1" style="color:#f59e0b;font-size:9px;"></i>
@@ -451,6 +451,7 @@
                       <span class="tl-field-label">Purpose:</span>
                       <span class="tl-field-val">{{ loc.purpose }}</span>
                     </div>
+
                     <!-- Remark -->
                     <div *ngIf="loc.remark" class="tl-visit-field tl-remark">
                       <span class="tl-field-label">Remark:</span>

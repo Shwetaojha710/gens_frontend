@@ -31,6 +31,9 @@ getEmploymentTypes(obj:any): Observable<any[]> {
 getStates(data: any): Observable<any> {
   return this.http.post(`${this.baseUrl}getStateDD`, data);
 }
+getStatesDistrict(data: any): Observable<any> {
+  return this.http.post(`${this.baseUrl}get-state-district`, data);
+}
 getCities(data: any): Observable<any> {
   return this.http.post(`${this.baseUrl}getCityDD`, data);
 }

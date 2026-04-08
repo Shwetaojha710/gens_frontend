@@ -68,6 +68,19 @@ export class InterviewService {
     return this.http.post<any>(`${this.baseUrl}save-interview-feedback`, payload);
   }
 
+  // Panel user (interviewer) APIs — use panel user token, no admin token needed
+  panelUserLogin(payload: { tenantId: string; email: string; password: string }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}panel-user-login`, payload);
+  }
+
+  getMyInterviews(): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}get-my-interviews`, {});
+  }
+
+  panelSaveFeedback(payload: InterviewFeedbackPayload): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}panel-save-feedback`, payload);
+  }
+
   createInterviewPanelUser(payload: InterviewPanelUser): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}createInterviewPanelUser`, payload);
   }

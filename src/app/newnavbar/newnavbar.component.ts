@@ -87,7 +87,7 @@ export class NewnavbarComponent {
       children: [
         { title: 'Employee Report', icon: 'ri-file-user-line', link: '/layout/reports/employee' },
         { title: 'Payroll Report', icon: 'ri-file-paper-line', link: '/layout/reports/payroll' },
-        { title: 'Attendance Report', icon: 'ri-file-list-3-line', link: '/layout/reports/attendance' }
+        { title: 'Late Arrival Report', icon: 'ri-file-list-3-line', link: '/layout/reports/attendance' }
       ]
     },
     {

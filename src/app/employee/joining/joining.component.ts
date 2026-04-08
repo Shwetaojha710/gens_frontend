@@ -165,6 +165,24 @@ export class JoiningComponent {
   //   }
   //   );
   // }
+
+getStateDistrict(pin_code: any) {
+  if (!pin_code) return;
+
+  let obj: any = {
+    pin_code: pin_code
+  };
+
+  this.employeeService.getStatesDistrict(obj).subscribe({
+    next: (data: any) => {
+      this.personalDetails['state'] = data?.data?.state_name || '';
+      this.personalDetails['city'] = data?.data?.district_name || '';
+    },
+    error: (err) => {
+      console.error('Error fetching state/district:', err);
+    }
+  });
+}
   states: any[] = [];
   async getstates(countryId: any) {
     this.states = []
@@ -491,13 +509,16 @@ stats:any
     const dob = new Date(this.personalDetails.dateOfBirth);
     const formattedDob = `${dob.getFullYear()}-${(dob.getMonth() + 1).toString().padStart(2, '0')}-${dob.getDate().toString().padStart(2, '0')}`;;
     this.personalDetails.dateOfBirth = formattedDob;
-    this.personalDetails.state = Number(this.personalDetails.state);
-    this.personalDetails.city = Number(this.personalDetails.city);
+    // this.personalDetails.state = Number(this.personalDetails.state);
+    // this.personalDetails.city = Number(this.personalDetails.city);
     this.personalDetails.country = Number(this.personalDetails.country);
-    await this.getstates(this.personalDetails.country);
-    await this.getcity(this.personalDetails.state);
+    await this.getStateDistrict(this.personalDetails.pinCode);
+    // await this.getstates(this.personalDetails.country);
+    // await this.getcity(this.personalDetails.state);
     await this.getDesignation(this.personalDetails.departmentId);
     this.employeeList = this.employeeList.filter((item: any) => item.value != this.personalDetails.id);
+
+
     this.createFlag = true;
     this.updateFlag = true;
   }

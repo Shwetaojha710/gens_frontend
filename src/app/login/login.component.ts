@@ -103,7 +103,7 @@ export class LoginComponent {
           localStorage.setItem('token', data.data.token);
           localStorage.setItem("base_url", data.data.baseUrl);
           localStorage.setItem("PORT", data.data.PORT);
-          localStorage.setItem('user', JSON.stringify(data.data.user));
+          localStorage.setItem('user', JSON.stringify(data.data));
           localStorage.setItem('tenant', JSON.stringify(data.data.tenant));
           localStorage.setItem('branch', JSON.stringify(data.data.branch));
           localStorage.setItem('currency', JSON.stringify(data.data.currencyList));
@@ -166,11 +166,11 @@ export class LoginComponent {
           localStorage.setItem('currency', JSON.stringify(data.data.currencyList));
 
           const user = data.data.user;
-          if (user.role === 'panel_user' || user.designation?.toLowerCase().includes('interviewer')) {
-            this.router.navigate(['interviewer-dashboard']);
-          } else {
+          // if (user.role === 'panel_user' || user.designation?.toLowerCase().includes('interviewer')) {
+            // this.router.navigate(['interviewer-dashboard']);
+          // } else {
             this.router.navigate(['branchwise']);
-          }
+          // }
 
           this.notyf.success(data.message);
         } else {
