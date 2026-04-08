@@ -68,35 +68,35 @@ export class RelevingLetterComponent {
     if (!dateStr) return '___';
     const d = new Date(dateStr);
     const day = d.getDate();
-    const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const sup = (n: number) => n === 1 || n === 21 || n === 31 ? 'st' : n === 2 || n === 22 ? 'nd' : n === 3 || n === 23 ? 'rd' : 'th';
     return `${day}<sup>${sup(day)}</sup> ${months[d.getMonth()]},${d.getFullYear()}`;
   }
 
   printDoc() {
-  const logoBase64Promise = this.getBase64FromSrc('/assets/img/logo/logo-quaere.png');
-  const cmmiBase64Promise = this.getBase64FromSrc('/assets/img/logo/Picture1.jpg');
-  const updescoBase64Promise = this.getBase64FromSrc('/assets/img/logo/Picture2.png');
+    const logoBase64Promise = this.getBase64FromSrc('/assets/img/logo/logo-quaere.png');
+    const cmmiBase64Promise = this.getBase64FromSrc('/assets/img/logo/Picture1.jpg');
+    const updescoBase64Promise = this.getBase64FromSrc('/assets/img/logo/Picture2.png');
 
-  // 🔥 ADD THIS (BACKGROUND IMAGE)
-  const bgBase64Promise = this.getBase64FromSrc('/assets/img/Letterhead-2.png');
+    // 🔥 ADD THIS (BACKGROUND IMAGE)
+    const bgBase64Promise = this.getBase64FromSrc('/assets/img/Letterhead-2.png');
 
-  Promise.all([
-    logoBase64Promise,
-    cmmiBase64Promise,
-    updescoBase64Promise,
-    bgBase64Promise
-  ]).then(([logo, cmmi, updesco, bgImage]) => {
+    Promise.all([
+      logoBase64Promise,
+      cmmiBase64Promise,
+      updescoBase64Promise,
+      bgBase64Promise
+    ]).then(([logo, cmmi, updesco, bgImage]) => {
 
-    const relievingData = {
-      ...this.relievingData,
-      closing: `With warm regards<br/><br/><br/><b>Human Resource Department</b><br/>Date: ${this.formatDate(new Date().toISOString())}`
-    };
-    const relievingDate = this.relievingDate ? this.formatDate(this.relievingDate) : new Date().toLocaleDateString('en-GB');
-    const joiningDate = this.joiningDate ? this.formatDate(this.joiningDate) : new Date().toLocaleDateString('en-GB');
-    const refNo = this.refNo || '001';
+      const relievingData = {
+        ...this.relievingData,
+        closing: `With warm regards<br/><br/><br/><b>Human Resource Department</b><br/>Date: ${this.formatDate(new Date().toISOString())}`
+      };
+      const relievingDate = this.relievingDate ? this.formatDate(this.relievingDate) : new Date().toLocaleDateString('en-GB');
+      const joiningDate = this.joiningDate ? this.formatDate(this.joiningDate) : new Date().toLocaleDateString('en-GB');
+      const refNo = this.refNo || '001';
 
-    const html = `
+      const html = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -115,7 +115,7 @@ body {
 /* 🔥 BACKGROUND FIX */
 .page {
   width: 21cm;
-  min-height: 26.7cm;
+  min-height: 29.7cm;
   padding: 100px 60px 0px 60px;
   position: relative;
 
@@ -215,17 +215,17 @@ body {
 </html>
 `;
 
-    const printWindow = window.open('', '', 'width=900,height=650');
-    printWindow!.document.write(html);
-    printWindow!.document.close();
-    printWindow!.focus();
+      const printWindow = window.open('', '', 'width=900,height=650');
+      printWindow!.document.write(html);
+      printWindow!.document.close();
+      printWindow!.focus();
 
-    setTimeout(() => {
-      printWindow!.print();
-      printWindow!.close();
-    }, 1000);
-  });
-}
+      setTimeout(() => {
+        printWindow!.print();
+        printWindow!.close();
+      }, 1000);
+    });
+  }
 
   getBase64FromSrc(src: string): Promise<string> {
     return fetch(src)

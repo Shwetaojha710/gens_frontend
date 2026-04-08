@@ -2,12 +2,14 @@
   width: 794px;
   min-height: 1123px;
   /* margin: auto; */
-  padding: 100px 60px 150px;
+  padding: 120px 60px 150px;
   font-family: "Times New Roman", serif;
-  font-size: 13px;
+  /* font-size: 13px; */
   color: #000;
   background: #fff url('/assets/img/Letterhead-2.png') no-repeat top center / 100% 100%;
   position: relative;
+      border: 1px solid #ececce;
+    margin: auto;
 }
 
 .logo-row {

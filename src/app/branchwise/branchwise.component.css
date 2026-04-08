@@ -214,3 +214,117 @@ body {
 
 
 }
+
+
+.bg-1 {
+    border: 0px solid;
+    padding: 30px 30px;
+    width: 100%;
+    border: 0px solid;
+    padding: 30px 30px;
+    width: 1588px;
+    background-image: url('/assets/img/bg-login/bg-branch1.pn');
+    background-size: cover;
+    background-position: center;
+    border-radius: 32px;
+    background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%), linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));
+}
+
+.bg-2 {
+    border: 0px solid;
+    padding: 30px 30px;
+    width: 1394px;
+    height: 650px;
+    background-image: url('/assets/img/bg-login/bg-branch1.pn');
+    background-size: cover;
+    background-position: center;
+    border-radius: 32px;
+    margin: auto;
+    background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),
+        linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1))
+}
+
+/* Media Queries */
+
+@media screen and (max-width: 1024px) {
+    .bg-1 {
+        border: 0px solid;
+        padding: 30px 30px;
+        width: 100%;
+        background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%), linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1));
+    }
+
+
+    .bg-2 {
+        border: 0px solid;
+        padding: 30px 30px;
+        width: 100%;
+        height: 650px;
+        background-image: url('/assets/img/bg-login/bg-branch1.pn');
+        background-size: cover;
+        background-position: center;
+        border-radius: 32px;
+        margin: auto;
+        background: linear-gradient(110.78deg, rgba(255, 255, 255, 0.41) 7.01%, rgba(255, 255, 255, 0.01) 106.22%),
+            linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1))
+    }
+
+    .card-wrapper {
+        width: 100%;
+    }
+
+    .city-card {
+        width: 100%;
+        height: 320px;
+    }
+
+    .city {
+        font-size: 14px !important;
+    }
+
+    .office {
+        font-size: 14px !important;
+    }
+
+    .sub-line {
+        font-size: 11px !important;
+    }
+
+    .btn-dashboard{
+        font-size: 11px;
+        width: 100px;
+    }
+
+    .buy-now .btn-buy-now {
+    position: fixed;
+    z-index: 1080;
+    box-shadow: 0 1px 20px 1px #0663a9;
+    inset-block-end: 4rem;
+    inset-inline-end: 28.5rem;
+}
+}
+
+@media screen and (max-width: 1440px) {
+    .buy-now .btn-buy-now
+ {
+        position: fixed;
+        z-index: 1080;
+        box-shadow: 0 1px 20px 1px #0663a9;
+        inset-block-end: 2rem;
+        inset-inline-end: 42.5rem;
+    }
+
+}
+
+
+@media screen and (max-width: 768px) {
+    .buy-now .btn-buy-now
+ {
+        position: fixed;
+        z-index: 1080;
+        box-shadow: 0 1px 20px 1px #0663a9;
+        inset-block-end: 2rem;
+        inset-inline-end: 20.5rem;
+    }
+
+}
