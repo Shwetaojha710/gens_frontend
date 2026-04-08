@@ -36,6 +36,7 @@ export interface InterviewRoundPlan {
   interviewer_id?: string;
   interviewer_name?: string;
   interviewer_email?: string;
+  interviewer_phone?: string;
   scheduled_at?: string;
   duration_minutes?: number;
   mode?: string;

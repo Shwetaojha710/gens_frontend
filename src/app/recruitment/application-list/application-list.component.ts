@@ -8,6 +8,7 @@ import { Router } from '@angular/router';
 import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
 import { InterviewService } from '../../services/interview.service';
 import { Notyf } from 'notyf';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-application-list',
@@ -39,14 +40,28 @@ export class ApplicationListComponent implements OnInit {
   interviewRounds: any[] = [];
   assignApp: CandidateApplicationRecord | null = null;
   isAssigning = false;
-  assignForm: {
+
+  // Per-round assignment
+  roundAssignments: Array<{
+    round_id: string | number;
+    round_name: string;
     panel_user_id: string | number | null;
-    round_id: string | number | null;
     scheduled_at: string;
     duration_minutes: number | null;
     mode: string;
     meeting_link: string;
-  } = { panel_user_id: null, round_id: null, scheduled_at: '', duration_minutes: null, mode: '', meeting_link: '' };
+    status: string;
+    feedback_submitted: boolean;
+  }> = [];
+
+  sameInterviewerForAll = false;
+  commonAssignFields: {
+    panel_user_id: string | number | null;
+    scheduled_at: string;
+    duration_minutes: number | null;
+    mode: string;
+    meeting_link: string;
+  } = { panel_user_id: null, scheduled_at: '', duration_minutes: null, mode: '', meeting_link: '' };
 
   constructor(
     private jobService: JobService,
@@ -321,6 +336,57 @@ export class ApplicationListComponent implements OnInit {
   atsUrlResult: any = null;
   isUrlEvaluating = false;
 
+  // Normalize any ATS response shape to the new structure
+  normalizeAtsResult(raw: any): any {
+    if (!raw) return null;
+    let r = raw?.data ?? raw;
+    // URL response: { results: [...], errors: [...], count, job_post_id }
+    if (Array.isArray(r?.results) && r.results.length > 0) {
+      r = r.results[0];
+    } else if (Array.isArray(r?.errors) && r.errors.length > 0) {
+      // evaluation failed — return an error marker
+      return { _error: r.errors[0]?.error || 'Evaluation failed', _resumeUrl: r.errors[0]?.resume_url };
+    }
+    // already new format
+    if (r?.overall_score !== undefined) return r;
+    // legacy format — map old fields to new structure
+    return {
+      overall_score: r?.ats_score ?? r?.final_score ?? null,
+      match_level: null,
+      breakdown: {
+        skills: {
+          score: r?.ats_score ?? null,
+          matched: r?.matched_skills ?? [],
+          missing: r?.missing_skills ?? [],
+          extra: []
+        },
+        experience: { score: null, details: `${r?.experience_years ?? ''} years` },
+        education: { score: null, details: '' },
+        keywords: { score: null, matched: [], missing: [] },
+        certifications: { score: null, details: '' }
+      },
+      strengths: [],
+      weaknesses: [],
+      recommendations: [],
+      final_summary: r?.summary ?? ''
+    };
+  }
+
+  getMatchLevelClass(level: string): string {
+    switch ((level || '').toLowerCase()) {
+      case 'high':   return 'text-success';
+      case 'medium': return 'text-warning';
+      case 'low':    return 'text-danger';
+      default:       return 'text-secondary';
+    }
+  }
+
+  getScoreBarClass(score: number): string {
+    if (score >= 75) return 'bg-success';
+    if (score >= 50) return 'bg-warning';
+    return 'bg-danger';
+  }
+
   openAtsModal(app: CandidateApplicationRecord): void {
     this.atsApp = app;
     this.atsFile = null;
@@ -438,6 +504,13 @@ export class ApplicationListComponent implements OnInit {
     });
   }
 
+  getInterviewerPhone(round: any): string {
+    if (round?.interviewer_phone) return round.interviewer_phone;
+    if (!round?.interviewer_id) return '';
+    const user = this.panelUsers.find(u => String(u.id) === String(round.interviewer_id));
+    return user?.mobile_no || '';
+  }
+
   // Quick actions
   shortlist(app: CandidateApplicationRecord): void {
     this.updateStage(app, 'shortlisted');
@@ -450,7 +523,23 @@ export class ApplicationListComponent implements OnInit {
   // Assign interviewer
   openAssignModal(app: CandidateApplicationRecord): void {
     this.assignApp = app;
-    this.assignForm = { panel_user_id: null, round_id: null, scheduled_at: '', duration_minutes: null, mode: '', meeting_link: '' };
+    this.sameInterviewerForAll = false;
+    this.commonAssignFields = { panel_user_id: null, scheduled_at: '', duration_minutes: null, mode: '', meeting_link: '' };
+
+    // Use interview_rounds already present in the application (from admin-pipeline API)
+    const rounds: any[] = app.interview_rounds || [];
+    this.roundAssignments = rounds.map(r => ({
+      round_id: r.round_id,
+      round_name: r.round_name,
+      panel_user_id: r.interviewer_id || null,
+      scheduled_at: r.scheduled_at || '',
+      duration_minutes: r.duration_minutes || null,
+      mode: r.mode || '',
+      meeting_link: r.meeting_link || '',
+      status: r.status || 'pending',
+      feedback_submitted: r.feedback_submitted || false
+    }));
+
     this.cdr.markForCheck();
     const el = document.getElementById('assignInterviewerModal');
     if (el) (window as any).bootstrap.Modal.getOrCreateInstance(el).show();
@@ -463,44 +552,66 @@ export class ApplicationListComponent implements OnInit {
       if (m) m.hide();
     }
     this.assignApp = null;
-    this.assignForm = { panel_user_id: null, round_id: null, scheduled_at: '', duration_minutes: null, mode: '', meeting_link: '' };
+    this.roundAssignments = [];
+    this.sameInterviewerForAll = false;
+    this.commonAssignFields = { panel_user_id: null, scheduled_at: '', duration_minutes: null, mode: '', meeting_link: '' };
+    this.cdr.markForCheck();
+  }
+
+  applyCommonToAll(): void {
+    this.roundAssignments = this.roundAssignments.map(r => ({
+      ...r,
+      panel_user_id: this.commonAssignFields.panel_user_id ?? r.panel_user_id,
+      scheduled_at: this.commonAssignFields.scheduled_at || r.scheduled_at,
+      duration_minutes: this.commonAssignFields.duration_minutes ?? r.duration_minutes,
+      mode: this.commonAssignFields.mode || r.mode,
+      meeting_link: this.commonAssignFields.meeting_link || r.meeting_link
+    }));
     this.cdr.markForCheck();
   }
 
   confirmAssign(): void {
-    if (!this.assignApp || !this.assignForm.panel_user_id) {
-      this.notyf.error('Please select an interviewer');
+    if (!this.assignApp) return;
+
+    const toAssign = this.roundAssignments.filter(r => r.panel_user_id);
+    if (toAssign.length === 0) {
+      this.notyf.error('Please select at least one interviewer');
       return;
     }
 
     this.isAssigning = true;
     this.cdr.markForCheck();
 
-    this.interviewService.assignInterviewer({
-      application_id: this.assignApp.id,
-      panel_user_id: this.assignForm.panel_user_id,
-      round_id: this.assignForm.round_id,
-      scheduled_at: this.assignForm.scheduled_at || null,
-      duration_minutes: this.assignForm.duration_minutes,
-      mode: this.assignForm.mode || null,
-      meeting_link: this.assignForm.meeting_link || null
-    }).subscribe({
-      next: (res: any) => {
-        const status = this.statusService.handleResponseStatus(res.status, res.message);
-        if (status === true) {
-          this.notyf.success(res.message || 'Interviewer assigned successfully');
-          this.closeAssignModal();
-          this.loadApplications();
-        } else if (status === 'expired') {
-          this.router.navigate(['login']);
-        } else {
-          this.notyf.error(res.message || 'Assignment failed');
-        }
+    const calls = toAssign.map(r =>
+      this.interviewService.assignInterviewer({
+        application_id: this.assignApp!.id,
+        panel_user_id: r.panel_user_id!,
+        round_id: r.round_id,
+        scheduled_at: r.scheduled_at || null,
+        duration_minutes: r.duration_minutes,
+        mode: r.mode || null,
+        meeting_link: r.meeting_link || null
+      })
+    );
+
+    forkJoin(calls).subscribe({
+      next: () => {
+        // After assigning, determine the new stage:
+        // If every round is completed with feedback → offered
+        // Otherwise → interview_scheduled
+        const allDone = this.roundAssignments.length > 0 &&
+          this.roundAssignments.every(r => r.feedback_submitted || r.status === 'completed');
+        const newStage = allDone ? 'offered' : 'interview_scheduled';
+        this.updateStage(this.assignApp!, newStage);
+
+        this.notyf.success(`${toAssign.length} round(s) assigned — stage updated to ${newStage.replace('_', ' ')}`);
+        this.closeAssignModal();
+        this.loadApplications();
         this.isAssigning = false;
         this.cdr.markForCheck();
       },
       error: (err: any) => {
-        this.notyf.error(err?.error?.message || 'Error assigning interviewer');
+        this.notyf.error(err?.error?.message || 'Error assigning interviewers');
         this.isAssigning = false;
         this.cdr.markForCheck();
       }
