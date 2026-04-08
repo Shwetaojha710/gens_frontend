@@ -10,7 +10,7 @@
           Last 30 days
           <i class="fa-solid fa-angle-right fs-10 mx-1"></i>
         </button>
-        <button type="button" class="btn btn-primary waves-effect waves-light me-sm-2 me-2">
+        <button type="button" class="btn btn-primary waves-effect waves-light me-sm-2 me-2"  routerLink="/layout/reports/tracking-report"routerLinkActive="true" style="cursor: pointer;">
           <img src="../../../assets/img/icon/Vector.png" class="mx-2"> Reports
         </button>
       </div>
@@ -41,37 +41,37 @@
         </div>
 
         <div class="card-body d-flex justify-content-between flex-wrap gap-4">
-          <div class="d-flex align-items-center gap-3">
+          <div class="d-flex align-items-center gap-3" routerLink="/layout/attendance/date-wise-attendance"routerLinkActive="true" style="cursor: pointer"  [queryParams]="{ fromDashboard: true }">
             <div class="avatar">
               <div class="avatar-initial bg-label-success rounded">
                 <i class="icon-base ri ri-user-star-line icon-24px"></i>
               </div>
             </div>
-            <div class="card-info">
+            <div class="card-info" >
               <div class="d-flex align-items-center text-success">
                 <h5 class="mb-0">{{ getStatValueByTitle(`Today's Attendance`) }}</h5>
                 <div class="d-flex align-items-center text-success mx-1">
                   <p class="mb-0 fw-medium">{{ getStatChange(`Today's Attendance`) }} {{ getAttendanceTrendLabel('Present') }}</p>
                 </div>
               </div>
-              <p class="mb-0">Present Today</p>
+              <p class="mb-0" >Present Today</p>
             </div>
           </div>
 
-          <div class="d-flex align-items-center gap-3">
+          <div class="d-flex align-items-center gap-3" routerLink="/layout/employee/apply-leave"routerLinkActive="true" style="cursor: pointer"  [queryParams]="{ fromDashboard: true }">
             <div class="avatar">
               <div class="avatar-initial bg-label-warning rounded">
                 <i class="icon-base ri ri-pie-chart-2-line icon-24px"></i>
               </div>
             </div>
-            <div class="card-info">
+            <div class="card-info" >
               <div class="d-flex align-items-center text-warning">
                 <h5 class="mb-0">{{ attendanceChart?.todayLeaveCount || '0' }}</h5>
                 <div class="d-flex align-items-center text-warning mx-1">
                   <p class="mb-0 fw-medium">{{ getAttendanceBreakdown('On Leave') }} {{ getAttendanceTrendLabel('On Leave') }}</p>
                 </div>
               </div>
-              <p class="mb-0">On Leave</p>
+              <p class="mb-0" >On Leave</p>
             </div>
           </div>
 
@@ -81,7 +81,7 @@
                 <i class="icon-base ri ri-arrow-left-right-line icon-24px"></i>
               </div>
             </div>
-            <div class="card-info">
+            <div class="card-info" routerLink="/layout/employee/apply-leave"routerLinkActive="true" style="cursor: pointer" [queryParams]="{ fromDashboard: true }">
               <div class="d-flex align-items-center text-danger">
                 <h5 class="mb-0">{{ attendanceChart?.emergencyCount || '0' }}</h5>
                 <div class="d-flex align-items-center text-danger mx-1">
@@ -99,7 +99,7 @@
       <div class="card h-100 dashboard-glass-card">
         <div class="row h-100">
           <div class="col-6">
-            <div class="card-body">
+            <div class="card-body" (click)="gotoTrackingPage()" style="cursor: pointer;">
               <div class="card-info mb-2">
                 <h6 class="mb-1 text-nowrap" style="color: #3C4056;">On Field Employees (GPS)</h6>
                 <div class="badge bg-label-primary bg-white text-black rounded-pill lh-xs">
@@ -124,9 +124,9 @@
 
     <div class="col-lg-3 col-sm-6">
       <div class="card h-100 dashboard-glass-card">
-        <div class="card-body">
+        <div class="card-body" >
           <div class="d-flex justify-content-between align-items-start mb-3">
-            <div>
+            <div  routerLink="/layout/attendance/date-wise-attendance"routerLinkActive="true" style="cursor: pointer"  [queryParams]="{ fromDashboard: true }">
               <h6 class="mb-1 text-nowrap" style="color: #3C4056;">Attendance Chart</h6>
             </div>
             <div class="dropdown table-range-dropdown">

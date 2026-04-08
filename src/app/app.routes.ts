@@ -226,6 +226,7 @@ export const routes: Routes = [
     component: RecruitmentComponent,
     children: [
     { path: 'recruitment-dashboard', component: RecuiterDashboardComponent },
+    // { path: 'interviewer-dashboard', component: InterviewerDashboardComponent },
     {
       path: 'jobs',
       component: JobsComponent,
@@ -255,9 +256,9 @@ export const routes: Routes = [
       },
     ]
   },
-
-  { path: ':slug', component: CandidateComponent },
 { path: 'interviewer-dashboard', component: InterviewerDashboardComponent },
+  { path: ':slug', component: CandidateComponent },
+
   { path: '**', component: PageNotFoundComponent },
 ];
 

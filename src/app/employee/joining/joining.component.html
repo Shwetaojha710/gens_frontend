@@ -288,32 +288,44 @@
               </ng-select>
             </div>
             <div class="col-md-3">
-              <label class="col-form-label fw-bold">State
-                <!-- <span *ngIf="!updateFlag" style="color: red"> *</span> -->
-              </label>
-              <ng-select [items]="states" bindLabel="label" bindValue="value" [(ngModel)]="personalDetails['state']"
-                [multiple]="false" placeholder="Select state" name="state" id="select2Danger"
-                (change)="getcity($event)">
-              </ng-select>
-            </div>
-            <div class="col-md-3">
               <label class="col-form-label fw-bold">PIN Code
                 <!-- <span *ngIf="!updateFlag" style="color: red"> *</span> -->
               </label>
-              <input type="text" class="form-control" placeholder="Enter PIN Code" [(ngModel)]="personalDetails.pinCode"
-                name="pinCode"  #pinCodeRef="ngModel" pattern="^[1-9][0-9]{5}$" maxlength="6" />
+           <input
+  type="text"
+  class="form-control"
+  placeholder="Enter PIN Code"
+  [(ngModel)]="personalDetails.pinCode"
+  name="pinCode"
+  maxlength="6"
+  (input)="personalDetails.pinCode?.length === 6 && getStateDistrict(personalDetails.pinCode)"
+/>
 
-              <small class="text-danger" *ngIf="pinCodeRef.invalid && pinCodeRef.touched">
+              <!-- <small class="text-danger" *ngIf="pinCodeRef.invalid && pinCodeRef.touched">
                 Please enter a valid 6-digit PIN code.
-              </small>
+              </small> -->
             </div>
+            <div class="col-md-3">
+              <label class="col-form-label fw-bold">State
+                <!-- <span *ngIf="!updateFlag" style="color: red"> *</span> -->
+              </label>
+                 <input type="text" class="form-control" placeholder="Enter state"
+                  [(ngModel)]="personalDetails['state']" name="state"  #stateRef="ngModel" disabled="true"/>
+              <!-- <ng-select [items]="states" bindLabel="label" bindValue="value" [(ngModel)]="personalDetails['state']"
+                [multiple]="false" placeholder="Select state" name="state" id="select2Danger"
+                (change)="getcity($event)">
+              </ng-select> -->
+            </div>
+
             <div class="col-md-3">
               <label class="col-form-label fw-bold">City
                 <!-- <span *ngIf="!updateFlag" style="color: red"> *</span> -->
               </label>
-              <ng-select [items]="cities" bindLabel="label" bindValue="value" [(ngModel)]="personalDetails['city']"
+               <input type="text" class="form-control" placeholder="Enter City"
+                  [(ngModel)]="personalDetails['city']" name="city"  #cityRef="ngModel"  disabled="true" />
+              <!-- <ng-select [items]="cities" bindLabel="label" bindValue="value" [(ngModel)]="personalDetails['city']"
                 [multiple]="false" placeholder="Select City" name="city" id="select2Danger">
-              </ng-select>
+              </ng-select> -->
             </div>
 
             <div class="col-md-3">
@@ -394,7 +406,7 @@
 
   <div class="row g-3 mb-6" *ngIf="!createFlag">
     <div class="col-lg-3 col-sm-6"  (click)="checkTotalEmp()">
-      
+
 
       <div class="card card-border-shadow-primary h-100">
         <div class="card-body">
@@ -413,7 +425,7 @@
       </div>
     </div>
     <div class="col-lg-3 col-sm-6" (click)="checkActiveStatus()">
-      
+
 
       <div class="card card-border-shadow-success h-100">
         <div class="card-body">
@@ -433,7 +445,7 @@
     </div>
     <div class="col-lg-3 col-sm-6" (click)="checkStatus()">
 
-      
+
 
       <div class="card card-border-shadow-danger h-100">
         <div class="card-body">
@@ -451,7 +463,7 @@
         </div>
       </div>
 
-     
+
     </div>
     <div class="col-lg-3 col-sm-6" (click)="checknewJoiner()">
 
@@ -470,8 +482,8 @@
           </p>
         </div>
       </div>
-      
-      
+
+
     </div>
   </div>
 
@@ -523,11 +535,11 @@
                           {{ item["firstName"] }} {{ item["lastName"] }}
                         </h6>
                         <small class="text-truncate">{{item?.['designation']}}</small>
-                          
+
                           <br>
                         <small class="text-truncate">{{item?.empCode}}</small>
-                        
-                        
+
+
 
 
                       </div>

@@ -411,11 +411,12 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
         // ── Step 1: sort by timestamp (once, reused everywhere) ──────────────
         const raw: LocationPoint[] = res.data.sort((a: any, b: any) => a.timestamp - b.timestamp);
 
-        // ── Step 2: DEDUPLICATE — the core fix for map slowness ──────────────
-        // Removes redundant GPS points that are within 50 m AND within 60 s.
-        // Pinned points are ALWAYS kept regardless of distance.
-        // Result: 500 raw points → typically 40–80 meaningful points.
-        const pts = this.deduplicatePoints(raw, { radiusMeters: 50, windowSeconds: 60 });
+        // ── Step 2: DEDUPLICATE ──────────────────────────────────────────────
+        // hardFiltered = quality-filtered (accuracy/teleport) but NOT cluster-collapsed.
+        // Used for stay detection so 30-min stationary clusters are preserved.
+        // pts = fully deduplicated for map rendering (cluster-collapsed + RDP).
+        const hardFiltered = this.hardFilterPoints(raw);
+        const pts = this.clusterAndSimplify(hardFiltered, { radiusMeters: 150, windowSeconds: 120 });
 
         // ── Step 3: single-pass stats (no extra allocations) ─────────────────
         this.computeStats(pts);
@@ -431,8 +432,10 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
           this.ngZone.run(() => this.cdr.markForCheck());
         });
 
-        // ── Step 6: stay detection + lazy address fetch ───────────────────────
-        const stays = this.detectStays(pts);
+        // ── Step 6: stay detection on pre-collapse data (not pts!) ────────────
+        // Using hardFiltered preserves consecutive stationary readings needed
+        // for stay duration calculation. pts has too few points after collapse.
+        const stays = this.detectStays(hardFiltered);
         this.renderStaysWithLazyAddresses(stays);
       },
       error: () => { this.isLoading = false; this.cdr.markForCheck(); }
@@ -440,114 +443,131 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // DEDUPLICATION — Heart of the performance fix
+  // DEDUPLICATION — Two separate passes for map vs stay detection
   // ═══════════════════════════════════════════════════════════════════════════
 
   /**
-   * TWO-PASS GPS cleaning:
-   *
-   * PASS 1 — Hard filter (remove clearly bad points):
-   *   a. accuracy > 200m → discard (GPS not locked) unless pinned
-   *   b. "teleport" detection: if a normal point is > 2 km from BOTH the
-   *      previous AND next valid point it's a ghost coordinate → discard
-   *      (this kills the 26.7903314/81.0162834 junk points in your data)
-   *
-   * PASS 2 — Cluster collapse (remove duplicate stationary readings):
-   *   • If a point is within 50 m of the last kept point AND within 60 s
-   *     → discard (GPS drift while stationary)
-   *   • If within 50 m but > 60 s apart → replace anchor (device stayed)
-   *   • Pinned points always kept regardless
+   * PASS 1 only — accuracy filter + teleport/impossible-speed removal.
+   * Returns all quality points INCLUDING stationary duplicates.
+   * Used by detectStays() so consecutive readings at the same spot are kept
+   * for duration calculation.
    */
-  deduplicatePoints(
-    sorted: LocationPoint[],
-    opts: { radiusMeters: number; windowSeconds: number } = { radiusMeters: 50, windowSeconds: 60 }
-  ): LocationPoint[] {
+  hardFilterPoints(sorted: LocationPoint[]): LocationPoint[] {
     if (!sorted.length) return [];
-
-    // ── PASS 1: hard filter ──────────────────────────────────────────────────
-    const pass1: LocationPoint[] = [];
+    const out: LocationPoint[] = [];
 
     for (let i = 0; i < sorted.length; i++) {
       const p = sorted[i];
+      if (p.location_type === 'pinned') { out.push(p); continue; }
 
-      // Always keep pinned — user explicitly marked this
-      if (p.location_type === 'pinned') { pass1.push(p); continue; }
+      // Reject poor-accuracy points (>= 200 catches "exactly 200" Android fallback coords)
+      if (p.coords.accuracy >= 200) continue;
 
-      // Discard very inaccurate fixes (GPS not locked)
-      // From real data: ghost coords always have accuracy >= 200m
-      if (p.coords.accuracy > 200) continue;
+      if (out.length > 0) {
+        const prev = out[out.length - 1];
+        const dPrev = this.dist(prev.coords.latitude, prev.coords.longitude, p.coords.latitude, p.coords.longitude);
 
-      // Teleport detection:
-      // Look at the nearest valid points before and after.
-      // If this point is extremely far from both neighbours it's a ghost.
-      if (pass1.length > 0) {
-        const prev = pass1[pass1.length - 1];
-        const dPrev = this.dist(
-          prev.coords.latitude, prev.coords.longitude,
-          p.coords.latitude,    p.coords.longitude
-        );
-
-        // Find next valid-accuracy point
+        // Look ahead for the next quality point to detect isolated spikes
         let dNext = 0;
         for (let j = i + 1; j < sorted.length; j++) {
           const n = sorted[j];
-          if (n.location_type === 'pinned' || n.coords.accuracy <= 200) {
+          if (n.location_type === 'pinned' || n.coords.accuracy < 200) {
             dNext = this.dist(p.coords.latitude, p.coords.longitude, n.coords.latitude, n.coords.longitude);
             break;
           }
         }
 
-        // If point is > 2 km from previous AND > 2 km from next valid point
-        // it's an isolated junk coordinate — drop it
-        if (dPrev > 2000 && dNext > 2000) continue;
+        // Spike filter: point far from both previous and next → isolated ghost reading
+        if (dPrev > 150 && dNext > 150) continue;
 
-        // Also drop if speed implied by distance/time is impossibly high
-        // (> 200 km/h for a field tracking app)
+        // Speed filter: impossibly fast jump for a low-quality reading
         const timeSec = (p.timestamp - prev.timestamp) / 1000;
-        if (timeSec > 0 && (dPrev / timeSec) > 55) { // 55 m/s ≈ 200 km/h
-          // could be legitimate fast travel — only reject if also low accuracy
-          if (p.coords.accuracy > 100) continue;
-        }
+        if (timeSec > 0 && (dPrev / timeSec) > 55 && p.coords.accuracy > 100) continue;
       }
 
-      pass1.push(p);
+      out.push(p);
     }
+    return out;
+  }
 
+  /**
+   * PASS 2 + 3 — cluster collapse then RDP simplification.
+   * Takes hardFiltered data. Produces minimal clean polyline for map rendering.
+   * radiusMeters: 150 m collapses the ~110 m drift clusters in real data.
+   */
+  clusterAndSimplify(
+    pass1: LocationPoint[],
+    opts: { radiusMeters: number; windowSeconds: number } = { radiusMeters: 150, windowSeconds: 120 }
+  ): LocationPoint[] {
     if (!pass1.length) return [];
 
-    // ── PASS 2: collapse stationary clusters ─────────────────────────────────
     const kept: LocationPoint[] = [];
 
     for (const p of pass1) {
-      // Always keep first and pinned
       if (kept.length === 0) { kept.push(p); continue; }
       if (p.location_type === 'pinned') { kept.push(p); continue; }
 
-      const last    = kept[kept.length - 1];
-      const distM   = this.dist(last.coords.latitude, last.coords.longitude, p.coords.latitude, p.coords.longitude);
-      const timeSec = (p.timestamp - last.timestamp) / 1000;
+      const anchor = kept[kept.length - 1];
+      const distM  = this.dist(anchor.coords.latitude, anchor.coords.longitude, p.coords.latitude, p.coords.longitude);
 
-      if (distM < opts.radiusMeters && timeSec < opts.windowSeconds) {
-        // GPS drift while stationary — discard
-        continue;
-      }
-
-      if (distM < opts.radiusMeters && timeSec >= opts.windowSeconds) {
-        // Device stayed — update anchor to newest timestamp
-        kept[kept.length - 1] = p;
-        continue;
-      }
+      if (distM < opts.radiusMeters) continue; // discard — still inside cluster
 
       kept.push(p);
     }
 
-    // Always ensure the true last raw-pinned/valid point is included as End
-    const last = pass1[pass1.length - 1];
-    if (kept.length > 0 && kept[kept.length - 1].timestamp !== last.timestamp) {
-      kept.push(last);
+    // Always include the true last quality point as the End marker
+    const lastRaw = pass1[pass1.length - 1];
+    if (kept.length > 0 && kept[kept.length - 1].timestamp !== lastRaw.timestamp) {
+      kept.push(lastRaw);
     }
 
-    return kept;
+    return this.rdpSimplify(kept, 0.00005);
+  }
+
+  /**
+   * Ramer-Douglas-Peucker polyline simplification.
+   * Pinned points are always kept (they mark explicit user visits).
+   * tolerance in degrees (0.00005 ≈ 5–6 m on the ground).
+   */
+  private rdpSimplify(pts: LocationPoint[], tolerance: number): LocationPoint[] {
+    if (pts.length <= 2) return pts;
+
+    const sqTol = tolerance * tolerance;
+
+    const perpDistSq = (p: LocationPoint, a: LocationPoint, b: LocationPoint): number => {
+      const ax = a.coords.longitude, ay = a.coords.latitude;
+      const bx = b.coords.longitude, by = b.coords.latitude;
+      const px = p.coords.longitude, py = p.coords.latitude;
+      const dx = bx - ax, dy = by - ay;
+      if (dx === 0 && dy === 0) {
+        const ex = px - ax, ey = py - ay;
+        return ex * ex + ey * ey;
+      }
+      const t = Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / (dx * dx + dy * dy)));
+      const cx = ax + t * dx - px, cy = ay + t * dy - py;
+      return cx * cx + cy * cy;
+    };
+
+    const simplify = (start: number, end: number, result: boolean[]): void => {
+      let maxSq = 0, idx = start;
+      for (let i = start + 1; i < end; i++) {
+        if (pts[i].location_type === 'pinned') { result[i] = true; continue; }
+        const d = perpDistSq(pts[i], pts[start], pts[end]);
+        if (d > maxSq) { maxSq = d; idx = i; }
+      }
+      if (maxSq > sqTol) {
+        result[idx] = true;
+        simplify(start, idx, result);
+        simplify(idx, end, result);
+      }
+    };
+
+    const keep = new Array(pts.length).fill(false);
+    keep[0] = true;
+    keep[pts.length - 1] = true;
+    simplify(0, pts.length - 1, keep);
+
+    return pts.filter((_, i) => keep[i]);
   }
 
   // ─── Render Layers (outside NgZone) ─────────────────────────────────────────
@@ -619,7 +639,7 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
 
     for (const pin of this.pinnedLocationList) {
       const m = L.marker([pin.latitude, pin.longitude],
-        { icon: this.pinCountIcon(pin.count), zIndexOffset: 900 });
+        { icon: this.pinCountIcon(pin.count, pin.visits.some((v: any) => v.visit_place || v.remark || v.purpose)), zIndexOffset: 900 });
       m.bindPopup(() => this.lazyPinPopup(pin));
       m.on('click', () => this.ngZone.run(() => {
         this.selectedLocation = pin.visits[pin.visits.length - 1] ?? null;
@@ -861,7 +881,11 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
   // ─── Stay Detection ─────────────────────────────────────────────────────────
 
   detectStays(pts: LocationPoint[]): any[] {
-    const D = 100, T = 5 * 60_000;
+    // D: radius within which consecutive readings count as "same place"
+    // Must match the cluster radius (150 m) so alternating drift clusters
+    // are treated as one stay rather than separate movements.
+    // T: minimum duration to report as a stay (2 minutes).
+    const D = 200, T = 2 * 60_000;
     const out: any[] = [];
     let start: LocationPoint | null = null;
     for (let i = 1; i < pts.length; i++) {
@@ -958,10 +982,13 @@ export class TrackingComponent implements OnInit, AfterViewInit, OnDestroy {
     });
   }
 
-  pinCountIcon(count: number): L.DivIcon {
+  pinCountIcon(count: number, hasRemark = false): L.DivIcon {
+    const remarkDot = hasRemark
+      ? `<span style="position:absolute;bottom:-3px;right:-3px;width:10px;height:10px;background:#22c55e;border-radius:50%;border:1.5px solid #fff;box-shadow:0 1px 3px rgba(0,0,0,.4)"></span>`
+      : '';
     return L.divIcon({
       className: '',
-      html: `<div style="position:relative;display:inline-block"><div style="width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#f59e0b;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center"><span style="transform:rotate(45deg);color:#fff;font-size:10px;font-weight:700">P</span></div>${count>1?`<span style="position:absolute;top:-5px;right:-5px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:8px;border:1.5px solid #fff">${count}</span>`:''}</div>`,
+      html: `<div style="position:relative;display:inline-block"><div style="width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);background:#f59e0b;border:2px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35);display:flex;align-items:center;justify-content:center"><span style="transform:rotate(45deg);color:#fff;font-size:10px;font-weight:700">P</span></div>${count>1?`<span style="position:absolute;top:-5px;right:-5px;background:#ef4444;color:#fff;font-size:9px;font-weight:700;padding:1px 4px;border-radius:8px;border:1.5px solid #fff">${count}</span>`:''}${remarkDot}</div>`,
       iconSize: [28, 28], iconAnchor: [14, 31]
     });
   }

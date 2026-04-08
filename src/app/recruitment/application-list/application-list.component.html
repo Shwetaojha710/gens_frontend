@@ -41,7 +41,7 @@
                 <th>Job</th>
                 <th>Applied</th>
                 <th>Experience</th>
-                <th>CTC (LPA) </th>
+                <th>Current /Expected CTC (LPA)  </th>
                 <th>Notice Period</th>
                 <th>Stage</th>
                 <th style="width: 180px">Actions</th>
@@ -80,7 +80,10 @@
                 </td>
                 <td>
                   <div>{{ app.current_ctc }} <small class="text-muted">↑</small> {{ app.expected_ctc }}</div>
-                  <small class="text-muted">{{ app.notice_period }} days</small>
+                  <!-- <small class="text-muted">{{ app.notice_period }} days</small> -->
+                </td>
+                <td>
+                  {{ app.notice_period }} days
                 </td>
                 <td>
                   <span class="badge" [class]="getStageBadgeClass(app.stage)">

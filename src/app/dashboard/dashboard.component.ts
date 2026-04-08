@@ -511,6 +511,9 @@ export class DashboardComponent {
     this.isAttendanceChartRangeOpen = false;
     this.isAttendanceDepartmentRangeOpen = false;
   }
+  gotoTrackingPage(){
+    this.router.navigate(['/layout/tracking']);
+  }
 
   getBranchDD() {
     this.branchList = [];

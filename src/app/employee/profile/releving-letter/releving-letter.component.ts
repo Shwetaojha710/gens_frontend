@@ -115,7 +115,7 @@ body {
 /* 🔥 BACKGROUND FIX */
 .page {
   width: 21cm;
-  min-height: 26.7cm;
+  min-height: 29.7cm;
   padding: 100px 60px 0px 60px;
   position: relative;
 
