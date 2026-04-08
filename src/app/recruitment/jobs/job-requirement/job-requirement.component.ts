@@ -335,9 +335,19 @@ export class JobRequirementComponent {
 
   }
   async update(data: any) {
-
-    this.obj = Object.assign({}, data)
-    this.obj['interview_round_ids'] = this.extractInterviewRoundIds(data);
+    this.obj = Object.assign({}, data);
+    const extractedIds = this.extractInterviewRoundIds(data);
+    // Normalize IDs to exactly match the `value` type in interviewRounds (handles string/number mismatch)
+    this.obj['interview_round_ids'] = extractedIds.map((id: any) => {
+      const match = this.interviewRounds.find((r: any) => String(r.value) === String(id));
+      return match ? match.value : id;
+    });
+    // Restore skills tags from existing data
+    this.skills = Array.isArray(data.skills)
+      ? [...data.skills]
+      : (typeof data.skills === 'string' && data.skills.trim()
+          ? data.skills.split(',').map((s: string) => s.trim()).filter(Boolean)
+          : []);
     this.createFlag = true;
     this.updateFlag = true;
   }
@@ -505,12 +515,18 @@ export class JobRequirementComponent {
       : [];
 
     this.obj['interview_round_ids'] = roundIds;
+    this.obj['interview_round'] = roundIds;   // matches API field name
     this.obj['interview_rounds'] = roundIds;
   }
 
   private extractInterviewRoundIds(data: any): any[] {
     if (Array.isArray(data?.interview_round_ids)) {
       return [...data.interview_round_ids];
+    }
+
+    // API returns field as 'interview_round' (array of UUID strings)
+    if (Array.isArray(data?.interview_round)) {
+      return data.interview_round.map((item: any) => item?.id || item).filter(Boolean);
     }
 
     if (Array.isArray(data?.interview_rounds)) {
