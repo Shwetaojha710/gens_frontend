@@ -119,7 +119,7 @@
           [currentPage]="currentPage" (search)="onSearch($event)" (pageChange)="onPageChange($event)"
           (pageSizeChange)="onPageSizeChange($event)">
           <div class="table-responsive">
-          <table class="table table-striped dataTable">
+          <table class="table dataTable">
             <thead>
               <tr>
                 <th>SI.No</th>
@@ -156,7 +156,7 @@
 
                     <!-- IMAGE -->
                     <ng-container *ngIf="f.doc_type.startsWith('image/')">
-                      <img [src]="f.image" width="80" class="m-1 rounded cursor-pointer"
+                      <img [src]="f.image" width="80" height="80" class="m-1 rounded cursor-pointer"
                         (click)="openModal1(f.image)" />
                     </ng-container>
 

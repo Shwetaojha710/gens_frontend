@@ -7,9 +7,9 @@
     <div class="card employee-list-card">
       <div class="card-header d-flex justify-content-between align-items-center">
         <div class="d-flex align-items-center gap-2">
-          <i class="fas fa-satellite-dish text-primary"></i>
+          <i class="fas fa-satellite-dish text-white"></i>
           <h5 class="mb-0 fw-semibold">Live Tracking — Employee List</h5>
-          <span class="badge bg-primary ms-2" *ngIf="ActiveUsers.length > 0">{{ ActiveUsers.length }}</span>
+          <span class="badge bg-white text-primary ms-2" *ngIf="ActiveUsers.length > 0">{{ ActiveUsers.length }}</span>
         </div>
         <div class="d-flex align-items-center gap-2">
           <span class="live-indicator"><span class="live-dot"></span>Live</span>
@@ -35,7 +35,7 @@
                   <th>Aadhaar</th>
                   <th>Date of Birth</th>
                   <th>Gender</th>
-                  <th class="text-center" style="width:140px;">Action</th>
+                  <th class="text-center" style="width:300px;">Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -98,7 +98,7 @@
                       <button class="btn btn-sm btn-primary view-btn" (click)="viewTrackingOnMap(item)">
                         <i class="fas fa-map-marker-alt me-1"></i>View Map
                       </button>
-                      <button class="btn btn-sm btn-go-live" (click)="goLive(item)">
+                      <button class="btn btn-sm btn-outline-primary" (click)="goLive(item)">
                         <span class="go-live-pip"></span>
                         <i class="fas fa-satellite-dish me-1"></i>Go Live
                       </button>
@@ -143,7 +143,7 @@
   <!-- ═══════════════════════════════════════════════
        TRACKING MAP VIEW
   ════════════════════════════════════════════════ -->
-  <div *ngIf="!viewLiveTracking && !viewLivePage" class="tracking-root" [class.fullscreen-mode]="isFullScreen" [class.tracking-light]="themeMode === 'light'">
+  <div *ngIf="!viewLiveTracking && !viewLivePage" class="tracking-root container-fluid" [class.fullscreen-mode]="isFullScreen" [class.tracking-light]="themeMode === 'light'">
 
     <!-- ── TOP BAR ── -->
     <div class="topbar">
