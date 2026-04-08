@@ -64,6 +64,20 @@
               <span>Close</span>
             </button>
           </div>
+          <div *ngIf="item?.url" class="mt-2 d-flex align-items-center gap-2">
+            <a [href]="normalizeUrl(item.url)" target="_blank" rel="noopener noreferrer"
+              class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1" title="Open Job URL">
+              <i class="ri-external-link-line"></i>
+              <span>Open</span>
+            </a>
+            <button type="button" class="btn btn-sm d-flex align-items-center gap-1"
+              [ngClass]="copied[item.id] ? 'btn-success' : 'btn-outline-secondary'"
+              [title]="copied[item.id] ? 'Copied!' : 'Copy Job URL'"
+              (click)="copy(item.url, item.id)">
+              <i [class]="copied[item.id] ? 'ri-check-line' : 'ri-file-copy-line'"></i>
+              <span>{{ copied[item.id] ? 'Copied!' : 'Copy URL' }}</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
