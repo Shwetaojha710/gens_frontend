@@ -1,4 +1,4 @@
-<div class="container-fluid mt-5">
+<div class="container-fluid mt-2">
   <div class="row g-3 align-items-center mb-4">
     <div class="col-md-6">
       <h4 class="mb-0">Dashboard</h4>
@@ -18,13 +18,13 @@
   </div>
 
   <div class="row g-3 mb-3">
-    <div class="col-lg-6">
+    <div class="col-lg-6 col-md-12">
       <div class="card h-100 dashboard-glass-card">
         <div class="card-header border-0" style="margin-bottom: 0px;">
           <div class="d-flex justify-content-between">
             <h5 class="mb-1">Employee Overview</h5>
             <div>
-              <div class="badge bg-label-primary bg-white text-secondary rounded-pill mx-10 px-4">
+              <div class="badge bg-label-primary bg-white text-secondary rounded-pill mx-2 px-4">
                 Late Check-ins
                 <span class="mb-0 fw-medium text-danger">
                   {{ getStatValueByTitle('Late Check-ins') }} <i class="icon-base ri ri-arrow-up-s-line"></i>
@@ -101,13 +101,13 @@
           <div class="col-6">
             <div class="card-body" (click)="gotoTrackingPage()" style="cursor: pointer;">
               <div class="card-info mb-2">
-                <h6 class="mb-1 text-nowrap" style="color: #3C4056;">On Field Employees (GPS)</h6>
-                <div class="badge bg-label-primary bg-white text-black rounded-pill lh-xs">
+                <h6 class="mb-2 text-nowrap" style="color: #3C4056;">On Field Employees (GPS)</h6>
+                <div class="badge bg-label-primary bg-white text-black rounded-pill lh-xs mt-1">
                   <span class="text-danger me-2"><i class="icon-base ri ri-circle-fill icon-12px"></i></span>
                   Live Tracking
                 </div>
               </div>
-              <div class="d-flex align-items-center">
+              <div class="d-flex align-items-center mt-2">
                 <h4 class="mb-0 sent me-2">{{ trackingList.length }}</h4>
                 <div class="tracking">{{ offlineTrackingCount }} Employees Offline</div>
               </div>
@@ -188,7 +188,7 @@
   </div>
 
   <div class="row g-3 mb-3">
-    <div class="col-md-6">
+    <div class="col-md-6 col-md-6 col-lg-6">
       <div class="ai-card" style="background-image: url('/assets/img/bg-login/ai-bg.png');background-size: cover;background-position: center;">
         <div class="ai-content">
           <h2 class="title">
