@@ -94,7 +94,7 @@ import { RoundTypeComponent } from './recruitment/master/round-type/round-type.c
 import { CandidateComponent } from './recruitment/candidate/candidate.component';
 import { ApplicationListComponent } from './recruitment/application-list/application-list.component';
 import { UserComponent } from './recruitment/interview-pannel/user/user.component';
-import { InterviewerDashboardComponent } from './interviewer-dashboard/interviewer-dashboard.component';
+import { InterviewerDashboardComponent } from './interviewer/interviewer-dashboard/interviewer-dashboard.component';
 
 export const routes: Routes = [
 

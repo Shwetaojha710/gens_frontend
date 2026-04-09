@@ -235,7 +235,7 @@ export class JobRequirementComponent {
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err?.error?.message)
+        // this.notyf.error(err?.error?.message)
       }
     });
   }

@@ -40,6 +40,7 @@ export class JobService {
     return this.http.post<any>(`${this.baseUrl}getJobRequirements`, {});
   }
 
+
   deleteJobRequirement(dept: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}deleteJobRequirement`, dept);
   }

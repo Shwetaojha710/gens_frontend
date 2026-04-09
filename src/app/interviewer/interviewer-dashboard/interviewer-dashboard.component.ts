@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { InterviewService } from '../services/interview.service';
-import { StatusService } from '../services/status.service';
+import { InterviewService } from '../../services/interview.service';
+import { StatusService } from '../../services/status.service';
 import { Router } from '@angular/router';
 import { Notyf } from 'notyf';
 
