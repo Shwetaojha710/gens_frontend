@@ -1,29 +1,28 @@
 import { Component, ElementRef, HostListener } from '@angular/core';
-import { AuthService } from '../../services/auth.service';
 import { Notyf } from 'notyf';
+import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { MasterService } from '../../services/master.service';
-import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { NgSelectModule } from '@ng-select/ng-select';
-import { RouterModule } from '@angular/router';
+
 @Component({
-  selector: 'app-header',
-  standalone: true,
-  imports: [CommonModule, NgSelectModule, FormsModule, RouterModule],
-  templateUrl: './header.component.html',
-  styleUrl: './header.component.css'
+  selector: 'app-interviewer-header',
+  imports: [],
+  templateUrl: './interviewer-header.component.html',
+  styleUrl: './interviewer-header.component.css'
 })
-export class HeaderComponent {
+// export class InterviewerHeaderComponent {
+
+// }
+export class InterviewerHeaderComponent {
   notyf: Notyf = new Notyf();
   tenantDetails:any={}
   baseurl:any
   constructor(private auth: AuthService, private router: Router, private eRef: ElementRef, public masterService: MasterService) {
-    this.getBranchDD()
+    // this.getBranchDD()
       this.baseurl = this.masterService.getBaseUrl();
-    this.obj.branchId = localStorage.getItem('branchId') || '';
-     this.tenantDetails=JSON.parse(localStorage.getItem('tenant') || '{}');
-     this.tenantDetails.image=`${this.baseurl}${this.tenantDetails['image']}`
+    // this.obj.branchId = localStorage.getItem('branchId') || '';
+    //  this.tenantDetails=JSON.parse(localStorage.getItem('tenant') || '{}');
+    //  this.tenantDetails.image=`${this.baseurl}${this.tenantDetails['image']}`
   }
   isDropdownOpen = false;
   branchList: any

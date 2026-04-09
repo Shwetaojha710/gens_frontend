@@ -76,6 +76,47 @@ export class OfferLetterComponent implements OnInit {
         reader.readAsDataURL(blob);
       }));
   }
+
+  formatOrdinalDate(value: string | Date | null | undefined): string {
+    if (!value) return '';
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+
+    const day = date.getDate();
+    const month = date.toLocaleString('en-US', { month: 'long' });
+    const year = date.getFullYear();
+
+    return `${day} ${this.getOrdinalSuffix(day)} ${month}, ${year}`;
+  }
+
+  formatOrdinalDateHtml(value: string | Date | null | undefined): string {
+    if (!value) return '';
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+
+    const day = date.getDate();
+    const month = date.toLocaleString('en-US', { month: 'long' });
+    const year = date.getFullYear();
+
+    return `${day}<sup>${this.getOrdinalSuffix(day)}</sup> ${month}, ${year}`;
+  }
+
+  private getOrdinalSuffix(day: number): string {
+    if (day >= 11 && day <= 13) return 'TH';
+
+    switch (day % 10) {
+      case 1:
+        return 'ST';
+      case 2:
+        return 'ND';
+      case 3:
+        return 'RD';
+      default:
+        return 'TH';
+    }
+  }
 printDoc() {
   this.isDownload = true;
 
