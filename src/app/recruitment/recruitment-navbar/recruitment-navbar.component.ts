@@ -52,6 +52,14 @@ export class RecruitmentNavbarComponent {
   }
 
   menuItems: MenuItem[] = [
+
+    {
+      title: 'Interviewer Dashboard',
+      icon: 'ri-home-smile-line',
+      active: true,
+      link: '/interview/interviewer-dashboard'
+    },
+
     {
       title: 'Dashboard',
       icon: 'ri-home-smile-line',
@@ -64,7 +72,7 @@ export class RecruitmentNavbarComponent {
       children: [
         { title: 'Job Requirement Analysis', icon: 'ri-user-add-line', link: '/recruitment/jobs/job-requirement' },
         { title: 'Job Posting & Sourcing', icon: 'ri-user-add-line', link: '/recruitment/jobs/posting-sourcing' },
-        { title: 'Candidate Pipeline', icon: 'ri-profile-line', link: '/recruitment/pipeline' }
+        // { title: 'Candidate Pipeline', icon: 'ri-profile-line', link: '/recruitment/pipeline' }
       ]
     },
     {

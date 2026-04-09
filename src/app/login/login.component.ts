@@ -110,7 +110,7 @@ export class LoginComponent {
 
           const user = data.data.user;
           // if (user.role === 'panel_user' || user.designation?.toLowerCase().includes('interviewer')) {
-            this.router.navigate(['interviewer-dashboard']);
+            this.router.navigate(['interview']);
           // }
           // else {
             // this.router.navigate(['branchwise']);

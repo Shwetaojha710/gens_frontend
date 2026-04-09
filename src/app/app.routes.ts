@@ -95,6 +95,7 @@ import { CandidateComponent } from './recruitment/candidate/candidate.component'
 import { ApplicationListComponent } from './recruitment/application-list/application-list.component';
 import { UserComponent } from './recruitment/interview-pannel/user/user.component';
 import { InterviewerDashboardComponent } from './interviewer/interviewer-dashboard/interviewer-dashboard.component';
+import { InterviewerComponent } from './interviewer/interviewer.component';
 
 export const routes: Routes = [
 
@@ -256,7 +257,15 @@ export const routes: Routes = [
       },
     ]
   },
-{ path: 'interviewer-dashboard', component: InterviewerDashboardComponent },
+
+  {
+    path: 'interview',
+    component: InterviewerComponent,
+    children: [
+      { path: 'interviewer-dashboard', component: InterviewerDashboardComponent },
+    ]
+  },
+
   { path: ':slug', component: CandidateComponent },
 
   { path: '**', component: PageNotFoundComponent },

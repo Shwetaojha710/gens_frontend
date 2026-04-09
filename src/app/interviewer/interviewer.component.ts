@@ -1,13 +1,11 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { HeaderComponent } from '../include/header/header.component';
-import { NavbarComponent } from '../navbar/navbar.component';
-import { NewnavbarComponent } from '../newnavbar/newnavbar.component';
 import { RecruitmentNavbarComponent } from '../recruitment/recruitment-navbar/recruitment-navbar.component';
+import { InterviewerHeaderComponent } from './interviewer-header/interviewer-header.component';
 
 @Component({
   selector: 'app-interviewer',
-  imports: [HeaderComponent,RecruitmentNavbarComponent, RouterModule],
+  imports: [InterviewerHeaderComponent,RecruitmentNavbarComponent, RouterModule],
   templateUrl: './interviewer.component.html',
   styleUrl: './interviewer.component.css'
 })

@@ -25,6 +25,7 @@ export class PostingSourcingComponent {
   EmployeeList = [];
   editingId: number | null = null;
   minDate: any
+  tenant: any = {};
   constructor(
     public jobService: JobService,
     private router: Router,
@@ -37,6 +38,7 @@ export class PostingSourcingComponent {
     const today = new Date();
     this.minDate = today.toISOString().split('T')[0]; // today
     this.notyf = new Notyf();
+    this.tenant = JSON.parse(localStorage.getItem('tenant') || '{}');
   }
   channels = [
     { id: 'linkedin', label: 'LinkedIn', color: '#0A66C2' },
@@ -61,6 +63,7 @@ export class PostingSourcingComponent {
   token = '';
   expiresAt: Date | null = null;
   copied: Record<string, boolean> = {};
+  selectedJob: any | null = null;
 
   pageSize = 10;
   currentPage = 1;
@@ -146,6 +149,74 @@ export class PostingSourcingComponent {
     }
 
     return [];
+  }
+
+  viewDetails(item: any): void {
+    this.selectedJob = item;
+  }
+
+  getPostedAgoLabel(value: any): string {
+    if (!value) return 'Recently posted';
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return 'Recently posted';
+
+    const diffMs = Date.now() - date.getTime();
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffDays <= 0) return 'Posted today';
+    if (diffDays === 1) return 'Posted 1 day ago';
+    return `Posted ${diffDays} days ago`;
+  }
+
+  getUpdatedAgoLabel(value: any): string {
+    if (!value) return '';
+
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return '';
+
+    const diffMs = Date.now() - date.getTime();
+    const diffMinutes = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMinutes < 1) return 'Just now';
+    if (diffMinutes < 60) return `${diffMinutes} min ago`;
+    if (diffHours < 24) return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+    return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+  }
+
+  getApplicantCount(item: any): number {
+    return Number(
+      item?.applicantsCount ??
+      item?.applicantCount ??
+      item?.applicants ??
+      item?.application_count ??
+      item?.applicationsCount ??
+      0
+    ) || 0;
+  }
+
+  getSalaryLabel(item: any): string {
+    const min = item?.min_salary ?? item?.salary_from ?? item?.salaryFrom;
+    const max = item?.max_salary ?? item?.salary_to ?? item?.salaryTo;
+    const fixed = item?.offered_salary ?? item?.offer_salary ?? item?.salary;
+
+    if (min && max) return `${min} - ${max}`;
+    if (fixed) return `${fixed}`;
+    return item?.employment_type || '-';
+  }
+
+  getWorkLevelLabel(item: any): string {
+    return item?.work_level || item?.seniority || item?.experience_level || '-';
+  }
+
+  getExperienceLabel(item: any): string {
+    return item?.experience || item?.experience_required || item?.minimum_experience || '-';
+  }
+
+  getEmploymentTypeLabel(item: any): string {
+    return item?.employment_type || item?.employee_type || item?.job_type || '-';
   }
 
   publish(data: any, status: any) {
@@ -254,6 +325,7 @@ export class PostingSourcingComponent {
           this.JobRequirementsList = response.data
           this.jobs = response.data
           this.originalList = response.data
+          this.selectedJob = this.jobs[0] || null;
           // pagination
           const start = (this.currentPage - 1) * this.pageSize;
           const end = start + this.pageSize;
