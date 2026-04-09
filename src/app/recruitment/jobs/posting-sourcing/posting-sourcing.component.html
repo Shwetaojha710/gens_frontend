@@ -1,31 +1,27 @@
-
 <div class="container-fluid mt-3">
   <div class="row">
-    <div class="col-md-3" *ngFor="let item of jobs">
-      <div class="card mb-6 border border-2" [ngClass]="getCardBorderClass(item?.status)">
+    <div class="col-md-4" *ngFor="let item of jobs">
+      <!-- <div class="card mb-6" [ngClass]="getCardBorderClass(item?.status)">
         <div class="card-body">
           <div class="d-flex justify-content-between align-items-start text-capitalize">
             <h5 class="text-primary mb-0">
               {{item?.job_title}}
             </h5>
-            <span class="badge rounded-pill px-3 py-2 text-uppercase" [ngClass]="getStatusBadgeClass(item?.status)">
+            <span class="badge rounded-pill text-uppercase" [ngClass]="getStatusBadgeClass(item?.status)">
               {{ getStatusLabel(item?.status) }}
             </span>
           </div>
 
-
-
-
           <ul class="list-unstyled g-2 my-3">
             <li class="mb-2 d-flex align-items-center"><i
-                class="icon-base ri ri-circle-fill icon-10px text-body me-2"></i><strong>📍 Job Location </strong>
-              :<span class="text-success"> {{item?.location}}</span></li>
+                class="icon-base ri ri-circle-fill icon-10px text-body me-2"></i> Job Location
+              : <span class="text-success"> {{item?.location}}</span></li>
             <li class="mb-2 d-flex align-items-center"><i
-                class="icon-base ri ri-circle-fill icon-10px text-body me-2"></i><span><strong>No Of Opening </strong> :
+                class="icon-base ri ri-circle-fill icon-10px text-body me-2"></i><span>No Of Opening :
                 {{item?.no_of_opening}}</span></li>
 
             <li class="mb-2 d-flex align-items-center"><i
-                class="icon-base ri ri-circle-fill icon-10px text-body me-2"></i><span><strong>Notice Period </strong> :
+                class="icon-base ri ri-circle-fill icon-10px text-body me-2"></i><span>Notice Period :
                 {{item?.notice_period}}</span></li>
 
           </ul>
@@ -37,10 +33,7 @@
 
 
           <div class="d-flex flex-wrap gap-2 mb-3">
-            <span
-              *ngFor="let skill of getSkillsList(item?.skills)"
-              class="badge rounded-pill bg-label-primary"
-            >
+            <span *ngFor="let skill of getSkillsList(item?.skills)" class="badge rounded-pill bg-label-primary">
               {{ skill }}
             </span>
             <span *ngIf="!getSkillsList(item?.skills).length" class="text-muted">-</span>
@@ -53,7 +46,7 @@
 
           <p> {{item?.job_description}}</p>
           <div class="job-action-row">
-            <button *ngIf="canPublish(item)" type="button" class="job-action-btn publish-btn"
+            <button *ngIf="canPublish(item)" type="button" class="btn btn-outline-primary d-grid w-100 waves-effect"
               (click)="publish(item,'open')">
               <i class="ri-rocket-line"></i>
               <span>Publish</span>
@@ -77,6 +70,149 @@
               <i [class]="copied[item.id] ? 'ri-check-line' : 'ri-file-copy-line'"></i>
               <span>{{ copied[item.id] ? 'Copied!' : 'Copy URL' }}</span>
             </button>
+          </div>
+        </div>
+      </div> -->
+
+
+      <div class="card h-100" [ngClass]="getCardBorderClass(item?.status)">
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-4">
+            <a href="javascript:;" class="d-flex align-items-center">
+              <div class="avatar me-2">
+                <img src="../../assets/img/icons/brands/react-label.png" alt="Avatar" class="rounded-circle">
+              </div>
+              <div class="me-2 text-heading h5 mb-0"> {{item?.job_title}}</div>
+            </a>
+            <div class="ms-auto">
+              <ul class="list-inline mb-0 d-flex align-items-center">
+                <li class="list-inline-item me-1">
+                  <a href="javascript:void(0);" class="badge bg-label-primary rounded-pill"> Notice Period : 20</a>
+                </li>
+                <li class="list-inline-item me-1">
+                  <!-- <a href="javascript:void(0);"
+                    class="badge bg-label-success rounded-pill" [ngClass]="getStatusBadgeClass(item?.status)">  {{ getStatusLabel(item?.status) }}</a> -->
+                </li>
+                <li class="list-inline-item">
+                  <div class="dropdown">
+                    <button type="button"
+                      class="btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow p-0 waves-effect"
+                      data-bs-toggle="dropdown" aria-expanded="false"><i
+                        class="icon-base ri ri-more-2-line icon-22px text-body-secondary"></i></button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                      <li><a class="dropdown-item waves-effect" href="javascript:void(0);">Update</a></li>
+                      <li><a class="dropdown-item waves-effect" href="javascript:void(0);">Publish</a></li>
+                      <li><a class="dropdown-item waves-effect" href="javascript:void(0);">Delete</a></li>
+                      <li>
+                        <hr class="dropdown-divider">
+                      </li>
+
+                    </ul>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <p class="text-nowrap mb-2"><span class="text-primary">Skills level</span>: <span
+              *ngFor="let skill of getSkillsList(item?.skills)" class="badge rounded-pill bg-label-info mx-1">
+              {{ skill }}
+            </span></p>
+          <p class="mb-3 pb-1">{{item?.job_description}}</p>
+          <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center w-px-100">
+              <i class="icon-base ri ri-map-pin-line icon-18px me-1_5 text-primary"></i>
+              <span> {{item?.location}}</span>
+            </div>
+            <div class="d-flex align-items-center w-px-75">
+              <i class="icon-base ri ri-hand icon-18px me-1_5 text-primary"></i>
+              <span>{{item?.no_of_opening}}</span>
+            </div>
+
+            <div class="ms-auto">
+              <a href="javascript:void(0);" class="badge bg-label-success rounded-pill mx-1"
+                [ngClass]="getStatusBadgeClass(item?.status)"> {{ getStatusLabel(item?.status) }}</a>
+              <a href="javascript:;" class="me-1"><span class="badge bg-outilne-primary rounded-pill">View
+                  Details</span></a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-2">
+    <div class="col-lg-12">
+
+      <div class="card">
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center flex-wrap gap-1">
+            <a href="javascript:;" class="d-flex align-items-center">
+              <div class="me-2 text-heading h5 mb-0"> Software Developer <br><small class="fs-12">Location :
+                  Lucknow</small></div>
+            </a>
+
+            <small class="text-body-secondary">12 min ago</small>
+          </div>
+          <p class="text-primary mb-1">Quaere eTechnologies Pvt. Ltd. </p>
+
+          <div class="text-black">Posted 3 days ago <i class="fa fa-circle fs-8"></i> <span>34 Applicants</span></div>
+          <hr>
+          <div class="mt-2">
+
+
+            <h5 class="card-text text-uppercase text-body-secondary small">About this Job</h5>
+            <p class="mb-0">Learn web design in 1 hour with 25+ simple-to-use rules and guidelines — tons of amazing
+              web design resources included!</p>
+            <hr class="my-6">
+            <div class="row g-6 mb-6">
+              <div class="col-md-6 col-xl-2">
+                <div class="card shadow-none bg-transparent border border-primary text-primary">
+                  <div class="card-body">
+                    <p class="card-title mb-0 text-primary">Experience</p>
+                    <small class="card-text">Minimum 1 years</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-xl-2">
+                <div class="card shadow-none bg-transparent border border-primary text-primary">
+                  <div class="card-body">
+                    <p class="card-title mb-0 text-primary">Work Level</p>
+                    <small class="card-text">Senior level</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-xl-2">
+                <div class="card shadow-none bg-transparent border border-primary text-primary">
+                  <div class="card-body">
+                    <p class="card-title mb-0 text-primary">Employee type</p>
+                    <small class="card-text">Full Time</small>
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6 col-xl-2">
+                <div class="card shadow-none bg-transparent border border-primary text-primary">
+                  <div class="card-body">
+                    <p class="card-title mb-0 text-primary">Offer Salary</p>
+                    <small class="card-text">Full Time</small>
+                  </div>
+                </div>
+              </div>
+              
+            </div>
+            <hr class="my-3">
+            <h5 class="card-text text-uppercase text-body-secondary small">Description</h5>
+            <p class="mb-2">The material of this course is also covered in my other course about web design and
+              development with HTML5 &amp; CSS3. Scroll to the bottom of this page to check out that course, too! If
+              you're already taking my other course, you already have all it takes to start designing beautiful
+              websites today!</p>
+            <p class="mb-2">"Best web design course: If you're interested in web design, but want more than just a
+              "how to use WordPress" course,I highly recommend this one." — Florian Giusti</p>
+            <p>"Very helpful to us left-brained people: I am familiar with HTML, CSS, JQuery, and Twitter Bootstrap,
+              but I needed instruction in web design. This course gave me practical, impactful techniques for making
+              websites more beautiful and engaging." — Susan Darlene Cain</p>
+            <hr>
+
+
           </div>
         </div>
       </div>
