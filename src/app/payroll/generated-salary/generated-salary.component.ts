@@ -43,8 +43,8 @@ export class GeneratedSalaryComponent {
     { value: '12', label: 'December' }
   ];
   monthObj: any = {
-    '01': 'January', '02': 'February', '03': 'March', '04': 'April', '05': 'May', '06': 'June',
-    '07': 'July', '08': 'August', '09': 'September', '10': 'October', '11': 'November', '12': 'December'
+    '1': 'January', '2': 'February', '3': 'March', '4': 'April', '5': 'May', '6': 'June',
+    '7': 'July', '8': 'August', '9': 'September', '10': 'October', '11': 'November', '12': 'December'
   }
   yearList: any = [];
   notyf: Notyf;
@@ -718,12 +718,12 @@ export class GeneratedSalaryComponent {
 
 
   convertNumberToWords(amount: number): string {
-    if (amount === 0) return 'zero';
+    if (amount === 0) return 'Zero';
     const a = [
-      '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
-      'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen', 'eighteen', 'nineteen'
+      '', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten',
+      'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'
     ];
-    const b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+    const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
     const numToWords = (n: number): string => {
       if (n < 20) return a[n];
       if (n < 100) return b[Math.floor(n / 10)] + (n % 10 ? ' ' + a[n % 10] : '');
@@ -759,8 +759,10 @@ async generateDoc() {
     TableCell,
     WidthType,
     ImageRun,
-    Footer,
-    Header
+    Header,
+    HorizontalPositionRelativeFrom,
+    VerticalPositionRelativeFrom,
+    TextWrappingType
   } = await import("docx");
 
   this.obj['totalAmount'] = this.totalAmount;
@@ -799,62 +801,37 @@ const formattedDate = `Dated: ${day}${getOrdinal(day)} ${month}, ${year}`;
         transformation:{ width:w,height:h }
       });
 
-    const logo = await loadImg('assets/img/logo/logo-quaere.png',120,40);
-    const soc2 = await loadImg('assets/img/logo/footer1.png',45,45);
-    const cmmi = await loadImg('assets/img/logo/footer_2.png',120,60);
+    const letterhead = new ImageRun({
+      data: await fetch('assets/img/Letterhead-1.png').then(r => r.arrayBuffer()),
+      type: 'png',
+      transformation: { width: 800, height: 1123 },
+      floating: {
+        behindDocument: true,
+        allowOverlap: true,
+        horizontalPosition: {
+          relative: HorizontalPositionRelativeFrom.PAGE,
+          offset: 0
+        },
+        verticalPosition: {
+          relative: VerticalPositionRelativeFrom.PAGE,
+          offset: 0
+        },
+        wrap: {
+          type: TextWrappingType.NONE
+        }
+      }
+    });
+
 
     // ======================
-    // HEADER (LOGO + DATE)
+    // HEADER (LETTERHEAD BACKGROUND)
     // ======================
 
     const header = new Header({
 
       children:[
-
-        new Table({
-          width:{ size:100,type:WidthType.PERCENTAGE },
-          borders:{
-            top:{style:"none"},
-            bottom:{style:"none"},
-            left:{style:"none"},
-            right:{style:"none"},
-            insideHorizontal:{style:"none"},
-            insideVertical:{style:"none"}
-          },
-          rows:[
-
-            new TableRow({
-
-              children:[
-
-                new TableCell({
-                  borders:{top:{style:"none"},bottom:{style:"none"},left:{style:"none"},right:{style:"none"}},
-                  children:[ new Paragraph({ children:[logo] }) ]
-                }),
-
-                // new TableCell({
-                //   borders:{top:{style:"none"},bottom:{style:"none"},left:{style:"none"},right:{style:"none"}},
-                //   children:[
-
-                //     new Paragraph({
-                //       alignment:AlignmentType.RIGHT,
-                //       children:[
-                //         new TextRun({
-                //           text:`Dated: ${new Date().toLocaleDateString()}`,
-                //           bold:true,
-                //           size:24
-                //         })
-                //       ]
-                //     })
-
-                //   ]
-                // })
-
-              ]
-
-            })
-
-          ]
+        new Paragraph({
+          children: [letterhead]
         })
 
       ]
@@ -902,98 +879,6 @@ const formattedDate = `Dated: ${day}${getOrdinal(day)} ${month}, ${year}`;
     });
 
     // ======================
-    // FOOTER
-    // ======================
-
-    const footer = new Footer({
-
-      children:[
-
-        new Paragraph({
-          border:{ top:{
-            color: "999999", size: 6,
-            style: 'nil'
-          } }
-        }),
-
-        new Table({
-
-          width:{size:100,type:WidthType.PERCENTAGE},
-
-          borders:{
-            top:{style:"none"},
-            bottom:{style:"none"},
-            left:{style:"none"},
-            right:{style:"none"},
-            insideHorizontal:{style:"none"},
-            insideVertical:{style:"none"}
-          },
-
-          rows:[ new TableRow({
-
-            children:[
-
-              // BLUE STRIP
-              new TableCell({
-                shading:{ fill:"1E73BE" },
-                width:{ size:3,type:WidthType.PERCENTAGE },
-                borders:{top:{style:"none"},bottom:{style:"none"},left:{style:"none"},right:{style:"none"}},
-                children:[ new Paragraph("") ]
-              }),
-
-              // COMPANY TEXT
-              new TableCell({
-
-                width:{ size:67,type:WidthType.PERCENTAGE },
-
-                borders:{top:{style:"none"},bottom:{style:"none"},left:{style:"none"},right:{style:"none"}},
-
-                children:[
-
-                  new Paragraph({
-                    children:[
-                      new TextRun({ text:"Quaere Technologies Private Limited ",bold:true }),
-                      new TextRun({ text:"AN ISO 9001 : 2015" })
-                    ]
-                  }),
-
-                  new Paragraph("7th Floor, Cyber Tower, Vibhuti Khand,"),
-                  new Paragraph("Gomti Nagar, Lucknow, U.P.-226010"),
-                  new Paragraph("Web: www.quaeretech.com"),
-                  new Paragraph("E-mail: info@quaeretech.com | Tel: 0522-4067760"),
-
-                  new Paragraph({
-                    children:[ new TextRun({ text:"GSTN- 09AAACQ1581F1Z1",bold:true }) ]
-                  })
-
-                ]
-
-              }),
-
-              // ICONS RIGHT
-              new TableCell({
-                width:{ size:30,type:WidthType.PERCENTAGE },
-                borders:{top:{style:"none"},bottom:{style:"none"},left:{style:"none"},right:{style:"none"}},
-                children:[
-
-                  new Paragraph({
-                    alignment:AlignmentType.RIGHT,
-                    children:[ soc2,new TextRun(" "),cmmi ]
-                  })
-
-                ]
-              })
-
-            ]
-
-          }) ]
-        })
-
-      ]
-
-    });
-
-    // ======================
     // DOCUMENT
     // ======================
 
@@ -1002,7 +887,18 @@ const formattedDate = `Dated: ${day}${getOrdinal(day)} ${month}, ${year}`;
       sections:[{
 
         headers:{ default: header },
-        footers:{ default: footer },
+        properties: {
+          page: {
+            margin: {
+              top: 900,
+              right: 720,
+              bottom: 720,
+              left: 720,
+              header: 0,
+              footer: 0
+            }
+          }
+        },
 
         children:[
         // new Paragraph(""),
@@ -1011,16 +907,26 @@ const formattedDate = `Dated: ${day}${getOrdinal(day)} ${month}, ${year}`;
                       children:[
                         new TextRun({
                           text:`${formattedDate}`,
-                          bold:true,
+                          // bold:true,
                           size:24
                         })
                       ]
                     }),
           new Paragraph(""),
-          new Paragraph("To,"),
-          new Paragraph("The Branch Manager"),
-          new Paragraph("ICICI Bank"),
-          new Paragraph("Gomti Nagar, Lucknow"),
+              new Paragraph(""),
+                  new Paragraph(""),
+          new Paragraph({
+            children: [new TextRun({ text: "To,", bold: true })]
+          }),
+          new Paragraph({
+            children: [new TextRun({ text: "The Branch Manager", bold: true })]
+          }),
+          new Paragraph({
+            children: [new TextRun({ text: "ICICI Bank", bold: true })]
+          }),
+          new Paragraph({
+            children: [new TextRun({ text: "Gomti Nagar, Lucknow", bold: true })]
+          }),
 
           new Paragraph(""),
 
@@ -1030,7 +936,14 @@ const formattedDate = `Dated: ${day}${getOrdinal(day)} ${month}, ${year}`;
           }),
 
           new Paragraph(""),
-
+           new Paragraph({
+            children:[ new TextRun({
+              text:`Respected Sir/ Madam,`,
+              bold:true,
+              size:22
+            })]
+          }),
+              new Paragraph(""),
           new Paragraph({
             children:[ new TextRun({
               text:`1) Enclosed please find Cheque No.${this.chequeNo} dated ${new Date().toLocaleDateString()} of Rs.${this.totalAmount}/- (${this.convertNumberToWords(this.totalAmount)}). Kindly transfer the amount as per details given below:`,
@@ -1046,12 +959,14 @@ const formattedDate = `Dated: ${day}${getOrdinal(day)} ${month}, ${year}`;
             alignment:AlignmentType.RIGHT,
             children:[ new TextRun("Shiv Pal Singh") ]
           }),
-
+new Paragraph(""),
           new Paragraph({
             alignment:AlignmentType.RIGHT,
             children:[ new TextRun({ text:"Director",bold:true }) ]
-          })
+          }),
 
+          new Paragraph(""),
+  new Paragraph(""),  new Paragraph(""),  new Paragraph(""),
         ]
 
       }]

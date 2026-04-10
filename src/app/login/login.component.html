@@ -127,7 +127,7 @@
                     style="width:56px;height:56px;" inputmode="numeric"
                     (input)="onOtpInput($event, null)" (keydown)="onOtpKeydown($event, d3)">
                 </div>
-                <button class="btn btn-primary d-grid w-100" (click)="verifyOtp()" [disabled]="otpForm.invalid">
+                <button type="button" class="btn btn-primary d-grid w-100" (click)="verifyOtp()" [disabled]="otpForm.invalid">
                   Verify & Login
                 </button>
                 <small class="text-muted d-block text-center mt-2">

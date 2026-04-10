@@ -12,19 +12,6 @@
 
     <div class="header-actions">
       <div class="header-utilities">
-        <!-- <button type="button" class="utility-btn" aria-label="Translate">
-          <i class="ri ri-translate-2"></i>
-        </button>
-        <button type="button" class="utility-btn" aria-label="Theme">
-          <i class="ri ri-sun-line"></i>
-        </button>
-        <button type="button" class="utility-btn" aria-label="Favorites">
-          <i class="ri ri-star-line"></i>
-        </button>
-        <button type="button" class="utility-btn notification-btn" aria-label="Notifications">
-          <i class="ri ri-notification-3-line"></i>
-          <span class="notification-dot"></span>
-        </button> -->
       </div>
 
 
@@ -44,8 +31,8 @@
               <span class="profile-status"></span>
             </div>
             <div class="profile-meta">
-              <h6>{{ personalDetail['name'] }}</h6>
-              <p>{{ personalDetail['role'] }}</p>
+              <h6>{{ personalDetail['first_name'] }}{{ personalDetail['last_name'] }}</h6>
+              <p>Interviewer</p>
               <span>{{ personalDetail['email'] }}</span>
             </div>
           </div>

@@ -2,29 +2,17 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { InterviewService } from '../../services/interview.service';
+import {
+  InterviewerAssignedInterview,
+  InterviewerSectionGroup,
+  InterviewService
+} from '../../services/interview.service';
 import { StatusService } from '../../services/status.service';
 import { Router } from '@angular/router';
 import { Notyf } from 'notyf';
-
-interface AssignedInterview {
-  round_id: string;
-  round_master_id: string;
-  application_id: string;
-  round_name: string;
-  round_type: string;
-  sequence: number;
-  total_rounds: number;
-  scheduled_at: string;
-  duration_minutes: number;
-  mode: string;
-  meeting_link: string;
-  status: string;
-  feedback_submitted: boolean;
-  is_unlocked: boolean;
-  candidate: { name: string; email: string; phone: string; experience: string };
-  job: { job_title: string; department: string };
-}
+import { InterviewerInterviewsComponent } from '../interviewer-interviews/interviewer-interviews.component';
+import { InterviewerFeedbackComponent } from '../interviewer-feedback/interviewer-feedback.component';
+import { InterviewerCandidatesComponent } from '../interviewer-candidates/interviewer-candidates.component';
 
 interface FeedbackForm {
   application_id: string;
@@ -41,7 +29,14 @@ interface FeedbackForm {
 @Component({
   selector: 'app-interviewer-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [
+    CommonModule,
+    RouterModule,
+    FormsModule,
+    InterviewerInterviewsComponent,
+    InterviewerFeedbackComponent,
+    InterviewerCandidatesComponent
+  ],
   templateUrl: './interviewer-dashboard.component.html',
   styleUrls: ['./interviewer-dashboard.component.css']
 })
@@ -50,12 +45,13 @@ export class InterviewerDashboardComponent implements OnInit {
   loading = false;
   notyf = new Notyf();
 
-  assignedInterviews: AssignedInterview[] = [];
+  assignedInterviews: InterviewerAssignedInterview[] = [];
   stats = { total: 0, scheduled: 0, pending_feedback: 0, completed: 0 };
+  sections: InterviewerSectionGroup[] = [];
 
   // Feedback modal
   showFeedbackModal = false;
-  selectedInterview: AssignedInterview | null = null;
+  selectedInterview: InterviewerAssignedInterview | null = null;
   feedbackForm: FeedbackForm = {
     application_id: '',
     round_id: '',
@@ -84,25 +80,31 @@ export class InterviewerDashboardComponent implements OnInit {
 
   loadMyInterviews(): void {
     this.loading = true;
-    this.interviewService.getMyInterviews().subscribe({
-      next: (res: any) => {
-        const status = this.statusService.handleResponseStatus(res.status);
+    this.interviewService.getInterviewerWorkspace().subscribe({
+      next: (workspace) => {
+        const status = this.statusService.handleResponseStatus(workspace.status);
         if (status === true) {
-          this.assignedInterviews = res.data?.interviews || [];
-          this.stats = res.data?.stats || { total: 0, scheduled: 0, pending_feedback: 0, completed: 0 };
+          this.assignedInterviews = workspace.interviews || [];
+          this.stats = workspace.stats || { total: 0, scheduled: 0, pending_feedback: 0, completed: 0 };
+          this.sections = workspace.sections || [];
         } else if (status === 'expired') {
           this.router.navigate(['login']);
         }
         this.loading = false;
       },
-      error: () => {
+      error: (err: any) => {
         this.loading = false;
-        this.notyf.error('Failed to load interviews');
+        const status = this.statusService.handleResponseStatus(err?.error?.status);
+        if (status === 'expired') {
+          this.router.navigate(['login']);
+          return;
+        }
+        this.notyf.error(err?.error?.message || 'Failed to load interviews');
       }
     });
   }
 
-  openFeedbackModal(item: AssignedInterview): void {
+  openFeedbackModal(item: InterviewerAssignedInterview): void {
     this.selectedInterview = item;
     const name = [this.currentUser.first_name, this.currentUser.last_name].filter(Boolean).join(' ')
       || this.currentUser.name || this.currentUser.email || '';
@@ -154,17 +156,21 @@ export class InterviewerDashboardComponent implements OnInit {
     });
   }
 
-  getStatusClass(item: AssignedInterview): string {
+  getStatusClass(item: InterviewerAssignedInterview): string {
     if (item.feedback_submitted || item.status === 'completed') return 'bg-success';
     if (item.status === 'scheduled') return 'bg-warning';
     if (item.status === 'cancelled') return 'bg-danger';
     return 'bg-secondary';
   }
 
-  getStatusLabel(item: AssignedInterview): string {
+  getStatusLabel(item: InterviewerAssignedInterview): string {
     if (item.feedback_submitted || item.status === 'completed') return 'Completed';
     if (item.status === 'scheduled') return 'Scheduled';
     if (item.status === 'cancelled') return 'Cancelled';
     return item.status || 'Pending';
+  }
+
+  getSectionItems(title: string) {
+    return this.sections.find((section) => section.title === title)?.items || [];
   }
 }

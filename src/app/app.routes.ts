@@ -96,6 +96,10 @@ import { ApplicationListComponent } from './recruitment/application-list/applica
 import { UserComponent } from './recruitment/interview-pannel/user/user.component';
 import { InterviewerDashboardComponent } from './interviewer/interviewer-dashboard/interviewer-dashboard.component';
 import { InterviewerComponent } from './interviewer/interviewer.component';
+import { InterviewerInterviewsPageComponent } from './interviewer/interviewer-interviews-page/interviewer-interviews-page.component';
+import { InterviewerFeedbackPageComponent } from './interviewer/interviewer-feedback-page/interviewer-feedback-page.component';
+import { InterviewerCandidatesPageComponent } from './interviewer/interviewer-candidates-page/interviewer-candidates-page.component';
+import { InterviewerCalendarPageComponent } from './interviewer/interviewer-calendar-page/interviewer-calendar-page.component';
 
 export const routes: Routes = [
 
@@ -262,7 +266,12 @@ export const routes: Routes = [
     path: 'interview',
     component: InterviewerComponent,
     children: [
+      { path: '', redirectTo: 'interviewer-dashboard', pathMatch: 'full' },
       { path: 'interviewer-dashboard', component: InterviewerDashboardComponent },
+      { path: 'interviews', component: InterviewerInterviewsPageComponent },
+      { path: 'feedback', component: InterviewerFeedbackPageComponent },
+      { path: 'candidates', component: InterviewerCandidatesPageComponent },
+      { path: 'calendar', component: InterviewerCalendarPageComponent },
     ]
   },
 
