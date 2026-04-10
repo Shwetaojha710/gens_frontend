@@ -573,3 +573,91 @@ nav.layout-navbar .menu-text {
 .landing-footer .form-floating.form-floating-outline .form-control:not(:placeholder-shown) ~ label::after {
   background: var(--bs-footer-top-bg);
 }
+
+/* —— GENS marketing nav: floating white bar on soft blue + gradient CTA —— */
+nav.layout-navbar.gens-topnav {
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  /* Inherits --gens-surface from app-landing-page on /Home; fallback matches landing-page :host */
+  background: var(--gens-surface, #f1f5f9) !important;
+  padding-block: 1rem 0.75rem;
+  padding-inline: 0;
+}
+
+nav.layout-navbar.gens-topnav > .container {
+  padding-inline: clamp(0.75rem, 2vw, 1.5rem);
+}
+
+nav.layout-navbar.gens-topnav .landing-navbar {
+  --bs-front-navbar-bg: #ffffff !important;
+  background-color: #fff !important;
+  border-radius: 0.875rem !important;
+  box-shadow:
+    0 4px 24px rgba(15, 23, 42, 0.07),
+    0 1px 3px rgba(15, 23, 42, 0.06) !important;
+  padding-block: 0.6rem 0.65rem !important;
+  padding-inline: 1rem 1.125rem !important;
+  align-items: center;
+}
+
+nav.layout-navbar.gens-topnav .gens-nav-logo {
+  filter: none;
+  object-fit: contain;
+}
+
+nav.layout-navbar.gens-topnav .gens-nav-icon {
+  color: #475569 !important;
+}
+
+nav.layout-navbar.gens-topnav .gens-nav-link {
+  color: #1e293b !important;
+  font-weight: 500;
+}
+
+nav.layout-navbar.gens-topnav .navbar.landing-navbar .navbar-nav .nav-link:hover,
+nav.layout-navbar.gens-topnav .navbar.landing-navbar .navbar-nav .nav-link.active,
+nav.layout-navbar.gens-topnav .navbar.landing-navbar .navbar-nav .nav-link:focus {
+  color: #209af7 !important;
+}
+
+nav.layout-navbar.gens-topnav .gens-nav-cta.btn-primary {
+  background: linear-gradient(89.79deg, #209af7 0.92%, #025a9d 99.82%) !important;
+  color: #fff !important;
+  border: none !important;
+  font-weight: 600;
+  border-radius: 0.5rem !important;
+  box-shadow: 0 2px 12px rgba(32, 154, 247, 0.35);
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+nav.layout-navbar.gens-topnav .gens-nav-cta.btn-primary:hover,
+nav.layout-navbar.gens-topnav .gens-nav-cta.btn-primary:focus {
+  color: #fff !important;
+  filter: brightness(1.05);
+}
+
+nav.layout-navbar.gens-topnav .gens-nav-cta.btn-primary .icon-base,
+nav.layout-navbar.gens-topnav .gens-nav-cta.btn-primary .ri {
+  color: #fff !important;
+}
+
+@media (max-width: 991.98px) {
+  nav.layout-navbar.gens-topnav .landing-nav-menu {
+    background-color: #fff !important;
+    border-radius: 0 0.5rem 0.5rem 0;
+    box-shadow: 4px 0 24px rgba(15, 23, 42, 0.12) !important;
+  }
+
+  nav.layout-navbar.gens-topnav .landing-navbar .navbar-nav .nav-link {
+    color: #1e293b !important;
+  }
+}
+
+nav.layout-navbar.gens-topnav.navbar-active .landing-navbar {
+  box-shadow:
+    0 6px 28px rgba(15, 23, 42, 0.1),
+    0 2px 6px rgba(15, 23, 42, 0.06) !important;
+}

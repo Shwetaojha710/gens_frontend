@@ -53,12 +53,12 @@ export class RecruitmentNavbarComponent {
 
   menuItems: MenuItem[] = [
 
-    {
-      title: 'Interviewer Dashboard',
-      icon: 'ri-home-smile-line',
-      active: true,
-      link: '/interview/interviewer-dashboard'
-    },
+    // {
+    //   title: 'Interviewer Dashboard',
+    //   icon: 'ri-home-smile-line',
+    //   active: true,
+    //   link: '/interview/interviewer-dashboard'
+    // },
 
     {
       title: 'Dashboard',

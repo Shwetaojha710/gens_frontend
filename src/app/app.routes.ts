@@ -100,6 +100,16 @@ import { InterviewerInterviewsPageComponent } from './interviewer/interviewer-in
 import { InterviewerFeedbackPageComponent } from './interviewer/interviewer-feedback-page/interviewer-feedback-page.component';
 import { InterviewerCandidatesPageComponent } from './interviewer/interviewer-candidates-page/interviewer-candidates-page.component';
 import { InterviewerCalendarPageComponent } from './interviewer/interviewer-calendar-page/interviewer-calendar-page.component';
+import { SuperadminCompaniesComponent } from './superadmin/companies/superadmin-companies.component';
+import { SuperadminCompanyDashboardComponent } from './superadmin/company-dashboard/superadmin-company-dashboard.component';
+import { SuperadminContactInquiriesComponent } from './superadmin/contact-inquiries/superadmin-contact-inquiries.component';
+import { SuperadminDashboardComponent } from './superadmin/dashboard/superadmin-dashboard.component';
+import { SuperadminLandingComponent } from './superadmin/landing/superadmin-landing.component';
+import { SuperadminLayoutComponent } from './superadmin/layout/superadmin-layout.component';
+import { SuperadminLoginComponent } from './superadmin/login/superadmin-login.component';
+import { SuperadminPlansComponent } from './superadmin/plans/superadmin-plans.component';
+import { SuperadminGuard } from './superadmin/superadmin.guard';
+import { SuperadminUsersComponent } from './superadmin/users/superadmin-users.component';
 
 export const routes: Routes = [
 
@@ -109,7 +119,22 @@ export const routes: Routes = [
   { path: 'landing-home', component: LandingHomeComponent },
   { path: 'login', component: LoginComponent },
   // { path: 'candidate-application', component: CandidateComponent },
-
+{ path: 'superadmin/login', component: SuperadminLoginComponent },
+  {
+    path: 'superadmin',
+    component: SuperadminLayoutComponent,
+    canActivate: [SuperadminGuard],
+    children: [
+      { path: 'dashboard', component: SuperadminDashboardComponent },
+      { path: 'companies/:tenantId/dashboard', component: SuperadminCompanyDashboardComponent },
+      { path: 'companies', component: SuperadminCompaniesComponent },
+      { path: 'plans', component: SuperadminPlansComponent },
+      { path: 'landing', component: SuperadminLandingComponent },
+      { path: 'contact-inquiries', component: SuperadminContactInquiriesComponent },
+      { path: 'users', component: SuperadminUsersComponent },
+      { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+    ],
+  },
   { path: 'privacy-policy', component: PrivacyPolicyComponent },
 
   { path: 'branchwise', component: BranchwiseComponent },
