@@ -6,21 +6,37 @@ import { tap } from 'rxjs/operators';
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
 
-  // Employee portal has its own token stored under a different key
+  const superAdminToken = localStorage.getItem('superadminToken');
   const empPortalToken  = localStorage.getItem('empPortalToken');
   const adminToken      = localStorage.getItem('token');
 
-  const isEmpPortal = !!empPortalToken;
-  const token       = isEmpPortal ? empPortalToken : adminToken;
-  const branchId    = isEmpPortal
-    ? localStorage.getItem('empPortalBranchId')
-    : localStorage.getItem('branchId');
+  // Detect context: URL-based check AND token presence as fallback
+  const isSuperAdmin = !!(
+    superAdminToken &&
+    (req.url.includes('/superadmin/') || req.url.includes('superadmin/'))
+  ) && !req.url.includes('/superadmin/login');
+
+  const isEmpPortal = !!empPortalToken && !isSuperAdmin;
+
+  let token: string | null;
+  let branchId: string | null;
+
+  if (isSuperAdmin) {
+    token    = superAdminToken;
+    branchId = null;
+  } else if (isEmpPortal) {
+    token    = empPortalToken;
+    branchId = localStorage.getItem('empPortalBranchId');
+  } else {
+    token    = adminToken;
+    branchId = localStorage.getItem('branchId');
+  }
 
   const clonedRequest = token
     ? req.clone({
         setHeaders: {
           Authorization: `Bearer ${token}`,
-          branchId: `${branchId ?? ''}`
+          ...(branchId != null ? { branchId } : {})
         }
       })
     : req;
@@ -28,11 +44,23 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   return next(clonedRequest).pipe(
     tap((event) => {
       if (event instanceof HttpResponse) {
-        const body = event.body as any;
+        let body = event.body as any;
+
+        // responseType: 'text' responses arrive as a raw JSON string — parse it
+        if (typeof body === 'string') {
+          try { body = JSON.parse(body); } catch { /* not JSON, ignore */ }
+        }
+
         if (body && body.status === 'expired') {
           localStorage.clear();
-          // Redirect to the correct login page depending on context
-          router.navigate([isEmpPortal ? '/employee-portal/login' : '/login']);
+          // Superadmin: check by token presence OR by URL
+          if (superAdminToken || req.url.includes('superadmin/')) {
+            router.navigate(['/superadmin/login']);
+          } else if (isEmpPortal) {
+            router.navigate(['/employee-portal/login']);
+          } else {
+            router.navigate(['/login']);
+          }
         }
       }
     })
