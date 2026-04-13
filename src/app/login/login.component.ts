@@ -146,7 +146,7 @@ export class LoginComponent {
     }
   }
 
-  login() {
+    login() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       this.notyf.error('Please fill in all required fields.');
@@ -157,6 +157,12 @@ export class LoginComponent {
       next: (res) => {
         const data = JSON.parse(res);
         if (data.status) {
+          localStorage.removeItem('empPortalToken');
+          localStorage.removeItem('empPortalBranchId');
+          localStorage.removeItem('empPortalUser');
+          localStorage.removeItem('empPortalTenant');
+          localStorage.removeItem('empPortalCurrency');
+          localStorage.removeItem('empPortalBaseUrl');
           localStorage.setItem('token', data.data.token);
           localStorage.setItem("base_url", data.data.baseUrl);
           localStorage.setItem("PORT", data.data.PORT);
@@ -183,6 +189,43 @@ export class LoginComponent {
       }
     });
   }
+  // login() {
+  //   if (this.form.invalid) {
+  //     this.form.markAllAsTouched();
+  //     this.notyf.error('Please fill in all required fields.');
+  //     return;
+  //   }
+
+  //   this.auth.loginUser(this.form.value).subscribe({
+  //     next: (res) => {
+  //       const data = JSON.parse(res);
+  //       if (data.status) {
+  //         localStorage.setItem('token', data.data.token);
+  //         localStorage.setItem("base_url", data.data.baseUrl);
+  //         localStorage.setItem("PORT", data.data.PORT);
+  //         localStorage.setItem('user', JSON.stringify(data.data.user));
+  //         localStorage.setItem('tenant', JSON.stringify(data.data.tenant));
+  //         localStorage.setItem('branch', JSON.stringify(data.data.branch));
+  //         localStorage.setItem('currency', JSON.stringify(data.data.currencyList));
+
+  //         const user = data.data.user;
+  //         // if (user.role === 'panel_user' || user.designation?.toLowerCase().includes('interviewer')) {
+  //           // this.router.navigate(['interviewer-dashboard']);
+  //         // } else {
+  //           this.router.navigate(['branchwise']);
+  //         // }
+
+  //         this.notyf.success(data.message);
+  //       } else {
+  //         this.notyf.error(data.message);
+  //       }
+  //     },
+  //     error: (err) => {
+  //       console.error('Login error:', err);
+  //       this.notyf.error(err.error?.message || 'Server error. Please try again.');
+  //     }
+  //   });
+  // }
 
 
   // isInvalid(field: string): boolean {

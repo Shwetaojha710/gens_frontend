@@ -52,7 +52,7 @@ export class JobRequirementComponent {
 
     return '-';
   }
-  status: any = [{ value: 'active', label: 'ACTIVE' }, { value: 'inactive', label: 'INACTIVE' }]
+  status: any = [{ value: 'open', label: 'Open' }, { value: 'draft', label: 'Draft' }, { value: 'closed', label: 'Closed' }]
   candidatePreferenceOptions: any = [
     { value: 'male', label: 'Male' },
     { value: 'female', label: 'Female' },
@@ -299,6 +299,7 @@ export class JobRequirementComponent {
     this.createFlag = false;
     this.listflag = true;
     this.updateFlag = false;
+    this.obj['skills'] = this.skills;
     this.syncInterviewRoundPayload();
 
     this.jobService.updateJobRequirement(this.obj).subscribe(
@@ -346,8 +347,8 @@ export class JobRequirementComponent {
     this.skills = Array.isArray(data.skills)
       ? [...data.skills]
       : (typeof data.skills === 'string' && data.skills.trim()
-          ? data.skills.split(',').map((s: string) => s.trim()).filter(Boolean)
-          : []);
+        ? data.skills.split(',').map((s: string) => s.trim()).filter(Boolean)
+        : []);
     this.createFlag = true;
     this.updateFlag = true;
   }
@@ -379,7 +380,8 @@ export class JobRequirementComponent {
     this.JobRequirementsList = []
     this.originalList = []
     this.filteredDesignation = []
-    this.jobService.getJobRequirements().subscribe({
+
+    this.jobService.getJobRequirements(this.obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
 
@@ -708,6 +710,8 @@ export class JobRequirementComponent {
   createFlag: any = false
   listflag: any = true
   updateFlag: any = false
+  selectedItem: any = null;
+
   opencreate() {
     this.obj = {}
     this.createFlag = true
@@ -715,7 +719,16 @@ export class JobRequirementComponent {
     this.updateFlag = false
   }
 
+  viewItem(item: any): void {
+    this.selectedItem = item;
+    const el = document.getElementById('jobReqViewModal');
+    if (el) (window as any).bootstrap.Modal.getOrCreateInstance(el).show();
+  }
 
-
+  closeViewModal(): void {
+    const el = document.getElementById('jobReqViewModal');
+    if (el) (window as any).bootstrap.Modal.getInstance(el)?.hide();
+    this.selectedItem = null;
+  }
 
 }

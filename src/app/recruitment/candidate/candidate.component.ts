@@ -410,7 +410,8 @@ export class CandidateComponent {
   }
 
   private fallbackLoadJobPosting() {
-    this.jobService.getJobRequirements().subscribe({
+    let obj={}
+    this.jobService.getJobRequirements(obj).subscribe({
       next: (response: any) => {
         const allJobs = response?.data || [];
         let matchedJob = null;

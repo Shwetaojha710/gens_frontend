@@ -1,0 +1,252 @@
+<div class="container-fluid ep-leave-page">
+  <header class="ep-leave-page__intro mb-4">
+    <h4 class="mb-1 ep-page-title">Apply for leave</h4>
+    <p class="ep-page-sub mb-0">Submit requests and track approvals in one place.</p>
+  </header>
+  <p class="small text-muted mb-4 ep-leave-hint">
+    <i class="fas fa-info-circle me-1 ep-leave-hint__icon"></i>
+    From / To cannot be before today. Total days and duration options update after you pick dates.
+  </p>
+
+  <div class="row g-4 ep-leave-row">
+    <div class="col-lg-5">
+      <div class="card ep-glass-card border-0 h-100 ep-leave-form-card">
+        <div class="card-body">
+          <div class="ep-leave-form-head">
+            <div class="ep-leave-form-head__badge" aria-hidden="true">
+              <i class="fas fa-paper-plane"></i>
+            </div>
+            <div>
+              <p class="ep-leave-form-head__eyebrow mb-1">New request</p>
+              <h2 class="ep-leave-form-head__title h5 mb-0">Fill in the details</h2>
+            </div>
+          </div>
+
+          <form [formGroup]="form" (ngSubmit)="submit()">
+            <div class="mb-3">
+              <label class="form-label ep-leave-label">Leave type</label>
+              <select class="form-select" formControlName="leaveTypeId">
+                <option value="">Select</option>
+                <option *ngFor="let t of types" [value]="t.value">{{ t.label }}</option>
+              </select>
+              <p class="ep-leave-restricted-note mb-0 mt-2" *ngIf="restrictedLeaveYearEndHint">
+                <i class="fas fa-calendar-alt me-1" aria-hidden="true"></i>
+                Restricted leave: any unused balance expires at the end of the calendar year (does not carry forward).
+              </p>
+            </div>
+            <div class="row g-2 mb-3">
+              <div class="col-sm-6">
+                <label class="form-label ep-leave-label">From</label>
+                <input type="date" class="form-control" formControlName="fromDate" [attr.min]="minDateStr" />
+              </div>
+              <div class="col-sm-6">
+                <label class="form-label ep-leave-label">To</label>
+                <input type="date" class="form-control" formControlName="toDate" [attr.min]="minToDateStr" />
+              </div>
+            </div>
+
+            <div class="mb-3 ep-leave-panel">
+              <label class="form-label ep-leave-label mb-2">Total leave</label>
+              <div class="ep-total-days">{{ computedLeaveDaysLabel }}</div>
+              <p class="text-muted small mb-0 mt-2" *ngIf="form.get('fromDate')?.value && form.get('toDate')?.value">
+                Includes first/last day half rules when applicable.
+              </p>
+              <p class="text-muted small mb-0 mt-2" *ngIf="!form.get('fromDate')?.value || !form.get('toDate')?.value">
+                Select both dates to calculate days.
+              </p>
+            </div>
+
+            <div class="mb-3 ep-leave-panel">
+              <label class="form-label ep-leave-label mb-2">
+                Duration
+                <span class="fw-normal text-muted small" *ngIf="isSingleLeaveDay"> (single day)</span>
+                <span
+                  class="fw-normal text-muted small"
+                  *ngIf="form.get('fromDate')?.value && form.get('toDate')?.value && !isSingleLeaveDay"
+                >
+                  — first calendar day
+                </span>
+              </label>
+              <div class="ep-duration-group" role="radiogroup" aria-label="Leave duration">
+                <label class="ep-duration-item">
+                  <input type="radio" formControlName="duration_type" value="full" />
+                  <span>Full day</span>
+                </label>
+                <label class="ep-duration-item">
+                  <input type="radio" formControlName="duration_type" value="first_half" />
+                  <span>First half</span>
+                </label>
+                <label class="ep-duration-item">
+                  <input type="radio" formControlName="duration_type" value="second_half" />
+                  <span>Second half</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="mb-3 ep-leave-panel" *ngIf="form.get('fromDate')?.value && form.get('toDate')?.value && !isSingleLeaveDay">
+              <label class="form-label ep-leave-label mb-2">Last calendar day of range</label>
+              <div class="ep-duration-group ep-duration-group--compact" role="radiogroup">
+                <label class="ep-duration-item">
+                  <input type="radio" formControlName="to_duration_type" value="full" />
+                  <span>Full</span>
+                </label>
+                <label class="ep-duration-item">
+                  <input type="radio" formControlName="to_duration_type" value="first_half" />
+                  <span>1st half</span>
+                </label>
+                <label class="ep-duration-item">
+                  <input type="radio" formControlName="to_duration_type" value="second_half" />
+                  <span>2nd half</span>
+                </label>
+              </div>
+            </div>
+
+            <p class="text-danger small mb-3" *ngIf="form.touched && form.errors?.['fromInPast']">
+              Leave cannot start on a past date. Choose today or a future date.
+            </p>
+            <p class="text-danger small mb-3" *ngIf="form.touched && form.errors?.['toBeforeFrom']">
+              &quot;To&quot; must be on or after &quot;From&quot;.
+            </p>
+
+            <div class="mb-4">
+              <label class="form-label ep-leave-label">Reason</label>
+              <textarea class="form-control" rows="3" formControlName="reason" placeholder="Brief reason for your leave"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary ep-leave-submit" [disabled]="submitting">
+              <span *ngIf="!submitting"><i class="fas fa-check me-2"></i>Submit application</span>
+              <span *ngIf="submitting"><i class="fas fa-circle-notch fa-spin me-2"></i>Submitting…</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-7">
+      <div class="card ep-glass-card border-0 h-100 ep-leave-apps">
+        <div class="card-header border-0 ep-leave-apps__header">
+          <div class="ep-leave-apps__top">
+            <div>
+              <p class="ep-leave-apps__eyebrow mb-1">Overview</p>
+              <h3 class="ep-leave-apps__title h5 mb-0">Leave applications</h3>
+            </div>
+            <div class="ep-leave-toolbar" role="group" aria-label="Filter by period">
+              <span class="ep-leave-toolbar__label text-muted small">Period</span>
+              <div class="ep-leave-toolbar__inputs">
+                <select
+                  class="form-select form-select-sm ep-leave-toolbar__month"
+                  [(ngModel)]="month"
+                  [ngModelOptions]="{ standalone: true }"
+                  (ngModelChange)="loadList()"
+                  [attr.aria-label]="'Month'"
+                >
+                  <option *ngFor="let m of [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]" [ngValue]="m">
+                    {{ monthShort[m - 1] }}
+                  </option>
+                </select>
+                <input
+                  type="number"
+                  class="form-control form-control-sm ep-leave-toolbar__year"
+                  [(ngModel)]="year"
+                  [ngModelOptions]="{ standalone: true }"
+                  (change)="loadList()"
+                  min="2000"
+                  max="2100"
+                  aria-label="Year"
+                />
+                <button
+                  type="button"
+                  class="btn btn-sm ep-leave-toolbar__refresh"
+                  (click)="loadList()"
+                  [disabled]="loading"
+                  title="Refresh list"
+                >
+                  <i class="fas fa-sync-alt" [class.fa-spin]="loading"></i>
+                  <span class="d-none d-sm-inline ms-1">Refresh</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="ep-leave-segment" role="tablist">
+            <button
+              type="button"
+              class="ep-leave-segment__btn"
+              [class.ep-leave-segment__btn--active]="listTab === 'my'"
+              (click)="setListTab('my')"
+              role="tab"
+              [attr.aria-selected]="listTab === 'my'"
+            >
+              <i class="fas fa-user me-2 ep-leave-segment__ico"></i>
+              My leave
+            </button>
+            <button
+              type="button"
+              class="ep-leave-segment__btn"
+              [class.ep-leave-segment__btn--active]="listTab === 'team'"
+              (click)="setListTab('team')"
+              role="tab"
+              [attr.aria-selected]="listTab === 'team'"
+            >
+              <i class="fas fa-users me-2 ep-leave-segment__ico"></i>
+              <span class="d-inline d-md-none">Team</span>
+              <span class="d-none d-md-inline">Applied by my team members</span>
+            </button>
+          </div>
+        </div>
+
+        <div class="ep-leave-table-shell">
+          <div *ngIf="loading" class="ep-leave-table-shell__loading">
+            <div class="spinner-border text-primary ep-leave-spinner" role="status">
+              <span class="visually-hidden">Loading</span>
+            </div>
+          </div>
+          <ng-container *ngIf="!loading && displayLeaves.length > 0">
+            <div class="table-responsive ep-leave-table-wrap">
+              <table class="table table-sm table-hover align-middle mb-0 ep-leave-table">
+                <thead>
+                  <tr>
+                    <th scope="col">Applicant</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">From</th>
+                    <th scope="col">To</th>
+                    <th scope="col" class="text-end">Days</th>
+                    <th scope="col">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of displayLeaves; trackBy: trackLeaveRow" class="ep-leave-table__row">
+                    <td>
+                      <div class="ep-leave-applicant">
+                        <span class="ep-leave-avatar" [attr.aria-hidden]="true">{{ applicantInitials(row) }}</span>
+                        <span class="ep-leave-applicant__name">{{ applicantName(row) }}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span class="ep-leave-type">{{ $any(row).leaveName || '—' }}</span>
+                    </td>
+                    <td class="text-nowrap ep-leave-date">{{ $any(row).fromDate | date : 'mediumDate' }}</td>
+                    <td class="text-nowrap ep-leave-date">{{ $any(row).toDate | date : 'mediumDate' }}</td>
+                    <td class="text-end fw-semibold ep-leave-days">{{ $any(row).days }}</td>
+                    <td>
+                      <span [class]="leaveStatusClass($any(row).status)">{{ $any(row).status }}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </ng-container>
+          <div *ngIf="!loading && displayLeaves.length === 0" class="ep-leave-empty">
+            <div class="ep-leave-empty__icon">
+              <i class="fas fa-inbox"></i>
+            </div>
+            <p class="ep-leave-empty__title mb-1">No applications</p>
+            <p class="ep-leave-empty__hint mb-0 small text-muted">
+              <ng-container *ngIf="listTab === 'my'">No leave requests for this period.</ng-container>
+              <ng-container *ngIf="listTab === 'team'">No team requests for this period, or you have no reportees.</ng-container>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

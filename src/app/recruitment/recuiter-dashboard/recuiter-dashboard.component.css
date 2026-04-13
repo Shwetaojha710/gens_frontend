@@ -67,8 +67,90 @@
   font-weight: 500;
   color: var(--rd-text);
   box-shadow: var(--rd-shadow);
-  border: 1px solid rgba(0, 0, 0, 0.04);
-  cursor: default;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+}
+.rd-header__daterange:hover {
+  border-color: var(--rd-primary);
+}
+
+/* Date filter dropdown */
+.rd-date-filter {
+  position: relative;
+}
+.rd-date-filter__panel {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 1050;
+  background: var(--rd-card);
+  border: 1px solid rgba(0,0,0,0.1);
+  border-radius: 12px;
+  box-shadow: var(--rd-shadow-lg);
+  padding: 16px;
+  min-width: 240px;
+}
+.rd-date-filter__row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 12px;
+}
+.rd-date-filter__label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--rd-muted);
+}
+.rd-date-filter__input {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.875rem;
+  outline: none;
+  width: 100%;
+}
+.rd-date-filter__input:focus {
+  border-color: var(--rd-primary);
+}
+.rd-date-filter__actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.rd-date-filter__btn {
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+}
+.rd-date-filter__btn--clear {
+  background: #f1f5f9;
+  color: #64748b;
+}
+.rd-date-filter__btn--clear:hover {
+  background: #e2e8f0;
+}
+.rd-date-filter__btn--apply {
+  background: var(--rd-primary);
+  color: #fff;
+}
+.rd-date-filter__btn--apply:hover {
+  opacity: 0.9;
+}
+.rd-date-filter__btn--apply:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.rd-date-filter__err {
+  font-size: 0.72rem;
+  color: #dc3545;
+  display: flex;
+  align-items: center;
+  margin-top: 3px;
 }
 
 .rd-header__caret {
@@ -426,17 +508,93 @@
 
 .rd-donut-card__chart {
   position: relative;
-  width: 112px;
-  height: 112px;
+  width: 120px;
+  height: 120px;
   margin-bottom: 0.5rem;
 }
 
-.rd-donut-sm {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
+/* SVG donut */
+.rd-donut-svg {
+  width: 120px;
+  height: 120px;
+  display: block;
 }
 
+.rd-donut-slice {
+  transition: opacity .15s, transform .15s;
+  transform-origin: 60px 60px;
+  cursor: pointer;
+}
+
+.rd-donut-slice:hover,
+.rd-donut-slice--hovered {
+  opacity: .85;
+  transform: scale(1.06);
+}
+
+.rd-donut-centre-n {
+  font-size: 16px;
+  font-weight: 800;
+  fill: var(--rd-text, #1e293b);
+  text-anchor: middle;
+  dominant-baseline: middle;
+}
+
+.rd-donut-centre-sub {
+  font-size: 8px;
+  fill: #94a3b8;
+  text-anchor: middle;
+}
+
+/* floating tooltip card */
+.rd-donut-tooltip {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, calc(-50% + 70px));
+  background: #1e293b;
+  color: #f1f5f9;
+  border-radius: 8px;
+  padding: 5px 10px;
+  font-size: 0.7rem;
+  white-space: nowrap;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  z-index: 10;
+  box-shadow: 0 4px 12px rgba(0,0,0,.25);
+  animation: rdTipIn .12s ease;
+}
+
+@keyframes rdTipIn {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 74px)); }
+  to   { opacity: 1; transform: translate(-50%, calc(-50% + 70px)); }
+}
+
+.rd-donut-tooltip__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.rd-donut-tooltip__label {
+  font-weight: 600;
+}
+
+.rd-donut-tooltip__val {
+  margin-left: 4px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.rd-donut-tooltip__val small {
+  font-weight: 400;
+  color: #94a3b8;
+}
+
+/* keep old hole styles for any remaining usages */
 .rd-donut-sm__hole {
   position: absolute;
   inset: 50%;
@@ -485,6 +643,51 @@
 .rd-legend-compact strong {
   margin-left: auto;
   color: var(--rd-text);
+}
+
+/* ── Legend tooltip ── */
+.rd-legend-tip {
+  position: relative;
+  cursor: default;
+}
+
+.rd-legend-tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  background: #1e293b;
+  color: #f1f5f9;
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 4px 9px;
+  border-radius: 6px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s ease;
+  z-index: 99;
+  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+}
+
+.rd-legend-tip::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 1px);
+  transform: translateX(-50%);
+  border: 5px solid transparent;
+  border-top-color: #1e293b;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .15s ease;
+  z-index: 99;
+}
+
+.rd-legend-tip:hover::after,
+.rd-legend-tip:hover::before {
+  opacity: 1;
 }
 
 /* —— AI / dark panel —— */
@@ -875,3 +1078,96 @@
   font-weight: 600;
   padding: 0.35rem 0.85rem;
 }
+
+/* ── Candidate Detail Modal ── */
+.rd-modal-hero {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.rd-modal-avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #209af7, #025a9d);
+  color: #fff;
+  font-size: 1.4rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rd-modal-meta h5 { font-size: 1rem; }
+
+.rd-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: .75rem;
+}
+
+.rd-detail-item {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: .6rem .85rem;
+}
+
+.rd-detail-label {
+  font-size: .72rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .4px;
+  color: #64748b;
+  display: block;
+  margin-bottom: 2px;
+}
+
+.rd-detail-val {
+  font-size: .875rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+.rd-ats-bar {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: .75rem 1rem;
+}
+
+.rd-rounds-list {
+  display: flex;
+  flex-direction: column;
+  gap: .5rem;
+}
+
+.rd-round-row {
+  display: flex;
+  align-items: center;
+  gap: .75rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: .5rem .85rem;
+  flex-wrap: wrap;
+}
+
+.rd-round-name {
+  font-weight: 600;
+  font-size: .85rem;
+  color: #1e293b;
+  min-width: 120px;
+}
+
+.rd-round-meta {
+  display: flex;
+  gap: .75rem;
+  font-size: .78rem;
+  color: #64748b;
+  flex: 1;
+  flex-wrap: wrap;
+}
+

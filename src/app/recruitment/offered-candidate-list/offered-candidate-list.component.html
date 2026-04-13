@@ -1,0 +1,122 @@
+<div class="container-fluid offered-page">
+
+  <!-- ── PAGE HEADER ── -->
+  <div class="page-header mb-3">
+    <div class="d-flex align-items-center gap-2">
+      <div class="page-icon-wrap">
+        <i class="fas fa-handshake"></i>
+      </div>
+      <div>
+        <h5 class="mb-0 fw-semibold">Offered Candidates</h5>
+        <small class="text-muted">Candidates who have been given an offer</small>
+      </div>
+      <span class="badge bg-success ms-1">{{ offeredApplications.length }}</span>
+    </div>
+    <button class="btn btn-sm btn-outline-success" (click)="loadApplications()">
+      <i class="fas fa-sync-alt me-1"></i>Refresh
+    </button>
+  </div>
+
+  <!-- ── TABLE CARD ── -->
+  <div class="card table-card">
+    <div class="card-body p-0">
+
+      <!-- Loading -->
+      <div *ngIf="isLoading" class="text-center py-5">
+        <div class="spinner-border text-success" role="status"></div>
+        <p class="mt-2 text-muted mb-0">Loading offered candidates...</p>
+      </div>
+
+      <app-search-pagination
+        *ngIf="!isLoading"
+        [totalItems]="totalItems"
+        [pageSize]="itemsPerPage"
+        [currentPage]="currentPage"
+        (search)="onSearch($event)"
+        (pageChange)="onPageChange($event)"
+        (pageSizeChange)="onPageSizeChange($event)"
+      >
+        <!-- Empty state -->
+        <div *ngIf="displayApps.length === 0" class="text-center py-5">
+          <i class="fas fa-handshake fa-3x text-muted mb-3 d-block"></i>
+          <h6 class="text-muted">No offered candidates found</h6>
+          <p class="text-muted mb-0 small">Candidates marked as "Offered" will appear here</p>
+        </div>
+
+        <div class="table-responsive" *ngIf="displayApps.length > 0">
+          <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+              <tr>
+                <th style="width:50px">#</th>
+                <th>Candidate</th>
+                <th>Job / Department</th>
+                <th>Experience</th>
+                <th>Current CTC (LPA)</th>
+                <th>Expected CTC (LPA)</th>
+                <th>Notice Period</th>
+                <th>Applied On</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let app of displayApps; let i = index">
+                <td class="text-muted fw-semibold">
+                  {{ (currentPage - 1) * itemsPerPage + i + 1 }}
+                </td>
+
+                <!-- Candidate -->
+                <td>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="cand-avatar">
+                      {{ (app.name ? app.name.charAt(0).toUpperCase() : 'C') }}
+                    </div>
+                    <div>
+                      <div class="fw-semibold">{{ app.name }}</div>
+                      <small class="text-muted d-block">{{ app.email }}</small>
+                      <small class="text-muted">{{ app.phone }}</small>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- Job -->
+                <td>
+                  <div class="fw-semibold text-truncate" style="max-width:160px">{{ app.job_title }}</div>
+                  <small class="text-muted">{{ app.department }}</small>
+                </td>
+
+                <!-- Experience -->
+                <td>
+                  <span class="fw-semibold">{{ app.experience }}</span>
+                  <small class="text-muted ms-1">yrs</small>
+                </td>
+
+                <!-- Current CTC -->
+                <td>
+                  <span class="fw-semibold">{{ app.current_ctc || '—' }}</span>
+                </td>
+
+                <!-- Expected CTC -->
+                <td>
+                  <span class="fw-semibold">{{ app.expected_ctc || '—' }}</span>
+                </td>
+
+                <!-- Notice period -->
+                <td>
+                  <span *ngIf="app.notice_period">{{ app.notice_period }} days</span>
+                  <span *ngIf="!app.notice_period" class="text-muted">—</span>
+                </td>
+
+                <!-- Applied On -->
+                <td>
+                  <span class="badge bg-light text-dark rounded-pill px-2">
+                    {{ app.createdAt | date:'MMM d, y' }}
+                  </span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </app-search-pagination>
+
+    </div>
+  </div>
+</div>

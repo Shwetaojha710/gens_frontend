@@ -85,8 +85,7 @@ export class SuperadminLayoutComponent {
   }
 
   logout() {
-    localStorage.removeItem('superadminToken');
-    localStorage.removeItem('superadminUser');
+    localStorage.clear();
     this.router.navigate(['superadmin/login']);
   }
 }

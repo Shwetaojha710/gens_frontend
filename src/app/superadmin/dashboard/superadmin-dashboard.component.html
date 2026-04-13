@@ -214,8 +214,8 @@
               <polyline [attr.points]="linePoints" class="sa-line-path"></polyline>
             </svg>
             <div class="d-flex justify-content-between text-muted small mt-2" *ngIf="analytics.companySignupsLast30Days?.length">
-              <span>{{ analytics.companySignupsLast30Days[0]?.date }}</span>
-              <span>{{ analytics.companySignupsLast30Days[analytics.companySignupsLast30Days.length - 1]?.date }}</span>
+              <span>{{ analytics.companySignupsLast30Days[0].date }}</span>
+              <span>{{ analytics.companySignupsLast30Days[analytics.companySignupsLast30Days.length - 1].date }}</span>
             </div>
           </div>
         </div>

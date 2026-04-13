@@ -50,7 +50,10 @@ export class SuperadminLoginComponent {
 
         localStorage.setItem('superadminToken', data.data.token);
         localStorage.setItem('superadminUser', JSON.stringify(data.data.user));
-        if (data.data.baseUrl) localStorage.setItem('base_url', data.data.baseUrl);
+        if (data.data.baseUrl)
+          {
+            localStorage.setItem('base_url', data.data.baseUrl);
+          }
         if (data.data.PORT) localStorage.setItem('PORT', String(data.data.PORT));
         this.notyf.success(data.message || 'Login successful!');
         this.router.navigate(['superadmin/dashboard']);

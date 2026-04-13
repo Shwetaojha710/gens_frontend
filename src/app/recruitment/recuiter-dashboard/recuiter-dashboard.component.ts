@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { Router, RouterModule } from '@angular/router';
 import { forkJoin, of } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { JobService } from '../../services/job.service';
@@ -12,6 +13,9 @@ interface StageSlice {
   label: string;
   value: number;
   color: string;
+  // SVG donut fields
+  path?: string;
+  pct?: number;
 }
 
 interface RecentAppRow {
@@ -39,7 +43,7 @@ interface InterviewSoon {
 @Component({
   selector: 'app-recuiter-dashboard',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, FormsModule],
   templateUrl: './recuiter-dashboard.component.html',
   styleUrl: './recuiter-dashboard.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -65,6 +69,18 @@ export class RecuiterDashboardComponent implements OnInit {
   upcomingInterviews: InterviewSoon[] = [];
   topOpenJobs: TopOpenJobRow[] = [];
 
+  selectedApp: CandidateApplicationRecord | null = null;
+  loadingDetail = false;
+  hoveredSlice: StageSlice | null = null;
+
+  // Date filter
+  filterFrom = '';
+  filterTo = '';
+  allApplications: CandidateApplicationRecord[] = [];
+  dateFilterOpen = false;
+  dateError: 'from_future' | 'to_future' | 'range' | null = null;
+  readonly today = new Date().toISOString().split('T')[0];
+
   readonly stageOrder: { key: RecruitmentStageKey; label: string; color: string }[] = [
     { key: 'candidate_applied', label: 'Applied', color: '#209af7' },
     { key: 'ats_screening', label: 'ATS / Screening', color: '#6366f1' },
@@ -82,6 +98,7 @@ export class RecuiterDashboardComponent implements OnInit {
     private jobService: JobService,
     private statusService: StatusService,
     private cdr: ChangeDetectorRef,
+    private router: Router,
   ) {}
 
   ngOnInit(): void {
@@ -91,9 +108,9 @@ export class RecuiterDashboardComponent implements OnInit {
   load(): void {
     this.loading = true;
     this.cdr.markForCheck();
-
+     let obj={}
     forkJoin({
-      jobs: this.jobService.getJobRequirements().pipe(
+      jobs: this.jobService.getJobRequirements(obj).pipe(
         catchError(() => of({ status: false, data: [] })),
       ),
       pipeline: this.jobService.getCandidatePipeline({}).pipe(
@@ -110,9 +127,8 @@ export class RecuiterDashboardComponent implements OnInit {
         }
 
         this.jobs = (jobs as any).status === true ? (jobs as any).data || [] : [];
-        this.applications = p.status === true ? p.data || [] : [];
-
-        this.computeAll();
+        this.allApplications = p.status === true ? p.data || [] : [];
+        this.applyDateFilter();
         this.loading = false;
         this.cdr.markForCheck();
       },
@@ -121,6 +137,62 @@ export class RecuiterDashboardComponent implements OnInit {
         this.cdr.markForCheck();
       },
     });
+  }
+
+  onFromChange(): void {
+    this.dateError = null;
+    if (this.filterFrom && this.filterFrom > this.today) {
+      this.dateError = 'from_future';
+      return;
+    }
+    if (this.filterFrom && this.filterTo && this.filterFrom > this.filterTo) {
+      this.dateError = 'range';
+    }
+  }
+
+  onToChange(): void {
+    this.dateError = null;
+    if (this.filterTo && this.filterTo > this.today) {
+      this.dateError = 'to_future';
+      return;
+    }
+    if (this.filterFrom && this.filterTo && this.filterFrom > this.filterTo) {
+      this.dateError = 'range';
+    }
+  }
+
+  applyDateFilter(): void {
+    if (this.dateError) return;
+    if (!this.filterFrom && !this.filterTo) {
+      this.applications = [...this.allApplications];
+    } else {
+      const from = this.filterFrom ? new Date(this.filterFrom).setHours(0, 0, 0, 0) : 0;
+      const to = this.filterTo ? new Date(this.filterTo).setHours(23, 59, 59, 999) : Infinity;
+      this.applications = this.allApplications.filter((a) => {
+        const t = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        return t >= from && t <= to;
+      });
+    }
+    this.computeAll();
+    this.dateFilterOpen = false;
+    this.cdr.markForCheck();
+  }
+
+  clearDateFilter(): void {
+    this.filterFrom = '';
+    this.filterTo = '';
+    this.dateError = null;
+    this.applications = [...this.allApplications];
+    this.computeAll();
+    this.dateFilterOpen = false;
+    this.cdr.markForCheck();
+  }
+
+  get dateLabel(): string {
+    if (this.filterFrom && this.filterTo) return `${this.filterFrom} → ${this.filterTo}`;
+    if (this.filterFrom) return `From ${this.filterFrom}`;
+    if (this.filterTo) return `Until ${this.filterTo}`;
+    return 'All Time';
   }
 
   private computeAll(): void {
@@ -182,13 +254,33 @@ export class RecuiterDashboardComponent implements OnInit {
       .filter((x) => x.value > 0);
 
     const total = this.stageSlices.reduce((sum, x) => sum + x.value, 0) || 1;
-    let acc = 0;
+
+    // Build SVG arc paths (cx=60,cy=60,r=46,innerR=30)
+    const cx = 60, cy = 60, r = 46, gap = 0.03;
+    let startAngle = -Math.PI / 2;
     const parts: string[] = [];
+
     for (const s of this.stageSlices) {
-      const pct = (s.value / total) * 100;
-      const start = acc;
-      acc += pct;
-      parts.push(`${s.color} ${start}% ${acc}%`);
+      const pct = s.value / total;
+      s.pct = Math.round(pct * 100);
+      const sweep = pct * 2 * Math.PI - gap;
+      const endAngle = startAngle + sweep;
+      const x1 = cx + r * Math.cos(startAngle);
+      const y1 = cy + r * Math.sin(startAngle);
+      const x2 = cx + r * Math.cos(endAngle);
+      const y2 = cy + r * Math.sin(endAngle);
+      const largeArc = sweep > Math.PI ? 1 : 0;
+      // outer arc → inner arc back
+      const ir = 28;
+      const xi1 = cx + ir * Math.cos(endAngle);
+      const yi1 = cy + ir * Math.sin(endAngle);
+      const xi2 = cx + ir * Math.cos(startAngle);
+      const yi2 = cy + ir * Math.sin(startAngle);
+      s.path = `M${x1},${y1} A${r},${r} 0 ${largeArc},1 ${x2},${y2} L${xi1},${yi1} A${ir},${ir} 0 ${largeArc},0 ${xi2},${yi2} Z`;
+      startAngle += pct * 2 * Math.PI;
+
+      // keep conic-gradient for fallback
+      parts.push(`${s.color} ${((startAngle + Math.PI / 2) / (2 * Math.PI)) * 100}%`);
     }
     this.donutGradient = parts.length ? `conic-gradient(${parts.join(', ')})` : 'conic-gradient(#e2e8f0 0% 100%)';
   }
@@ -263,6 +355,55 @@ export class RecuiterDashboardComponent implements OnInit {
     }
     out.sort((a, b) => a.sortKey - b.sortKey);
     this.upcomingInterviews = out.slice(0, 5);
+  }
+
+  viewApplication(row: RecentAppRow): void {
+    this.loadingDetail = true;
+    this.selectedApp = null;
+    this.cdr.markForCheck();
+    const el = document.getElementById('rdCandidateModal');
+    if (el) (window as any).bootstrap.Modal.getOrCreateInstance(el).show();
+
+    this.jobService.getCandidateApplicationById(row.id).subscribe({
+      next: (res) => {
+        if (res?.status) {
+          this.selectedApp = res.data;
+        }
+        this.loadingDetail = false;
+        this.cdr.markForCheck();
+      },
+      error: () => {
+        this.loadingDetail = false;
+        this.cdr.markForCheck();
+      }
+    });
+  }
+
+  closeModal(): void {
+    const el = document.getElementById('rdCandidateModal');
+    if (el) (window as any).bootstrap.Modal.getInstance(el)?.hide();
+    this.selectedApp = null;
+    this.cdr.markForCheck();
+  }
+
+  openPipeline(): void {
+    const el = document.getElementById('rdCandidateModal');
+    const modal = el ? (window as any).bootstrap.Modal.getInstance(el) : null;
+    if (modal) {
+      el!.addEventListener('hidden.bs.modal', () => {
+        this.router.navigate(['/recruitment/application-list']);
+      }, { once: true });
+      modal.hide();
+    } else {
+      this.router.navigate(['/recruitment/application-list']);
+    }
+    this.selectedApp = null;
+    this.cdr.markForCheck();
+  }
+
+  getSlicePct(value: number): number {
+    if (!this.totalCandidates) return 0;
+    return Math.round((value / this.totalCandidates) * 100);
   }
 
   stagePillClass(stage: string): string {

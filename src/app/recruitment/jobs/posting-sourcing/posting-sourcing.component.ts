@@ -326,7 +326,8 @@ export class PostingSourcingComponent {
     this.originalList = []
     this.jobs = []
     this.filteredDesignation = []
-    this.jobService.getJobRequirements().subscribe({
+    let obj={}
+    this.jobService.getJobRequirements(obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
 
