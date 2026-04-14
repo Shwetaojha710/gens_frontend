@@ -278,6 +278,10 @@ export class MasterService {
     return this.http.post<any>(`${this.baseUrl}createBranch`, dept);
   }
 
+  addBranchWithImage(formData: FormData): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}createBranch`, formData);
+  }
+
   updateBranch(id: any, dept: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}updateBranch`, dept);
   }
