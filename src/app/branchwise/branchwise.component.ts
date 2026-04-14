@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { DashboardService } from '../services/dashboard.service';
 import { MasterService } from '../services/master.service';
+import { LocationsService } from '../services/locations.service';
 import { Notyf } from 'notyf';
 import { ChartOptions } from '../dashboard/dashboard.component';
 import { CommonModule } from '@angular/common';
@@ -18,6 +19,9 @@ export class BranchwiseComponent {
   notyf: Notyf = new Notyf();
   public chartOptions!: Partial<ChartOptions>;
   branchList: any
+  allBranchList: any = []
+  modalSearchText: string = ''
+  modalFilteredBranches: any = []
   obj: any = {};
   stats: any = []
   tenantDetails: any = {}
@@ -40,12 +44,23 @@ export class BranchwiseComponent {
     }
   ]
   baseurl: any;
-  constructor(private dashboardService: DashboardService, private router: Router, public masterService: MasterService) {
+
+  // Add branch modal state
+  newBranch: any = {};
+  selectedImage: File | null = null;
+  imagePreview: string | null = null;
+  addBranchLoading = false;
+
+  constructor(
+    private dashboardService: DashboardService,
+    private router: Router,
+    public masterService: MasterService,
+    private locationService: LocationsService
+  ) {
     this.baseurl = this.masterService.getBaseUrl();
     this.getBranchDD()
     this.tenantDetails = JSON.parse(localStorage.getItem('tenant') || '{}');
     this.tenantDetails.image = `${this.baseurl}${this.tenantDetails['image']}`
-
   }
 
   employeeList: any = []
@@ -79,14 +94,95 @@ createFlag = false;
         this.notyf.success(res.message || 'Dashboard data loaded successfully')
         this.stats = res.data.stats;
         if (res.data.length <= 2) {
-          this.branchList = [...res.data, ...this.branchDt].slice(0, 3);
+          this.allBranchList = [...res.data, ...this.branchDt];
+          this.branchList = this.allBranchList.slice(0, 3);
         } else {
-          this.branchList = res.data
+          this.allBranchList = res.data;
+          this.branchList = res.data;
         }
+        this.modalFilteredBranches = [...this.allBranchList];
       } else if (res.status == 'expired') {
         this.router.navigate(['login'])
       } else {
         this.notyf.error(res.message || 'Something went wrong')
+      }
+    });
+  }
+
+  searchModalBranches() {
+    const text = this.modalSearchText.trim().toLowerCase();
+    if (!text) {
+      this.modalFilteredBranches = [...this.allBranchList];
+    } else {
+      this.modalFilteredBranches = this.allBranchList.filter((b: any) =>
+        b.name?.toLowerCase().includes(text) || b.description?.toLowerCase().includes(text)
+      );
+    }
+  }
+
+  clearModalSearch() {
+    this.modalSearchText = '';
+    this.modalFilteredBranches = [...this.allBranchList];
+  }
+
+  openAddBranchModal() {
+    this.newBranch = {};
+    this.selectedImage = null;
+    this.imagePreview = null;
+    this.addBranchLoading = false;
+  }
+
+  fetchLocation() {
+    this.locationService.getCurrentLocation()
+      .then((res) => {
+        this.newBranch['latitude'] = res.latitude;
+        this.newBranch['longitude'] = res.longitude;
+      })
+      .catch(() => {
+        this.notyf.error('Could not fetch location. Please enter manually.');
+      });
+  }
+
+  onImageSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (!file) return;
+    this.selectedImage = file;
+    const reader = new FileReader();
+    reader.onload = () => { this.imagePreview = reader.result as string; };
+    reader.readAsDataURL(file);
+  }
+
+  submitNewBranch() {
+    if (!this.newBranch['name']?.trim()) {
+      this.notyf.error('Branch name is required.');
+      return;
+    }
+    this.addBranchLoading = true;
+    const formData = new FormData();
+    formData.append('name', this.newBranch['name']);
+    if (this.newBranch['description']) formData.append('description', this.newBranch['description']);
+    if (this.newBranch['latitude']) formData.append('latitude', this.newBranch['latitude']);
+    if (this.newBranch['longitude']) formData.append('longitude', this.newBranch['longitude']);
+    if (this.selectedImage) formData.append('image', this.selectedImage);
+
+    this.masterService.addBranchWithImage(formData).subscribe({
+      next: (res: any) => {
+        this.addBranchLoading = false;
+        if (res.status === true) {
+          this.notyf.success(res.message || 'Branch added successfully');
+          this.getBranchDD();
+          // close modal programmatically
+          const btn = document.getElementById('closeAddBranchModal');
+          if (btn) btn.click();
+        } else if (res.status === 'expired') {
+          this.router.navigate(['login']);
+        } else {
+          this.notyf.error(res.message || 'Something went wrong');
+        }
+      },
+      error: (err: any) => {
+        this.addBranchLoading = false;
+        this.notyf.error(err?.error?.message || err?.message || 'Something went wrong');
       }
     });
   }

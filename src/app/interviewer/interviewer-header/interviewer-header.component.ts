@@ -1,11 +1,12 @@
 import { Component, ElementRef, HostListener } from '@angular/core';
 import { Notyf } from 'notyf';
-import { AuthService } from '../../services/auth.service';
 import { Router } from '@angular/router';
 import { MasterService } from '../../services/master.service';
+import { InterviewService } from '../../services/interview.service';
 
 @Component({
   selector: 'app-interviewer-header',
+  standalone: true,
   imports: [],
   templateUrl: './interviewer-header.component.html',
   styleUrl: './interviewer-header.component.css'
@@ -17,9 +18,15 @@ export class InterviewerHeaderComponent {
   notyf: Notyf = new Notyf();
   tenantDetails:any={}
   baseurl:any
-  constructor(private auth: AuthService, private router: Router, private eRef: ElementRef, public masterService: MasterService) {
+  constructor(
+    private router: Router,
+    private eRef: ElementRef,
+    public masterService: MasterService,
+    private interviewService: InterviewService
+  ) {
     // this.getBranchDD()
       this.baseurl = this.masterService.getBaseUrl();
+      this.personalDetail = JSON.parse(localStorage.getItem('user') || '{}');
     // this.obj.branchId = localStorage.getItem('branchId') || '';
     //  this.tenantDetails=JSON.parse(localStorage.getItem('tenant') || '{}');
     //  this.tenantDetails.image=`${this.baseurl}${this.tenantDetails['image']}`
@@ -70,12 +77,9 @@ export class InterviewerHeaderComponent {
   }
 
   logout() {
-    console.log("hello logout api called")
-
-    this.auth.logout().subscribe({
+    this.interviewService.panelUserLogout().subscribe({
       next: (res) => {
         const data = res
-        console.log(data, "ss")
         if (data.status === true) {
           localStorage.clear()
           if (this.notyf) {

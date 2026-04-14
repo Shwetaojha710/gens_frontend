@@ -1850,6 +1850,10 @@
   color: #475569
 }
 
+.tracking-root.tracking-light .form-ctrl::-webkit-calendar-picker-indicator {
+  filter: none;
+}
+
 .tracking-root.tracking-light .emp-meta-name,
 .tracking-root.tracking-light .stat-pill strong,
 .tracking-root.tracking-light .pgc-title,

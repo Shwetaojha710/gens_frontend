@@ -123,8 +123,9 @@ originalList:any = []
     this.interviewService.getInterviewRound().subscribe(data => {
       if (data['status'] == true) {
         // this.notyf.success(data['message']);
-      this.CurrencyList = data.data.map((item: any) => ({
+      this.CurrencyList = data.data.map((item: any, index: number) => ({
   ...item,
+  si_no: index + 1,
   roundTypeData: {
     id: item['roundTypeData.id'],
     name: item['roundTypeData.name']

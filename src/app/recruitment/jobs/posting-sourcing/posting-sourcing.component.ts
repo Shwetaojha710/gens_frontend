@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, HostListener } from '@angular/core';
 import { FormGroup, FormsModule, Validators } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SearchPaginationComponent } from '../../../master/search-pagination/search-pagination.component';
@@ -64,6 +64,7 @@ export class PostingSourcingComponent {
   expiresAt: Date | null = null;
   copied: Record<string, boolean> = {};
   selectedJob: any | null = null;
+  openDropdownId: string | number | null = null;
 
   pageSize = 10;
   currentPage = 1;
@@ -155,6 +156,20 @@ export class PostingSourcingComponent {
     this.selectedJob = item;
   }
 
+  toggleDropdown(itemId: string | number, event: Event): void {
+    event.stopPropagation();
+    this.openDropdownId = this.openDropdownId === itemId ? null : itemId;
+  }
+
+  closeDropdown(): void {
+    this.openDropdownId = null;
+  }
+
+  @HostListener('document:click')
+  handleDocumentClick(): void {
+    this.closeDropdown();
+  }
+
   getPostedAgoLabel(value: any): string {
     if (!value) return 'Recently posted';
 
@@ -216,10 +231,12 @@ export class PostingSourcingComponent {
   }
 
   getEmploymentTypeLabel(item: any): string {
-    return item?.employment_type || item?.employee_type || item?.job_type || '-';
+
+    return item?.emp_typeData?.name || '-';
   }
 
   publish(data: any, status: any) {
+    this.closeDropdown();
     Swal.fire({
       title: "Are you sure?",
       text: `Do you Want to ${status == 'open' ? 'Publish' : 'Close'} this`,
@@ -309,7 +326,8 @@ export class PostingSourcingComponent {
     this.originalList = []
     this.jobs = []
     this.filteredDesignation = []
-    this.jobService.getJobRequirements().subscribe({
+    let obj={}
+    this.jobService.getJobRequirements(obj).subscribe({
       next: (response: any) => {
         console.log('response', response);
 
@@ -361,6 +379,17 @@ export class PostingSourcingComponent {
   normalizeUrl(url: string): string {
     if (!url) return url;
     return url.replace(/([^:]\/)\/+/g, '$1');
+  }
+
+  openJobUrl(url: string): void {
+    this.closeDropdown();
+    const normalizedUrl = this.normalizeUrl(url);
+    if (!normalizedUrl) {
+      this.notyf.error('Job URL not available');
+      return;
+    }
+
+    window.open(normalizedUrl, '_blank', 'noopener,noreferrer');
   }
 
   copy(text: string, key: string) {

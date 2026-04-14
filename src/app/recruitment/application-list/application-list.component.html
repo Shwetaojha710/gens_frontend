@@ -6,13 +6,29 @@
           <i class="fas fa-file-alt text-primary me-2"></i>
           Candidate Applications Pipeline
         </h5>
-        <span class="badge bg-primary">{{ applications.length }}</span>
+        <span class="badge bg-primary">{{ allApplications.length }}</span>
       </div>
       <div class="d-flex gap-2">
         <button class="btn btn-primary btn-sm" (click)="loadApplications()">
           <i class="fas fa-refresh me-1"></i>Refresh
         </button>
       </div>
+    </div>
+
+    <!-- Stage Filter Chips -->
+    <div class="filter-chip-bar px-3 pt-3 pb-2">
+      <button
+        *ngFor="let f of stageFilters"
+        class="filter-chip"
+        [class.chip-active]="activeStageFilter === f.key"
+        [attr.data-stage]="f.key"
+        (click)="setStageFilter(f.key)"
+      >
+        <span class="chip-dot" [style.background]="f.dotColor"></span>
+        <i [class]="f.icon + ' chip-icon'"></i>
+        <span class="chip-label">{{ f.label }}</span>
+        <span class="chip-count">{{ getStageCount(f.key) }}</span>
+      </button>
     </div>
 
     <div class="card-body p-0">
@@ -208,25 +224,12 @@
                   <div class="card-header bg-primary text-white">
                     <h6 class="mb-0"><i class="fas fa-robot me-2"></i>ATS Score</h6>
                   </div>
-                  <div class="card-body">
-                    <div class="row text-center">
-                      <div class="col-4">
-                        <div class="fw-semibold text-primary fs-4">{{ selectedDetailApp.ats.ats_score | number:'1.0-0'
-                          }}</div>
-                        <small class="text-muted">ATS Score</small>
-                      </div>
-                      <div class="col-4">
-                        <div class="fw-semibold text-success fs-4">{{ selectedDetailApp.ats.manual_score |
-                          number:'1.0-0' }}</div>
-                        <small class="text-muted">Manual Score</small>
-                      </div>
-                      <div class="col-4">
-                        <div class="fw-semibold text-info fs-4">{{ selectedDetailApp.ats.final_score | number:'1.0-0' }}
-                        </div>
-                        <small class="text-muted">Final Score</small>
-                      </div>
+                  <div class="card-body text-center">
+                    <div class="fw-semibold text-primary" style="font-size:2.2rem;">
+                      {{ selectedDetailApp.ats.ats_score | number:'1.0-0' }}
                     </div>
-                    <div *ngIf="selectedDetailApp.ats.notes" class="mt-3 p-3 bg-light rounded">
+                    <small class="text-muted">ATS Score</small>
+                    <div *ngIf="selectedDetailApp.ats.notes" class="mt-3 p-3 bg-light rounded text-start">
                       <small class="text-muted">Notes: {{ selectedDetailApp.ats.notes }}</small>
                     </div>
                   </div>
@@ -313,11 +316,11 @@
                   </div>
                   <div class="card-body">
                     <div class="d-grid gap-2">
-                      <button *ngIf="selectedDetailApp.stage === 'candidate_applied'" class="btn btn-success btn-sm"
+                      <button *ngIf="selectedDetailApp.stage == 'candidate_applied'" class="btn btn-success btn-sm"
                         (click)="shortlist(selectedApp!)">
                         <i class="fas fa-check me-1"></i>Shortlist
                       </button>
-                      <button *ngIf="selectedDetailApp.stage !== 'closed' && selectedDetailApp.stage !== 'rejected'"
+                      <button *ngIf="selectedDetailApp.stage != 'closed' && selectedDetailApp.stage != 'rejected'"
                         class="btn btn-outline-danger btn-sm" (click)="reject(selectedApp!)">
                         <i class="fas fa-times me-1"></i>Reject
                       </button>
@@ -600,11 +603,29 @@
                 <label class="form-label fw-semibold">Remark </label>
                 <input type="text" class="form-control" [(ngModel)]="editObj.remark" placeholder="Enter remark" />
               </div>
+
+              <!-- Resume Upload -->
+              <div class="col-md-12">
+                <hr class="my-2" />
+                <label class="form-label fw-semibold">
+                  <i class="fas fa-file-upload me-1 text-primary"></i>Update Resume
+                  <small class="text-muted fw-normal ms-1">(PDF/DOC — ATS score will be auto-evaluated on save)</small>
+                </label>
+                <input type="file" class="form-control" accept=".pdf,.doc,.docx"
+                  (change)="onEditResumeSelected($event)" #resumeFileInput />
+                <div *ngIf="editResumeFileName" class="mt-1 text-success small">
+                  <i class="fas fa-check-circle me-1"></i>{{ editResumeFileName }}
+                </div>
+                <div *ngIf="isUploadingResume" class="mt-2 d-flex align-items-center gap-2 text-primary small">
+                  <span class="spinner-border spinner-border-sm"></span>
+                  Uploading & evaluating ATS score...
+                </div>
+              </div>
             </div>
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="closeEditModal()">Cancel</button>
-            <button type="button" class="btn btn-primary" (click)="saveEdit()" [disabled]="isSaving">
+            <button type="button" class="btn btn-primary" (click)="saveEdit()" [disabled]="isSaving || isUploadingResume">
               <span *ngIf="isSaving" class="spinner-border spinner-border-sm me-1"></span>
               {{ isSaving ? 'Saving...' : 'Save Changes' }}
             </button>
@@ -652,6 +673,10 @@
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" (click)="closeAtsModal()">Close</button>
+            <button *ngIf="atsResult" type="button" class="btn btn-success"
+              (click)="saveAtsScoreToList(atsApp!, atsResult)">
+              <i class="fas fa-save me-1"></i>Save Score to List
+            </button>
             <button type="button" class="btn btn-warning text-white" (click)="runAtsEvaluate()"
               [disabled]="!atsFile || isEvaluating">
               <span *ngIf="isEvaluating" class="spinner-border spinner-border-sm me-1"></span>

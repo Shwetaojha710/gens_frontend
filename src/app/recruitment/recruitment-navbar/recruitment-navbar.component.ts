@@ -53,12 +53,12 @@ export class RecruitmentNavbarComponent {
 
   menuItems: MenuItem[] = [
 
-    {
-      title: 'Interviewer Dashboard',
-      icon: 'ri-home-smile-line',
-      active: true,
-      link: '/interview/interviewer-dashboard'
-    },
+    // {
+    //   title: 'Interviewer Dashboard',
+    //   icon: 'ri-home-smile-line',
+    //   active: true,
+    //   link: '/interview/interviewer-dashboard'
+    // },
 
     {
       title: 'Dashboard',
@@ -79,8 +79,8 @@ export class RecruitmentNavbarComponent {
       title: 'Candidate Management',
       icon: 'ri-layout-2-line',
       children: [
-
-        { title: 'Candidate Application', icon: 'ri-profile-line', link: '/recruitment/application-list' }
+        { title: 'Candidate Application', icon: 'ri-profile-line', link: '/recruitment/application-list' },
+        { title: 'Offered Candidate List', icon: 'ri-hand-coin-line', link: '/recruitment/offered-candidate-list' }
       ]
     },
     {
@@ -96,7 +96,9 @@ export class RecruitmentNavbarComponent {
       icon: 'ri-settings-3-line',
       children: [
         { title: 'Interview Round', icon: 'ri-building-4-line', link: '/recruitment/master/interview-round' },
-        { title: 'Round Type', icon: 'ri-building-4-line', link: '/recruitment/master/round-type' }
+        { title: 'Round Type', icon: 'ri-building-4-line', link: '/recruitment/master/round-type' },
+        { title: 'Department', icon: 'ri-community-line', link: '/recruitment/master/department' },
+        { title: 'Designation', icon: 'ri-award-line', link: '/recruitment/master/designation' }
       ]
     }
   ];
