@@ -189,7 +189,7 @@ this.originalList = [...this.CurrencyList];
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err?.message)
+        this.notyf.error(err?.error?.message)
       }
     });
 
@@ -223,7 +223,7 @@ this.originalList = [...this.CurrencyList];
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err?.message)
+       this.notyf.error(err?.error?.message)
       }
 
 

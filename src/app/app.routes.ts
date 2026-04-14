@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { AuthGuard } from './auth.guard';
 import { SuperadminGuard } from './superadmin/superadmin.guard';
 import { employeePortalGuard } from './employee-portal/employee-portal.guard';
+import { CandidateRouteGuard } from './candidate-route.guard';
 
 /**
  * Application routes — feature areas use `loadChildren` / `loadComponent` for lazy loading.
@@ -92,6 +93,7 @@ export const routes: Routes = [
 
   {
     path: ':slug',
+    canMatch: [CandidateRouteGuard],
     loadComponent: () =>
       import('./recruitment/candidate/candidate.component').then((m) => m.CandidateComponent),
   },

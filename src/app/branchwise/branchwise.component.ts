@@ -100,14 +100,9 @@ createFlag = false;
       if (res.status == true) {
         this.notyf.success(res.message || 'Dashboard data loaded successfully')
         this.stats = res.data.stats;
-        if (res.data.length <= 2) {
-          this.allBranchList = [...res.data, ...this.branchDt];
-          this.branchList = this.allBranchList.slice(0, 3);
-        } else {
-          this.allBranchList = res.data;
-          this.branchList = res.data;
-        }
-        this.modalFilteredBranches = [...this.allBranchList];
+        this.allBranchList = res.data.length > 0 ? res.data : this.branchDt;
+        this.branchList = this.allBranchList.slice(0, 4);
+        this.modalFilteredBranches = this.allBranchList.slice(4);
       } else if (res.status == 'expired') {
         this.router.navigate(['login'])
       } else {
@@ -129,7 +124,7 @@ createFlag = false;
 
   clearModalSearch() {
     this.modalSearchText = '';
-    this.modalFilteredBranches = [...this.allBranchList];
+    this.modalFilteredBranches = this.allBranchList.slice(4);
   }
 
   openAddBranchModal() {

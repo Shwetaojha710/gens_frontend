@@ -145,6 +145,26 @@ export class InterviewService {
     return this.getMyInterviews().pipe(
       map((res: any) => {
         const interviews: InterviewerAssignedInterview[] = res?.data?.interviews || [];
+
+        // If the same interviewer is assigned to ALL rounds of an application,
+        // unlock all their rounds (sequential lock doesn't apply to solo interviewers)
+        const appGroups = new Map<string, InterviewerAssignedInterview[]>();
+        interviews.forEach(item => {
+          if (!appGroups.has(item.application_id)) appGroups.set(item.application_id, []);
+          appGroups.get(item.application_id)!.push(item);
+        });
+        appGroups.forEach((rounds) => {
+          if (rounds.length > 1) {
+            const emails = rounds.map(r => (r.interviewer_email || '').toLowerCase().trim()).filter(Boolean);
+            const names  = rounds.map(r => (r.interviewer_name  || '').toLowerCase().trim()).filter(Boolean);
+            const allSameEmail = emails.length === rounds.length && new Set(emails).size === 1;
+            const allSameName  = names.length  === rounds.length && new Set(names).size  === 1;
+            if (allSameEmail || allSameName) {
+              rounds.forEach(r => (r.is_unlocked = true));
+            }
+          }
+        });
+
         const apiSections = res?.data?.sections;
 
         return {

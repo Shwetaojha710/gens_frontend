@@ -63,7 +63,7 @@
 
         <div class="description-block">
           <h3>Job Description</h3>
-          <p>{{ jobPosting?.job_description || 'Detailed job information will be reviewed during the screening process.' }}</p>
+          <div class="jd-rendered" [innerHTML]="parseJobDescription(jobPosting?.job_description)"></div>
         </div>
 
         <div class="info-banner">

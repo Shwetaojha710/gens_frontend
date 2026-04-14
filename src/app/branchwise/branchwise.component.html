@@ -256,12 +256,10 @@
               </div>
             </div>
 
-            <div class="buy-now">
-
-
+            <div class="buy-now" *ngIf="allBranchList.length > 4">
               <button type="button" class="btn btn-outline-primary bg-white btn-buy-now waves-effect waves-light"
                 data-bs-toggle="modal" data-bs-target="#exampleModal">
-                View More
+                View More ({{ allBranchList.length - 4 }})
               </button>
             </div>
 
@@ -270,7 +268,10 @@
               <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel1">Search Branch</h5>
+                    <h5 class="modal-title" id="exampleModalLabel1">
+                      More Branches
+                      <span class="badge bg-primary ms-1" *ngIf="!modalSearchText">{{ allBranchList.length - 4 }}</span>
+                    </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"
                       (click)="clearModalSearch()"></button>
                   </div>
@@ -278,9 +279,9 @@
                     <div class="row">
                       <div class="col-12 mt-2">
                         <div class="input-group">
-                          <input type="text" class="form-control" placeholder="Search Branch" aria-label="Search Branch"
-                            aria-describedby="button-addon2" [(ngModel)]="modalSearchText"
-                            (input)="searchModalBranches()">
+                          <input type="text" class="form-control" placeholder="Search all branches..."
+                            aria-label="Search Branch" aria-describedby="button-addon2"
+                            [(ngModel)]="modalSearchText" (input)="searchModalBranches()">
                           <button class="btn btn-outline-primary waves-effect" type="button"
                             id="button-addon2" (click)="searchModalBranches()">Search</button>
                         </div>

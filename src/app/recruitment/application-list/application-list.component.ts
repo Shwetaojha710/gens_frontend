@@ -1,3 +1,21 @@
+// Stage pipeline order — index reflects how far along a candidate is.
+// ATS evaluation must NEVER move a candidate backward in this order.
+const STAGE_ORDER: string[] = [
+  'candidate_applied',
+  'ats_screening',
+  'shortlisted',
+  'interview_scheduled',
+  'interview_in_progress',
+  'offered',
+  'closed',
+  'rejected',
+];
+
+function stageIndex(stage: string): number {
+  const idx = STAGE_ORDER.indexOf(stage);
+  return idx === -1 ? 0 : idx;
+}
+
 import { Component, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -35,11 +53,14 @@ export class ApplicationListComponent implements OnInit {
   activeStageFilter = 'all';
 
   stageFilters = [
-    { key: 'all',                 label: 'All',                 icon: 'fas fa-th-list',        dotColor: '#3b82f6' },
-    { key: 'candidate_applied',   label: 'Candidate Applied',   icon: 'fas fa-user-plus',      dotColor: '#8b5cf6' },
-    { key: 'interview_scheduled', label: 'Interview Scheduled', icon: 'fas fa-calendar-check', dotColor: '#f59e0b' },
-    { key: 'offered',             label: 'Offered',             icon: 'fas fa-handshake',      dotColor: '#22c55e' },
-    { key: 'rejected',            label: 'Rejected',            icon: 'fas fa-times-circle',   dotColor: '#ef4444' },
+    { key: 'all',                   label: 'All',                   icon: 'fas fa-th-list',        dotColor: '#3b82f6' },
+    { key: 'candidate_applied',     label: 'Applied',               icon: 'fas fa-user-plus',      dotColor: '#8b5cf6' },
+    { key: 'ats_screening',         label: 'ATS Screening',         icon: 'fas fa-robot',          dotColor: '#f59e0b' },
+    { key: 'shortlisted',           label: 'Shortlisted',           icon: 'fas fa-check-circle',   dotColor: '#22c55e' },
+    { key: 'interview_scheduled',   label: 'Interview Scheduled',   icon: 'fas fa-calendar-check', dotColor: '#0ea5e9' },
+    { key: 'interview_in_progress', label: 'Interview In Progress', icon: 'fas fa-comments',       dotColor: '#a855f7' },
+    { key: 'offered',               label: 'Offered',               icon: 'fas fa-handshake',      dotColor: '#16a34a' },
+    { key: 'rejected',              label: 'Rejected',              icon: 'fas fa-times-circle',   dotColor: '#ef4444' },
   ];
 
   editObj: any = {};
@@ -305,13 +326,15 @@ export class ApplicationListComponent implements OnInit {
             if (normalized && !normalized._error) {
               const score = normalized.overall_score ?? normalized.breakdown?.skills?.score ?? null;
               if (score !== null) {
-                // Step 3: save ATS score
+                // Step 3: save ATS score — preserve stage if already ahead of ats_screening
+                const skipStageUpdate = stageIndex(app.stage) > stageIndex('ats_screening');
                 this.jobService.saveCandidateAtsScore({
                   application_id: app.id,
                   ats_score: score,
                   matched_skills: normalized.breakdown?.skills?.matched || [],
                   missing_skills: normalized.breakdown?.skills?.missing || [],
-                  summary: normalized.final_summary || ''
+                  summary: normalized.final_summary || '',
+                  skip_stage_update: skipStageUpdate
                 } as any).subscribe({
                   next: () => {
                     this.notyf.success(`Resume uploaded & ATS score updated: ${Math.round(score)}`);
@@ -437,7 +460,24 @@ export class ApplicationListComponent implements OnInit {
     return display[stage] || stage.replace('_', ' ').toUpperCase();
   }
 
+  // Returns true if moving to targetStage is a valid forward step.
+  // 'rejected' is allowed from any active stage except closed/offered/rejected.
+  canAdvanceTo(app: CandidateApplicationRecord, targetStage: string): boolean {
+    const currentIdx = stageIndex(app.stage);
+    if (targetStage === 'rejected') {
+      return !['closed', 'offered', 'rejected'].includes(app.stage);
+    }
+    const targetIdx = stageIndex(targetStage);
+    return targetIdx > currentIdx;
+  }
+
   updateStage(app: CandidateApplicationRecord, stage: string): void {
+    if (!this.canAdvanceTo(app, stage)) {
+      const currentLabel = this.getStageDisplay(app.stage as RecruitmentStageKey);
+      const targetLabel = this.getStageDisplay(stage as RecruitmentStageKey);
+      this.notyf.error(`Cannot move to "${targetLabel}" — current stage is already "${currentLabel}"`);
+      return;
+    }
     const payload = { application_id: app.id, stage: stage as RecruitmentStageKey };
     this.jobService.updateCandidateStage(payload).subscribe({
       next: (res) => {
@@ -582,12 +622,16 @@ export class ApplicationListComponent implements OnInit {
     const score = normalized.overall_score ?? normalized.breakdown?.skills?.score ?? null;
     if (score === null) return;
 
+    // If the candidate is already beyond ats_screening, do NOT downgrade the stage.
+    const skipStageUpdate = stageIndex(app.stage) > stageIndex('ats_screening');
+
     this.jobService.saveCandidateAtsScore({
       application_id: app.id,
       ats_score: score,
       matched_skills: normalized.breakdown?.skills?.matched || [],
       missing_skills: normalized.breakdown?.skills?.missing || [],
-      summary: normalized.final_summary || ''
+      summary: normalized.final_summary || '',
+      skip_stage_update: skipStageUpdate
     } as any).subscribe({
       next: () => {
         this.notyf.success(`ATS score saved: ${Math.round(score)}`);
@@ -661,10 +705,18 @@ export class ApplicationListComponent implements OnInit {
 
   // Quick actions
   shortlist(app: CandidateApplicationRecord): void {
+    if (app.stage !== 'ats_screening') {
+      this.notyf.error('ATS screening must be completed before shortlisting');
+      return;
+    }
     this.updateStage(app, 'shortlisted');
   }
 
   reject(app: CandidateApplicationRecord): void {
+    if (!this.canAdvanceTo(app, 'rejected')) {
+      this.notyf.error('This candidate cannot be rejected at their current stage');
+      return;
+    }
     this.updateStage(app, 'rejected');
   }
 
@@ -716,6 +768,20 @@ export class ApplicationListComponent implements OnInit {
       meeting_link: this.commonAssignFields.meeting_link || r.meeting_link
     }));
     this.cdr.markForCheck();
+  }
+
+  onSameForAllToggle(): void {
+    if (this.sameInterviewerForAll) {
+      // Auto-apply immediately when toggled on
+      this.applyCommonToAll();
+    }
+  }
+
+  onCommonFieldChange(): void {
+    // Auto-propagate to all rounds whenever a common field changes
+    if (this.sameInterviewerForAll) {
+      this.applyCommonToAll();
+    }
   }
 
   confirmAssign(): void {

@@ -111,37 +111,62 @@
                   </small>
                 </td>
                 <td>
-                  <div class="d-flex gap-1">
-                    <button class="btn btn-sm btn-outline-primary" *ngIf="app.stage == 'candidate_applied'"
+                  <div class="d-flex gap-1 flex-wrap">
+
+                    <!-- Step 1 — Edit: only before ATS -->
+                    <button class="btn btn-sm btn-outline-primary"
+                      *ngIf="app.stage === 'candidate_applied'"
                       (click)="editApplication(app)" title="Edit Application">
                       <i class="fas fa-edit"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-primary" (click)="viewApplication(app)" title="View Details">
+
+                    <!-- View: always visible -->
+                    <button class="btn btn-sm btn-outline-primary"
+                      (click)="viewApplication(app)" title="View Details">
                       <i class="fas fa-eye"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-success" *ngIf="app.stage === 'candidate_applied'"
-                      (click)="shortlist(app)" title="Shortlist">
+
+                    <!-- Step 1 → 2 — ATS Evaluate (file): only at candidate_applied -->
+                    <button class="btn btn-sm btn-outline-warning"
+                      *ngIf="app.stage === 'candidate_applied'"
+                      (click)="openAtsModal(app)" title="Step 2: Run ATS Screening (Upload Resume)">
+                      <i class="fas fa-robot"></i>
+                    </button>
+
+                    <!-- Step 1 → 2 — ATS Evaluate (URL): only at candidate_applied -->
+                    <button class="btn btn-sm btn-outline-warning"
+                      *ngIf="app.stage === 'candidate_applied' && app.resume_url"
+                      (click)="openAtsUrlModal(app)" title="Step 2: Run ATS Screening (via URL)">
+                      <i class="fas fa-link"></i>
+                    </button>
+
+                    <!-- Step 2 → 3 — Shortlist: only after ATS screening done -->
+                    <button class="btn btn-sm btn-outline-success"
+                      *ngIf="app.stage === 'ats_screening'"
+                      (click)="shortlist(app)" title="Step 3: Shortlist Candidate">
                       <i class="fas fa-check"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-info" *ngIf="app.stage === 'shortlisted'"
-                      (click)="openAssignModal(app)" title="Assign Interviewer">
+
+                    <!-- Step 3 → 4 — Assign Interviewer: only when shortlisted -->
+                    <button class="btn btn-sm btn-outline-info"
+                      *ngIf="app.stage === 'shortlisted'"
+                      (click)="openAssignModal(app)" title="Step 4: Assign Interviewer & Schedule">
                       <i class="fas fa-user-tie"></i>
                     </button>
 
-                    <button class="btn btn-sm btn-outline-danger"
-                      *ngIf="!['closed','rejected','offered'].includes(app.stage)" (click)="reject(app)" title="Reject">
-                      <i class="fas fa-times"></i>
-                    </button>
-                    <a *ngIf="app.resume_url" class="btn btn-sm btn-outline-secondary" [href]="app.resume_url"
-                      target="_blank" title="Resume">
+                    <!-- Resume: always if available -->
+                    <a *ngIf="app.resume_url" class="btn btn-sm btn-outline-secondary"
+                      [href]="app.resume_url" target="_blank" title="View Resume">
                       <i class="fas fa-file-pdf"></i>
                     </a>
-                    <button class="btn btn-sm btn-outline-warning" (click)="openAtsModal(app)" title="ATS Evaluate (Upload Resume)">
-                      <i class="fas fa-robot"></i>
+
+                    <!-- Reject: allowed from any active stage -->
+                    <button class="btn btn-sm btn-outline-danger"
+                      *ngIf="!['closed','rejected','offered'].includes(app.stage)"
+                      (click)="reject(app)" title="Reject">
+                      <i class="fas fa-times"></i>
                     </button>
-                    <button class="btn btn-sm btn-outline-info" *ngIf="app.resume_url" (click)="openAtsUrlModal(app)" title="ATS Evaluate via Resume URL">
-                      <i class="fas fa-link"></i>
-                    </button>
+
                   </div>
                 </td>
               </tr>
@@ -316,11 +341,23 @@
                   </div>
                   <div class="card-body">
                     <div class="d-grid gap-2">
-                      <button *ngIf="selectedDetailApp.stage == 'candidate_applied'" class="btn btn-success btn-sm"
-                        (click)="shortlist(selectedApp!)">
+                      <!-- Step 1→2: ATS only at candidate_applied -->
+                      <button *ngIf="selectedDetailApp.stage === 'candidate_applied'"
+                        class="btn btn-warning btn-sm text-white" (click)="closeModal(); openAtsModal(selectedApp!)">
+                        <i class="fas fa-robot me-1"></i>Run ATS Screening
+                      </button>
+                      <!-- Step 2→3: Shortlist only after ATS -->
+                      <button *ngIf="selectedDetailApp.stage === 'ats_screening'"
+                        class="btn btn-success btn-sm" (click)="shortlist(selectedApp!)">
                         <i class="fas fa-check me-1"></i>Shortlist
                       </button>
-                      <button *ngIf="selectedDetailApp.stage != 'closed' && selectedDetailApp.stage != 'rejected'"
+                      <!-- Step 3→4: Assign only when shortlisted -->
+                      <button *ngIf="selectedDetailApp.stage === 'shortlisted'"
+                        class="btn btn-info btn-sm text-white" (click)="closeModal(); openAssignModal(selectedApp!)">
+                        <i class="fas fa-user-tie me-1"></i>Assign Interviewer
+                      </button>
+                      <!-- Reject: any active stage -->
+                      <button *ngIf="!['closed','rejected','offered'].includes(selectedDetailApp.stage)"
                         class="btn btn-outline-danger btn-sm" (click)="reject(selectedApp!)">
                         <i class="fas fa-times me-1"></i>Reject
                       </button>
@@ -378,17 +415,24 @@
             <div class="card border-info mb-3">
               <div class="card-header bg-info bg-opacity-10 d-flex align-items-center gap-2 py-2">
                 <div class="form-check mb-0">
-                  <input class="form-check-input" type="checkbox" id="sameForAll" [(ngModel)]="sameInterviewerForAll" />
+                  <input class="form-check-input" type="checkbox" id="sameForAll"
+                    [(ngModel)]="sameInterviewerForAll"
+                    (ngModelChange)="onSameForAllToggle()" />
                   <label class="form-check-label fw-semibold" for="sameForAll">
                     Same interviewer &amp; settings for all rounds
                   </label>
                 </div>
+                <span *ngIf="sameInterviewerForAll" class="badge bg-info ms-2">
+                  <i class="fas fa-link me-1"></i>All rounds linked
+                </span>
               </div>
               <div class="card-body" *ngIf="sameInterviewerForAll">
                 <div class="row g-2 align-items-end">
                   <div class="col-md-3">
                     <label class="form-label fw-semibold mb-1">Interviewer <span class="text-danger">*</span></label>
-                    <select class="form-select form-select-sm" [(ngModel)]="commonAssignFields.panel_user_id">
+                    <select class="form-select form-select-sm"
+                      [(ngModel)]="commonAssignFields.panel_user_id"
+                      (ngModelChange)="onCommonFieldChange()">
                       <option [ngValue]="null" disabled>-- Select interviewer --</option>
                       <option *ngFor="let u of panelUsers" [ngValue]="u.id">
                         {{ u.first_name }} {{ u.last_name }}
@@ -397,26 +441,32 @@
                   </div>
                   <div class="col-md-3">
                     <label class="form-label fw-semibold mb-1">Date &amp; Time</label>
-                    <input type="datetime-local" class="form-control form-control-sm" [(ngModel)]="commonAssignFields.scheduled_at" />
+                    <input type="datetime-local" class="form-control form-control-sm"
+                      [(ngModel)]="commonAssignFields.scheduled_at"
+                      (ngModelChange)="onCommonFieldChange()" />
                   </div>
                   <div class="col-md-2">
                     <label class="form-label fw-semibold mb-1">Duration (min)</label>
-                    <input type="number" class="form-control form-control-sm" [(ngModel)]="commonAssignFields.duration_minutes" placeholder="60" min="1" />
+                    <input type="number" class="form-control form-control-sm"
+                      [(ngModel)]="commonAssignFields.duration_minutes"
+                      (ngModelChange)="onCommonFieldChange()"
+                      placeholder="60" min="1" />
                   </div>
                   <div class="col-md-2">
                     <label class="form-label fw-semibold mb-1">Mode</label>
-                    <select class="form-select form-select-sm" [(ngModel)]="commonAssignFields.mode">
+                    <select class="form-select form-select-sm"
+                      [(ngModel)]="commonAssignFields.mode"
+                      (ngModelChange)="onCommonFieldChange()">
                       <option value="">-- Mode --</option>
                       <option value="virtual">Virtual</option>
                       <option value="walk-in-interview">Walk In Interview</option>
                       <option value="phone">Phone</option>
                     </select>
                   </div>
-                  <div class="col-md-2">
-                    <button class="btn btn-sm btn-info text-white w-100" (click)="applyCommonToAll()"
-                      [disabled]="!commonAssignFields.panel_user_id">
-                      <i class="fas fa-copy me-1"></i>Apply to All
-                    </button>
+                  <div class="col-md-2 d-flex align-items-end">
+                    <small class="text-success fw-semibold">
+                      <i class="fas fa-check-circle me-1"></i>Auto-applied to all rounds
+                    </small>
                   </div>
                 </div>
               </div>
@@ -436,12 +486,17 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let row of roundAssignments; let i = index">
+                  <tr *ngFor="let row of roundAssignments; let i = index"
+                    [class.table-info]="sameInterviewerForAll">
                     <td>
                       <span class="fw-semibold">{{ row.round_name }}</span>
+                      <span *ngIf="sameInterviewerForAll" class="badge bg-info ms-1" style="font-size:0.65rem;">
+                        <i class="fas fa-link"></i>
+                      </span>
                     </td>
                     <td>
-                      <select class="form-select form-select-sm" [(ngModel)]="row.panel_user_id">
+                      <select class="form-select form-select-sm" [(ngModel)]="row.panel_user_id"
+                        [disabled]="sameInterviewerForAll">
                         <option [ngValue]="null">-- Skip --</option>
                         <option *ngFor="let u of panelUsers" [ngValue]="u.id">
                           {{ u.first_name }} {{ u.last_name }}

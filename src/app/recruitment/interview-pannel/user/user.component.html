@@ -35,7 +35,9 @@
             <div class="col-12 col-md-6 col-lg-4">
               <label class="form-label fw-semibold">Mobile No <span class="text-danger">*</span></label>
               <input type="text" class="form-control" placeholder="Enter mobile number"
-                [(ngModel)]="obj['mobile_no']" name="mobile_no" maxlength="15" />
+                [(ngModel)]="obj['mobile_no']" name="mobile_no" maxlength="10"
+                (keydown)="$event.key === 'Backspace' || $event.key === 'Tab' || $event.key === 'ArrowLeft' || $event.key === 'ArrowRight' || ($event.key >= '0' && $event.key <= '9') ? null : $event.preventDefault()" />
+              <small class="text-muted">10 digits only</small>
             </div>
 
             <div class="col-12 col-md-6 col-lg-4">

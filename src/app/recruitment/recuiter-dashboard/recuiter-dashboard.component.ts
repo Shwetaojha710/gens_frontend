@@ -63,7 +63,7 @@ export class RecuiterDashboardComponent implements OnInit {
   stageSlices: StageSlice[] = [];
   donutGradient = 'conic-gradient(#e2e8f0 0% 100%)';
 
-  deptBars: { label: string; count: number; pct: number }[] = [];
+  deptBars: { label: string; raw: string; count: number; pct: number }[] = [];
 
   recentRows: RecentAppRow[] = [];
   upcomingInterviews: InterviewSoon[] = [];
@@ -294,6 +294,7 @@ export class RecuiterDashboardComponent implements OnInit {
     const entries = [...map.entries()].sort((a, b) => b[1] - a[1]).slice(0, 8);
     const max = Math.max(...entries.map((e) => e[1]), 1);
     this.deptBars = entries.map(([label, count]) => ({
+      raw: label,
       label: label.length > 28 ? label.slice(0, 26) + '…' : label,
       count,
       pct: Math.round((count / max) * 100),

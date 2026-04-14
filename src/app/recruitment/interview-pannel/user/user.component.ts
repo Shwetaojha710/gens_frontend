@@ -246,8 +246,18 @@ export class UserComponent implements OnInit {
       this.notyf.error('Email is required');
       return false;
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(this.obj.email.trim())) {
+      this.notyf.error('Please enter a valid email address');
+      return false;
+    }
     if (!this.obj.mobile_no?.trim()) {
       this.notyf.error('Mobile number is required');
+      return false;
+    }
+    const mobileRegex = /^[0-9]{10}$/;
+    if (!mobileRegex.test(this.obj.mobile_no.trim())) {
+      this.notyf.error('Mobile number must be exactly 10 digits');
       return false;
     }
     if (!this.obj.department) {

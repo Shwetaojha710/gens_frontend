@@ -439,4 +439,39 @@ export class CandidateComponent {
       }
     });
   }
+
+  parseJobDescription(text: string): string {
+    if (!text || !text.trim()) return '<p class="text-muted">Detailed job information will be reviewed during the screening process.</p>';
+
+    const escaped = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    const lines = escaped.split('\n');
+    const result: string[] = [];
+    let inList = false;
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (trimmed.startsWith('* ')) {
+        if (!inList) { result.push('<ul class="ps-3 mb-1">'); inList = true; }
+        result.push(`<li>${this.applyInlineMd(trimmed.slice(2))}</li>`);
+      } else {
+        if (inList) { result.push('</ul>'); inList = false; }
+        if (trimmed === '') {
+          result.push('<br>');
+        } else {
+          result.push(`<p class="mb-1">${this.applyInlineMd(trimmed)}</p>`);
+        }
+      }
+    }
+
+    if (inList) result.push('</ul>');
+    return result.join('');
+  }
+
+  private applyInlineMd(text: string): string {
+    return text.replace(/\*([^*\n]+)\*/g, '<strong>$1</strong>');
+  }
 }
