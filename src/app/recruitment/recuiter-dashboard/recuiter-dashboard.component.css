@@ -20,14 +20,13 @@
 
 .rd-shell {
   background: linear-gradient(180deg, var(--rd-page-bg) 0%, var(--rd-page-bg2) 45%, #f3f6fb 100%);
-  margin: -0.75rem -1rem -2rem;
   padding: 1.25rem 1.25rem 2.5rem;
   min-height: calc(100vh - 5rem);
 }
 
 @media (min-width: 992px) {
   .rd-shell {
-    margin: -1rem -1.5rem -2rem;
+    /* margin: -1rem -1.5rem -2rem; */
     padding: 1.5rem 1.75rem 2.5rem;
   }
 }
@@ -39,7 +38,7 @@
   align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  /* margin-bottom: 1.5rem; */
 }
 
 .rd-header__title {
@@ -70,6 +69,7 @@
   border: 1px solid rgba(0, 0, 0, 0.08);
   cursor: pointer;
 }
+
 .rd-header__daterange:hover {
   border-color: var(--rd-primary);
 }
@@ -78,24 +78,27 @@
 .rd-date-filter {
   position: relative;
 }
+
 .rd-date-filter__panel {
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
   z-index: 1050;
   background: var(--rd-card);
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   box-shadow: var(--rd-shadow-lg);
   padding: 16px;
   min-width: 240px;
 }
+
 .rd-date-filter__row {
   display: flex;
   flex-direction: column;
   gap: 4px;
   margin-bottom: 12px;
 }
+
 .rd-date-filter__label {
   font-size: 0.72rem;
   font-weight: 600;
@@ -103,6 +106,7 @@
   letter-spacing: 0.05em;
   color: var(--rd-muted);
 }
+
 .rd-date-filter__input {
   border: 1px solid #dee2e6;
   border-radius: 8px;
@@ -111,14 +115,17 @@
   outline: none;
   width: 100%;
 }
+
 .rd-date-filter__input:focus {
   border-color: var(--rd-primary);
 }
+
 .rd-date-filter__actions {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
 }
+
 .rd-date-filter__btn {
   padding: 6px 16px;
   border-radius: 8px;
@@ -127,24 +134,30 @@
   border: none;
   cursor: pointer;
 }
+
 .rd-date-filter__btn--clear {
   background: #f1f5f9;
   color: #64748b;
 }
+
 .rd-date-filter__btn--clear:hover {
   background: #e2e8f0;
 }
+
 .rd-date-filter__btn--apply {
   background: var(--rd-primary);
   color: #fff;
 }
+
 .rd-date-filter__btn--apply:hover {
   opacity: 0.9;
 }
+
 .rd-date-filter__btn--apply:disabled {
   opacity: 0.45;
   cursor: not-allowed;
 }
+
 .rd-date-filter__err {
   font-size: 0.72rem;
   color: #dc3545;
@@ -183,7 +196,9 @@
   align-items: center;
   padding: 0.5rem 1.35rem;
   border-radius: 10px;
-  background: var(--rd-primary);
+  border-top: 0px solid;
+  border-image-source: linear-gradient(90deg, #209AF7 0%, #025A9D 100%);
+  background: linear-gradient(89.79deg, #209AF7 0.92%, #025A9D 99.82%);
   color: #fff !important;
   font-weight: 600;
   font-size: 0.875rem;
@@ -216,10 +231,10 @@
   --bs-card-hover-border-color: var(--bs-card-border-color);
   --bs-card-hover-border-bottom-color: var(--bs-card-border-color);
   --bs-card-box-shadow: var(--bs-box-shadow);
-  background: var(--rd-card);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 100%) !important;
   border-radius: var(--rd-radius);
   box-shadow: var(--bs-card-box-shadow);
-  border: 1px solid var(--bs-card-border-color, rgba(38, 43, 67, 0.12));
+  border: 2px solid #fff;
   overflow: hidden;
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
 }
@@ -563,13 +578,20 @@
   align-items: center;
   gap: 5px;
   z-index: 10;
-  box-shadow: 0 4px 12px rgba(0,0,0,.25);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .25);
   animation: rdTipIn .12s ease;
 }
 
 @keyframes rdTipIn {
-  from { opacity: 0; transform: translate(-50%, calc(-50% + 74px)); }
-  to   { opacity: 1; transform: translate(-50%, calc(-50% + 70px)); }
+  from {
+    opacity: 0;
+    transform: translate(-50%, calc(-50% + 74px));
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, calc(-50% + 70px));
+  }
 }
 
 .rd-donut-tooltip__dot {
@@ -668,7 +690,7 @@
   opacity: 0;
   transition: opacity .15s ease;
   z-index: 99;
-  box-shadow: 0 2px 8px rgba(0,0,0,.2);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, .2);
 }
 
 .rd-legend-tip::before {
@@ -1100,7 +1122,9 @@
   flex-shrink: 0;
 }
 
-.rd-modal-meta h5 { font-size: 1rem; }
+.rd-modal-meta h5 {
+  font-size: 1rem;
+}
 
 .rd-detail-grid {
   display: grid;
@@ -1170,4 +1194,3 @@
   flex: 1;
   flex-wrap: wrap;
 }
-

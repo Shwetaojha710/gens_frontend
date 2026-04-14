@@ -3943,6 +3943,7 @@ fieldset:disabled .btn {
   --bs-btn-disabled-color: #fff;
   --bs-btn-disabled-bg: #005495;
   --bs-btn-disabled-border-color: #005495;
+  border: 0px;
 }
 
 .btn-secondary {
@@ -5505,7 +5506,7 @@ fieldset:disabled .btn {
   border: var(--bs-card-border-width) solid var(--bs-card-border-color);
   border-radius: var(--bs-card-border-radius);
   background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 100%) !important;
-  border:2px solid #fff;
+  border: 2px solid #fff;
 }
 
 .card>hr {
@@ -33876,6 +33877,6 @@ div.dt-container div.dt-search input {
 
 }
 
-.ng-select.ng-select-single .ng-select-container{
+.ng-select.ng-select-single .ng-select-container {
   background: transparent;
 }

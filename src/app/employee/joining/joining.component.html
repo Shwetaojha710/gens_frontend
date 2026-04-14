@@ -408,13 +408,13 @@
     <div class="col-lg-3 col-sm-6"  (click)="checkTotalEmp()">
 
 
-      <div class="card card-border-shadow-primary h-100">
+      <div class="card h-100">
         <div class="card-body">
           <div class="d-flex align-items-center mb-2">
             <div class="avatar me-4">
               <span class="avatar-initial rounded-3 bg-label-primary"><i class="icon-base ri ri-user-star-line icon-24px"></i></span>
             </div>
-            <h4 class="mb-0">{{cardData?.['totalEmployee']}}</h4>
+            <h4 class="mb-0 text-primary">{{cardData?.['totalEmployee']}}</h4>
           </div>
           <h6 class="mb-0 fw-normal">Total Employee</h6>
           <p class="mb-0">
@@ -427,13 +427,13 @@
     <div class="col-lg-3 col-sm-6" (click)="checkActiveStatus()">
 
 
-      <div class="card card-border-shadow-success h-100">
+      <div class="card h-100">
         <div class="card-body">
           <div class="d-flex align-items-center mb-2">
             <div class="avatar me-4">
               <span class="avatar-initial rounded-3 bg-label-success"><i class="icon-base ri ri-pie-chart-2-line icon-24px"></i></span>
             </div>
-            <h4 class="mb-0">{{cardData?.['ActiveEmployee']}}</h4>
+            <h4 class="mb-0 text-success">{{cardData?.['ActiveEmployee']}}</h4>
           </div>
           <h6 class="mb-0 fw-normal">Total Active Employee</h6>
           <p class="mb-0">
@@ -447,13 +447,13 @@
 
 
 
-      <div class="card card-border-shadow-danger h-100">
+      <div class="card h-100">
         <div class="card-body">
           <div class="d-flex align-items-center mb-2">
             <div class="avatar me-4">
               <span class="avatar-initial rounded-3 bg-label-danger"><i class="icon-base ri ri-pie-chart-2-line icon-24px"></i></span>
             </div>
-            <h4 class="mb-0">{{cardData?.['InactiveEmployee']}}</h4>
+            <h4 class="mb-0 text-danger">{{cardData?.['InactiveEmployee']}}</h4>
           </div>
           <h6 class="mb-0 fw-normal">Total InActive Employee</h6>
           <p class="mb-0">
@@ -467,13 +467,13 @@
     </div>
     <div class="col-lg-3 col-sm-6" (click)="checknewJoiner()">
 
- <div class="card card-border-shadow-info h-100">
+ <div class="card h-100">
         <div class="card-body">
           <div class="d-flex align-items-center mb-2">
             <div class="avatar me-4">
               <span class="avatar-initial rounded-3 bg-label-info"><i class="icon-base ri ri-pie-chart-2-line icon-24px"></i></span>
             </div>
-            <h4 class="mb-0">{{cardData?.['newJoiners']}}</h4>
+            <h4 class="mb-0 text-info">{{cardData?.['newJoiners']}}</h4>
           </div>
           <h6 class="mb-0 fw-normal">Total New Joiners Employee</h6>
           <p class="mb-0">
