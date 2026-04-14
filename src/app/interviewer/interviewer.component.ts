@@ -1,11 +1,12 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { RecruitmentNavbarComponent } from '../recruitment/recruitment-navbar/recruitment-navbar.component';
 import { InterviewerHeaderComponent } from './interviewer-header/interviewer-header.component';
+import { InterviewerNavbarComponent } from './interviewer-navbar/interviewer-navbar.component';
 
 @Component({
   selector: 'app-interviewer',
-  imports: [InterviewerHeaderComponent,RecruitmentNavbarComponent, RouterModule],
+  standalone: true,
+  imports: [InterviewerHeaderComponent, InterviewerNavbarComponent, RouterModule],
   templateUrl: './interviewer.component.html',
   styleUrl: './interviewer.component.css'
 })

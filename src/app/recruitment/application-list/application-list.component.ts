@@ -20,6 +20,7 @@ import { forkJoin } from 'rxjs';
 })
 export class ApplicationListComponent implements OnInit {
   applications: CandidateApplicationRecord[] = [];
+  allApplications: CandidateApplicationRecord[] = [];
   filteredApps: CandidateApplicationRecord[] = [];
   selectedApp: CandidateApplicationRecord | null = null;
   selectedDetailApp: CandidateApplicationRecord | null = null;
@@ -31,9 +32,23 @@ export class ApplicationListComponent implements OnInit {
   itemsPerPage = 10;
   totalItems = 0;
   obj: CandidatePipelinePayload = {};
+  activeStageFilter = 'all';
+
+  stageFilters = [
+    { key: 'all',                 label: 'All',                 icon: 'fas fa-th-list',        dotColor: '#3b82f6' },
+    { key: 'candidate_applied',   label: 'Candidate Applied',   icon: 'fas fa-user-plus',      dotColor: '#8b5cf6' },
+    { key: 'interview_scheduled', label: 'Interview Scheduled', icon: 'fas fa-calendar-check', dotColor: '#f59e0b' },
+    { key: 'offered',             label: 'Offered',             icon: 'fas fa-handshake',      dotColor: '#22c55e' },
+    { key: 'rejected',            label: 'Rejected',            icon: 'fas fa-times-circle',   dotColor: '#ef4444' },
+  ];
 
   editObj: any = {};
   notyf = new Notyf();
+
+  // Resume upload in edit modal
+  editResumeFile: File | null = null;
+  editResumeFileName = '';
+  isUploadingResume = false;
 
   // Assign interviewer
   panelUsers: InterviewPanelUser[] = [];
@@ -83,8 +98,8 @@ export class ApplicationListComponent implements OnInit {
       next: (res) => {
         const status = this.statusService.handleResponseStatus(res.status, 'OK');
         if (status === true) {
-          this.applications = res.data || [];
-          this.totalItems = this.applications.length;
+          this.allApplications = res.data || [];
+          this.applications = [...this.allApplications];
           this.applyFilter();
         } else if (status === 'expired') {
           this.router.navigate(['login']);
@@ -97,6 +112,17 @@ export class ApplicationListComponent implements OnInit {
         this.cdr.markForCheck();
       }
     });
+  }
+
+  setStageFilter(key: string): void {
+    this.activeStageFilter = key;
+    this.currentPage = 1;
+    this.applyFilter();
+  }
+
+  getStageCount(key: string): number {
+    if (key === 'all') return this.allApplications.length;
+    return this.allApplications.filter(a => a.stage === key).length;
   }
 
   loadPanelUsers(): void {
@@ -138,7 +164,12 @@ export class ApplicationListComponent implements OnInit {
   }
 
   private applyFilter(): void {
-    let filtered = [...this.applications];
+    let filtered = [...this.allApplications];
+
+    // Stage filter
+    if (this.activeStageFilter !== 'all') {
+      filtered = filtered.filter(app => app.stage === this.activeStageFilter);
+    }
 
     // Search filter
     if (this.searchTerm) {
@@ -147,6 +178,7 @@ export class ApplicationListComponent implements OnInit {
       );
     }
 
+    this.applications = filtered;
     this.totalItems = filtered.length;
 
     // Pagination
@@ -234,7 +266,92 @@ export class ApplicationListComponent implements OnInit {
       if (m) m.hide();
     }
     this.editObj = { relocateEnabled: false, offerInHandEnabled: false };
+    this.editResumeFile = null;
+    this.editResumeFileName = '';
     this.cdr.markForCheck();
+  }
+
+  onEditResumeSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0] || null;
+    this.editResumeFile = file;
+    this.editResumeFileName = file?.name || '';
+    this.cdr.markForCheck();
+  }
+
+  private uploadAndEvaluateResume(app: CandidateApplicationRecord): void {
+    if (!this.editResumeFile) return;
+    this.isUploadingResume = true;
+    this.cdr.markForCheck();
+
+    // Step 1: upload the resume file
+    this.jobService.uploadCandidateResume(app.id, this.editResumeFile).subscribe({
+      next: () => {
+        // Step 2: run ATS evaluation
+        const jobDescription = {
+          job_title: app.job_title,
+          department: (app as any).department,
+          skills: app.skills,
+          experience: app.experience
+        };
+        this.jobService.evaluateResumeFromFile(this.editResumeFile!, {
+          candidate_id: app.candidate_id || app.id,
+          job_id: app.job_id,
+          job_posting_id: app.job_posting_id,
+          job_description: jobDescription
+        }).subscribe({
+          next: (res: any) => {
+            const normalized = this.normalizeAtsResult(res);
+            if (normalized && !normalized._error) {
+              const score = normalized.overall_score ?? normalized.breakdown?.skills?.score ?? null;
+              if (score !== null) {
+                // Step 3: save ATS score
+                this.jobService.saveCandidateAtsScore({
+                  application_id: app.id,
+                  ats_score: score,
+                  matched_skills: normalized.breakdown?.skills?.matched || [],
+                  missing_skills: normalized.breakdown?.skills?.missing || [],
+                  summary: normalized.final_summary || ''
+                } as any).subscribe({
+                  next: () => {
+                    this.notyf.success(`Resume uploaded & ATS score updated: ${Math.round(score)}`);
+                    this.loadApplications();
+                    this.isUploadingResume = false;
+                    this.editResumeFile = null;
+                    this.editResumeFileName = '';
+                    this.cdr.markForCheck();
+                  },
+                  error: () => {
+                    this.notyf.error('Resume uploaded but ATS score save failed');
+                    this.isUploadingResume = false;
+                    this.cdr.markForCheck();
+                  }
+                });
+              } else {
+                this.notyf.success('Resume uploaded successfully');
+                this.loadApplications();
+                this.isUploadingResume = false;
+                this.cdr.markForCheck();
+              }
+            } else {
+              this.notyf.error(normalized?._error || 'ATS evaluation failed after resume upload');
+              this.isUploadingResume = false;
+              this.cdr.markForCheck();
+            }
+          },
+          error: () => {
+            this.notyf.error('Resume uploaded but ATS evaluation failed');
+            this.isUploadingResume = false;
+            this.cdr.markForCheck();
+          }
+        });
+      },
+      error: (err: any) => {
+        this.notyf.error(err?.error?.message || 'Resume upload failed');
+        this.isUploadingResume = false;
+        this.cdr.markForCheck();
+      }
+    });
   }
 
 
@@ -262,8 +379,14 @@ export class ApplicationListComponent implements OnInit {
         const status = this.statusService.handleResponseStatus(res.status, res.message);
         if (status === true) {
           this.notyf.success(res.message || 'Application updated successfully');
+          const appForResume = this.allApplications.find(a => a.id === this.editObj.application_id) || null;
+          const pendingResumeFile = this.editResumeFile;
           this.closeEditModal();
           this.loadApplications();
+          if (pendingResumeFile && appForResume) {
+            this.editResumeFile = pendingResumeFile;
+            this.uploadAndEvaluateResume(appForResume);
+          }
         } else if (status === 'expired') {
           this.router.navigate(['login']);
         } else {
@@ -443,11 +566,35 @@ export class ApplicationListComponent implements OnInit {
         this.atsResult = res;
         this.isEvaluating = false;
         this.cdr.markForCheck();
+        this.saveAtsScoreToList(this.atsApp!, res);
       },
       error: (err: any) => {
         this.notyf.error(err?.error?.message || 'ATS evaluation failed');
         this.isEvaluating = false;
         this.cdr.markForCheck();
+      }
+    });
+  }
+
+  saveAtsScoreToList(app: CandidateApplicationRecord, res: any): void {
+    const normalized = this.normalizeAtsResult(res);
+    if (!normalized || normalized._error) return;
+    const score = normalized.overall_score ?? normalized.breakdown?.skills?.score ?? null;
+    if (score === null) return;
+
+    this.jobService.saveCandidateAtsScore({
+      application_id: app.id,
+      ats_score: score,
+      matched_skills: normalized.breakdown?.skills?.matched || [],
+      missing_skills: normalized.breakdown?.skills?.missing || [],
+      summary: normalized.final_summary || ''
+    } as any).subscribe({
+      next: () => {
+        this.notyf.success(`ATS score saved: ${Math.round(score)}`);
+        this.loadApplications();
+      },
+      error: () => {
+        this.notyf.error('ATS score save failed');
       }
     });
   }
@@ -495,6 +642,7 @@ export class ApplicationListComponent implements OnInit {
         this.atsUrlResult = res;
         this.isUrlEvaluating = false;
         this.cdr.markForCheck();
+        this.saveAtsScoreToList(this.atsUrlApp!, res);
       },
       error: (err: any) => {
         this.notyf.error(err?.error?.message || 'ATS URL evaluation failed');

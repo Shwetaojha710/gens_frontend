@@ -36,8 +36,8 @@ export class JobService {
     return this.http.post<any>(`${this.baseUrl}publishJob`, dept);
   }
 
-  getJobRequirements(): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}getJobRequirements`, {});
+  getJobRequirements(obj:any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}getJobRequirements`, obj);
   }
 
 
@@ -85,6 +85,13 @@ export class JobService {
 
   updateCandidateApplication(payload: any): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}update-application`, payload);
+  }
+
+  uploadCandidateResume(applicationId: string, file: File): Observable<any> {
+    const formData = new FormData();
+    formData.append('resume', file, file.name);
+    formData.append('application_id', applicationId);
+    return this.http.post<any>(`${this.baseUrl}update-resume`, formData);
   }
 
   evaluateResumeFromFile(resumeFile: File, payload: { candidate_id?: string; job_id?: string; job_posting_id?: string; job_description?: any }): Observable<any> {

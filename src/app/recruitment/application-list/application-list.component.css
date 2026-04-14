@@ -47,6 +47,71 @@
   white-space: nowrap;
 }
 
+/* ── Stage Filter Chips ── */
+.filter-chip-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .45rem;
+  border-bottom: 1px solid rgba(0,0,0,.08);
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 13px;
+  border-radius: 20px;
+  border: 1.5px solid #e2e8f0;
+  font-size: .78rem;
+  font-weight: 500;
+  cursor: pointer;
+  background: #f8fafc;
+  color: #475569;
+  transition: all .15s;
+  white-space: nowrap;
+}
+
+.filter-chip:hover {
+  border-color: #94a3b8;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,.08);
+}
+
+.filter-chip.chip-active {
+  background: #1e40af;
+  border-color: #1e40af;
+  color: #fff;
+  box-shadow: 0 3px 8px rgba(30,64,175,.25);
+}
+
+.filter-chip[data-stage="candidate_applied"].chip-active   { background:#7c3aed; border-color:#7c3aed; box-shadow:0 3px 8px rgba(124,58,237,.25); }
+.filter-chip[data-stage="interview_scheduled"].chip-active { background:#b45309; border-color:#b45309; box-shadow:0 3px 8px rgba(180,83,9,.25); }
+.filter-chip[data-stage="offered"].chip-active             { background:#15803d; border-color:#15803d; box-shadow:0 3px 8px rgba(21,128,61,.25); }
+.filter-chip[data-stage="rejected"].chip-active            { background:#b91c1c; border-color:#b91c1c; box-shadow:0 3px 8px rgba(185,28,28,.25); }
+
+.chip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.chip-icon { font-size: .72rem; }
+
+.chip-count {
+  background: rgba(0,0,0,.08);
+  border-radius: 10px;
+  padding: 1px 6px;
+  font-size: .7rem;
+  font-weight: 600;
+  min-width: 20px;
+  text-align: center;
+}
+
+.filter-chip.chip-active .chip-count {
+  background: rgba(255,255,255,.25);
+}
+
 @media (max-width: 768px) {
   .d-flex.gap-1 {
     flex-wrap: wrap;

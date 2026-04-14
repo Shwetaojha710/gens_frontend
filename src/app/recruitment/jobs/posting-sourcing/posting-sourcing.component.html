@@ -94,15 +94,28 @@
                     class="badge bg-label-success rounded-pill" [ngClass]="getStatusBadgeClass(item?.status)">  {{ getStatusLabel(item?.status) }}</a> -->
                 </li>
                 <li class="list-inline-item">
-                  <div class="dropdown">
+                  <div class="dropdown" [class.show]="openDropdownId === item?.id">
                     <button type="button"
                       class="btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow p-0 waves-effect"
-                      data-bs-toggle="dropdown" aria-expanded="false"><i
+                      (click)="toggleDropdown(item?.id, $event)"
+                      [attr.aria-expanded]="openDropdownId === item?.id"><i
                         class="icon-base ri ri-more-2-line icon-22px text-body-secondary"></i></button>
-                    <ul class="dropdown-menu dropdown-menu-end">
-                      <li><a class="dropdown-item waves-effect" href="javascript:void(0);">Update</a></li>
-                      <li><a class="dropdown-item waves-effect" href="javascript:void(0);">Publish</a></li>
-                      <li><a class="dropdown-item waves-effect" href="javascript:void(0);">Delete</a></li>
+                    <ul class="dropdown-menu dropdown-menu-end" [class.show]="openDropdownId === item?.id" (click)="$event.stopPropagation()">
+                      <li *ngIf="canPublish(item)">
+                        <button type="button" class="dropdown-item waves-effect" (click)="publish(item, 'open')">
+                          Publish
+                        </button>
+                      </li>
+                      <li *ngIf="canClose(item)">
+                        <button type="button" class="dropdown-item waves-effect" (click)="publish(item, 'close')">
+                          Close
+                        </button>
+                      </li>
+                      <li *ngIf="item?.url">
+                        <button type="button" class="dropdown-item waves-effect" (click)="openJobUrl(item?.url)">
+                          Open URL
+                        </button>
+                      </li>
                       <li>
                         <hr class="dropdown-divider">
                       </li>
@@ -169,18 +182,18 @@
                 <div class="card shadow-none bg-transparent border border-primary text-primary">
                   <div class="card-body">
                     <p class="card-title mb-0 text-primary">Experience</p>
-                    <small class="card-text">{{ getExperienceLabel(selectedJob) }}</small>
+                    <small class="card-text">{{ selectedJob?.experience }}</small>
                   </div>
                 </div>
               </div>
-              <div class="col-md-6 col-xl-2">
+              <!-- <div class="col-md-6 col-xl-2">
                 <div class="card shadow-none bg-transparent border border-primary text-primary">
                   <div class="card-body">
                     <p class="card-title mb-0 text-primary">Work Level</p>
-                    <small class="card-text">{{ getWorkLevelLabel(selectedJob) }}</small>
+                    <small class="card-text">{{ selectedJob?.experience }}</small>
                   </div>
                 </div>
-              </div>
+              </div> -->
               <div class="col-md-6 col-xl-2">
                 <div class="card shadow-none bg-transparent border border-primary text-primary">
                   <div class="card-body">
@@ -193,7 +206,7 @@
                 <div class="card shadow-none bg-transparent border border-primary text-primary">
                   <div class="card-body">
                     <p class="card-title mb-0 text-primary">Offer Salary</p>
-                    <small class="card-text">{{ getSalaryLabel(selectedJob) }}</small>
+                    <small class="card-text">{{ selectedJob?.budget_ctc || 0 }} lpa</small>
                   </div>
                 </div>
               </div>

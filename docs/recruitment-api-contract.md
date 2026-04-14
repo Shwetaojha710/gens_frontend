@@ -290,6 +290,37 @@ Response:
 }
 ```
 
+### `POST /api/candidate/panel-feedback-detail`
+Purpose: Fetch saved feedback detail for one interviewer round from `candidate_interview_feedback`.
+
+Request:
+```json
+{
+  "application_id": "APP-1001",
+  "round_id": "R1"
+}
+```
+
+Response:
+```json
+{
+  "status": true,
+  "data": {
+    "application_id": "APP-1001",
+    "round_id": "R1",
+    "interviewer_name": "Neha Singh",
+    "interviewer_email": "neha@example.com",
+    "rating": 8,
+    "recommendation": "selected",
+    "strengths": "Good communication, strong domain basics",
+    "concerns": "Needs deeper reporting knowledge",
+    "notes": "Recommended for next round",
+    "created_at": "2026-04-04T12:10:00.000Z",
+    "updated_at": "2026-04-04T12:10:00.000Z"
+  }
+}
+```
+
 ## 5. Suggested Tables / Collections
 
 ### `job_requirements`

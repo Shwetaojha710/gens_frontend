@@ -77,14 +77,14 @@
               <small *ngIf="accNum.errors?.['required']"
                 >Account number is required.</small
               >
-              <small
+              <!-- <small
                 *ngIf="accNum.errors?.['minlength'] || accNum.errors?.['maxlength']"
               >
                 Account number must be exactly 14 digits.
-              </small>
-              <small *ngIf="accNum.errors?.['pattern']"
+              </small> -->
+              <!-- <small *ngIf="accNum.errors?.['pattern']"
                 >Only numbers are allowed.</small
-              >
+              > -->
             </div>
           </div>
           <div class="col-4">
@@ -109,9 +109,9 @@
               <small *ngIf="ifsc.errors?.['required']"
                 >IFSC code is required.</small
               >
-              <small *ngIf="ifsc.errors?.['pattern']"
+              <!-- <small *ngIf="ifsc.errors?.['pattern']"
                 >Enter a valid IFSC code (e.g., SBIN0001234).</small
-              >
+              > -->
             </div>
           </div>
 
