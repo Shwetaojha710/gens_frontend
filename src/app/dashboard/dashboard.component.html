@@ -10,7 +10,8 @@
           Last 30 days
           <i class="fa-solid fa-angle-right fs-10 mx-1"></i>
         </button>
-        <button type="button" class="btn btn-primary waves-effect waves-light me-sm-2 me-2"  routerLink="/layout/reports/tracking-report"routerLinkActive="true" style="cursor: pointer;">
+        <button type="button" class="btn btn-primary waves-effect waves-light me-sm-2 me-2"
+          routerLink="/layout/reports/tracking-report" routerLinkActive="true" style="cursor: pointer;">
           <img src="../../../assets/img/icon/Vector.png" class="mx-2"> Reports
         </button>
       </div>
@@ -41,37 +42,41 @@
         </div>
 
         <div class="card-body d-flex justify-content-between flex-wrap gap-4">
-          <div class="d-flex align-items-center gap-3" routerLink="/layout/attendance/date-wise-attendance"routerLinkActive="true" style="cursor: pointer"  [queryParams]="{ fromDashboard: true }">
+          <div class="d-flex align-items-center gap-3" routerLink="/layout/attendance/date-wise-attendance"
+            routerLinkActive="true" style="cursor: pointer" [queryParams]="{ fromDashboard: true }">
             <div class="avatar">
               <div class="avatar-initial bg-label-success rounded">
                 <i class="icon-base ri ri-user-star-line icon-24px"></i>
               </div>
             </div>
-            <div class="card-info" >
+            <div class="card-info">
               <div class="d-flex align-items-center text-success">
                 <h5 class="mb-0">{{ getStatValueByTitle(`Today's Attendance`) }}</h5>
                 <div class="d-flex align-items-center text-success mx-1">
-                  <p class="mb-0 fw-medium">{{ getStatChange(`Today's Attendance`) }} {{ getAttendanceTrendLabel('Present') }}</p>
+                  <p class="mb-0 fw-medium">{{ getStatChange(`Today's Attendance`) }} {{
+                    getAttendanceTrendLabel('Present') }}</p>
                 </div>
               </div>
-              <p class="mb-0" >Present Today</p>
+              <p class="mb-0">Present Today</p>
             </div>
           </div>
 
-          <div class="d-flex align-items-center gap-3" routerLink="/layout/employee/apply-leave"routerLinkActive="true" style="cursor: pointer"  [queryParams]="{ fromDashboard: true }">
+          <div class="d-flex align-items-center gap-3" routerLink="/layout/employee/apply-leave" routerLinkActive="true"
+            style="cursor: pointer" [queryParams]="{ fromDashboard: true }">
             <div class="avatar">
               <div class="avatar-initial bg-label-warning rounded">
                 <i class="icon-base ri ri-pie-chart-2-line icon-24px"></i>
               </div>
             </div>
-            <div class="card-info" >
+            <div class="card-info">
               <div class="d-flex align-items-center text-warning">
                 <h5 class="mb-0">{{ attendanceChart?.todayLeaveCount || '0' }}</h5>
                 <div class="d-flex align-items-center text-warning mx-1">
-                  <p class="mb-0 fw-medium">{{ getAttendanceBreakdown('On Leave') }} {{ getAttendanceTrendLabel('On Leave') }}</p>
+                  <p class="mb-0 fw-medium">{{ getAttendanceBreakdown('On Leave') }} {{ getAttendanceTrendLabel('On
+                    Leave') }}</p>
                 </div>
               </div>
-              <p class="mb-0" >On Leave</p>
+              <p class="mb-0">On Leave</p>
             </div>
           </div>
 
@@ -81,11 +86,13 @@
                 <i class="icon-base ri ri-arrow-left-right-line icon-24px"></i>
               </div>
             </div>
-            <div class="card-info" routerLink="/layout/employee/apply-leave"routerLinkActive="true" style="cursor: pointer" [queryParams]="{ fromDashboard: true }">
+            <div class="card-info" routerLink="/layout/employee/apply-leave" routerLinkActive="true"
+              style="cursor: pointer" [queryParams]="{ fromDashboard: true }">
               <div class="d-flex align-items-center text-danger">
                 <h5 class="mb-0">{{ attendanceChart?.emergencyCount || '0' }}</h5>
                 <div class="d-flex align-items-center text-danger mx-1">
-                  <p class="mb-0 fw-medium">{{ getAttendanceBreakdown('On Emergency leave') }} {{ getAttendanceTrendLabel('On Emergency leave') }}</p>
+                  <p class="mb-0 fw-medium">{{ getAttendanceBreakdown('On Emergency leave') }} {{
+                    getAttendanceTrendLabel('On Emergency leave') }}</p>
                 </div>
               </div>
               <p class="mb-0">Emergency leave</p>
@@ -124,25 +131,19 @@
 
     <div class="col-lg-3 col-sm-6">
       <div class="card h-100 dashboard-glass-card">
-        <div class="card-body" >
+        <div class="card-body">
           <div class="d-flex justify-content-between align-items-start mb-3">
-            <div  routerLink="/layout/attendance/date-wise-attendance"routerLinkActive="true" style="cursor: pointer"  [queryParams]="{ fromDashboard: true }">
+            <div routerLink="/layout/attendance/date-wise-attendance" routerLinkActive="true" style="cursor: pointer"
+              [queryParams]="{ fromDashboard: true }">
               <h6 class="mb-1 text-nowrap" style="color: #3C4056;">Attendance Chart</h6>
             </div>
             <div class="dropdown table-range-dropdown">
-              <button
-                class="btn chart-period-label"
-                type="button"
-                (click)="toggleAttendanceChartRangeDropdown($event)"
-                [attr.aria-expanded]="isAttendanceChartRangeOpen"
-              >
+              <button class="btn chart-period-label" type="button" (click)="toggleAttendanceChartRangeDropdown($event)"
+                [attr.aria-expanded]="isAttendanceChartRangeOpen">
                 <span>{{ selectedAttendanceChartRange }}</span>
                 <i class="ri ri-arrow-up-s-line"></i>
               </button>
-              <ul
-                class="dropdown-menu dropdown-menu-end table-range-menu"
-                [class.show]="isAttendanceChartRangeOpen"
-              >
+              <ul class="dropdown-menu dropdown-menu-end table-range-menu" [class.show]="isAttendanceChartRangeOpen">
                 <li>
                   <button class="dropdown-item" type="button" (click)="setAttendanceChartRange('This Week')">
                     This Week
@@ -169,17 +170,11 @@
             </div>
 
             <div class="attendance-chart-box">
-              <apx-chart
-                *ngIf="attendanceDonutOptions.series?.length"
-                [series]="attendanceDonutOptions.series!"
-                [chart]="attendanceDonutOptions.chart!"
-                [labels]="attendanceDonutOptions.labels!"
-                [colors]="attendanceDonutOptions.colors!"
-                [dataLabels]="attendanceDonutOptions.dataLabels!"
-                [legend]="attendanceDonutOptions.legend!"
-                [plotOptions]="attendanceDonutOptions.plotOptions!"
-                [responsive]="attendanceDonutOptions.responsive!"
-              ></apx-chart>
+              <apx-chart *ngIf="attendanceDonutOptions.series?.length" [series]="attendanceDonutOptions.series!"
+                [chart]="attendanceDonutOptions.chart!" [labels]="attendanceDonutOptions.labels!"
+                [colors]="attendanceDonutOptions.colors!" [dataLabels]="attendanceDonutOptions.dataLabels!"
+                [legend]="attendanceDonutOptions.legend!" [plotOptions]="attendanceDonutOptions.plotOptions!"
+                [responsive]="attendanceDonutOptions.responsive!"></apx-chart>
             </div>
           </div>
         </div>
@@ -189,17 +184,19 @@
 
   <div class="row g-3 mb-3">
     <div class="col-md-6 col-md-6 col-lg-6">
-      <div class="ai-card" style="background-image: url('/assets/img/bg-login/ai-bg.png');background-size: cover;background-position: center;">
+      <div class="ai-card"
+        style="background-image: url('/assets/img/bg-login/ai-bg.png');background-size: cover;background-position: center;">
         <div class="ai-content">
           <h2 class="title">
-            Artificial Intelligence ✨ <span>(Coming Soon)</span>
+            Artificial Intelligence <span>(Coming Soon)</span>
           </h2>
 
           <div class="analysis-box">
             <h3>AI Analysis & prediction</h3>
             <ul>
               <li>3 Employees At Risk Of Being Absent Tomorrow</li>
-              <li>Attendance Improved By <span style="color: #69c0ce;">8% <i class="fa-solid fa-angle-down"></i></span>  Today</li>
+              <li>Attendance Improved By <span style="color: #69c0ce;">8% <i class="fa-solid fa-angle-down"></i></span>
+                Today</li>
               <li>2 Employees Frequently Late This Week</li>
             </ul>
           </div>
@@ -229,19 +226,13 @@
         <div class="card-header d-flex justify-content-between align-items-center">
           <h6 class="mb-0 text-nowrap" style="color: #3C4056;">Attendance by depart.</h6>
           <div class="dropdown table-range-dropdown">
-            <button
-              class="btn chart-period-label"
-              type="button"
+            <button class="btn chart-period-label" type="button"
               (click)="toggleAttendanceDepartmentRangeDropdown($event)"
-              [attr.aria-expanded]="isAttendanceDepartmentRangeOpen"
-            >
+              [attr.aria-expanded]="isAttendanceDepartmentRangeOpen">
               <span>{{ selectedAttendanceDepartmentRange }}</span>
               <i class="ri ri-arrow-up-s-line"></i>
             </button>
-            <ul
-              class="dropdown-menu dropdown-menu-end table-range-menu"
-              [class.show]="isAttendanceDepartmentRangeOpen"
-            >
+            <ul class="dropdown-menu dropdown-menu-end table-range-menu" [class.show]="isAttendanceDepartmentRangeOpen">
               <li>
                 <button class="dropdown-item" type="button" (click)="setAttendanceDepartmentRange('This Week')">
                   This Week
@@ -267,17 +258,14 @@
               <div class="attendance-department-item" *ngFor="let item of attendanceByDepartment">
                 <span class="attendance-department-percent">{{ item.percentage }}%</span>
                 <div class="attendance-department-bar-wrapper">
-                <div class="attendance-department-tooltip">
-                  <strong>{{ item.name }}</strong>
-                  <span>{{ item.percentage }}% Attendance</span>
-                </div>
-                <div class="attendance-department-bar-bg">
-                  <div
-                    class="attendance-department-bar"
-                    [style.height.%]="item.percentage"
-                    [style.background]="item.color"
-                  ></div>
-                </div>
+                  <div class="attendance-department-tooltip">
+                    <strong>{{ item.name }}</strong>
+                    <span>{{ item.percentage }}% Attendance</span>
+                  </div>
+                  <div class="attendance-department-bar-bg">
+                    <div class="attendance-department-bar" [style.height.%]="item.percentage"
+                      [style.background]="item.color"></div>
+                  </div>
                 </div>
                 <span class="attendance-department-name">{{ item.name }}</span>
               </div>
@@ -306,12 +294,11 @@
         <div class="card-body">
           <div class="row">
             <div class="col-6" *ngFor="let item of celebrationsList">
-              <div
-                class="birthday-card"
-                style="background-image: url('../../../assets/img/avatars/birthday-bg.png');background-size: cover;background-position: center;background-repeat: no-repeat;width: 100%;height: 180px;"
-              >
+              <div class="birthday-card"
+                style="background-image: url('../../../assets/img/avatars/birthday-bg.png');background-size: cover;background-position: center;background-repeat: no-repeat;width: 100%;height: 180px;">
                 <div class="celebration-card text-center">
-                  <img [src]="getEmployeeAvatar(item)" (error)="onImageError($event, item, 'profileImage')" alt="emp-img">
+                  <img [src]="getEmployeeAvatar(item)" (error)="onImageError($event, item, 'profileImage')"
+                    alt="emp-img">
                   <p class="mb-0">{{ item.dateLabel }}</p>
                   <h4>{{ item.firstName }} {{ item.lastName }}</h4>
                   <h2>{{ item.cardTitle }}</h2>
@@ -337,13 +324,15 @@
           <p class="mb-0" style="font-size: 14px;color:#3C4056;">Event Name</p>
           <p class="mb-0" style="font-size: 14px;color:#3C4056;">Date</p>
         </div>
-        <div class="card-body bg-white p-2"  style="overflow-y:scroll;height: 147px;">
+        <div class="card-body bg-white p-2" style="overflow-y:scroll;height: 147px;">
           <ul class="p-0 m-0">
-            <li class="d-flex align-items-center mb-2" *ngFor="let item of holidayList" style="border-bottom:  1px solid #dadada;padding-bottom: 4px ;">
+            <li class="d-flex align-items-center mb-2" *ngFor="let item of holidayList"
+              style="border-bottom:  1px solid #dadada;padding-bottom: 4px ;">
               <div class="avatar avatar-md flex-shrink-0 me-4">
                 <div class="avatar-initial bg-lightest rounded-3">
                   <div>
-                    <img [src]="item.image" (error)="onImageError($event, item, 'holidayImage')" alt="User" class="h-25">
+                    <img [src]="item.image" (error)="onImageError($event, item, 'holidayImage')" alt="User"
+                      class="h-25">
                   </div>
                 </div>
               </div>
@@ -369,34 +358,38 @@
               <ul class="nav nav-pills bg-white p-1 mb-0" style="border-radius: 5px;" role="tablist">
                 <li class="nav-item" role="presentation">
                   <button type="button" class="nav-link active waves-effect waves-light text-secondary app" role="tab"
-                    (click)="setEmployeeSectionTab('employee')"
-                    data-bs-toggle="tab" data-bs-target="#navs-pills-top-emp-info" aria-controls="navs-pills-top-emp-info"
+                    (click)="setEmployeeSectionTab('employee')" data-bs-toggle="tab"
+                    data-bs-target="#navs-pills-top-emp-info" aria-controls="navs-pills-top-emp-info"
                     aria-selected="true">
                     Employee Info
                   </button>
                 </li>
                 <li class="nav-item" role="presentation">
                   <button type="button" class="nav-link waves-effect waves-light approve" role="tab"
-                    (click)="setEmployeeSectionTab('leave')"
-                    data-bs-toggle="tab" data-bs-target="#navs-pills-top-leave">
+                    (click)="setEmployeeSectionTab('leave')" data-bs-toggle="tab"
+                    data-bs-target="#navs-pills-top-leave">
                     Employee Leave Info
+                  </button>
+                </li>
+                <li class="employee-table-header-bottom">
+                  <button *ngIf="activeEmployeeSectionTab === 'employee'" type="button"
+                    class="btn btn-sm approve view-all-btn" (click)="openEmployeeListPage()">
+                    View All Employee
+                  </button>
+
+                  <button *ngIf="activeEmployeeSectionTab === 'leave'" type="button"
+                    class="btn btn-sm approve view-all-btn" (click)="openLeaveListPage()">
+                    View All Leave
                   </button>
                 </li>
               </ul>
 
               <div class="dropdown table-range-dropdown" *ngIf="activeEmployeeSectionTab === 'leave'">
-                <button
-                  class="btn table-range-btn dropdown-toggle"
-                  type="button"
-                  (click)="toggleEmployeeTableRangeDropdown($event)"
-                  [attr.aria-expanded]="isEmployeeTableRangeOpen"
-                >
+                <button class="btn table-range-btn dropdown-toggle" type="button"
+                  (click)="toggleEmployeeTableRangeDropdown($event)" [attr.aria-expanded]="isEmployeeTableRangeOpen">
                   {{ selectedEmployeeTableRange }}
                 </button>
-                <ul
-                  class="dropdown-menu dropdown-menu-end table-range-menu"
-                  [class.show]="isEmployeeTableRangeOpen"
-                >
+                <ul class="dropdown-menu dropdown-menu-end table-range-menu" [class.show]="isEmployeeTableRangeOpen">
                   <li>
                     <button class="dropdown-item" type="button" (click)="setEmployeeTableRange('This Week')">
                       This Week
@@ -412,25 +405,7 @@
             </div>
           </div>
 
-          <div class="employee-table-header-bottom">
-            <button
-              *ngIf="activeEmployeeSectionTab === 'employee'"
-              type="button"
-              class="btn btn-sm approve view-all-btn"
-              (click)="openEmployeeListPage()"
-            >
-              View All Employee
-            </button>
 
-            <button
-              *ngIf="activeEmployeeSectionTab === 'leave'"
-              type="button"
-              class="btn btn-sm approve view-all-btn"
-              (click)="openLeaveListPage()"
-            >
-              View All Leave
-            </button>
-          </div>
         </div>
 
         <div class="tab-content p-0">
@@ -453,7 +428,8 @@
                     <td>
                       <div class="d-flex align-items-center">
                         <div class="avatar avatar-sm me-4">
-                          <img [src]="item.profileImage" (error)="onImageError($event, item, 'profileImage')" alt="Avatar" class="rounded-circle">
+                          <img [src]="item.profileImage" (error)="onImageError($event, item, 'profileImage')"
+                            alt="Avatar" class="rounded-circle">
                         </div>
                         <div>
                           <h6 class="mb-0 text-truncate">{{ item.name }}</h6>
@@ -466,7 +442,8 @@
                     <td class="text-truncate">
                       <span class="badge rounded-pill" [ngClass]="'bg-label-' + item.badgeColor">{{ item.badge }}</span>
                     </td>
-                    <td><a href="javascript:void(0)" (click)="openEmployeeProfile(item)" class="btn btn-sm approve">View</a></td>
+                    <td><a href="javascript:void(0)" (click)="openEmployeeProfile(item)"
+                        class="btn btn-sm approve">View</a></td>
                   </tr>
                 </tbody>
               </table>
@@ -503,29 +480,23 @@
                         </div>
                       </div>
                     </td>
-                    <td class="text-truncate">{{ item.mobile  }}  <br> {{ item.email }}</td>
+                    <td class="text-truncate">{{ item.mobile }} <br> {{ item.email }}</td>
 
-                    <td class="text-truncate">{{ item.fromDate | date:'dd MMM yyyy' }} To {{ item.toDate | date:'dd MMM yyyy' }}  <br>
-                    {{ item.type }} -  {{ item.days }} days</td>
+                    <td class="text-truncate">{{ item.fromDate | date:'dd MMM yyyy' }} To {{ item.toDate | date:'dd MMM
+                      yyyy' }} <br>
+                      {{ item.type }} - {{ item.days }} days</td>
                     <!-- <td class="text-truncate">{{ item.type }}</td> -->
                     <td class="text-truncate">
-                      <span class="badge rounded-pill" [ngClass]="getLeaveStatusClass(item.status)">{{ item.status }}</span>
+                      <span class="badge rounded-pill" [ngClass]="getLeaveStatusClass(item.status)">{{ item.status
+                        }}</span>
                     </td>
                     <td class="text-truncate">
-                      <a
-                        href="javascript:void(0)"
-                        (click)="openLeaveApproval(item)"
-                        class="btn btn-sm approve me-1"
-                        *ngIf="!['approved', 'rejected', 'self_declined'].includes(item.status)"
-                      >
+                      <a href="javascript:void(0)" (click)="openLeaveApproval(item)" class="btn btn-sm approve me-1"
+                        *ngIf="!['approved', 'rejected', 'self_declined'].includes(item.status)">
                         <i class="ri ri-check-line me-1"></i>
                       </a>
-                      <a
-                        href="javascript:void(0)"
-                        (click)="rejectLeaveApproval(item)"
-                        class="btn btn-sm approve"
-                        *ngIf="!['approved', 'rejected', 'self_declined'].includes(item.status)"
-                      >
+                      <a href="javascript:void(0)" (click)="rejectLeaveApproval(item)" class="btn btn-sm approve"
+                        *ngIf="!['approved', 'rejected', 'self_declined'].includes(item.status)">
                         <i class="ri ri-close-line me-1"></i>
                       </a>
                       <span *ngIf="['approved', 'rejected', 'self_declined'].includes(item.status)">-</span>
@@ -541,7 +512,8 @@
   </div>
 </div>
 
-<footer class="content-footer footer bg-footer-theme mt-5" style="background: transparent;border-top: 1px solid #ececee;">
+<footer class="content-footer footer bg-footer-theme mt-5"
+  style="background: transparent;border-top: 1px solid #ececee;">
   <div class="container-fluid">
     <div class="footer-container d-flex align-items-center justify-content-between py-4 flex-md-row flex-column">
       <div class="mb-2 mb-md-0">

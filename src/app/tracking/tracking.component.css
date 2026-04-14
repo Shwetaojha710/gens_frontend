@@ -1791,7 +1791,8 @@
 
 .tracking-root.tracking-light,
 .tracking-root.tracking-light.fullscreen-mode {
-  background: radial-gradient(circle at top left, rgba(96, 165, 250, .18), transparent 28%), radial-gradient(circle at top right, rgba(34, 197, 94, .12), transparent 22%), linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%)
+  background: radial-gradient(circle at top left, rgba(96, 165, 250, .18), transparent 28%), radial-gradient(circle at top right, rgba(34, 197, 94, .12), transparent 22%), linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%);
+  background: transparent;
 }
 
 .tracking-root.tracking-light .topbar,
@@ -1910,15 +1911,18 @@
 }
 
 .tracking-root.tracking-light .fc-all.fc-active {
-  background: linear-gradient(135deg, #2563eb, #3b82f6)
+  background: linear-gradient(135deg, #2563eb, #3b82f6);
+  color: #fff;
 }
 
 .tracking-root.tracking-light .fc-normal.fc-active {
-  background: linear-gradient(135deg, #4f46e5, #6366f1)
+  background: linear-gradient(135deg, #4f46e5, #6366f1);
+  color: #fff;
 }
 
 .tracking-root.tracking-light .fc-pinned.fc-active {
-  background: linear-gradient(135deg, #d97706, #f59e0b)
+  background: linear-gradient(135deg, #d97706, #f59e0b);
+  color: #fff;
 }
 
 .tracking-root.tracking-light .fc-hint-blue {

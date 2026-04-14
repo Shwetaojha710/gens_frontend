@@ -5,5 +5,13 @@
         "getweekend",
         "Notyf"
     ],
-    "angular.log": "verbose"
+    "angular.log": "verbose",
+    "spellright.language": [
+        "en"
+    ],
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext"
+    ]
 }

@@ -244,6 +244,12 @@ body {
         linear-gradient(0deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.1))
 }
 
+.company-text {
+    font-size: 32px;
+    color: #005495;
+    font-weight: 500;
+}
+
 /* Media Queries */
 
 @media screen and (max-width: 1024px) {
@@ -290,23 +296,22 @@ body {
         font-size: 11px !important;
     }
 
-    .btn-dashboard{
+    .btn-dashboard {
         font-size: 11px;
         width: 100px;
     }
 
     .buy-now .btn-buy-now {
-    position: fixed;
-    z-index: 1080;
-    box-shadow: 0 1px 20px 1px #0663a9;
-    inset-block-end: 4rem;
-    inset-inline-end: 28.5rem;
-}
+        position: fixed;
+        z-index: 1080;
+        box-shadow: 0 1px 20px 1px #0663a9;
+        inset-block-end: 4rem;
+        inset-inline-end: 28.5rem;
+    }
 }
 
 @media screen and (max-width: 1440px) {
-    .buy-now .btn-buy-now
- {
+    .buy-now .btn-buy-now {
         position: fixed;
         z-index: 1080;
         box-shadow: 0 1px 20px 1px #0663a9;
@@ -318,8 +323,7 @@ body {
 
 
 @media screen and (max-width: 768px) {
-    .buy-now .btn-buy-now
- {
+    .buy-now .btn-buy-now {
         position: fixed;
         z-index: 1080;
         box-shadow: 0 1px 20px 1px #0663a9;
@@ -327,4 +331,21 @@ body {
         inset-inline-end: 20.5rem;
     }
 
+    .company-text {
+        font-size: 18px;
+        color: #005495;
+        font-weight: 500;
+    }
+
+}
+
+
+@media screen and (max-width: 480px) {
+    .buy-now .btn-buy-now {
+        position: fixed;
+        z-index: 1080;
+        box-shadow: 0 1px 20px 1px #0663a9;
+        inset-block-end: 2rem;
+        inset-inline-end: 9.5rem;
+    }
 }
