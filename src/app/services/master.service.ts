@@ -22,7 +22,7 @@ export class MasterService {
   }
 
   getImageUrl(filename: string): string {
-    const base = this.getBaseUrl().replace(/api\/?$/, '');
+    const base = this.getBaseUrl()
     return `${base}upload/${filename}`;
   }
 
