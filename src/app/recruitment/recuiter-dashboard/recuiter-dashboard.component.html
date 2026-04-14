@@ -220,14 +220,19 @@
             <p class="rd-card__head-desc">Volume by department / role (relative scale)</p>
           </div>
           <div class="rd-card__body pt-0">
-            <div class="rd-lollipop" *ngFor="let d of deptBars">
+            <a
+              class="rd-lollipop rd-lollipop--link"
+              *ngFor="let d of deptBars"
+              [routerLink]="['/recruitment/application-list']"
+              [queryParams]="{ department: d.raw }"
+              title="View {{ d.label }} candidates">
               <span class="rd-lollipop__label">{{ d.label }}</span>
               <div class="rd-lollipop__track">
                 <div class="rd-lollipop__stem"></div>
                 <div class="rd-lollipop__dot" [style.bottom.%]="d.pct"></div>
               </div>
               <span class="rd-lollipop__val">{{ d.count }}</span>
-            </div>
+            </a>
             <p *ngIf="!deptBars.length" class="text-muted small mb-0 text-center py-4">No applications to chart yet.</p>
           </div>
         </div>

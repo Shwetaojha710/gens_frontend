@@ -94,7 +94,7 @@
                     class="badge bg-label-success rounded-pill" [ngClass]="getStatusBadgeClass(item?.status)">  {{ getStatusLabel(item?.status) }}</a> -->
                 </li>
                 <li class="list-inline-item">
-                  <div class="dropdown" [class.show]="openDropdownId === item?.id">
+                  <div class="dropdown" [class.show]="openDropdownId == item?.id">
                     <button type="button"
                       class="btn btn-text-secondary btn-icon rounded-pill dropdown-toggle hide-arrow p-0 waves-effect"
                       (click)="toggleDropdown(item?.id, $event)"
@@ -130,7 +130,9 @@
               *ngFor="let skill of getSkillsList(item?.skills)" class="badge rounded-pill bg-label-info mx-1">
               {{ skill }}
             </span></p>
-          <p class="mb-3 pb-1">{{item?.job_description}}</p>
+          <p class="mb-3 pb-1 jd-snippet text-muted">
+            {{ truncateDescription(item?.job_description) }}
+          </p>
           <div class="d-flex align-items-center">
             <div class="d-flex align-items-center w-px-100">
               <i class="icon-base ri ri-map-pin-line icon-18px me-1_5 text-primary"></i>
@@ -173,9 +175,9 @@
           <div class="mt-2">
 
 
-            <h5 class="card-text text-uppercase text-body-secondary small">About this Job</h5>
+            <!-- <h5 class="card-text text-uppercase text-body-secondary small">About this Job</h5>
             <p class="mb-0">{{ selectedJob?.job_description || '-' }}</p>
-            <hr class="my-6">
+            <hr class="my-6"> -->
             <div class="row g-6 mb-6">
               <div class="col-md-6 col-xl-2">
                 <div class="card shadow-none bg-transparent border border-primary text-primary">
@@ -213,7 +215,9 @@
             </div>
             <hr class="my-3">
             <h5 class="card-text text-uppercase text-body-secondary small">Description</h5>
-            <p class="mb-2">{{ selectedJob?.description || selectedJob?.job_description || '-' }}</p>
+            <div class="mb-2 jd-body"
+              [innerHTML]="parseJobDescription(selectedJob?.job_description || selectedJob?.description)">
+            </div>
             <hr>
 
 
@@ -225,50 +229,3 @@
 
 
 </div>
-
-<!--
-<div class="modal fade" id="SalaryModal" tabindex="-1">
-  <div class="modal-dialog modal-dialog-centered modal-xl">
-    <div class="modal-content">
-
-      <div class="modal-header">
-        <h5 class="modal-title">Link configuration</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-
-      <div class="modal-body">
-        <hr>
-
-
-               <div class="row g-3">
-            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-4">
-              <label for="defaultFormControlInput" class="col-form-label fw-bold">Base URL <span  style="color: red"> *</span></label>
-              <input type="text" name="Base Url" value="baseUrl" placeholder="https://careers.yourcompany.com/apply" class="form-control"
-                [(ngModel)]="obj['baseUrl']" />
-            </div>
-            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-4">
-              <label for="defaultFormControlInput" class="col-form-label fw-bold">Job slug (auto-filled)<span  style="color: red"> *</span></label>
-              <input type="text" name="slug" value="slug" placeholder="Job slug (auto-filled)" class="form-control"
-                [(ngModel)]="obj['slug']" />
-            </div>
-            <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-xl-4">
-              <label for="defaultFormControlInput" class="col-form-label fw-bold">Expires after (days)<span  style="color: red"> *</span></label>
-                 <ng-select [items]="expireDays" bindLabel="label" bindValue="value" [(ngModel)]="obj['expiresDays']"
-                [multiple]="false" placeholder="Expires after (days)" name="country" id="select2Danger"
-                #departmentRef="ngModel">
-              </ng-select>
-
-            </div>
-            </div>
-
-
-          <div class="form-actions">
-            <button class="btn-primary" (click)="generate()" [disabled]="!job || job.status !== 'open' || generating">
-              {{ generating ? 'Generating...' : 'Generate Link' }}
-            </button>
-          </div>
-
-      </div>
-    </div>
-  </div>
-</div> -->

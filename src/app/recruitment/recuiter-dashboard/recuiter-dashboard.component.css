@@ -862,6 +862,21 @@
   border-bottom: none;
 }
 
+.rd-lollipop--link {
+  text-decoration: none;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.rd-lollipop--link:hover {
+  background: rgba(var(--rd-primary-rgb, 99, 102, 241), 0.06);
+}
+
+.rd-lollipop--link:hover .rd-lollipop__label {
+  color: var(--rd-primary, #6366f1);
+}
+
 .rd-lollipop__label {
   font-weight: 500;
   color: var(--rd-text);

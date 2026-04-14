@@ -55,11 +55,11 @@ export class InterviewerNavbarComponent {
       icon: 'ri-file-list-3-line',
       link: '/interview/feedback'
     },
-    {
-      title: 'Calendar',
-      icon: 'ri-calendar-2-line',
-      link: '/interview/calendar'
-    }
+    // {
+    //   title: 'Calendar',
+    //   icon: 'ri-calendar-2-line',
+    //   link: '/interview/calendar'
+    // }
   ];
 
   constructor(private router: Router) {}

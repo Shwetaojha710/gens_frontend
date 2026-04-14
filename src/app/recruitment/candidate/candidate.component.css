@@ -1,3 +1,24 @@
+.jd-rendered p {
+  margin-bottom: 0.25rem;
+  line-height: 1.65;
+  font-size: 0.9rem;
+}
+
+.jd-rendered ul {
+  padding-left: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.jd-rendered li {
+  font-size: 0.9rem;
+  line-height: 1.65;
+  margin-bottom: 0.2rem;
+}
+
+.jd-rendered strong {
+  font-weight: 600;
+}
+
 .candidate-page {
   min-height: 100vh;
   padding: 32px 16px 48px;

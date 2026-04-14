@@ -2,6 +2,20 @@ import { Routes } from '@angular/router';
 import { LayoutComponent } from './layout.component';
 import { TrackingComponent } from '../tracking/tracking.component';
 import { LiveTrackingComponent } from '../tracking/live-tracking/live-tracking.component';
+import { AddComponent } from '../employee/add/add.component';
+import { AppointmentLetterComponent } from '../employee/profile/appointment-letter/appointment-letter.component';
+import { DocumentsComponent } from '../employee/profile/documents/documents.component';
+import { NdaComponent } from '../employee/profile/nda/nda.component';
+import { OfferLetterComponent } from '../employee/profile/offer-letter/offer-letter.component';
+import { PersonalDetailsComponent } from '../employee/profile/personal-details/personal-details.component';
+import { AssignLeaveComponent } from '../employee/profile/professional-info/assign-leave/assign-leave.component';
+import { BankDetailsComponent } from '../employee/profile/professional-info/bank-details/bank-details.component';
+import { ExperienceComponent } from '../employee/profile/professional-info/experience/experience.component';
+import { QualificationComponent } from '../employee/profile/professional-info/qualification/qualification.component';
+import { SkillsComponent } from '../employee/profile/professional-info/skills/skills.component';
+import { SalaryStructureComponent } from '../employee/profile/salary-structure/salary-structure.component';
+import { ServiceAgreementComponent } from '../employee/profile/service-agreement/service-agreement.component';
+import { SalarySetupComponent } from '../payroll/salary-setup/salary-setup.component';
 
 /**
  * HR app area under `/layout/*` (sidebar in {@link LayoutComponent}).
@@ -18,8 +32,31 @@ export const layoutRoutes: Routes = [
         loadComponent: () => import('../dashboard/dashboard.component').then((m) => m.DashboardComponent),
       },
       {
+        path: 'employee/list',
+        loadComponent: () => import('../employee/list/list.component').then((m) => m.ListComponent),
+      },
+      {
         path: 'employee/joining',
         loadComponent: () => import('../employee/joining/joining.component').then((m) => m.JoiningComponent),
+      },
+      {
+        path: 'employee/add',
+        component: AddComponent,
+        children: [
+          { path: 'profile/professional-info/qualification', component: QualificationComponent },
+          { path: 'profile/professional-info/personal', component: PersonalDetailsComponent },
+          { path: 'profile/professional-info/experience', component: ExperienceComponent },
+          { path: 'profile/professional-info/skills', component: SkillsComponent },
+          { path: 'profile/professional-info/salary', component: SalaryStructureComponent },
+          { path: 'profile/professional-info/documents', component: DocumentsComponent },
+          { path: 'profile/professional-info/bank-details', component: BankDetailsComponent },
+          { path: 'profile/professional-info/assign-leave', component: AssignLeaveComponent },
+          { path: 'profile/professional-info/salary-setup', component: SalarySetupComponent },
+          { path: 'profile/professional-info/nda', component: NdaComponent },
+          { path: 'profile/professional-info/service-agreement', component: ServiceAgreementComponent },
+          { path: 'profile/professional-info/appointment-letter', component: AppointmentLetterComponent },
+          { path: 'profile/professional-info/offer-letter', component: OfferLetterComponent },
+        ],
       },
       {
         path: 'employee/apply-leave',

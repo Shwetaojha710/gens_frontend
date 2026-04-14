@@ -1,3 +1,30 @@
+.jd-snippet {
+  font-size: 0.82rem;
+  line-height: 1.5;
+}
+
+/* Detail view description */
+.jd-body p {
+  margin-bottom: 0.25rem;
+  line-height: 1.6;
+  font-size: 0.9rem;
+}
+
+.jd-body .jd-list {
+  margin-bottom: 0.5rem;
+  padding-left: 1.2rem;
+}
+
+.jd-body .jd-list li {
+  margin-bottom: 0.2rem;
+  font-size: 0.9rem;
+  line-height: 1.6;
+}
+
+.jd-body strong {
+  font-weight: 600;
+}
+
 .job-action-row {
   display: flex;
   gap: 12px;

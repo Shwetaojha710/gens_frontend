@@ -235,6 +235,49 @@ export class PostingSourcingComponent {
     return item?.emp_typeData?.name || '-';
   }
 
+  truncateDescription(text: string, limit = 120): string {
+    if (!text) return '-';
+    const plain = text.replace(/\*/g, '').replace(/\n/g, ' ').trim();
+    return plain.length > limit ? plain.slice(0, limit) + '...' : plain;
+  }
+
+  parseJobDescription(text: string): string {
+    if (!text || !text.trim()) return '-';
+
+    // Escape HTML entities to prevent XSS
+    const escaped = text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    const lines = escaped.split('\n');
+    const result: string[] = [];
+    let inList = false;
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+
+      if (trimmed.startsWith('* ')) {
+        if (!inList) { result.push('<ul class="jd-list ps-3 mb-1">'); inList = true; }
+        result.push(`<li>${this.applyInlineMd(trimmed.slice(2))}</li>`);
+      } else {
+        if (inList) { result.push('</ul>'); inList = false; }
+        if (trimmed === '') {
+          result.push('<br>');
+        } else {
+          result.push(`<p class="mb-1">${this.applyInlineMd(trimmed)}</p>`);
+        }
+      }
+    }
+
+    if (inList) result.push('</ul>');
+    return result.join('');
+  }
+
+  private applyInlineMd(text: string): string {
+    return text.replace(/\*([^*\n]+)\*/g, '<strong>$1</strong>');
+  }
+
   publish(data: any, status: any) {
     this.closeDropdown();
     Swal.fire({

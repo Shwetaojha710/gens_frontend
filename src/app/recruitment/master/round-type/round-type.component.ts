@@ -165,7 +165,7 @@ originalList:any = []
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err?.message)
+        this.notyf.error(err?.error?.message)
       }
     });
 
@@ -199,7 +199,7 @@ originalList:any = []
       },
       error: (err) => {
         console.error('Error:', err);
-        this.notyf.error(err?.message)
+        this.notyf.error(err?.error?.message)
       }
 
 
