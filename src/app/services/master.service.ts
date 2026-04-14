@@ -21,6 +21,11 @@ export class MasterService {
       : localStorage.getItem('base_url')?.replace(/["\\,]/g, '') || '';
   }
 
+  getImageUrl(filename: string): string {
+    const base = this.getBaseUrl().replace(/api\/?$/, '');
+    return `${base}upload/${filename}`;
+  }
+
   getDesignations(): Observable<any> {
     return this.http.post(`${this.baseUrl}getDesignations`, {});
   }
@@ -280,6 +285,10 @@ export class MasterService {
 
   addBranchWithImage(formData: FormData): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}createBranch`, formData);
+  }
+
+  updateBranchWithImage(formData: FormData): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}updateBranch`, formData);
   }
 
   updateBranch(id: any, dept: any): Observable<any> {
