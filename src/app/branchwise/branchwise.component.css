@@ -137,15 +137,15 @@ body {
 
 /* Main Card */
 .city-card {
-    border-radius: 20px;
-    background: url("/assets/img/bg-login/lko-bg.png") center/cover no-repeat;
+    border-radius: 16px;
+    background-image: url("/assets/img/bg-login/lko-bg.png");
+    background-size: cover;
+    background-position: center;
     position: relative;
     overflow: hidden;
     width: 268px;
     height: 380px;
     opacity: 1;
-    border-radius: 16px;
-
 }
 
 /* Gradient overlay */

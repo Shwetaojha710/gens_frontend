@@ -51,6 +51,13 @@ export class BranchwiseComponent {
   imagePreview: string | null = null;
   addBranchLoading = false;
 
+  // Edit branch modal state
+  editBranch: any = {};
+  editBranchId: string | null = null;
+  editSelectedImage: File | null = null;
+  editImagePreview: string | null = null;
+  editBranchLoading = false;
+
   constructor(
     private dashboardService: DashboardService,
     private router: Router,
@@ -182,6 +189,77 @@ createFlag = false;
       },
       error: (err: any) => {
         this.addBranchLoading = false;
+        this.notyf.error(err?.error?.message || err?.message || 'Something went wrong');
+      }
+    });
+  }
+
+  getCardImageUrl(branch: any): string {
+    if (branch.image) {
+      return this.masterService.getImageUrl(branch.image);
+    }
+    return '/assets/img/bg-login/lko-bg.png';
+  }
+
+  openEditBranchModal(branch: any) {
+    this.editBranch = { ...branch };
+    this.editBranchId = branch.id;
+    this.editSelectedImage = null;
+    this.editImagePreview = branch.image ? this.masterService.getImageUrl(branch.image) : null;
+    this.editBranchLoading = false;
+  }
+
+  onEditImageSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (!file) return;
+    this.editSelectedImage = file;
+    const reader = new FileReader();
+    reader.onload = () => { this.editImagePreview = reader.result as string; };
+    reader.readAsDataURL(file);
+  }
+
+  fetchLocationForEdit() {
+    this.locationService.getCurrentLocation()
+      .then((res) => {
+        this.editBranch['latitude'] = res.latitude;
+        this.editBranch['longitude'] = res.longitude;
+      })
+      .catch(() => {
+        this.notyf.error('Could not fetch location. Please enter manually.');
+      });
+  }
+
+  submitEditBranch() {
+    if (!this.editBranch['name']?.trim()) {
+      this.notyf.error('Branch name is required.');
+      return;
+    }
+    this.editBranchLoading = true;
+    const formData = new FormData();
+    formData.append('id', this.editBranchId!);
+    formData.append('name', this.editBranch['name']);
+    if (this.editBranch['description']) formData.append('description', this.editBranch['description']);
+    if (this.editBranch['latitude']) formData.append('latitude', this.editBranch['latitude']);
+    if (this.editBranch['longitude']) formData.append('longitude', this.editBranch['longitude']);
+    if (this.editBranch['status']) formData.append('status', this.editBranch['status']);
+    if (this.editSelectedImage) formData.append('image', this.editSelectedImage);
+
+    this.masterService.updateBranchWithImage(formData).subscribe({
+      next: (res: any) => {
+        this.editBranchLoading = false;
+        if (res.status === true) {
+          this.notyf.success(res.message || 'Branch updated successfully');
+          this.getBranchDD();
+          const btn = document.getElementById('closeEditBranchModal');
+          if (btn) btn.click();
+        } else if (res.status === 'expired') {
+          this.router.navigate(['login']);
+        } else {
+          this.notyf.error(res.message || 'Something went wrong');
+        }
+      },
+      error: (err: any) => {
+        this.editBranchLoading = false;
         this.notyf.error(err?.error?.message || err?.message || 'Something went wrong');
       }
     });
