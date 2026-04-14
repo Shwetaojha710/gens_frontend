@@ -1,5 +1,7 @@
 import { Routes } from '@angular/router';
 import { LayoutComponent } from './layout.component';
+import { TrackingComponent } from '../tracking/tracking.component';
+import { LiveTrackingComponent } from '../tracking/live-tracking/live-tracking.component';
 
 /**
  * HR app area under `/layout/*` (sidebar in {@link LayoutComponent}).
@@ -109,6 +111,22 @@ export const layoutRoutes: Routes = [
         loadComponent: () =>
           import('../reports/tracking-report/tracking-report.component').then((m) => m.TrackingReportComponent),
       },
+        {
+        path: 'tracking',
+          loadComponent: () =>
+          import('../../app/tracking/tracking.component').then((m) => m.TrackingComponent),
+
+      },
+        {
+        path: 'tracking/live',
+          loadComponent: () =>
+          import('../../app/tracking/live-tracking/live-tracking.component').then((m) => m.LiveTrackingComponent),
+
+      },
+      // {
+      //   path: 'tracking/live',
+      //   component: LiveTrackingComponent
+      // },
       {
         path: 'master/designation',
         loadComponent: () =>
