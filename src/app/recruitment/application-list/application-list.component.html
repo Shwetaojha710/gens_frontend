@@ -1,5 +1,5 @@
 <div class="container-fluid">
-  <div class="card">
+  <div class="card mt-2">
     <div class="card-header d-flex justify-content-between align-items-center">
       <span style="font-weight: bold">Candidate Applications Pipeline</span>
       <button type="button" class="btn btn-xs btn-primary float-end" (click)="loadApplications()">
@@ -17,7 +17,7 @@
         (click)="setStageFilter(f.key)"
       >
         <span class="chip-dot" [style.background]="f.dotColor"></span>
-        <i [class]="f.icon + ' chip-icon'"></i>
+        <!-- <i [class]="f.icon + ' chip-icon'"></i> -->
         <span class="chip-label">{{ f.label }}</span>
         <span class="chip-count">{{ getStageCount(f.key) }}</span>
       </button>
