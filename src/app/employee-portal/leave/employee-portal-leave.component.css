@@ -241,9 +241,21 @@
 }
 
 .ep-leave-toolbar__year {
-  width: 4.25rem;
+  width: 3.75rem;
   font-weight: 600;
   border-radius: 0.5rem;
+  text-align: center;
+}
+
+/* hide browser number-input spinner arrows */
+.ep-leave-toolbar__year::-webkit-outer-spin-button,
+.ep-leave-toolbar__year::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.ep-leave-toolbar__year[type='number'] {
+  -moz-appearance: textfield;
 }
 
 .ep-leave-toolbar__refresh {
@@ -418,6 +430,20 @@
 .ep-leave-days {
   color: #0f172a;
   font-variant-numeric: tabular-nums;
+}
+
+.ep-leave-reason-cell {
+  max-width: 180px;
+  color: #475569;
+  font-size: 0.875rem;
+}
+
+.ep-leave-reason-text {
+  display: block;
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.4;
+  cursor: default;
 }
 
 /* Status pills */

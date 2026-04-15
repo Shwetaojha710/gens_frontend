@@ -130,8 +130,12 @@
                 inputmode="numeric"
                 maxlength="10"
                 (input)="onPhoneInput($event)"
+                (blur)="checkDuplicateMobile()"
               />
-              <small class="field-error" *ngIf="phoneControl.touched && phoneControl.invalid">Phone number must be exactly 10 digits.</small>
+              <small class="field-helper" *ngIf="isCheckingDuplicatePhone">Checking duplicate application...</small>
+              <small class="field-error" *ngIf="phoneControl.touched && phoneControl.hasError('required')">Phone number is required.</small>
+              <small class="field-error" *ngIf="phoneControl.touched && phoneControl.hasError('pattern')">Phone number must be exactly 10 digits.</small>
+              <small class="field-error" *ngIf="phoneControl.touched && duplicatePhoneFound">This phone number has already been used for this posting.</small>
             </div>
 
             <div class="field-group">

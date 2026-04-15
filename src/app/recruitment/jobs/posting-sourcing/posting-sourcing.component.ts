@@ -386,7 +386,7 @@ export class PostingSourcingComponent {
           this.JobRequirementsList = response.data
           this.jobs = response.data
           this.originalList = response.data
-          this.selectedJob = this.jobs[0] || null;
+          // this.selectedJob = this.jobs[0] || null;
           // pagination
           const start = (this.currentPage - 1) * this.pageSize;
           const end = start + this.pageSize;

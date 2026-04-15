@@ -1,18 +1,10 @@
 <div class="container-fluid">
   <div class="card">
     <div class="card-header d-flex justify-content-between align-items-center">
-      <div class="d-flex align-items-center gap-3">
-        <h5 class="card-title mb-0">
-          <i class="fas fa-file-alt text-primary me-2"></i>
-          Candidate Applications Pipeline
-        </h5>
-        <span class="badge bg-primary">{{ allApplications.length }}</span>
-      </div>
-      <div class="d-flex gap-2">
-        <button class="btn btn-primary btn-sm" (click)="loadApplications()">
-          <i class="fas fa-refresh me-1"></i>Refresh
-        </button>
-      </div>
+      <span style="font-weight: bold">Candidate Applications Pipeline</span>
+      <button type="button" class="btn btn-xs btn-primary float-end" (click)="loadApplications()">
+        <i class="fas fa-refresh"></i>&nbsp;Refresh
+      </button>
     </div>
 
     <!-- Stage Filter Chips -->
@@ -49,61 +41,46 @@
         </div>
 
         <div class="table-responsive">
-          <table class="table table-hover mb-0">
-            <thead class="table-light">
+          <table class="table dataTable">
+            <thead>
               <tr>
-                <th style="width: 60px">#</th>
-                <th>Candidate</th>
-                <th>Job</th>
-                <th>Applied</th>
+                <th style="width: 10px!important;">SI.NO</th>
+                <th>Name / Job</th>
+                <th>Phone / Email</th>
                 <th>Experience</th>
-                <th>Current /Expected CTC (LPA)  </th>
+                <th>Current / Expected CTC (LPA)</th>
                 <th>Notice Period</th>
+                <th>Applied</th>
                 <th>Stage</th>
-                <th style="width: 180px">Actions</th>
+                <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              <tr *ngFor="let app of filteredApps; let i = index" class="align-middle">
+            <tbody class="table-border-bottom-0">
+              <tr *ngFor="let app of filteredApps; let i = index">
+                <td style="width: 10px!important;">{{ (currentPage - 1) * itemsPerPage + i + 1 }}</td>
                 <td>
-                  <strong>{{ (currentPage - 1) * itemsPerPage + i + 1 }}</strong>
-                </td>
-                <td>
-                  <div class="d-flex align-items-center gap-2">
-                    <div class="flex-shrink-0">
-                      <div
-                        class="avatar avatar-sm bg-primary text-white rounded-circle d-flex align-items-center justify-content-center">
-                        {{ app.name?.charAt(0)?.toUpperCase() || 'C' }}
-                      </div>
+                  <div class="d-flex align-items-center">
+                    <div class="avatar avatar-sm me-4">
+                      <img src="../../assets/img/avatars/1.png" width="100" height="auto" alt="Avatar" class="rounded-circle"
+                        onerror="this.src='../../assets/img/avatars/1.png'" />
                     </div>
-                    <div class="flex-grow-1 min-w-0">
-                      <div class="fw-semibold text-truncate">{{ app.name }}</div>
-                      <small class="text-muted d-block text-truncate">{{ app.email }}</small>
-                      <small class="text-muted">{{ app.phone }}</small>
+                    <div>
+                      <h6 class="mb-0 text-truncate link-primary">{{ app.name }}</h6>
+                      <small class="text-truncate">{{ app.job_title }}</small><br>
+                      <small class="text-truncate">{{ app.department }}</small>
                     </div>
                   </div>
                 </td>
                 <td>
-                  <div class="fw-semibold text-truncate">{{ app.job_title }}</div>
-                  <small class="text-muted">{{ app.department }}</small>
+                  {{ app.phone }}<br><small class="text-truncate">{{ app.email }}</small>
                 </td>
+                <td>{{ app.experience }} yrs</td>
+                <td>{{ app.current_ctc }} / {{ app.expected_ctc }}</td>
+                <td>{{ app.notice_period }} days</td>
+                <td>{{ app.createdAt | date:'dd-MM-yyyy' }}</td>
                 <td>
-                  <span class="badge bg-light text-dark rounded-pill px-2 py-1">{{ app.createdAt | date:'MMM d'
-                    }}</span>
-                </td>
-                <td>
-                  <span class="fw-semibold">{{ app.experience }} yrs</span>
-                </td>
-                <td>
-                  <div>{{ app.current_ctc }} <small class="text-muted">↑</small> {{ app.expected_ctc }}</div>
-                  <!-- <small class="text-muted">{{ app.notice_period }} days</small> -->
-                </td>
-                <td>
-                  {{ app.notice_period }} days
-                </td>
-                <td>
-                  <span class="badge" [class]="getStageBadgeClass(app.stage)">
-                    {{ app.stage?.replace('_', ' ')?.toUpperCase() || 'N/A' }}
+                  <span class="badge badge-outline-success px-2" [ngClass]="getStageBadgeClass(app.stage)">
+                    {{ app.stage?.replace('_', ' ') || 'N/A' }}
                   </span>
                   <small *ngIf="app.ats" class="d-block text-muted mt-1">
                     ATS: {{ app.ats.ats_score | number:'1.0-0' }}
@@ -111,63 +88,53 @@
                   </small>
                 </td>
                 <td>
-                  <div class="d-flex gap-1 flex-wrap">
+                  <!-- Edit: only before ATS -->
+                  <button type="button" class="badge badge-center bg-label-info" title="Edit Application"
+                    *ngIf="app.stage === 'candidate_applied'" (click)="editApplication(app)">
+                    <i class="fas fa-edit"></i>
+                  </button>&nbsp;
 
-                    <!-- Step 1 — Edit: only before ATS -->
-                    <button class="btn btn-sm btn-outline-primary"
-                      *ngIf="app.stage === 'candidate_applied'"
-                      (click)="editApplication(app)" title="Edit Application">
-                      <i class="fas fa-edit"></i>
-                    </button>
+                  <!-- View: always visible -->
+                  <button type="button" class="badge badge-center bg-label-secondary" title="View Details"
+                    (click)="viewApplication(app)">
+                    <i class="far fa-eye"></i>
+                  </button>&nbsp;
 
-                    <!-- View: always visible -->
-                    <button class="btn btn-sm btn-outline-primary"
-                      (click)="viewApplication(app)" title="View Details">
-                      <i class="fas fa-eye"></i>
-                    </button>
+                  <!-- ATS Evaluate (file): only at candidate_applied -->
+                  <button type="button" class="badge badge-center bg-label-warning" title="Run ATS Screening (Upload Resume)"
+                    *ngIf="app.stage == 'candidate_applied'" (click)="openAtsModal(app)">
+                    <i class="fas fa-robot"></i>
+                  </button>&nbsp;
 
-                    <!-- Step 1 → 2 — ATS Evaluate (file): only at candidate_applied -->
-                    <button class="btn btn-sm btn-outline-warning"
-                      *ngIf="app.stage === 'candidate_applied'"
-                      (click)="openAtsModal(app)" title="Step 2: Run ATS Screening (Upload Resume)">
-                      <i class="fas fa-robot"></i>
-                    </button>
+                  <!-- ATS Evaluate (URL): only at candidate_applied with resume_url -->
+                  <button type="button" class="badge badge-center bg-label-warning" title="Run ATS Screening (via URL)"
+                    *ngIf="app.stage === 'candidate_applied' && app.resume_url" (click)="openAtsUrlModal(app)">
+                    <i class="fas fa-link"></i>
+                  </button>&nbsp;
 
-                    <!-- Step 1 → 2 — ATS Evaluate (URL): only at candidate_applied -->
-                    <button class="btn btn-sm btn-outline-warning"
-                      *ngIf="app.stage === 'candidate_applied' && app.resume_url"
-                      (click)="openAtsUrlModal(app)" title="Step 2: Run ATS Screening (via URL)">
-                      <i class="fas fa-link"></i>
-                    </button>
+                  <!-- Shortlist: only after ATS screening -->
+                  <button type="button" class="badge badge-center bg-label-success" title="Shortlist Candidate"
+                    *ngIf="app.stage === 'ats_screening'" (click)="shortlist(app)">
+                    <i class="fas fa-check"></i>
+                  </button>&nbsp;
 
-                    <!-- Step 2 → 3 — Shortlist: only after ATS screening done -->
-                    <button class="btn btn-sm btn-outline-success"
-                      *ngIf="app.stage === 'ats_screening'"
-                      (click)="shortlist(app)" title="Step 3: Shortlist Candidate">
-                      <i class="fas fa-check"></i>
-                    </button>
+                  <!-- Assign Interviewer: only when shortlisted -->
+                  <button type="button" class="badge badge-center bg-label-primary" title="Assign Interviewer & Schedule"
+                    *ngIf="app.stage === 'shortlisted'" (click)="openAssignModal(app)">
+                    <i class="fas fa-user-tie"></i>
+                  </button>&nbsp;
 
-                    <!-- Step 3 → 4 — Assign Interviewer: only when shortlisted -->
-                    <button class="btn btn-sm btn-outline-info"
-                      *ngIf="app.stage === 'shortlisted'"
-                      (click)="openAssignModal(app)" title="Step 4: Assign Interviewer & Schedule">
-                      <i class="fas fa-user-tie"></i>
-                    </button>
+                  <!-- Resume: always if available -->
+                  <a *ngIf="app.resume_url" class="badge badge-center bg-label-secondary"
+                    [href]="app.resume_url" target="_blank" title="View Resume">
+                    <i class="fas fa-file-pdf"></i>
+                  </a>&nbsp;
 
-                    <!-- Resume: always if available -->
-                    <a *ngIf="app.resume_url" class="btn btn-sm btn-outline-secondary"
-                      [href]="app.resume_url" target="_blank" title="View Resume">
-                      <i class="fas fa-file-pdf"></i>
-                    </a>
-
-                    <!-- Reject: allowed from any active stage -->
-                    <button class="btn btn-sm btn-outline-danger"
-                      *ngIf="!['closed','rejected','offered'].includes(app.stage)"
-                      (click)="reject(app)" title="Reject">
-                      <i class="fas fa-times"></i>
-                    </button>
-
-                  </div>
+                  <!-- Reject: allowed from any active stage -->
+                  <button type="button" class="badge badge-center bg-label-danger" title="Reject"
+                    *ngIf="!['closed','rejected','offered'].includes(app.stage)" (click)="reject(app)">
+                    <i class="fas fa-times"></i>
+                  </button>
                 </td>
               </tr>
             </tbody>

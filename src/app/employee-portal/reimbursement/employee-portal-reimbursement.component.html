@@ -68,7 +68,7 @@
           <p class="ep-dash-section__eyebrow mb-1">Your claims</p>
           <h5 class="h6 mb-3">History</h5>
           <div *ngIf="loadingList" class="text-muted py-4 text-center">Loading…</div>
-          <div *ngIf="!loadingList && list.length === 0" class="text-muted py-4 text-center">No reimbursement claims yet.</div>
+          <div *ngIf="!loadingList && list.length == 0" class="text-muted py-4 text-center">No reimbursement claims yet.</div>
           <div class="table-responsive" *ngIf="!loadingList && list.length > 0">
             <table class="table table-sm align-middle mb-0 ep-reim__table">
               <thead>
@@ -92,7 +92,7 @@
                   <td class="small text-break">{{ row['remark'] || '—' }}</td>
                   <td>
                     <ng-container *ngFor="let f of fileList(row); let i = index">
-                      <a *ngIf="f.image" [href]="f.image" target="_blank" rel="noopener" class="d-inline-block small me-1">
+                      <a *ngIf="f.image" [href]="imageUrl(f.image)" target="_blank" rel="noopener" class="d-inline-block small me-1">
                         {{ fileList(row).length > 1 ? 'File ' + (i + 1) : 'Open' }}
                       </a>
                     </ng-container>
