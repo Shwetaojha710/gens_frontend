@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Notyf } from 'notyf';
 import { EmployeePortalService } from '../services/employee-portal.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-employee-portal-holidays',
@@ -74,5 +75,24 @@ export class EmployeePortalHolidaysComponent implements OnInit {
 
   selectFilter(type: string | null): void {
     this.selectedType = type;
+  }
+
+  holidayIcon(type: string): string {
+    const t = type.toLowerCase();
+    if (t.includes('public')) return '🎉';
+    if (t.includes('optional')) return '🌟';
+    if (t.includes('regional')) return '🗺️';
+    if (t.includes('national')) return '🇮🇳';
+    if (t.includes('religious')) return '🙏';
+    if (t.includes('festival')) return '🪔';
+    return '📅';
+  }
+
+  holidayImageUrl(h: Record<string, unknown>): string {
+    const filename = String(h['image'] ?? '').trim();
+    if (!filename) return '';
+    if (filename.startsWith('http://') || filename.startsWith('https://')) return filename;
+    const serverRoot = environment.apiUrl.replace(/\/api\/?$/, '');
+    return `${serverRoot}/${filename}`;
   }
 }

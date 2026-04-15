@@ -49,6 +49,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    localStorage.clear();
     this.fragSub = this.route.fragment.subscribe((frag) => {
       if (frag) this.scheduleScrollTo(frag);
     });

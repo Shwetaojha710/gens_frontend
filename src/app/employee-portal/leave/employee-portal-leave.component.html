@@ -46,7 +46,7 @@
             </div>
 
             <div class="mb-3 ep-leave-panel">
-              <label class="form-label ep-leave-label mb-2">Total leave</label>
+              <label class="form-label ep-leave-label mb-2">Total leave</label>&nbsp;
               <div class="ep-total-days">{{ computedLeaveDaysLabel }}</div>
               <p class="text-muted small mb-0 mt-2" *ngIf="form.get('fromDate')?.value && form.get('toDate')?.value">
                 Includes first/last day half rules when applicable.
@@ -67,7 +67,21 @@
                   — first calendar day
                 </span>
               </label>
-              <div class="ep-duration-group" role="radiogroup" aria-label="Leave duration">
+               <div class="ep-duration-group ep-duration-group--compact" role="radiogroup">
+                <label class="ep-duration-item">
+                  <input type="radio" formControlName="duration_type" value="full" />
+                  <span>Full</span>
+                </label>
+                <label class="ep-duration-item">
+                  <input type="radio" formControlName="duration_type" value="first_half" />
+                  <span>1st half</span>
+                </label>
+                <label class="ep-duration-item">
+                  <input type="radio" formControlName="duration_type" value="second_half" />
+                  <span>2nd half</span>
+                </label>
+              </div>
+              <!-- <div class="ep-duration-group" role="radiogroup" aria-label="Leave duration">
                 <label class="ep-duration-item">
                   <input type="radio" formControlName="duration_type" value="full" />
                   <span>Full day</span>
@@ -80,7 +94,7 @@
                   <input type="radio" formControlName="duration_type" value="second_half" />
                   <span>Second half</span>
                 </label>
-              </div>
+              </div> -->
             </div>
 
             <div class="mb-3 ep-leave-panel" *ngIf="form.get('fromDate')?.value && form.get('toDate')?.value && !isSingleLeaveDay">
@@ -210,6 +224,7 @@
                     <th scope="col">From</th>
                     <th scope="col">To</th>
                     <th scope="col" class="text-end">Days</th>
+                    <th scope="col" >Reason</th>
                     <th scope="col">Status</th>
                   </tr>
                 </thead>
@@ -226,7 +241,16 @@
                     </td>
                     <td class="text-nowrap ep-leave-date">{{ $any(row).fromDate | date : 'mediumDate' }}</td>
                     <td class="text-nowrap ep-leave-date">{{ $any(row).toDate | date : 'mediumDate' }}</td>
+
                     <td class="text-end fw-semibold ep-leave-days">{{ $any(row).days }}</td>
+                    <td class="ep-leave-reason-cell">
+                      <span
+                        class="ep-leave-reason-text"
+                        [title]="$any(row).reason || ''"
+                      >
+                        {{ ($any(row).reason?.length > 60) ? ($any(row).reason | slice:0:60) + '…' : ($any(row).reason || '—') }}
+                      </span>
+                    </td>
                     <td>
                       <span [class]="leaveStatusClass($any(row).status)">{{ $any(row).status }}</span>
                     </td>

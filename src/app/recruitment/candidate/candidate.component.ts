@@ -17,7 +17,9 @@ export class CandidateComponent {
   isLoadingJob = true;
   isSubmitting = false;
   isCheckingDuplicate = false;
+  isCheckingDuplicatePhone = false;
   duplicateFound = false;
+  duplicatePhoneFound = false;
   hasSubmitted = false;
   invalidLinkMessage = '';
   selectedFile: File | null = null;
@@ -35,6 +37,7 @@ export class CandidateComponent {
   jobId = '';
   token = '';
   duplicateCheckEmail = '';
+  duplicateCheckPhone = '';
   applicationForm: FormGroup<{
     name: FormControl<string | null>;
     email: FormControl<string | null>;
@@ -140,8 +143,10 @@ export class CandidateComponent {
     return this.applicationForm.valid
       && !!this.selectedFile
       && !this.duplicateFound
+      && !this.duplicatePhoneFound
       && !this.isSubmitting
       && !this.isCheckingDuplicate
+      && !this.isCheckingDuplicatePhone
       && this.isJobOpen;
   }
 
@@ -198,6 +203,16 @@ export class CandidateComponent {
     }
 
     this.phoneControl.setValue(digitsOnly, { emitEvent: false });
+
+    this.duplicatePhoneFound = false;
+    this.duplicateCheckPhone = '';
+
+    const phoneControl = this.applicationForm.get('phone');
+    if (phoneControl?.hasError('duplicatePhone')) {
+      const errors = { ...(phoneControl.errors || {}) };
+      delete errors['duplicatePhone'];
+      phoneControl.setErrors(Object.keys(errors).length ? errors : null);
+    }
   }
 
   onResumeSelected(event: Event) {
@@ -292,6 +307,61 @@ export class CandidateComponent {
     });
   }
 
+  checkDuplicateMobile(submitAfterCheck = false) {
+    const phone = (this.phoneControl.value || '').replace(/\D/g, '');
+
+    if (!phone || phone.length !== 10 || !this.hasValidJobContext) {
+      this.duplicatePhoneFound = false;
+      return;
+    }
+
+    if (this.duplicateCheckPhone === phone) {
+      return;
+    }
+
+    this.isCheckingDuplicatePhone = true;
+
+    this.jobService.checkDuplicateCandidateApplication({
+      phone,
+      job_posting_id: this.jobPosting?.id || this.jobId,
+      job_id: this.jobId,
+      slug: this.routeSlug,
+      token: this.token
+    }).subscribe({
+      next: (response: any) => {
+        this.isCheckingDuplicatePhone = false;
+        const duplicateExists = !!(response?.exists || response?.isDuplicate || response?.data?.exists);
+
+        this.duplicatePhoneFound = duplicateExists;
+        this.duplicateCheckPhone = phone;
+
+        if (duplicateExists) {
+          this.applicationForm.get('phone')?.setErrors({ duplicatePhone: true });
+          this.notyf.error(response?.message || 'This phone number has already been used for this posting');
+          return;
+        }
+
+        const phoneControl = this.applicationForm.get('phone');
+        if (phoneControl?.hasError('duplicatePhone')) {
+          const errors = { ...(phoneControl.errors || {}) };
+          delete errors['duplicatePhone'];
+          phoneControl.setErrors(Object.keys(errors).length ? errors : null);
+        }
+        this.duplicateCheckPhone = phone;
+
+        if (submitAfterCheck) {
+          const email = this.applicationForm.value.email?.trim().toLowerCase() || '';
+          this.performSubmit(email);
+        }
+      },
+      error: (err: any) => {
+        this.isCheckingDuplicatePhone = false;
+        this.duplicatePhoneFound = false;
+        this.notyf.error(err?.error?.message || 'Unable to validate duplicate application');
+      }
+    });
+  }
+
   submitApplication() {
     this.applicationForm.markAllAsTouched();
 
@@ -310,8 +380,19 @@ export class CandidateComponent {
       return;
     }
 
+    if (this.duplicatePhoneFound) {
+      this.notyf.error('This phone number has already been used for this posting');
+      return;
+    }
+
     if (!this.isJobOpen) {
       this.notyf.error('Applications are currently not open for this posting');
+      return;
+    }
+
+    const phone = this.applicationForm.value.phone?.trim() || '';
+    if (phone && this.duplicateCheckPhone !== phone) {
+      this.checkDuplicateMobile(true);
       return;
     }
 
@@ -364,6 +445,8 @@ export class CandidateComponent {
           this.selectedFileName = '';
           this.duplicateFound = false;
           this.duplicateCheckEmail = '';
+          this.duplicatePhoneFound = false;
+          this.duplicateCheckPhone = '';
           return;
         }
 

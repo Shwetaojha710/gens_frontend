@@ -4,6 +4,7 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { RouterLink } from '@angular/router';
 import { Notyf } from 'notyf';
 import { EmployeePortalService } from '../services/employee-portal.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-employee-portal-reimbursement',
@@ -132,5 +133,13 @@ export class EmployeePortalReimbursementComponent implements OnInit {
     const f = row['files'];
     if (!Array.isArray(f)) return [];
     return f as { image?: string; doc_type?: string }[];
+  }
+
+  imageUrl(path: string): string {
+    if (!path) return '';
+    if (path.startsWith('http://') || path.startsWith('https://')) return path;
+    // Strip trailing /api/ (or /api) to get the server root, then join with the path
+    const serverRoot = environment.apiUrl.replace(/\/api\/?$/, '');
+    return `${serverRoot}/${path.replace(/^\//, '')}`;
   }
 }
