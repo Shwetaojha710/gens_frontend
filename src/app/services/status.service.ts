@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Notyf } from 'notyf';
-import 'notyf/notyf.min.css';
+// import 'notyf/notyf.min.css';
 
 @Injectable({
   providedIn: 'root'

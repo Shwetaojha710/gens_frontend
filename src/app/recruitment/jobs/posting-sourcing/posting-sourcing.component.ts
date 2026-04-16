@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostListener } from '@angular/core';
+import { Component, HostListener, NgZone } from '@angular/core';
 import { FormGroup, FormsModule, Validators } from '@angular/forms';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { SearchPaginationComponent } from '../../../master/search-pagination/search-pagination.component';
@@ -32,7 +32,7 @@ export class PostingSourcingComponent {
     public messagingService: MessagingService,
     public statusService: StatusService,
     private jobSvc: JobService,
-
+    private ngZone: NgZone,
   ) {
 
     const today = new Date();
@@ -154,6 +154,23 @@ export class PostingSourcingComponent {
 
   viewDetails(item: any): void {
     this.selectedJob = item;
+    // If a link was already generated for this job, show it directly
+    if (item?.url && item?.token) {
+      this.generatedUrl = item.url;
+      this.token = item.token;
+      this.expiresAt = item.expires_at ? new Date(item.expires_at) : null;
+    } else {
+      this.generatedUrl = '';
+      this.token = '';
+      this.expiresAt = null;
+    }
+    const el = document.getElementById('jobDetailModal');
+    if (el) (window as any).bootstrap.Modal.getOrCreateInstance(el).show();
+  }
+
+  closeDetailsModal(): void {
+    const el = document.getElementById('jobDetailModal');
+    if (el) (window as any).bootstrap.Modal.getInstance(el)?.hide();
   }
 
   toggleDropdown(itemId: string | number, event: Event): void {
@@ -435,51 +452,114 @@ export class PostingSourcingComponent {
     window.open(normalizedUrl, '_blank', 'noopener,noreferrer');
   }
 
-  copy(text: string, key: string) {
+  copy(text: string, key: string): void {
     text = this.normalizeUrl(text);
-    if (navigator.clipboard) {
-      navigator.clipboard.writeText(text).catch(() => this.fallbackCopy(text));
-    } else {
-      this.fallbackCopy(text);
+
+    // 1. Try synchronous fallback first — must run in the same click-handler
+    //    tick so execCommand has clipboard write permission.
+    const syncOk = this.fallbackCopy(text);
+    if (syncOk) {
+      this.onCopySuccess(key);
+      return;
     }
-    this.copied[key] = true;
-    setTimeout(() => this.copied[key] = false, 2000);
+
+    // 2. Fallback failed (e.g. very modern browser with execCommand removed).
+    //    Try the async Clipboard API.
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text)
+        .then(() => this.ngZone.run(() => this.onCopySuccess(key)))
+        .catch(() => this.ngZone.run(() => this.notyf.error('Could not copy to clipboard')));
+    } else {
+      this.notyf.error('Could not copy to clipboard');
+    }
   }
 
-  private fallbackCopy(text: string) {
+  private onCopySuccess(key: string): void {
+    this.copied[key] = true;
+    this.notyf.success('Copied!');
+    setTimeout(() => (this.copied[key] = false), 2000);
+  }
+
+  private fallbackCopy(text: string): boolean {
     const textarea = document.createElement('textarea');
     textarea.value = text;
-    textarea.style.position = 'fixed';
-    textarea.style.opacity = '0';
-    document.body.appendChild(textarea);
+    textarea.setAttribute('readonly', '');
+    textarea.style.position = 'absolute';
+    textarea.style.left = '-9999px';
+    textarea.style.top = '0';
+    // Append inside the open modal (if any) so Bootstrap's focus-trap
+    // does not block textarea.focus(), which execCommand requires.
+    const container = (document.querySelector('.modal.show') as HTMLElement) || document.body;
+    container.appendChild(textarea);
     textarea.focus();
     textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
+    const ok = document.execCommand('copy');
+    container.removeChild(textarea);
+    return ok;
   }
 
   generate() {
-    if (!this.job) return;
+    const job = this.selectedJob || this.job;
+    if (!job) return;
     this.generating = true;
-    // Call backend endpoint POST /api/v1/jobs/:id/generate-link
-    // For demo we construct locally; replace with HTTP call in production
-    const token = btoa(this.job.id + ':' + Date.now()).replace(/=/g, '').substring(0, 24);
-    const slug = this.obj.slug || this.job.title.toLowerCase().replace(/\s+/g, '-');
-    this.token = token;
-    this.generatedUrl = `${this.obj.baseUrl.replace(/\/+$/, '')}/${slug}?job_id=${this.job.id}&token=${token}`;
-    if (this.obj.expiresDays) {
-      this.expiresAt = new Date(Date.now() + Number(this.obj.expiresDays) * 86400000);
-    }
-    this.generating = false;
 
-    /* Production version — uncomment and remove the lines above:
-    this.jobSvc.generateLink(this.job.id, this.config.baseUrl, this.config.expiresDays)
-      .subscribe(res => {
-        this.generatedUrl = res.url;
-        this.token        = res.token;
-        this.expiresAt    = res.expires ? new Date(res.expires) : null;
-        this.generating   = false;
-      });
-    */
+    const token = btoa(job.id + ':' + Date.now()).replace(/=/g, '').substring(0, 24);
+    const jobTitle = job.job_title || job.title || 'job';
+    const slug = this.obj.slug || jobTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    const baseUrl = this.obj.baseUrl?.replace(/\/+$/, '') || window.location.origin;
+    const expiresDays = Number(this.obj.expiresDays) || 0;
+    const url = `${baseUrl}/${slug}?job_id=${job.id}&token=${token}`;
+    const expiresAt = expiresDays > 0
+      ? new Date(Date.now() + expiresDays * 86400000)
+      : null;
+
+    const payload = {
+      job_id: job.id,
+      slug,
+      base_url: baseUrl,
+      token,
+      url,
+      expires_days: expiresDays,
+      expires_at: expiresAt ? expiresAt.toISOString() : null,
+    };
+
+    this.jobSvc.saveJobLink(payload).subscribe({
+      next: (response: any) => {
+        if (response?.status === true) {
+          const savedUrl = response.data?.url || url;
+          const savedExpiry = response.data?.expires_at
+            ? new Date(response.data.expires_at)
+            : expiresAt;
+
+          this.token = token;
+          this.generatedUrl = savedUrl;
+          this.expiresAt = savedExpiry;
+
+          // Persist onto the in-memory job object so reopening the modal
+          // shows the link immediately without a new generate call
+          if (this.selectedJob) {
+            this.selectedJob.url = savedUrl;
+            this.selectedJob.token = token;
+            this.selectedJob.expires_at = savedExpiry ? savedExpiry.toISOString() : null;
+            this.selectedJob.expires_days = expiresDays;
+          }
+
+          // Also update the card list so the job card reflects the saved link
+          const idx = this.jobs.findIndex((j: any) => j.id === job.id);
+          if (idx !== -1) {
+            this.jobs[idx] = { ...this.jobs[idx], ...this.selectedJob };
+          }
+
+          this.notyf.success('Application link saved successfully');
+        } else {
+          this.notyf.error(response?.message || 'Failed to save link');
+        }
+        this.generating = false;
+      },
+      error: (err: any) => {
+        this.notyf.error(err?.error?.message || 'Failed to save link');
+        this.generating = false;
+      },
+    });
   }
 }

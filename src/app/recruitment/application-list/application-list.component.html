@@ -7,12 +7,34 @@
       </button>
     </div>
 
-    <!-- Stage Filter Chips -->
+    <!-- Department & Job Title Filters -->
+    <div class="px-3 pt-3 pb-2 d-flex flex-wrap gap-3 align-items-end border-bottom">
+      <div style="min-width:200px;">
+        <label class="form-label fw-semibold mb-1 small">Department</label>
+        <select class="form-select form-select-sm" [(ngModel)]="activeDepartmentFilter" (ngModelChange)="onDepartmentFilterChange()">
+          <option value="">All Departments</option>
+          <option *ngFor="let d of uniqueDepartments" [value]="d">{{ d }}</option>
+        </select>
+      </div>
+      <div style="min-width:200px;">
+        <label class="form-label fw-semibold mb-1 small">Job Title</label>
+        <select class="form-select form-select-sm" [(ngModel)]="activeJobTitleFilter" (ngModelChange)="onJobTitleFilterChange()">
+          <option value="">All Job Titles</option>
+          <option *ngFor="let j of uniqueJobTitles" [value]="j">{{ j }}</option>
+        </select>
+      </div>
+      <div>
+        <button class="btn btn-sm btn-outline-secondary" (click)="clearDropdownFilters()" title="Clear filters">
+          <i class="fas fa-times me-1"></i>Clear
+        </button>
+      </div>
+    </div>
+
+    <!-- Stage Filter Chips (counts reflect dept/job-title selection) -->
     <div class="filter-chip-bar px-3 pt-3 pb-2">
       <button *ngFor="let f of stageFilters" class="filter-chip" [class.chip-active]="activeStageFilter === f.key"
         [attr.data-stage]="f.key" (click)="setStageFilter(f.key)">
         <span class="chip-dot" [style.background]="f.dotColor"></span>
-        <!-- <i [class]="f.icon + ' chip-icon'"></i> -->
         <span class="chip-label">{{ f.label }}</span>
         <span class="chip-count">{{ getStageCount(f.key) }}</span>
       </button>
@@ -807,11 +829,11 @@
                   <input type="text" class="form-control" [(ngModel)]="editObj.current_company"
                     placeholder="Enter current company" />
                 </div>
-                <div class="col-md-6">
+                <!-- <div class="col-md-6">
                   <label class="form-label fw-semibold">Last Company</label>
                   <input type="text" class="form-control" [(ngModel)]="editObj.last_company"
                     placeholder="Enter last company" />
-                </div>
+                </div> -->
                 <div class="col-md-4">
                   <label class="form-label fw-semibold">Experience (yrs)</label>
                   <input type="number" class="form-control" [(ngModel)]="editObj.experience" placeholder="e.g. 3"

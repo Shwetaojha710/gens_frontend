@@ -92,6 +92,76 @@ table.table {
     text-transform: capitalize;
 }
 
+/* =========================
+ * SuperAdmin shared Hero UI
+ * Use: <div class="sa-hero card ..."> with
+ *  - <p class="sa-hero-kicker">
+ *  - <div class="sa-hero-title">
+ *  - <div class="sa-hero-subtitle">
+ * ========================= */
+.sa-hero.card {
+  border-radius: 1rem !important;
+  border: 0 !important;
+  overflow: hidden;
+  position: relative;
+  color: #fff;
+  background: linear-gradient(89.79deg, #209af7 0.92%, #025a9d 99.82%) !important;
+  box-shadow: 0 14px 40px rgba(2, 90, 157, 0.28);
+}
+
+.sa-hero.card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(900px 380px at 15% 15%, rgba(255, 255, 255, 0.22), transparent 55%),
+    radial-gradient(760px 340px at 90% 0%, rgba(255, 255, 255, 0.16), transparent 52%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.08), transparent 55%);
+  opacity: 0.95;
+}
+
+.sa-hero.card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.sa-hero.card > .card-body {
+  position: relative;
+  z-index: 1;
+}
+
+.sa-hero-kicker {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0;
+}
+
+.sa-hero-title {
+  font-size: 1.45rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.2;
+  color: #fff;
+  text-shadow: 0 10px 28px rgba(2, 90, 157, 0.35);
+}
+
+.sa-hero-subtitle {
+  font-size: 0.9rem;
+  opacity: 0.92;
+  margin-top: 0.35rem;
+  max-width: 40rem;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.88);
+}
+
 
 /*
 * demo.css

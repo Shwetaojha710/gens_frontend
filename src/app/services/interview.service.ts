@@ -220,6 +220,22 @@ export class InterviewService {
     return this.http.post<any>(`${this.baseUrl}assign-interviewer`, payload);
   }
 
+  sendInterviewMail(payload: {
+    application_id: string;
+    candidate_name: string;
+    candidate_email: string;
+    interviewer_name: string;
+    interviewer_email: string;
+    round_name: string;
+    job_title: string;
+    scheduled_at: string | null;
+    duration_minutes: number | null;
+    mode: string;
+    meeting_link: string;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}send-interview-mail`, payload);
+  }
+
   private buildInterviewerSections(interviews: InterviewerAssignedInterview[]): InterviewerSectionGroup[] {
     const today = new Date();
     today.setHours(0, 0, 0, 0);

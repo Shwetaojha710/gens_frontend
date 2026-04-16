@@ -22,7 +22,7 @@ import { FormsModule } from '@angular/forms';
 import { JobService } from '../../services/job.service';
 import { RecruitmentStageKey, CandidateApplicationRecord, CandidatePipelinePayload, InterviewPanelUser } from '../recruitment.models';
 import { StatusService } from '../../services/status.service';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { SearchPaginationComponent } from '../../master/search-pagination/search-pagination.component';
 import { InterviewService } from '../../services/interview.service';
 import { Notyf } from 'notyf';
@@ -51,6 +51,10 @@ export class ApplicationListComponent implements OnInit {
   totalItems = 0;
   obj: CandidatePipelinePayload = {};
   activeStageFilter = 'all';
+  activeDepartmentFilter = '';
+  activeJobTitleFilter = '';
+  uniqueDepartments: string[] = [];
+  uniqueJobTitles: string[] = [];
 
   stageFilters = [
     { key: 'all',                   label: 'All',                   icon: 'fas fa-th-list',        dotColor: '#3b82f6' },
@@ -103,11 +107,21 @@ export class ApplicationListComponent implements OnInit {
     private jobService: JobService,
     private statusService: StatusService,
     private router: Router,
+    private route: ActivatedRoute,
     private cdr: ChangeDetectorRef,
     private interviewService: InterviewService
   ) {}
 
   ngOnInit(): void {
+    const params = this.route.snapshot.queryParamMap;
+    const dept = params.get('department');
+    if (dept) {
+      this.activeDepartmentFilter = dept;
+    }
+    const stage = params.get('stage');
+    if (stage) {
+      this.activeStageFilter = stage;
+    }
     this.loadApplications();
     this.loadPanelUsers();
     this.loadInterviewRounds();
@@ -121,6 +135,12 @@ export class ApplicationListComponent implements OnInit {
         if (status === true) {
           this.allApplications = res.data || [];
           this.applications = [...this.allApplications];
+          this.uniqueDepartments = [...new Set(
+            this.allApplications.map(a => a.department || '').filter(Boolean)
+          )].sort() as string[];
+          this.uniqueJobTitles = [...new Set(
+            this.allApplications.map(a => a.job_title || '').filter(Boolean)
+          )].sort();
           this.applyFilter();
         } else if (status === 'expired') {
           this.router.navigate(['login']);
@@ -141,9 +161,24 @@ export class ApplicationListComponent implements OnInit {
     this.applyFilter();
   }
 
+  // Returns applications filtered by dept + job title only (no stage/search).
+  // Used by both getStageCount() and applyFilter() so chip counts always
+  // reflect the active dept/job selection.
+  private getBaseFiltered(): CandidateApplicationRecord[] {
+    let base = [...this.allApplications];
+    if (this.activeDepartmentFilter) {
+      base = base.filter(a => a.department === this.activeDepartmentFilter);
+    }
+    if (this.activeJobTitleFilter) {
+      base = base.filter(a => a.job_title === this.activeJobTitleFilter);
+    }
+    return base;
+  }
+
   getStageCount(key: string): number {
-    if (key === 'all') return this.allApplications.length;
-    return this.allApplications.filter(a => a.stage === key).length;
+    const base = this.getBaseFiltered();
+    if (key === 'all') return base.length;
+    return base.filter(a => a.stage === key).length;
   }
 
   loadPanelUsers(): void {
@@ -184,8 +219,26 @@ export class ApplicationListComponent implements OnInit {
     this.applyFilter();
   }
 
+  onDepartmentFilterChange(): void {
+    this.currentPage = 1;
+    this.applyFilter();
+  }
+
+  onJobTitleFilterChange(): void {
+    this.currentPage = 1;
+    this.applyFilter();
+  }
+
+  clearDropdownFilters(): void {
+    this.activeDepartmentFilter = '';
+    this.activeJobTitleFilter = '';
+    this.currentPage = 1;
+    this.applyFilter();
+  }
+
   private applyFilter(): void {
-    let filtered = [...this.allApplications];
+    // Start from dept+job-title base (same as chip counts)
+    let filtered = this.getBaseFiltered();
 
     // Stage filter
     if (this.activeStageFilter !== 'all') {
@@ -819,6 +872,10 @@ export class ApplicationListComponent implements OnInit {
         this.updateStage(this.assignApp!, newStage);
 
         this.notyf.success(`${toAssign.length} round(s) assigned — stage updated to ${newStage.replace('_', ' ')}`);
+
+        // Send interview invitation mail to candidate & interviewer for each assigned round
+        this.sendInterviewMails(toAssign);
+
         this.closeAssignModal();
         this.loadApplications();
         this.isAssigning = false;
@@ -829,6 +886,40 @@ export class ApplicationListComponent implements OnInit {
         this.isAssigning = false;
         this.cdr.markForCheck();
       }
+    });
+  }
+
+  private sendInterviewMails(assignedRounds: typeof this.roundAssignments): void {
+    if (!this.assignApp) return;
+
+    const app = this.assignApp;
+    const mailCalls = assignedRounds
+      .filter(r => r.panel_user_id)
+      .map(r => {
+        const interviewer = this.panelUsers.find(u => String(u.id) === String(r.panel_user_id));
+        if (!interviewer?.email) return null;
+
+        return this.interviewService.sendInterviewMail({
+          application_id: app.id,
+          candidate_name: app.name,
+          candidate_email: app.email,
+          interviewer_name: `${interviewer.first_name} ${interviewer.last_name}`.trim(),
+          interviewer_email: interviewer.email,
+          round_name: r.round_name,
+          job_title: app.job_title,
+          scheduled_at: r.scheduled_at || null,
+          duration_minutes: r.duration_minutes,
+          mode: r.mode,
+          meeting_link: r.meeting_link
+        });
+      })
+      .filter(Boolean) as ReturnType<typeof this.interviewService.sendInterviewMail>[];
+
+    if (!mailCalls.length) return;
+
+    forkJoin(mailCalls).subscribe({
+      next: () => this.notyf.success('Interview invitation sent to candidate & interviewer(s)'),
+      error: () => this.notyf.error('Interview assigned but email notification failed')
     });
   }
 }

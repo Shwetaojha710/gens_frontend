@@ -10,8 +10,8 @@ import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Notyf } from 'notyf';
-import { RouterModule } from '@angular/router';
 import { NgItemLabelDirective } from "@ng-select/ng-select";
+
 @Component({
   selector: 'app-login',
   standalone: true,
@@ -20,16 +20,15 @@ import { NgItemLabelDirective } from "@ng-select/ng-select";
   styleUrl: './login.component.css'
 })
 export class LoginComponent {
-  showMobileLogin = false;
+  showMobileLogin = false;      // false = employee email/password, true = interviewer OTP
   form: FormGroup;
   phoneForm: FormGroup;
   otpForm: FormGroup;
   notyf: Notyf;
-  // showMobileLogin = false;
-  otpStep = false;
-  tenantId = '';
-  resendTimer = 0;
-  // otpControl: any;
+  interviewerOtpStep = false;
+  interviewerResendTimer = 0;
+  passwordVisible = false;
+
   constructor(
     private fb: FormBuilder,
     private auth: AuthService,
@@ -56,97 +55,9 @@ export class LoginComponent {
     this.notyf = new Notyf();
   }
 
-  passwordVisible: boolean = false;
+  // ─── Employee Login ───────────────────────────────────────────────────────
 
-  sendOtp() {
-    if (this.phoneForm.invalid) {
-      this.phoneForm.markAllAsTouched();
-    this.notyf.error('Please enter valid phone number.');
-      return;
-    }
-
-    const payload = this.phoneForm.value;
-    this.tenantId = payload.tenantId;
-    this.auth.sendOtp(payload).subscribe({
-      next: (res) => {
-        const data = JSON.parse(res);
-        if (data.status) {
-          this.otpStep = true;
-          this.notyf.success('OTP sent! Check your phone.');
-          this.startResendTimer();
-        } else {
-          this.notyf.error(data.message || 'OTP send failed.');
-        }
-      },
-      error: (err) => this.notyf.error(err.error?.message || 'Error sending OTP')
-    });
-  }
-
-  verifyOtp() {
-    // if (this.otpForm.invalid) {
-    //   this.otpForm.markAllAsTouched();
-    //   return;
-    // }
-
-    const { digit1, digit2, digit3, digit4 } = this.otpForm.value;
-    const payload = {
-      tenantId: this.tenantId,
-      phone: this.phoneForm.value.phone,
-      otp: `${digit1}${digit2}${digit3}${digit4}`
-    };
-
-    this.auth.verifyOtp(payload).subscribe({
-      next: (res) => {
-        const data = JSON.parse(res);
-        console.log('verifyOtp response:', data);
-        if (data.status) {
-          localStorage.setItem('token', data.data.token);
-          localStorage.setItem("base_url", data.data.baseUrl);
-          localStorage.setItem("PORT", data.data.PORT);
-          localStorage.setItem('user', JSON.stringify(data.data));
-          localStorage.setItem('tenant', JSON.stringify(data.data.tenant));
-          localStorage.setItem('branch', JSON.stringify(data.data.branch));
-          localStorage.setItem('currency', JSON.stringify(data.data.currencyList));
-
-          const user = data.data.user;
-          // if (user.role === 'panel_user' || user.designation?.toLowerCase().includes('interviewer')) {
-            this.router.navigate(['interview']);
-          // }
-          // else {
-            // this.router.navigate(['branchwise']);
-          // }
-
-          this.notyf.success('Login successful!');
-        } else {
-          this.notyf.error(data.message || 'Invalid OTP');
-        }
-      },
-      error: (err) => this.notyf.error(err.error?.message || 'OTP verification failed')
-    });
-  }
-
-  private startResendTimer() {
-    this.resendTimer = 60;
-    const interval = setInterval(() => {
-      this.resendTimer--;
-      if (this.resendTimer <= 0) {
-        clearInterval(interval);
-      }
-    }, 1000);
-  }
-
-  loginWithMobile() {
-    this.showMobileLogin = !this.showMobileLogin;
-    this.otpStep = false;
-    this.phoneForm.reset();
-    // Sync tenantId from email form if available
-    const tenantIdValue = this.form.get('tenantId')?.value;
-    if (tenantIdValue) {
-      this.phoneForm.patchValue({ tenantId: tenantIdValue });
-    }
-  }
-
-    login() {
+  login() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
       this.notyf.error('Please fill in all required fields.');
@@ -164,85 +75,113 @@ export class LoginComponent {
           localStorage.removeItem('empPortalCurrency');
           localStorage.removeItem('empPortalBaseUrl');
           localStorage.setItem('token', data.data.token);
-          localStorage.setItem("base_url", data.data.baseUrl);
-          localStorage.setItem("PORT", data.data.PORT);
+          localStorage.setItem('base_url', data.data.baseUrl);
+          localStorage.setItem('PORT', data.data.PORT);
           localStorage.setItem('user', JSON.stringify(data.data.user));
           localStorage.setItem('tenant', JSON.stringify(data.data.tenant));
           localStorage.setItem('branch', JSON.stringify(data.data.branch));
           localStorage.setItem('currency', JSON.stringify(data.data.currencyList));
-
-          const user = data.data.user;
-          // if (user.role === 'panel_user' || user.designation?.toLowerCase().includes('interviewer')) {
-            // this.router.navigate(['interviewer-dashboard']);
-          // } else {
-            this.router.navigate(['branchwise']);
-          // }
-
           this.notyf.success(data.message);
+          this.router.navigate(['branchwise']);
         } else {
           this.notyf.error(data.message);
         }
       },
-      error: (err) => {
-        console.error('Login error:', err);
-        this.notyf.error(err.error?.message || 'Server error. Please try again.');
-      }
+      error: (err) => this.notyf.error(err?.error?.message || 'Server error. Please try again.')
     });
   }
-  // login() {
-  //   if (this.form.invalid) {
-  //     this.form.markAllAsTouched();
-  //     this.notyf.error('Please fill in all required fields.');
-  //     return;
-  //   }
 
-  //   this.auth.loginUser(this.form.value).subscribe({
-  //     next: (res) => {
-  //       const data = JSON.parse(res);
-  //       if (data.status) {
-  //         localStorage.setItem('token', data.data.token);
-  //         localStorage.setItem("base_url", data.data.baseUrl);
-  //         localStorage.setItem("PORT", data.data.PORT);
-  //         localStorage.setItem('user', JSON.stringify(data.data.user));
-  //         localStorage.setItem('tenant', JSON.stringify(data.data.tenant));
-  //         localStorage.setItem('branch', JSON.stringify(data.data.branch));
-  //         localStorage.setItem('currency', JSON.stringify(data.data.currencyList));
+  // ─── Interviewer OTP Login ────────────────────────────────────────────────
 
-  //         const user = data.data.user;
-  //         // if (user.role === 'panel_user' || user.designation?.toLowerCase().includes('interviewer')) {
-  //           // this.router.navigate(['interviewer-dashboard']);
-  //         // } else {
-  //           this.router.navigate(['branchwise']);
-  //         // }
+  sendInterviewerOtp() {
+    const tenantId = this.phoneForm.get('tenantId')?.value?.trim();
+    const phone = this.phoneForm.get('phone')?.value?.trim();
 
-  //         this.notyf.success(data.message);
-  //       } else {
-  //         this.notyf.error(data.message);
-  //       }
-  //     },
-  //     error: (err) => {
-  //       console.error('Login error:', err);
-  //       this.notyf.error(err.error?.message || 'Server error. Please try again.');
-  //     }
-  //   });
-  // }
+    if (!tenantId) {
+      this.notyf.error('Please enter company code.');
+      return;
+    }
+    if (!phone || !/^[6-9]\d{9}$/.test(phone)) {
+      this.notyf.error('Please enter a valid 10-digit mobile number.');
+      return;
+    }
 
+    this.auth.sendOtp({ tenantId, phone }).subscribe({
+      next: (res) => {
+        const data = JSON.parse(res);
+        if (data.status) {
+          this.interviewerOtpStep = true;
+          this.otpForm.reset();
+          this.notyf.success('OTP sent! Check your phone.');
+          this.startInterviewerResendTimer();
+        } else {
+          this.notyf.error(data.message || 'OTP send failed.');
+        }
+      },
+      error: (err) => this.notyf.error(err.error?.message || 'Error sending OTP')
+    });
+  }
 
-  // isInvalid(field: string): boolean {
-  //   const control = this.form.get(field);
-  //   return !!(control && control.touched && control.invalid);
-  // }
+  verifyInterviewerOtp() {
+    const { digit1, digit2, digit3, digit4 } = this.otpForm.value;
+    const otp = `${digit1 ?? ''}${digit2 ?? ''}${digit3 ?? ''}${digit4 ?? ''}`;
+    if (otp.replace(/\s/g, '').length < 4) {
+      this.notyf.error('Please enter the complete OTP.');
+      return;
+    }
+
+    const payload = {
+      tenantId: this.phoneForm.get('tenantId')?.value?.trim(),
+      phone: this.phoneForm.get('phone')?.value?.trim(),
+      otp
+    };
+
+    this.auth.verifyOtp(payload).subscribe({
+      next: (res) => {
+        const data = JSON.parse(res);
+        if (data.status) {
+          localStorage.setItem('panelToken', data.data.token);
+          localStorage.setItem('panelUser', JSON.stringify(data.data.user));
+          localStorage.setItem('tenant', JSON.stringify(data.data.tenant));
+          localStorage.setItem('branch', JSON.stringify(data.data.branch));
+          localStorage.setItem('base_url', data.data.baseUrl);
+          localStorage.setItem('PORT', data.data.PORT);
+          this.notyf.success('Welcome, ' + data.data.user.first_name + '!');
+          this.router.navigate(['interview']);
+        } else {
+          this.notyf.error(data.message || 'Invalid OTP');
+        }
+      },
+      error: (err) => this.notyf.error(err.error?.message || 'OTP verification failed')
+    });
+  }
+
+  private startInterviewerResendTimer() {
+    this.interviewerResendTimer = 60;
+    const interval = setInterval(() => {
+      this.interviewerResendTimer--;
+      if (this.interviewerResendTimer <= 0) clearInterval(interval);
+    }, 1000);
+  }
+
+  // ─── Toggle between Employee form and Interviewer OTP form ───────────────
+
+  loginWithMobile() {
+    this.showMobileLogin = !this.showMobileLogin;
+    this.interviewerOtpStep = false;
+    this.phoneForm.reset();
+    this.otpForm.reset();
+    this.interviewerResendTimer = 0;
+  }
+
+  // ─── Helpers ─────────────────────────────────────────────────────────────
+
   goToEmpProfile() {
     this.router.navigate(['emp-profile']);
   }
+
   gotoRegister() {
     this.router.navigate(['company-reg']);
-  }
-  onPhoneInput(event: Event) {
-    const value = (event.target as HTMLInputElement).value.replace(/\D/g, '');
-    if (value.length === 10 && this.phoneForm.valid) {
-      this.sendOtp();
-    }
   }
 
   onOtpInput(event: Event, next: HTMLInputElement | null) {
@@ -264,4 +203,3 @@ export class LoginComponent {
     return !!control && control.invalid && (control.dirty || control.touched);
   }
 }
-

@@ -1,59 +1,77 @@
 <div class="sa-dashboard">
   <div class="row g-3 g-lg-4">
-  <div class="col-12">
-    <div class="sa-hero card sa-dashboard-hero">
-      <div class="card-body">
-        <div class="d-flex align-items-start justify-content-between flex-wrap gap-3">
-          <div>
-            <p class="sa-dashboard-hero-kicker mb-1">SuperAdmin</p>
-            <div class="sa-hero-title">Overview</div>
-            <div class="sa-hero-subtitle">Company, plan and user counts across the platform</div>
+    <div class="col-12">
+      <div class="sa-hero card sa-dashboard-hero">
+        <div class="card-body">
+          <div class="sa-dashboard-hero-row">
+            <div class="sa-dashboard-hero-copy">
+              <p class="sa-hero-kicker mb-1">SuperAdmin</p>
+              <div class="sa-hero-title">Overview</div>
+              <div class="sa-hero-subtitle">Company, plan and user counts across the platform</div>
+
+              <div class="sa-dashboard-hero-actions">
+                <a class="sa-hero-chip" routerLink="/superadmin/companies">
+                  <i class="ri ri-building-4-line" aria-hidden="true"></i>
+                  <span>Companies</span>
+                </a>
+                <a class="sa-hero-chip" routerLink="/superadmin/plans">
+                  <i class="ri ri-vip-crown-2-line" aria-hidden="true"></i>
+                  <span>Plans</span>
+                </a>
+                <a class="sa-hero-chip" routerLink="/superadmin/users">
+                  <i class="ri ri-group-line" aria-hidden="true"></i>
+                  <span>Users</span>
+                </a>
+              </div>
+            </div>
+
+            <div class="sa-dashboard-hero-right">
+              <button type="button" class="btn btn-sm sa-dashboard-refresh" (click)="refresh()" [disabled]="loading">
+                <i class="ri ri-refresh-line me-1" [class.sa-spin]="loading"></i> Refresh
+              </button>
+            </div>
           </div>
-          <button type="button" class="btn btn-sm sa-dashboard-refresh" (click)="refresh()" [disabled]="loading">
-            <i class="ri ri-refresh-line me-1" [class.sa-spin]="loading"></i> Refresh
-          </button>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="col-12">
-    <div class="row g-3">
-      <div class="col-12 col-md-4 d-flex">
-        <div class="sa-kpi sa-kpi--companies w-100">
-          <div class="sa-kpi-top">
-            <div class="sa-kpi-label">Total Companies</div>
-            <div class="sa-kpi-icon"><i class="ri ri-building-4-line"></i></div>
+    <div class="col-12">
+      <div class="row g-3">
+        <div class="col-12 col-md-4 d-flex">
+          <div class="sa-kpi sa-kpi--companies w-100">
+            <div class="sa-kpi-top">
+              <div class="sa-kpi-label">Total Companies</div>
+              <div class="sa-kpi-icon"><i class="ri ri-building-4-line"></i></div>
+            </div>
+            <div class="sa-kpi-value">{{ stats.totalCompanies }}</div>
+            <div class="sa-kpi-sub">Active + inactive companies</div>
           </div>
-          <div class="sa-kpi-value">{{ stats.totalCompanies }}</div>
-          <div class="sa-kpi-sub">Active + inactive companies</div>
         </div>
-      </div>
-      <div class="col-12 col-md-4 d-flex">
-        <div class="sa-kpi sa-kpi--plans w-100">
-          <div class="sa-kpi-top">
-            <div class="sa-kpi-label">Total Plans</div>
-            <div class="sa-kpi-icon"><i class="ri ri-vip-crown-2-line"></i></div>
+        <div class="col-12 col-md-4 d-flex">
+          <div class="sa-kpi sa-kpi--plans w-100">
+            <div class="sa-kpi-top">
+              <div class="sa-kpi-label">Total Plans</div>
+              <div class="sa-kpi-icon"><i class="ri ri-vip-crown-2-line"></i></div>
+            </div>
+            <div class="sa-kpi-value">{{ stats.totalPlans }}</div>
+            <div class="sa-kpi-sub">Unique plans in use</div>
           </div>
-          <div class="sa-kpi-value">{{ stats.totalPlans }}</div>
-          <div class="sa-kpi-sub">Unique plans in use</div>
         </div>
-      </div>
-      <div class="col-12 col-md-4 d-flex">
-        <div class="sa-kpi sa-kpi--users w-100">
-          <div class="sa-kpi-top">
-            <div class="sa-kpi-label">Total Users</div>
-            <div class="sa-kpi-icon"><i class="ri ri-group-line"></i></div>
+        <div class="col-12 col-md-4 d-flex">
+          <div class="sa-kpi sa-kpi--users w-100">
+            <div class="sa-kpi-top">
+              <div class="sa-kpi-label">Total Users</div>
+              <div class="sa-kpi-icon"><i class="ri ri-group-line"></i></div>
+            </div>
+            <div class="sa-kpi-value">{{ stats.totalUsers }}</div>
+            <div class="sa-kpi-sub">All users across companies</div>
           </div>
-          <div class="sa-kpi-value">{{ stats.totalUsers }}</div>
-          <div class="sa-kpi-sub">All users across companies</div>
         </div>
       </div>
     </div>
-  </div>
 
-  <div class="col-12">
-    <div class="row g-3 align-items-stretch">
+    <div class="col-12">
+      <div class="row g-3 align-items-stretch">
       <div class="col-12 col-lg-6 d-flex">
         <div class="card sa-panel w-100">
           <div class="sa-panel-head">
@@ -250,8 +268,8 @@
           </div>
         </div>
       </div>
+      </div>
     </div>
   </div>
-</div>
 </div>
 

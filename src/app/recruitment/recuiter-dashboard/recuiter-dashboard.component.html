@@ -71,12 +71,22 @@
           <div class="rd-overview-head">
             <h2 class="rd-overview-head__title">Recruitment overview</h2>
             <div class="rd-overview-head__pills">
-              <span class="rd-pill-tag rd-pill-tag--soft">Open reqs <strong>{{ openRoles }}</strong></span>
-              <span class="rd-pill-tag rd-pill-tag--dark">Pipeline <strong>{{ totalCandidates }}</strong></span>
+              <a [routerLink]="['/recruitment/jobs/job-requirement']"
+                 class="rd-pill-tag rd-pill-tag--soft rd-pill-tag--link"
+                 title="View all open job requisitions">
+                Open reqs <strong>{{ openRoles }}</strong>
+              </a>
+              <a [routerLink]="['/recruitment/application-list']"
+                 class="rd-pill-tag rd-pill-tag--dark rd-pill-tag--link"
+                 title="View full candidate pipeline">
+                Pipeline <strong>{{ totalCandidates }}</strong>
+              </a>
             </div>
           </div>
           <div class="rd-overview-grid">
-            <div class="rd-overview-cell">
+            <a class="rd-overview-cell rd-overview-cell--link"
+               [routerLink]="['/recruitment/application-list']"
+               title="View all active candidates">
               <div class="rd-overview-cell__icon rd-overview-cell__icon--blue">
                 <i class="icon-base ri ri-team-line"></i>
               </div>
@@ -86,16 +96,22 @@
                 {{ newThisWeek }} new (7d)
               </div>
               <div class="rd-overview-cell__label">Active candidates</div>
-            </div>
-            <div class="rd-overview-cell">
+            </a>
+            <a class="rd-overview-cell rd-overview-cell--link"
+               [routerLink]="['/recruitment/application-list']"
+               [queryParams]="{ stage: 'interview_scheduled' }"
+               title="View candidates in interview stage">
               <div class="rd-overview-cell__icon rd-overview-cell__icon--teal">
                 <i class="icon-base ri ri-calendar-event-line"></i>
               </div>
               <div class="rd-overview-cell__value">{{ interviewsActive }}</div>
               <div class="rd-overview-cell__trend rd-overview-cell__trend--neutral">Interview stage</div>
               <div class="rd-overview-cell__label">Scheduled &amp; in progress</div>
-            </div>
-            <div class="rd-overview-cell">
+            </a>
+            <a class="rd-overview-cell rd-overview-cell--link"
+               [routerLink]="['/recruitment/application-list']"
+               [queryParams]="{ stage: 'offered' }"
+               title="View offers and closures">
               <div class="rd-overview-cell__icon rd-overview-cell__icon--violet">
                 <i class="icon-base ri ri-mail-send-line"></i>
               </div>
@@ -104,13 +120,15 @@
                 {{ offersOut }} offer · {{ hiredClosed }} hired
               </div>
               <div class="rd-overview-cell__label">Offers &amp; closures</div>
-            </div>
+            </a>
           </div>
         </div>
       </div>
 
       <div class="col-xl-3 col-md-6 col-lg-6">
-        <div class="rd-card rd-card--elevated rd-spotlight h-100">
+        <a [routerLink]="['/recruitment/application-list']"
+           class="rd-card rd-card--elevated rd-spotlight h-100 rd-overview-cell--link text-decoration-none"
+           title="View all candidates">
           <div class="rd-spotlight__badge">
             <span class="rd-live-dot"></span>
             Live pipeline
@@ -123,32 +141,33 @@
             <div class="rd-spotlight__blob"></div>
             <i class="icon-base ri ri-user-search-line rd-spotlight__fig"></i>
           </div>
-          <a routerLink="/recruitment/application-list" class="btn btn-sm btn-outline-primary w-100 mt-auto rd-spotlight__btn">View board</a>
-        </div>
+          <span class="btn btn-sm btn-outline-primary w-100 mt-auto rd-spotlight__btn">View board</span>
+        </a>
       </div>
 
       <div class="col-xl-2 col-md-6 col-lg-6">
         <div class="rd-card rd-card--elevated h-100 rd-donut-card">
           <h3 class="rd-donut-card__title">Stage mix</h3>
           <div class="rd-donut-card__chart">
-            <!-- SVG donut with per-slice tooltips -->
+            <!-- SVG donut with per-slice tooltips — each slice navigates by stage -->
             <svg viewBox="0 0 120 120" class="rd-donut-svg" *ngIf="stageSlices.length">
               <g>
                 <path
                   *ngFor="let s of stageSlices"
                   [attr.d]="s.path"
                   [attr.fill]="s.color"
-                  class="rd-donut-slice"
+                  class="rd-donut-slice rd-donut-slice--clickable"
                   [class.rd-donut-slice--hovered]="hoveredSlice === s"
                   (mouseenter)="hoveredSlice = s"
                   (mouseleave)="hoveredSlice = null"
+                  (click)="navigateToStage(s.key)"
                 >
-                  <title>{{ s.label }}: {{ s.value }} candidate{{ s.value !== 1 ? 's' : '' }} ({{ s.pct }}%)</title>
+                  <title>{{ s.label }}: {{ s.value }} candidate{{ s.value !== 1 ? 's' : '' }} ({{ s.pct }}%) — click to filter</title>
                 </path>
               </g>
-              <!-- centre hole label -->
-              <text x="60" y="56" class="rd-donut-centre-n">{{ totalCandidates }}</text>
-              <text x="60" y="68" class="rd-donut-centre-sub">total</text>
+              <!-- centre — click navigates to all -->
+              <text x="60" y="56" class="rd-donut-centre-n" style="cursor:pointer" (click)="navigateToStage('')">{{ totalCandidates }}</text>
+              <text x="60" y="68" class="rd-donut-centre-sub" style="cursor:pointer" (click)="navigateToStage('')">total</text>
             </svg>
 
             <!-- empty state ring -->
@@ -168,8 +187,10 @@
           <ul class="rd-legend-compact list-unstyled mb-0">
             <li
               *ngFor="let s of stageSlices.slice(0, 5)"
-              class="rd-legend-tip"
+              class="rd-legend-tip rd-legend-tip--clickable"
               [attr.data-tip]="s.label + ': ' + s.value + ' candidate' + (s.value !== 1 ? 's' : '') + ' (' + getSlicePct(s.value) + '%)'"
+              (click)="navigateToStage(s.key)"
+              title="Filter by {{ s.label }}"
             >
               <span class="rd-legend-compact__dot" [style.background]="s.color"></span>
               <span>{{ s.label }}</span>
@@ -446,10 +467,10 @@
                   <span *ngIf="r.interviewer_name"><i class="fas fa-user-tie me-1"></i>{{ r.interviewer_name }}</span>
                 </div>
                 <span class="badge rounded-pill"
-                  [class.bg-success]="r.status === 'completed'"
-                  [class.bg-warning]="r.status === 'scheduled'"
-                  [class.bg-secondary]="r.status === 'pending'"
-                  [class.bg-danger]="r.status === 'cancelled'">
+                  [class.bg-success]="r.status == 'completed'"
+                  [class.bg-warning]="r.status == 'scheduled'"
+                  [class.bg-secondary]="r.status == 'pending'"
+                  [class.bg-danger]="r.status == 'cancelled'">
                   {{ r.status || 'pending' }}
                 </span>
               </div>

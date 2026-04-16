@@ -337,6 +337,26 @@
   color: #fff;
 }
 
+.rd-pill-tag--link {
+  text-decoration: none;
+  cursor: pointer;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.rd-pill-tag--link:hover {
+  opacity: 0.82;
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+.rd-pill-tag--soft.rd-pill-tag--link:hover {
+  color: #0d6efd;
+}
+.rd-pill-tag--dark.rd-pill-tag--link:hover {
+  color: #fff;
+}
+
 .rd-overview-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -353,6 +373,20 @@
   padding: 1.35rem 1.25rem;
   text-align: center;
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+.rd-overview-cell--link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.15s ease;
+  border-radius: 0.5rem;
+}
+.rd-overview-cell--link:hover {
+  background: rgba(32, 154, 247, 0.06);
+  transform: translateY(-2px);
+  color: inherit;
+  text-decoration: none;
 }
 
 @media (min-width: 576px) {
@@ -538,6 +572,9 @@
 .rd-donut-slice {
   transition: opacity .15s, transform .15s;
   transform-origin: 60px 60px;
+}
+.rd-donut-slice--clickable {
+  cursor: pointer;
   cursor: pointer;
 }
 
@@ -671,6 +708,13 @@
 .rd-legend-tip {
   position: relative;
   cursor: default;
+}
+.rd-legend-tip--clickable {
+  cursor: pointer;
+}
+.rd-legend-tip--clickable:hover span,
+.rd-legend-tip--clickable:hover strong {
+  color: #209af7;
 }
 
 .rd-legend-tip::after {

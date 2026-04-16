@@ -37,6 +37,12 @@ export class UserComponent implements OnInit {
     { value: 'inactive', label: 'INACTIVE' }
   ];
 
+  genderOptions = [
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+    { value: 'other', label: 'Other' }
+  ];
+
   searchTerm = '';
   currentPage = 1;
   pageSize = 10;
@@ -255,9 +261,9 @@ export class UserComponent implements OnInit {
       this.notyf.error('Mobile number is required');
       return false;
     }
-    const mobileRegex = /^[0-9]{10}$/;
+    const mobileRegex = /^[6-9][0-9]{9}$/;
     if (!mobileRegex.test(this.obj.mobile_no.trim())) {
-      this.notyf.error('Mobile number must be exactly 10 digits');
+      this.notyf.error('Mobile number must be 10 digits and start with 6, 7, 8, or 9');
       return false;
     }
     if (!this.obj.department) {
