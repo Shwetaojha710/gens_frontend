@@ -128,7 +128,7 @@
                 <th>From Date</th>
                 <th>To Date</th>
                 <th>Amount</th>
-                <th>Description</th>
+                <th style="width: 30%;">Description</th>
                 <th>Status</th>
                 <th>createdAt</th>
                 <th>Document</th>
@@ -179,12 +179,12 @@
                 </td>
                 <td>
 
-                  <button type="button" class="badge badge-center bg-label-success" *ngIf="item.status=='pending'"
+                  <button type="button" class="btn btn-sm btn-outline-success" *ngIf="item.status=='pending'"
                     (click)="statuschange(item,'approved')">
                     <i class="fas fa-edit"></i>
                   </button>
                   &nbsp;
-                  <button *ngIf="item.status=='pending'" type="button" class="badge badge-center bg-label-danger"
+                  <button *ngIf="item.status=='pending'" type="button" class="btn btn-sm btn-outline-danger"
                     (click)="statuschange(item,'rejected')">
                     <i class="fas fa-trash-alt"></i>
                   </button>

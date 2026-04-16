@@ -63,15 +63,15 @@
               <tr>
                 <th style="width: 10px!important;">SI.NO</th>
                 <th>Name / Job</th>
-                <th>Phone / Email</th>
+                <th>Email / Phone </th>
                 <th>Experience</th>
 
-                <th>Current / Expected CTC (LPA)</th>
+                <th>Current CTC <br> Expected CTC in (LPA)</th>
 
                 <th>Notice Period</th>
                 <th>Applied</th>
                 <th>Stage</th>
-                <th>Actions</th>
+                <th style="width: 12% !important;">Actions</th>
               </tr>
             </thead>
             <tbody class="table-border-bottom-0">
@@ -91,22 +91,22 @@
                   </div>
                 </td>
                 <td>
-                  {{ app.phone }}<br><small class="text-truncate">{{ app.email }}</small>
+                  <small class="text-truncate">{{ app.email }}</small><br>{{ app.phone }}
                 </td>
                 <td>{{ app.experience }} yrs</td>
-                <td>{{ app.current_ctc }} / {{ app.expected_ctc }}</td>
+                <td>    Current CTC : <span class="text-info">{{ app.current_ctc }} LPA</span><br> Expected CTC : <span class="text-success">{{ app.expected_ctc }}  LPA</span></td>
                 <td>{{ app.notice_period }} days</td>
                 <td>{{ app.createdAt | date:'dd-MM-yyyy' }}</td>
                 <td>
-                  <span class="badge badge-outline-success px-2" [ngClass]="getStageBadgeClass(app.stage)">
+                  <span class="badge badge-success px-2" [ngClass]="getStageBadgeClass(app.stage)">
                     {{ app.stage?.replace('_', ' ') || 'N/A' }}
                   </span>
-                  <small *ngIf="app.ats" class="d-block text-muted mt-1">
+                  <small *ngIf="app.ats" class="d-block text-primary mt-1">
                     ATS: {{ app.ats.ats_score | number:'1.0-0' }}
-                    <i class="fas fa-star text-warning"></i>
+                   
                   </small>
                 </td>
-                <td>
+                <td style="width: 12% !important;">
                   <div class="d-flex gap-1 flex-wrap">
 
                     <!-- Step 1 — Edit: only before ATS -->
@@ -378,7 +378,7 @@
               <div class="row">
                 <div class="col-xl-5 col-lg-5 col-md-5">
                   <!-- About User -->
-                  <div class="card border-none shadow-none mb-6">
+                  <div class="card mb-6">
                     <div class="card-body">
                       <small class="card-text text-uppercase text-body-secondary small">About</small>
                       <ul class="list-unstyled my-3 py-1">
@@ -422,9 +422,11 @@
                         <li class="d-flex align-items-center mb-4"><span
                             class="badge badge-center rounded-pill text-bg-primary"><i
                               class="icon-base ri ri-check-line"></i></span><span class="fw-medium mx-2">Skills:</span>
-                          <span *ngFor="let skill of selectedDetailApp.skills" class="badge bg-success">
+                          <div>
+                            <span *ngFor="let skill of selectedDetailApp.skills" class="badge bg-label-primary rounded-pill lh-xs mx-1 my-1">
                             {{ skill }}
                           </span>
+                          </div>
                         </li>
                       </ul>
 
@@ -639,7 +641,7 @@
 
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-outline-secondary" (click)="closeModal()">Close</button>
+            <button type="button" class="btn btn-secondary" (click)="closeModal()">Close</button>
           </div>
         </div>
       </div>

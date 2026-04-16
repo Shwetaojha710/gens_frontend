@@ -181,18 +181,18 @@
                     </span>
                   </td>
                   <td>
-                    <button *ngIf="!item.editable" type="button" class="badge badge-center bg-label-success m-2"
+                    <button *ngIf="!item.editable" type="button" class="btn btn-sm btn-outline-success m-2"
                       (click)="applyUpdate(item)">
                       <i class="ri ri-pencil-line"></i>
                     </button>
 
-                    <button *ngIf="item.editable" type="button" class="badge badge-center bg-label-success m-2"
+                    <button *ngIf="item.editable" type="button" class="btn btn-sm btn-outline-success m-2"
                       (click)="update(item)">
                       <i class="ri ri-send-plane-line"></i>
 
                     </button>
 
-                    <button type="button" class="badge badge-center bg-label-danger" (click)="delete(item)">
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="delete(item)">
                       <i class="fas fa-trash-alt"></i>
                     </button>
                   </td>
