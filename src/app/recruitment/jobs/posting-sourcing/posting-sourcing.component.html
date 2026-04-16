@@ -154,85 +154,175 @@
       </div>
     </div>
   </div>
+</div>
 
-  <div class="row mt-3" *ngIf="selectedJob">
-    <div class="col-lg-12">
+<!-- Job Detail Modal -->
+<div class="modal fade" id="jobDetailModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
 
-      <div class="card">
-        <div class="card-body">
-          <div class="d-flex justify-content-between align-items-center flex-wrap gap-1">
-            <a href="javascript:;" class="d-flex align-items-center">
-              <div class="me-2 text-heading h4 font-weight-700 mb-1">{{ selectedJob?.job_title }} <br></div>
-            </a>
-
-            <small class="text-body-secondary">{{ getUpdatedAgoLabel(selectedJob?.updatedAt || selectedJob?.updated_at || selectedJob?.createdAt || selectedJob?.created_at) }}</small>
+      <div class="modal-header">
+        <div class="d-flex align-items-center gap-3 flex-grow-1 min-w-0">
+          <div>
+            <h5 class="modal-title mb-0 fw-bold">{{ selectedJob?.job_title }}</h5>
+            <small class="text-muted">
+              {{ tenant?.companyName || tenant?.name || '' }}
+              <span *ngIf="selectedJob?.location"> · {{ selectedJob?.location }}</span>
+            </small>
           </div>
+          <span class="badge rounded-pill ms-2" [ngClass]="getStatusBadgeClass(selectedJob?.status)">
+            {{ getStatusLabel(selectedJob?.status) }}
+          </span>
+        </div>
+        <button type="button" class="btn-close ms-2" (click)="closeDetailsModal()"></button>
+      </div>
 
-          <a href="#-">
-            <p class="fs-12 text-success mb-1">Location :
-                  {{ selectedJob?.location || '-' }} <i class="icon-base ri ri-arrow-right-up-fill icon-18px me-1_5 text-primary"></i></p>
+      <div class="modal-body" *ngIf="selectedJob">
 
-          </a>
+        <!-- Meta row -->
+        <div class="d-flex flex-wrap align-items-center gap-3 mb-4 text-muted small">
+          <span><i class="fas fa-map-marker-alt me-1 text-primary"></i>{{ selectedJob?.location || '—' }}</span>
+          <span><i class="fas fa-clock me-1 text-primary"></i>{{ getPostedAgoLabel(selectedJob?.createdAt || selectedJob?.created_at) }}</span>
+          <span><i class="fas fa-users me-1 text-primary"></i>{{ getApplicantCount(selectedJob) }} Applicant(s)</span>
+          <span class="ms-auto text-end"><i class="fas fa-sync-alt me-1"></i>{{ getUpdatedAgoLabel(selectedJob?.updatedAt || selectedJob?.updated_at || selectedJob?.createdAt) }}</span>
+        </div>
 
-          <p class="text-primary mb-1 h5">{{ tenant?.companyName || tenant?.name || 'Quaere eTechnologies Pvt. Ltd.' }} </p>
-
-          <div class="text-black me-2">{{ getPostedAgoLabel(selectedJob?.createdAt || selectedJob?.created_at || selectedJob?.postedAt || selectedJob?.posted_at) }} <i class="fa fa-user fs-8 text-info me-2"></i> <span>{{ getApplicantCount(selectedJob) }} Applicants</span></div>
-          <!-- <div class="text-black">Posted 3 days ago <i class="fa fa-circle fs-6" style="font-size: 8px !important;color: #918a8a;"></i> <span>34 Applicants</span></div>
-          <hr> -->
-          <div class="mt-2">
-
-
-            <!-- <h5 class="card-text text-uppercase text-body-secondary small">About this Job</h5>
-            <p class="mb-0">{{ selectedJob?.job_description || '-' }}</p>
-            <hr class="my-6"> -->
-            <div class="row g-6 mb-6">
-              <div class="col-md-6 col-xl-2">
-                <div class="card shadow-none bg-transparent border border-primary text-primary">
-                  <div class="card-body">
-                    <p class="card-title mb-0 text-primary"><strong>Experience</strong></p>
-                    <small class="card-text">{{ selectedJob?.experience }}</small>
-                  </div>
-                </div>
+        <!-- Info cards -->
+        <div class="row g-3 mb-4">
+          <div class="col-6 col-md-3">
+            <div class="card shadow-none border border-primary-subtle h-100">
+              <div class="card-body py-3">
+                <div class="text-muted small text-uppercase mb-1">Experience</div>
+                <div class="fw-semibold text-primary">{{ selectedJob?.experience || '—' }}</div>
               </div>
-              <!-- <div class="col-md-6 col-xl-2">
-                <div class="card shadow-none bg-transparent border border-primary text-primary">
-                  <div class="card-body">
-                    <p class="card-title mb-0 text-primary">Work Level</p>
-                    <small class="card-text">{{ selectedJob?.experience }}</small>
-                  </div>
-                </div>
-              </div> -->
-              <div class="col-md-6 col-xl-2">
-                <div class="card shadow-none bg-transparent border border-primary text-primary">
-                  <div class="card-body">
-                    <p class="card-title mb-0 text-primary"><strong>Employee type</strong></p>
-                    <small class="card-text">{{ getEmploymentTypeLabel(selectedJob) }}</small>
-                  </div>
-                </div>
-              </div>
-              <div class="col-md-6 col-xl-2">
-                <div class="card shadow-none bg-transparent border border-primary text-primary">
-                  <div class="card-body">
-                    <p class="card-title mb-0 text-primary"><strong>Offer Salary</strong></p>
-                    <small class="card-text">{{ selectedJob?.budget_ctc || 0 }} lpa</small>
-                  </div>
-                </div>
-              </div>
-
             </div>
-            <hr class="my-3">
-            <h5 class="card-text text-uppercase text-body-secondary small">Description</h5>
-            <div class="mb-2 jd-body"
-              [innerHTML]="parseJobDescription(selectedJob?.job_description || selectedJob?.description)">
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card shadow-none border border-primary-subtle h-100">
+              <div class="card-body py-3">
+                <div class="text-muted small text-uppercase mb-1">Employment Type</div>
+                <div class="fw-semibold text-primary">{{ getEmploymentTypeLabel(selectedJob) }}</div>
+              </div>
             </div>
-            <hr>
-
-
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card shadow-none border border-primary-subtle h-100">
+              <div class="card-body py-3">
+                <div class="text-muted small text-uppercase mb-1">Budget CTC</div>
+                <div class="fw-semibold text-primary">{{ selectedJob?.budget_ctc || '—' }} LPA</div>
+              </div>
+            </div>
+          </div>
+          <div class="col-6 col-md-3">
+            <div class="card shadow-none border border-primary-subtle h-100">
+              <div class="card-body py-3">
+                <div class="text-muted small text-uppercase mb-1">Openings</div>
+                <div class="fw-semibold text-primary">{{ selectedJob?.no_of_opening || '—' }}</div>
+              </div>
+            </div>
           </div>
         </div>
+
+        <!-- Skills -->
+        <div class="mb-4" *ngIf="getSkillsList(selectedJob?.skills).length">
+          <div class="text-uppercase text-muted small fw-semibold mb-2">Skills Required</div>
+          <div class="d-flex flex-wrap gap-2">
+            <span *ngFor="let s of getSkillsList(selectedJob?.skills)" class="badge bg-label-info rounded-pill px-2 py-1">{{ s }}</span>
+          </div>
+        </div>
+
+        <!-- Job Description -->
+        <div class="mb-4" *ngIf="selectedJob?.job_description">
+          <div class="text-uppercase text-muted small fw-semibold mb-2">Job Description</div>
+          <div class="jd-body border rounded p-3" [innerHTML]="parseJobDescription(selectedJob?.job_description)"></div>
+        </div>
+
+        <!-- Sourcing / Application Link -->
+        <div class="border rounded p-3">
+          <div class="d-flex align-items-center justify-content-between mb-3">
+            <div class="text-uppercase text-muted small fw-semibold">
+              <i class="fas fa-link me-1"></i>Application Link
+              <span *ngIf="generatedUrl" class="badge bg-label-success ms-2" style="font-size:10px;text-transform:none;">
+                <i class="fas fa-lock me-1"></i>Link active
+              </span>
+            </div>
+            <button *ngIf="!generatedUrl" type="button" class="btn btn-sm btn-primary" (click)="generate()" [disabled]="generating">
+              <span *ngIf="generating" class="spinner-border spinner-border-sm me-1"></span>
+              {{ generating ? 'Generating...' : 'Generate Link' }}
+            </button>
+          </div>
+
+          <!-- Config form — only shown before first generate -->
+          <div *ngIf="!generatedUrl" class="mb-3">
+            <div class="alert alert-info py-2 px-3 mb-3 small">
+              <i class="fas fa-info-circle me-1"></i>
+              Once generated, this link is permanent and cannot be regenerated.
+            </div>
+            <div class="row g-2 align-items-end">
+              <div class="col-md-6">
+                <label class="form-label small fw-semibold mb-1">Base URL</label>
+                <input type="url" class="form-control form-control-sm" [(ngModel)]="obj['baseUrl']" placeholder="https://yourdomain.com" />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small fw-semibold mb-1">Slug (optional)</label>
+                <input type="text" class="form-control form-control-sm" [(ngModel)]="obj['slug']" placeholder="auto-generated" />
+              </div>
+              <div class="col-md-3">
+                <label class="form-label small fw-semibold mb-1">Expires In</label>
+                <select class="form-select form-select-sm" [(ngModel)]="obj['expiresDays']">
+                  <option *ngFor="let d of expireDays" [value]="d.value">{{ d.label }}</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="generatedUrl">
+            <!-- Main link -->
+            <div class="d-flex align-items-center gap-2 mb-3">
+              <input type="text" class="form-control form-control-sm font-monospace" [value]="normalizeUrl(generatedUrl)" readonly />
+              <button type="button" class="btn btn-sm flex-shrink-0"
+                [ngClass]="copied['main'] ? 'btn-success' : 'btn-outline-secondary'"
+                (click)="copy(generatedUrl, 'main')">
+                <i [class]="copied['main'] ? 'fas fa-check' : 'fas fa-copy'"></i>
+              </button>
+              <button type="button" class="btn btn-sm btn-outline-primary flex-shrink-0" (click)="openJobUrl(generatedUrl)">
+                <i class="fas fa-external-link-alt"></i>
+              </button>
+            </div>
+            <div *ngIf="expiresAt" class="text-muted small mb-3">
+              <i class="fas fa-hourglass-half me-1"></i>Expires: {{ expiresAt | date:'mediumDate' }}
+            </div>
+            <!-- Channel UTM links -->
+            <div class="text-uppercase text-muted small fw-semibold mb-2">Per-Channel Links</div>
+            <div class="row g-2">
+              <div class="col-md-4" *ngFor="let ch of channels">
+                <div class="d-flex align-items-center gap-1 border rounded px-2 py-1">
+                  <span class="fw-semibold small flex-grow-1" [style.color]="ch.color">{{ ch.label }}</span>
+                  <button type="button" class="btn btn-xs p-1"
+                    [ngClass]="copied[ch.id] ? 'btn-success' : 'btn-outline-secondary'"
+                    (click)="copy(buildChannelUrl(ch.id), ch.id)" [title]="'Copy ' + ch.label + ' link'">
+                    <i [class]="copied[ch.id] ? 'fas fa-check' : 'fas fa-copy'" style="font-size:11px;"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
+
+      <div class="modal-footer">
+        <button *ngIf="canPublish(selectedJob)" type="button" class="btn btn-success btn-sm me-auto"
+          (click)="publish(selectedJob, 'open'); closeDetailsModal()">
+          <i class="ri-rocket-line me-1"></i>Publish
+        </button>
+        <button *ngIf="canClose(selectedJob)" type="button" class="btn btn-warning btn-sm me-auto"
+          (click)="publish(selectedJob, 'close'); closeDetailsModal()">
+          <i class="ri-lock-line me-1"></i>Close Posting
+        </button>
+        <button type="button" class="btn btn-secondary btn-sm" (click)="closeDetailsModal()">Close</button>
+      </div>
+
     </div>
   </div>
-
-
 </div>

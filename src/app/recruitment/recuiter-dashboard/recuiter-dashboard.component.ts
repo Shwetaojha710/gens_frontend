@@ -119,15 +119,15 @@ export class RecuiterDashboardComponent implements OnInit {
     }).subscribe({
       next: ({ jobs, pipeline }) => {
         const p = pipeline as any;
-        if (p.status === 'expired') {
+        if (p.status == 'expired') {
           this.statusService.handleResponseStatus('expired', 'Session expired');
           this.loading = false;
           this.cdr.markForCheck();
           return;
         }
 
-        this.jobs = (jobs as any).status === true ? (jobs as any).data || [] : [];
-        this.allApplications = p.status === true ? p.data || [] : [];
+        this.jobs = (jobs as any).status == true ? (jobs as any).data || [] : [];
+        this.allApplications = p.status == true ? p.data || [] : [];
         this.applyDateFilter();
         this.loading = false;
         this.cdr.markForCheck();
@@ -234,7 +234,7 @@ export class RecuiterDashboardComponent implements OnInit {
 
   private isJobOpen(j: any): boolean {
     const s = String(j?.status || j?.job_status || '').toLowerCase();
-    return s === 'active' || s === 'published' || j?.is_published === true || j?.published === true;
+    return s == 'open' || s == 'active' || s == 'published' || j?.is_published == true || j?.published == true;
   }
 
   private buildStageSlices(): void {
@@ -405,6 +405,11 @@ export class RecuiterDashboardComponent implements OnInit {
   getSlicePct(value: number): number {
     if (!this.totalCandidates) return 0;
     return Math.round((value / this.totalCandidates) * 100);
+  }
+
+  navigateToStage(stage: string): void {
+    const extras = stage ? { queryParams: { stage } } : {};
+    this.router.navigate(['/recruitment/application-list'], extras);
   }
 
   stagePillClass(stage: string): string {

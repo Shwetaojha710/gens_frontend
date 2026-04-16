@@ -53,7 +53,8 @@
 
             <div class="col-12 col-md-6 col-xl-4">
               <label class="col-form-label fw-bold">Employment Type
-                <!-- <span *ngIf="!updateFlag" style="color: red"> *</span> -->
+              <span
+                  style="color: red">*</span>
               </label>
               <ng-select [items]="employmentTypes" bindLabel="label" bindValue="value" [(ngModel)]="obj['emp_type']"
                 [multiple]="false" placeholder="Select Employment Types" name="emp_type" id="empType">
@@ -206,8 +207,25 @@
 
             </div>
 
+            <div class="col-12 col-md-6 col-xl-4">
+              <label class="col-form-label fw-bold">Application Link Expiry</label>
+              <ng-select
+                [items]="expireDays"
+                bindLabel="label"
+                bindValue="value"
+                [(ngModel)]="obj['expires_days']"
+                [multiple]="false"
+                placeholder="Select expiry period"
+                name="expires_days"
+                id="expiresDays">
+              </ng-select>
+              <small class="text-muted">How long the candidate application link stays active.</small>
+
+            </div>
+
             <div class="col-12">
-              <label for="jobDescription" class="col-form-label fw-bold">Job Description</label>
+              <label for="jobDescription" class="col-form-label fw-bold">Job Description <span
+                  style="color: red">*</span></label>
               <textarea
                 class="form-control"
                 id="jobDescription"

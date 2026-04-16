@@ -53,6 +53,12 @@ export class JobRequirementComponent {
     return '-';
   }
   status: any = [{ value: 'open', label: 'Open' }, { value: 'draft', label: 'Draft' }, { value: 'closed', label: 'Closed' }]
+  expireDays = [
+    { value: 14, label: '14 days' },
+    { value: 21, label: '21 days' },
+    { value: 30, label: '30 days' },
+    { value: 0,  label: 'No expiry' },
+  ];
   candidatePreferenceOptions: any = [
     { value: 'male', label: 'Male' },
     { value: 'female', label: 'Female' },
@@ -461,8 +467,9 @@ export class JobRequirementComponent {
         if (status == true) {
 
           this.notyf.success(message)
+               this.resetForm();
           this.getJobRequirementList();
-          this.resetForm();
+
         }
         else if (status == "expired") {
           this.router.navigate(["login"]);
@@ -679,6 +686,7 @@ export class JobRequirementComponent {
         console.log("response", response);
         if (status == true) {
           this.notyf.success(message)
+          this.obj = {}
           this.getJobRequirementList();
         }
         else if (status === "expired") {

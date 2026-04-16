@@ -128,4 +128,16 @@ export class JobService {
       { base_url: baseUrl, expires_days: expiresDays }
     );
   }
+
+  saveJobLink(payload: {
+    job_id: string;
+    slug: string;
+    base_url: string;
+    token: string;
+    url: string;
+    expires_days: number;
+    expires_at: string | null;
+  }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}saveJobLink`, payload);
+  }
 }

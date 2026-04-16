@@ -65,6 +65,7 @@ export interface CandidateApplicationRecord {
   skills?: any[] | any;
   resume_url?: string;
   resume_name?: string;
+  img_base_url?: string;
   createdAt?: string;
   ats?: AtsScoreCard;
   interview_rounds?: InterviewRoundPlan[];
