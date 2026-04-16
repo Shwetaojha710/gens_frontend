@@ -55,7 +55,8 @@ export class SuperadminCompanyDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.paramMap.subscribe((pm) => {
-      const id = pm.get('tenantId') || '';
+      // Route param is defined as `companies/:companyId/dashboard`
+      const id = pm.get('companyId') || '';
       this.tenantId = id;
       if (!id) {
         this.router.navigate(['/superadmin/companies']);

@@ -11,7 +11,7 @@
 
       <div class="sa-co-hero-main">
         <div class="sa-co-hero-copy">
-          <p class="sa-co-kicker">Tenant overview</p>
+          <p class="sa-hero-kicker">Tenant overview</p>
           <h1 class="sa-co-title" *ngIf="snapshot?.tenant as t; else titleLoad">{{ t.companyName }}</h1>
           <ng-template #titleLoad>
             <h1 class="sa-co-title sa-co-title--ghost">{{ loading ? 'Loading workspace…' : 'Company' }}</h1>
@@ -47,7 +47,10 @@
         </div>
       </div>
 
-      <div class="sa-co-hero-branch" *ngIf="snapshot && !loading && branchesList.length">
+      <div
+        class="sa-co-hero-branch"
+        *ngIf="snapshot && !loading && branchesList.length && (branchesList.length > 1 || (branchesList[0]?.name || '').trim())"
+      >
         <div class="sa-co-branch-single" *ngIf="branchesList.length === 1">
           <i class="ri ri-building-2-line" aria-hidden="true"></i>
           <span class="sa-co-branch-label">Branch</span>
