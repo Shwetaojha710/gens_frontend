@@ -112,8 +112,10 @@ export interface InterviewPanelUser {
   department: string | number;
   designation: string | number;
   mobile_no: string;
+  gender?: 'male' | 'female' | 'other' | null;
   status?: 'active' | 'inactive';
   si_no?: number;
   department_name?: string;
   designation_name?: string;
+  password?: any;
 }

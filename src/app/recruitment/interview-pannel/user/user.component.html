@@ -54,6 +54,20 @@
               </ng-select>
             </div>
 
+            <div class="col-12 col-md-6 col-lg-4" *ngIf="!updateFlag">
+              <label class="form-label fw-semibold">Password <span class="text-danger">*</span></label>
+              <input type="password" class="form-control" placeholder="Set login password"
+                [(ngModel)]="obj['password']" name="password" />
+              <small class="text-muted">Interviewer uses this to login</small>
+            </div>
+
+            <div class="col-12 col-md-6 col-lg-4">
+              <label class="form-label fw-semibold">Gender</label>
+              <ng-select [items]="genderOptions" bindLabel="label" bindValue="value"
+                [(ngModel)]="obj['gender']" placeholder="Select gender" name="gender">
+              </ng-select>
+            </div>
+
             <div class="col-12 col-md-6 col-lg-4" *ngIf="updateFlag">
               <label class="form-label fw-semibold">Status</label>
               <ng-select [items]="statusOptions" bindLabel="label" bindValue="value"
@@ -107,6 +121,7 @@
                   <th>Mobile No</th>
                   <th>Department</th>
                   <th>Designation</th>
+                  <th>Gender</th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -120,6 +135,7 @@
                   <td>{{ item.mobile_no || '-' }}</td>
                   <td>{{ item.department_name || item.department || '-' }}</td>
                   <td>{{ item.designation_name || item.designation || '-' }}</td>
+                  <td>{{ item.gender ? (item.gender | titlecase) : '-' }}</td>
                   <td>
                     <span class="badge overflow-hidden px-2" [ngClass]="getStatusClass(item.status || '')">
                       {{ item.status || '-' }}
@@ -136,7 +152,7 @@
                   </td>
                 </tr>
                 <tr *ngIf="userList.length === 0">
-                  <td colspan="9" class="text-center text-muted py-3">No panel users found.</td>
+                  <td colspan="10" class="text-center text-muted py-3">No panel users found.</td>
                 </tr>
               </tbody>
             </table>

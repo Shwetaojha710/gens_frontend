@@ -37,6 +37,12 @@ export class UserComponent implements OnInit {
     { value: 'inactive', label: 'INACTIVE' }
   ];
 
+  genderOptions = [
+    { value: 'male', label: 'Male' },
+    { value: 'female', label: 'Female' },
+    { value: 'other', label: 'Other' }
+  ];
+
   searchTerm = '';
   currentPage = 1;
   pageSize = 10;
