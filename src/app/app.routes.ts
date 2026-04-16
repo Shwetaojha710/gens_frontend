@@ -3,7 +3,7 @@ import { AuthGuard } from './auth.guard';
 import { SuperadminGuard } from './superadmin/superadmin.guard';
 import { employeePortalGuard } from './employee-portal/employee-portal.guard';
 import { CandidateRouteGuard } from './candidate-route.guard';
-
+import { LandingPageComponent } from './landing-page/landing-page.component';
 /**
  * Application routes — feature areas use `loadChildren` / `loadComponent` for lazy loading.
  */

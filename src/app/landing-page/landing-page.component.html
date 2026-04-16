@@ -1,310 +1,97 @@
 <app-landing-header></app-landing-header>
 
-<div class="gens-lp" *ngIf="loading">
-  <div class="gens-lp-loading">
-    <div class="gens-lp-spinner" aria-hidden="true"></div>
-    <p>Loading experience…</p>
-  </div>
-</div>
-
-<div class="gens-lp gens-lp-page gens-lp--error container py-5 text-center" *ngIf="!loading && loadError && !content">
-  <h1 class="h4 mb-3">We could not load this page</h1>
-  <p class="text-muted mb-4">Check that the API is running and <code>/api/public/landing</code> is reachable.</p>
-  <button type="button" class="btn btn-primary" (click)="retryLoad()">Retry</button>
-</div>
-
-<div class="gens-lp-page" *ngIf="content as c">
-  <!-- Hero -->
-  <section class="gens-hero" id="top">
-    <div class="gens-hero__bg" aria-hidden="true"></div>
-    <div class="container position-relative">
-      <div class="row align-items-center gy-5 py-5 py-lg-6">
-        <div class="col-lg-6">
-          <p class="gens-kicker">{{ c.hero.trustLine }}</p>
-          <h1 class="gens-hero__title">
-            {{ c.hero.titleLead }}
-            <span class="gens-hero__accent">{{ c.hero.titleAccent }}</span>
-          </h1>
-          <p class="gens-hero__lead">{{ c.hero.subtitle }}</p>
-          <div class="d-flex flex-wrap gap-2 gap-sm-3 mt-4">
-            <button type="button" class="btn btn-primary btn-lg px-4" (click)="goHref(c.hero.primaryCtaHref)">
-              {{ c.hero.primaryCtaLabel }}
-            </button>
-            <button
-              *ngIf="c.hero.secondaryCtaLabel && c.hero.secondaryCtaHref"
-              type="button"
-              class="btn btn-outline-primary btn-lg px-4"
-              (click)="goHref(c.hero.secondaryCtaHref!)"
-            >
-              {{ c.hero.secondaryCtaLabel }}
-            </button>
-          </div>
-        </div>
-        <div class="col-lg-6">
-          <div class="gens-hero__visual">
-            <img
-              src="assets/img/front-pages/landing-page/hero-dashboard-light.png"
-              alt="GENS dashboard preview"
-              class="img-fluid gens-hero__shot"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Features -->
-  <section class="gens-section" id="gens-features">
-    <div class="container">
-      <header class="gens-section__head text-center mx-auto">
-        <p class="gens-kicker gens-kicker--dark">{{ c.features.kicker }}</p>
-        <h2 class="gens-section__title">{{ c.features.title }}</h2>
-        <p class="gens-section__sub">{{ c.features.subtitle }}</p>
-      </header>
-      <div class="row g-4 mt-2">
-        <div class="col-md-6 col-xl-4" *ngFor="let f of c.features.items">
-          <article class="gens-card h-100">
-            <div class="gens-card__icon">
-              <i [attr.class]="'icon-base ' + remixIcon(f.icon)" aria-hidden="true"></i>
-            </div>
-            <h3 class="gens-card__title">{{ f.title }}</h3>
-            <p class="gens-card__text mb-0">{{ f.description }}</p>
-          </article>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Pricing (dynamic plans) -->
-  <section class="gens-section gens-section--alt" id="gens-pricing">
-    <div class="container">
-      <header class="gens-section__head text-center mx-auto">
-        <p class="gens-kicker">{{ c.pricing.kicker }}</p>
-        <h2 class="gens-section__title">{{ c.pricing.title }}</h2>
-        <p class="gens-section__sub">{{ c.pricing.subtitle }}</p>
-      </header>
-
-      <div class="row g-4 justify-content-center mt-2 gens-pricing-row" *ngIf="plans.length">
-        <div class="col-12 col-sm-6 col-lg-3" *ngFor="let p of plans">
-          <article class="gens-plan h-100" [class.gens-plan--featured]="p.highlight">
-            <div class="gens-plan__badge" *ngIf="p.highlight">Popular</div>
-            <h3 class="gens-plan__name">{{ p.name }}</h3>
-            <div class="gens-plan__price-row">
-              <span class="gens-plan__amount">{{ formatPrice(p) }}</span>
-              <span class="gens-plan__cycle" *ngIf="p.price != null">{{ billingLabel(p.billingCycle) }}</span>
-            </div>
-            <p class="gens-plan__meta text-muted small mb-3" *ngIf="p.maxUsers != null">Up to {{ p.maxUsers }} users</p>
-            <ul class="gens-plan__list">
-              <li *ngFor="let b of p.bullets">{{ b }}</li>
-            </ul>
-            <div class="gens-plan__support small text-muted mb-3" *ngIf="p.supportLabel || p.supportBadge">
-              <span *ngIf="p.supportLabel">{{ p.supportLabel }}</span>
-              <span class="badge bg-label-primary ms-1" *ngIf="p.supportBadge">{{ p.supportBadge }}</span>
-            </div>
-            <button type="button" class="btn w-100" [class.btn-primary]="p.highlight" [class.btn-outline-primary]="!p.highlight" (click)="registerWithPlan(p.id)">
-              Get started
-            </button>
-          </article>
-        </div>
-      </div>
-
-      <p class="text-center text-muted mt-4 mb-0 small" *ngIf="!plans.length">
-        No active plans are published yet. SuperAdmin can activate plans under <strong>Plan Management</strong>.
+<section class="section hero">
+  <div class="container split split--hero">
+    <div class="copy">
+      <h1 class="h1">Managing employees<br />shouldn’t be this hard.</h1>
+      <p class="lead">
+        From attendance to payroll — GENS-AI simplifies HR operations with smart automation
+        and real-time insights.
       </p>
-      <p class="text-center text-muted small mt-2" *ngIf="c.pricing.footerNote">{{ c.pricing.footerNote }}</p>
+      <div class="cta">
+        <a class="btn btn--primary" href="#contact">Book a Demo</a>
+        <a class="btn btn--secondary" href="#contact">Start Free Trial</a>
+      </div>
     </div>
-  </section>
 
-  <!-- Subscription explainer -->
-  <section class="gens-section" id="gens-subscription">
-    <div class="container">
-      <div class="row justify-content-center">
-        <div class="col-lg-10">
-          <div class="gens-sub-box">
-            <div class="row gy-4 align-items-center">
-              <div class="col-md-5">
-                <p class="gens-kicker gens-kicker--dark mb-2">Subscriptions</p>
-                <h2 class="h3 fw-bold mb-0">{{ c.subscription.title }}</h2>
-              </div>
-              <div class="col-md-7">
-                <p class="text-muted mb-3">{{ c.subscription.subtitle }}</p>
-                <ul class="gens-checklist mb-0">
-                  <li *ngFor="let line of c.subscription.bullets">{{ line }}</li>
-                </ul>
-              </div>
-            </div>
+    <div class="section-image-container">
+      <img src="../../../assets/img/bg-login/GENS-IMAGE.png" class="section-image" alt="GENS-AI" />
+    </div>
+  </div>
+</section>
+
+<section id="features" class="section section--soft" style="background: #f6f9ff;">
+  <div class="container split">
+    <div class="copy">
+      <h2 class="h1">Managing employees<br />shouldn’t be this hard.</h2>
+      <ul class="checklist">
+        <li>Manual attendance errors</li>
+        <li>Payroll delays &amp; compliance issues</li>
+        <li>No visibility into employee performance</li>
+        <li>Poor decision-making without data</li>
+      </ul>
+    </div>
+    <div class="section-image-container">
+      <img src="../../../assets/img/bg-login/3.png" class="section-image" alt="GENS-AI" />
+    </div>
+    <!-- <div class="visual visual--pain" aria-hidden="true"></div> -->
+  </div>
+</section>
+
+<section id="solutions" class="section section--softer">
+  <div class="container split">
+    <div class="copy">
+      <h2 class="h1">GENS-AI solves it all:</h2>
+
+      <div class="featurelist">
+        <div class="feature">
+          <div class="feature__title">Smart Attendance Tracking</div>
+          <div class="feature__desc">
+            Track employee attendance with AI-powered accuracy and live GPS tracking
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">Automated Payroll &amp; Compliance</div>
+          <div class="feature__desc">
+            Process payroll automatically while ensuring compliance with labor laws
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">Employee Lifecycle Management</div>
+          <div class="feature__desc">
+            Manage everything from onboarding to offboarding in one place.
+          </div>
+        </div>
+        <div class="feature">
+          <div class="feature__title">Real-Time Dashboards &amp; Reports</div>
+          <div class="feature__desc">
+            Gain actionable insights with intuitive realtime dashboards
           </div>
         </div>
       </div>
     </div>
-  </section>
-
-  <!-- Stats (trust banner — CMS: stats.items) -->
-  <section class="gens-stats" id="gens-stats" aria-label="Trust and scale">
-    <div class="container">
-      <div class="row g-4 g-lg-5 text-center justify-content-center">
-        <div class="col-6 col-lg-3" *ngFor="let s of c.stats.items">
-          <div class="gens-stat">
-            <span class="gens-stat__icon-wrap" aria-hidden="true">
-              <i [attr.class]="'icon-base gens-stat__icon ' + remixIcon(s.icon)"></i>
-            </span>
-            <div class="gens-stat__value">{{ s.value }}</div>
-            <p class="gens-stat__label mb-0">{{ s.label }}</p>
-          </div>
-        </div>
-      </div>
+    <!-- <div class="visual visual--dash" aria-hidden="true"></div> -->
+    <div class="section-image-container">
+      <img src="../../../assets/img/bg-login/4_5.png" class="section-image" alt="GENS-AI" />
     </div>
-  </section>
+  </div>
+</section>
 
-  <!-- FAQ -->
-  <section class="gens-section gens-section--alt" id="gens-faq">
-    <div class="container">
-      <header class="gens-section__head text-center mx-auto">
-        <p class="gens-kicker">{{ c.faq.kicker }}</p>
-        <h2 class="gens-section__title">{{ c.faq.title }}</h2>
-        <p class="gens-section__sub">{{ c.faq.subtitle }}</p>
-      </header>
-      <div class="row justify-content-center mt-4">
-        <div class="col-lg-8">
-          <div class="accordion" id="gensFaqAccordion">
-            <div class="accordion-item" *ngFor="let item of c.faq.items; let i = index">
-              <h2 class="accordion-header" [id]="'faq-h-' + i">
-                <button
-                  class="accordion-button"
-                  [class.collapsed]="i !== 0"
-                  type="button"
-                  data-bs-toggle="collapse"
-                  [attr.data-bs-target]="'#faq-c-' + i"
-                  [attr.aria-expanded]="i === 0"
-                  [attr.aria-controls]="'faq-c-' + i"
-                >
-                  {{ item.q }}
-                </button>
-              </h2>
-              <div
-                [id]="'faq-c-' + i"
-                class="accordion-collapse collapse"
-                [class.show]="i === 0"
-                data-bs-parent="#gensFaqAccordion"
-                [attr.aria-labelledby]="'faq-h-' + i"
-              >
-                <div class="accordion-body text-muted">{{ item.a }}</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+<section id="contact" class="section section--final">
+  <div class="container split split--final">
+    <!-- <div class="visual visual--robot" aria-hidden="true"></div> -->
+    <div class="section-image-container">
+      <img src="../../../assets/img/bg-login/5.png" class="section-image" alt="GENS-AI" />
     </div>
-  </section>
-
-  <!-- CTA -->
-  <section class="gens-cta" id="gens-cta">
-    <div class="container">
-      <div class="gens-cta__inner">
-        <h2 class="gens-cta__title">{{ c.cta.title }}</h2>
-        <p class="gens-cta__sub mb-4">{{ c.cta.subtitle }}</p>
-        <button type="button" class="btn btn-light btn-lg px-4" (click)="goHref(c.cta.buttonHref)">
-          {{ c.cta.buttonLabel }}
-        </button>
-      </div>
+    <div>
+      <h2 class="h2">Get complete control of your workforce<br />from one powerful dashboard.</h2>
+      <ul class="checklist checklist--tight">
+        <li>Predict absenteeism before it happens</li>
+        <li>Detect late-coming trends</li>
+        <li>Improve workforce productivity</li>
+      </ul>
     </div>
-  </section>
-
-  <!-- Contact -->
-  <section class="gens-section" id="gens-contact">
-    <div class="container">
-      <header class="gens-section__head text-center mx-auto">
-        <p class="gens-kicker gens-kicker--dark">{{ c.contact.kicker }}</p>
-        <h2 class="gens-section__title">{{ c.contact.title }}</h2>
-        <p class="gens-section__sub">{{ c.contact.subtitle }}</p>
-      </header>
-      <div class="row g-4 mt-2 align-items-stretch">
-        <div class="col-lg-5">
-          <div class="gens-contact-card h-100">
-            <p class="gens-contact-card__tag">{{ c.contact.cardTagline }}</p>
-            <h3 class="h5 text-white mb-3">{{ c.contact.cardTitle }}</h3>
-            <p class="gens-contact-card__body mb-0">{{ c.contact.cardBody }}</p>
-          </div>
-        </div>
-        <div class="col-lg-7">
-          <div class="card border-0 shadow-sm h-100">
-            <div class="card-body p-4 p-lg-5">
-              <h3 class="h5 mb-4">{{ c.contact.formTitle }}</h3>
-              <p class="text-muted small mb-4" *ngIf="contactFormOpen(c)">
-                {{ c.contact.formHelpText || 'We will only use your details to respond to this enquiry.' }}
-              </p>
-              <p class="text-muted small mb-0" *ngIf="!contactFormOpen(c)">
-                {{
-                  c.contact.formClosedMessage ||
-                    'We are not accepting messages through this form at the moment.'
-                }}
-              </p>
-              <form [formGroup]="contactForm" (ngSubmit)="submitContact()" *ngIf="contactFormOpen(c)" novalidate>
-                <div class="row g-3">
-                  <div class="col-md-6">
-                    <label class="form-label small text-muted" for="gens-contact-name">Full name</label>
-                    <input
-                      id="gens-contact-name"
-                      type="text"
-                      class="form-control"
-                      formControlName="fullName"
-                      autocomplete="name"
-                      [class.is-invalid]="contactForm.get('fullName')?.invalid && contactForm.get('fullName')?.touched"
-                      [placeholder]="c.contact.namePlaceholder || 'Your name'"
-                    />
-                    <div class="invalid-feedback d-block" *ngIf="contactForm.get('fullName')?.touched && contactForm.get('fullName')?.invalid">
-                      Enter at least 2 characters.
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label small text-muted" for="gens-contact-email">Work email</label>
-                    <input
-                      id="gens-contact-email"
-                      type="email"
-                      class="form-control"
-                      formControlName="email"
-                      autocomplete="email"
-                      [class.is-invalid]="contactForm.get('email')?.invalid && contactForm.get('email')?.touched"
-                      [placeholder]="c.contact.emailPlaceholder || 'you@company.com'"
-                    />
-                    <div class="invalid-feedback d-block" *ngIf="contactForm.get('email')?.touched && contactForm.get('email')?.invalid">
-                      Enter a valid email address.
-                    </div>
-                  </div>
-                  <div class="col-12">
-                    <label class="form-label small text-muted" for="gens-contact-msg">Message</label>
-                    <textarea
-                      id="gens-contact-msg"
-                      class="form-control"
-                      rows="4"
-                      formControlName="message"
-                      [class.is-invalid]="contactForm.get('message')?.invalid && contactForm.get('message')?.touched"
-                      [placeholder]="c.contact.messagePlaceholder || 'Tell us about your team size and goals…'"
-                    ></textarea>
-                    <div class="invalid-feedback d-block" *ngIf="contactForm.get('message')?.touched && contactForm.get('message')?.invalid">
-                      Enter at least 10 characters (max 8000).
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="alert mt-3 mb-0 py-2 small"
-                  *ngIf="contactFeedback"
-                  [class.alert-success]="contactFeedback.ok"
-                  [class.alert-danger]="!contactFeedback.ok"
-                  role="status"
-                >
-                  {{ contactFeedback.text }}
-                </div>
-                <button type="submit" class="btn btn-primary mt-4" [disabled]="contactSubmitting">
-                  {{ contactSubmitting ? 'Sending…' : (c.contact.submitButtonLabel || 'Send message') }}
-                </button>
-              </form>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-</div>
+  </div>
+</section>
 
 <app-landing-footer></app-landing-footer>

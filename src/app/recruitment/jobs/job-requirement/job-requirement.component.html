@@ -14,14 +14,8 @@
           <div class="row g-3 align-items-start">
             <div class="col-12 col-md-6 col-xl-4">
               <label for="jobTitle" class="col-form-label fw-bold">Job Title <span style="color: red">*</span></label>
-              <input
-                type="text"
-                id="jobTitle"
-                name="job_title"
-                placeholder="Job title"
-                class="form-control"
-                [(ngModel)]="obj['job_title']"
-              />
+              <input type="text" id="jobTitle" name="job_title" placeholder="Job title" class="form-control"
+                [(ngModel)]="obj['job_title']" />
             </div>
 
 
@@ -38,13 +32,8 @@
             <div class="col-12 col-md-6 col-xl-4">
               <label class="col-form-label fw-bold">Designation
               </label>
-              <input
-                type="text"
-                name="designation"
-                placeholder="Designation"
-                class="form-control"
-                [(ngModel)]="obj['designation']"
-              />
+              <input type="text" name="designation" placeholder="Designation" class="form-control"
+                [(ngModel)]="obj['designation']" />
 
 
             </div>
@@ -62,50 +51,30 @@
 
             <div class="col-12 col-md-6 col-xl-4">
               <label class="col-form-label fw-bold">Interview Rounds</label>
-              <ng-select
-                [items]="interviewRounds"
-                bindLabel="label"
-                bindValue="value"
-                [(ngModel)]="obj['interview_round_ids']"
-                [multiple]="true"
-                placeholder="Select Interview Rounds"
-                name="interview_round_ids"
-                id="interviewRounds"
-              >
+              <ng-select [items]="interviewRounds" bindLabel="label" bindValue="value"
+                [(ngModel)]="obj['interview_round_ids']" [multiple]="true" placeholder="Select Interview Rounds"
+                name="interview_round_ids" id="interviewRounds">
               </ng-select>
             </div>
 
             <div class="col-12 col-md-6 col-xl-4">
               <label class="col-form-label fw-bold">Candidate Preference</label>
-              <ng-select
-                [items]="candidatePreferenceOptions"
-                bindLabel="label"
-                bindValue="value"
-                [(ngModel)]="obj['candidate_preference']"
-                [multiple]="false"
-                placeholder="Select Candidate Preference"
-                name="candidate_preference"
-                id="candidatePreference"
-              >
+              <ng-select [items]="candidatePreferenceOptions" bindLabel="label" bindValue="value"
+                [(ngModel)]="obj['candidate_preference']" [multiple]="false" placeholder="Select Candidate Preference"
+                name="candidate_preference" id="candidatePreference">
               </ng-select>
             </div>
 
             <div class="col-12 col-md-6 col-xl-4">
-              <label for="skillsInput" class="col-form-label fw-bold">Skills <span
-                  style="color: red">*</span></label>
+              <label for="skillsInput" class="col-form-label fw-bold">Skills <span style="color: red">*</span></label>
               <div class="tag-container">
                 <span class="tag" *ngFor="let skill of skills; let i = index">
                   {{ skill }}
                   <span class="remove" (click)="removeSkill(i)">×</span>
                 </span>
 
-                <input
-                  type="text"
-                  id="skillsInput"
-                  placeholder="Type skill and press Enter"
-                  class="form-control"
-                  (keydown.enter)="addSkill($event)"
-                />
+                <input type="text" id="skillsInput" placeholder="Type skill and press Enter" class="form-control"
+                  (keydown.enter)="addSkill($event)" />
               </div>
             </div>
 
@@ -121,101 +90,53 @@
             <div class="col-12 col-md-6 col-xl-4">
               <label for="experience" class="col-form-label fw-bold">Experience (Years) <span
                   style="color: red">*</span></label>
-              <input
-                type="text"
-                id="experience"
-                name="experience"
-                class="form-control"
-                placeholder="Experience (Years)"
-                [(ngModel)]="obj['experience']"
-              />
+              <input type="text" id="experience" name="experience" class="form-control" placeholder="Experience (Years)"
+                [(ngModel)]="obj['experience']" />
 
             </div>
             <div class="col-12 col-md-6 col-xl-4">
               <label for="qualification" class="col-form-label fw-bold">Qualification <span
                   style="color: red">*</span></label>
-              <input
-                type="text"
-                id="qualification"
-                name="qualification"
-                class="form-control"
-                placeholder="Qualification"
-                [(ngModel)]="obj['qualification']"
-              />
+              <input type="text" id="qualification" name="qualification" class="form-control"
+                placeholder="Qualification" [(ngModel)]="obj['qualification']" />
 
             </div>
 
             <div class="col-12 col-md-6 col-xl-4">
               <label for="noticePeriod" class="col-form-label fw-bold">Notice Period (In Days) </label>
-              <input
-                type="text"
-                id="noticePeriod"
-                name="notice_period"
-                class="form-control"
-                placeholder="Notice Period"
-                [(ngModel)]="obj['notice_period']"
-              />
+              <input type="text" id="noticePeriod" name="notice_period" class="form-control" placeholder="Notice Period"
+                [(ngModel)]="obj['notice_period']" />
 
             </div>
             <div class="col-12 col-md-6 col-xl-4">
               <label for="budgetCtc" class="col-form-label fw-bold">Budget CTC (In LPA)</label>
-              <input
-                type="text"
-                id="budgetCtc"
-                name="budget_ctc"
-                class="form-control"
-                placeholder="Budget CTC"
-                [(ngModel)]="obj['budget_ctc']"
-              />
+              <input type="text" id="budgetCtc" name="budget_ctc" class="form-control" placeholder="Budget CTC"
+                [(ngModel)]="obj['budget_ctc']" />
 
             </div>
             <div class="col-12 col-md-6 col-xl-4">
               <label for="noOfOpening" class="col-form-label fw-bold">No Of Opening</label>
-              <input
-                type="text"
-                id="noOfOpening"
-                name="no_of_opening"
-                class="form-control"
-                placeholder="No Of Opening"
-                [(ngModel)]="obj['no_of_opening']"
-              />
+              <input type="text" id="noOfOpening" name="no_of_opening" class="form-control" placeholder="No Of Opening"
+                [(ngModel)]="obj['no_of_opening']" />
 
             </div>
             <div class="col-12 col-md-6 col-xl-4">
               <label for="location" class="col-form-label fw-bold">Location</label>
-              <input
-                type="text"
-                id="location"
-                name="location"
-                class="form-control"
-                placeholder="Location"
-                [(ngModel)]="obj['location']"
-              />
+              <input type="text" id="location" name="location" class="form-control" placeholder="Location"
+                [(ngModel)]="obj['location']" />
 
             </div>
             <div class="col-12 col-md-6 col-xl-4">
               <label for="mode" class="col-form-label fw-bold">Mode</label>
-              <input
-                type="text"
-                id="mode"
-                name="mode"
-                class="form-control"
-                placeholder="Mode"
-                [(ngModel)]="obj['mode']"
-              />
+              <input type="text" id="mode" name="mode" class="form-control" placeholder="Mode"
+                [(ngModel)]="obj['mode']" />
 
             </div>
 
             <div class="col-12">
               <label for="jobDescription" class="col-form-label fw-bold">Job Description</label>
-              <textarea
-                class="form-control"
-                id="jobDescription"
-                rows="4"
-                [(ngModel)]="obj['job_description']"
-                #reasonRef="ngModel"
-                style="height: 333px;"
-              ></textarea>
+              <textarea class="form-control" id="jobDescription" rows="4" [(ngModel)]="obj['job_description']"
+                #reasonRef="ngModel" style="height: 333px;"></textarea>
 
               <small class="text-danger" *ngIf="reasonRef.invalid && reasonRef.touched">
                 Reason Is Required
@@ -223,14 +144,14 @@
             </div>
           </div>
           <div class="d-flex justify-content-end gap-2 mt-4">
-              <button *ngIf="updateFlag == false && createFlag == true" type="button" class="btn btn-primary"
-                (click)="onSubmit()">
-                Submit
-              </button>
-              <button *ngIf="updateFlag == true && createFlag == true" type="button" class="btn btn-primary"
-                (click)="updateform()">
-                Update
-              </button>
+            <button *ngIf="updateFlag == false && createFlag == true" type="button" class="btn btn-primary"
+              (click)="onSubmit()">
+              Submit
+            </button>
+            <button *ngIf="updateFlag == true && createFlag == true" type="button" class="btn btn-primary"
+              (click)="updateform()">
+              Update
+            </button>
           </div>
         </div>
       </div>
@@ -283,10 +204,10 @@
 
           </div>
           <div class="d-flex justify-content-end mt-3">
-              <button type="button" class="btn btn-sm btn-primary waves-effect waves-light"
-                (click)="getJobRequirementList()">
-                Submit
-              </button>
+            <button type="button" class="btn btn-sm btn-primary waves-effect waves-light"
+              (click)="getJobRequirementList()">
+              Submit
+            </button>
           </div>
         </div>
       </div>
@@ -325,7 +246,7 @@
                   <th>SI.No</th>
                   <th>Job Title</th>
                   <th>Department</th>
-                  <th>Designation</th>
+                  <th style="width: 40%;">Designation</th>
                   <th>Experience</th>
                   <th>Status</th>
                   <th>Created At</th>
@@ -346,15 +267,18 @@
                   </td>
                   <td>{{ item["createdAt"] | date : "M/d/yyyy, h:mm a" }}</td>
                   <td>
-                    <button type="button" class="badge badge-center bg-label-info" title="View" (click)="viewItem(item)">
+                    <button type="button" class="btn btn-sm btn-outline-info" title="View"
+                      (click)="viewItem(item)">
                       <i class="fas fa-eye"></i>
                     </button>
                     &nbsp;
-                    <button type="button" class="badge badge-center bg-label-primary" title="Edit" (click)="update(item)">
+                    <button type="button" class="btn btn-sm btn-outline-primary" title="Edit"
+                      (click)="update(item)">
                       <i class="fas fa-edit"></i>
                     </button>
                     &nbsp;
-                    <button type="button" class="badge badge-center bg-label-danger" title="Delete" (click)="delete(item)">
+                    <button type="button" class="btn btn-sm btn-outline-danger" title="Delete"
+                      (click)="delete(item)">
                       <i class="fas fa-trash-alt"></i>
                     </button>
                   </td>
@@ -383,7 +307,7 @@
       </div>
 
       <div class="modal-body" *ngIf="selectedItem">
-
+       
         <!-- Title + Status -->
         <div class="jrv-hero mb-4">
           <div class="jrv-icon"><i class="fas fa-briefcase"></i></div>

@@ -539,18 +539,18 @@
                 </td>
                 <td>{{item.status}}</td>
                 <td>
-                  <!-- <button *ngIf="!item.editable" type="button" class="badge badge-center bg-label-success m-2"
+                  <!-- <button *ngIf="!item.editable" type="button" class="btn btn-sm btn-outline-success m-2"
                       (click)="applyUpdate(item)">
                       <i class="ri ri-pencil-line"></i>
                     </button>
 
-                    <button *ngIf="item.editable" type="button" class="badge badge-center bg-label-success m-2"
+                    <button *ngIf="item.editable" type="button" class="btn btn-sm btn-outline-success m-2"
                       (click)="update(item)">
                       <i class="ri ri-send-plane-line"></i>
 
                     </button> -->
 
-                  <button type="button" class="badge badge-center bg-label-danger" (click)="deleteAttendance(item)">
+                  <button type="button" class="btn btn-sm btn-outline-danger" (click)="deleteAttendance(item)">
                     <i class="fas fa-trash-alt"></i>
                   </button>
                 </td>
@@ -586,13 +586,13 @@
                 <td>{{leave.to_duration_type_name}}</td>
                 <td>{{leave.status}}</td>
                 <td>
-                  <button type="button" class="badge badge-center bg-label-success" *ngIf="!['approved','rejected','self_declined'].includes(leave.status)"
+                  <button type="button" class="btn btn-sm btn-outline-success" *ngIf="!['approved','rejected','self_declined'].includes(leave.status)"
                     (click)="statuschange(leave,'approved')">
                     <i class="fas fa-check"></i>
                   </button>
                   &nbsp;
                   <button *ngIf="['pending','recommended'].includes(leave.status)" type="button"
-                    class="badge badge-center bg-label-danger" (click)="statuschange(leave,'rejected')">
+                    class="btn btn-sm btn-outline-danger" (click)="statuschange(leave,'rejected')">
 
                     <i class="fa-solid fa-xmark"></i>
 

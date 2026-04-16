@@ -580,7 +580,7 @@ nav.layout-navbar.gens-topnav {
   top: 0;
   z-index: 1030;
   /* Inherits --gens-surface from app-landing-page on /Home; fallback matches landing-page :host */
-  background: var(--gens-surface, #f1f5f9) !important;
+  /* background: var(--gens-surface, #f1f5f9) !important; */
   padding-block: 1rem 0.75rem;
   padding-inline: 0;
 }
@@ -592,7 +592,7 @@ nav.layout-navbar.gens-topnav > .container {
 nav.layout-navbar.gens-topnav .landing-navbar {
   --bs-front-navbar-bg: #ffffff !important;
   background-color: #fff !important;
-  border-radius: 0.875rem !important;
+  /* border-radius: 0.875rem !important; */
   box-shadow:
     0 4px 24px rgba(15, 23, 42, 0.07),
     0 1px 3px rgba(15, 23, 42, 0.06) !important;
