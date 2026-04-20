@@ -129,6 +129,18 @@ export class JobService {
     );
   }
 
+  saveRecruitmentOfferLetter(payload: any): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}save-offer-letter`, payload);
+  }
+
+  getRecruitmentOfferLetters(): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}get-offer-letters`, {});
+  }
+
+  checkDuplicateOfferLetter(payload: { mobileNo?: string; email?: string; aadhaarNo?: string }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}check-duplicate-offer-letter`, payload);
+  }
+
   saveJobLink(payload: {
     job_id: string;
     slug: string;

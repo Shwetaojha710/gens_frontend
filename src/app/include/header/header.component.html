@@ -41,7 +41,7 @@
         >
         </ng-select>
 
-        <a routerLink="/layout/tracking" class="location-btn">
+        <a *ngIf="showLocationButton" routerLink="/layout/tracking" class="location-btn">
           <i class="ri ri-route-line"></i>
           <span>Location</span>
         </a>

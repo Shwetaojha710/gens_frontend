@@ -184,6 +184,13 @@ export class LoginComponent {
     this.router.navigate(['company-reg']);
   }
 
+  onInterviewerPhoneInput(event: Event) {
+    const value = (event.target as HTMLInputElement).value.replace(/\D/g, '');
+    if (value.length === 10 && /^[6-9]\d{9}$/.test(value)) {
+      this.sendInterviewerOtp();
+    }
+  }
+
   onOtpInput(event: Event, next: HTMLInputElement | null) {
     const input = event.target as HTMLInputElement;
     if (input.value.length === 1 && next) next.focus();

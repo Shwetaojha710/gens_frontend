@@ -67,6 +67,7 @@ export class EmployeePortalLeaveComponent implements OnInit {
   year = new Date().getFullYear();
   loading = false;
   submitting = false;
+  decliningId: string | null = null;
 
   form: FormGroup;
 
@@ -233,6 +234,24 @@ export class EmployeePortalLeaveComponent implements OnInit {
     if (raw === 'rejected' || raw === 'self_declined') return 'ep-status ep-status--bad';
     if (raw === 'cancelled' || raw === 'canceled') return 'ep-status ep-status--muted';
     return 'ep-status ep-status--neutral';
+  }
+
+  selfDecline(row: unknown): void {
+    const r = row as Record<string, unknown>;
+    const id = String(r['id'] ?? '');
+    if (!id) return;
+    this.decliningId = id;
+    this.api.selfDeclineLeave(id).subscribe({
+      next: () => {
+        this.decliningId = null;
+        this.notyf.success('Leave declined successfully.');
+        this.loadList();
+      },
+      error: (e: Error) => {
+        this.decliningId = null;
+        this.notyf.error(e.message || 'Could not decline leave.');
+      },
+    });
   }
 
   /** Stable row key for *ngFor. */

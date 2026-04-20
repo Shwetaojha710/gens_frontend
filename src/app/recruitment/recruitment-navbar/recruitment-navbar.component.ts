@@ -67,7 +67,7 @@ export class RecruitmentNavbarComponent {
       link: '/recruitment/recruitment-dashboard'
     },
     {
-      title: 'Job Recruitment Analysis',
+      title: 'Recruitment Analysis',
       icon: 'ri-layout-2-line',
       children: [
         { title: 'Job Requirement Analysis', icon: 'ri-user-add-line', link: '/recruitment/jobs/job-requirement' },
@@ -80,7 +80,8 @@ export class RecruitmentNavbarComponent {
       icon: 'ri-layout-2-line',
       children: [
         { title: 'Candidate Application', icon: 'ri-profile-line', link: '/recruitment/application-list' },
-        { title: 'Offered Candidate List', icon: 'ri-hand-coin-line', link: '/recruitment/offered-candidate-list' }
+        { title: 'Offered Candidate List', icon: 'ri-hand-coin-line', link: '/recruitment/offered-candidate-list' },
+        { title: 'Generate Offer Letter', icon: 'ri-file-text-line', link: '/recruitment/offers/offer-letter' }
       ]
     },
     {

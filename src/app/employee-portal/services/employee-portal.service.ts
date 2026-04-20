@@ -114,6 +114,12 @@ export class EmployeePortalService {
     });
   }
 
+  selfDeclineLeave(id: string): Observable<unknown> {
+    return this.unwrap(
+      this.http.post<{ status: unknown; data: unknown }>(`${this.base}update-apply-leaves-status`, { id, status: 'self_declined' }),
+    );
+  }
+
   /**
    * Leave balance per category (leave type): name, code, available_leave, total_leave.
    * Backend: POST get-emp-leave-list → data.leaveBalances

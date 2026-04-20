@@ -226,6 +226,7 @@
                     <th scope="col" class="text-end">Days</th>
                     <th scope="col" >Reason</th>
                     <th scope="col">Status</th>
+                    <th scope="col"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -253,6 +254,19 @@
                     </td>
                     <td>
                       <span [class]="leaveStatusClass($any(row).status)">{{ $any(row).status }}</span>
+                    </td>
+                    <td>
+                      <button
+                        *ngIf="listTab === 'my' && $any(row).status?.toLowerCase() === 'pending'"
+                        type="button"
+                        class="btn btn-sm btn-outline-danger ep-leave-self-decline"
+                        (click)="selfDecline(row)"
+                        [disabled]="decliningId === $any(row).id"
+                        title="Self decline this leave request"
+                      >
+                        <span *ngIf="decliningId !== $any(row).id"><i class="fas fa-times me-1"></i>Self Decline</span>
+                        <span *ngIf="decliningId === $any(row).id"><i class="fas fa-circle-notch fa-spin me-1"></i>Declining…</span>
+                      </button>
                     </td>
                   </tr>
                 </tbody>

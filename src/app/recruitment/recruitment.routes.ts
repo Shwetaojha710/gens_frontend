@@ -63,6 +63,11 @@ export const recruitmentRoutes: Routes = [
       },
           { path: 'department', component: RecruitmentDepartmentComponent },
           { path: 'designation', component: RecruitmentDesignationComponent },
+      {
+        path: 'offers/offer-letter',
+        loadComponent: () =>
+          import('./offers/offer-letter/offer-letter.component').then((m) => m.RecruitmentOfferLetterComponent),
+      },
     ],
   },
 ];
