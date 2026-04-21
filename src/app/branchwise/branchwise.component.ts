@@ -1,5 +1,7 @@
-import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Router, NavigationStart } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { DashboardService } from '../services/dashboard.service';
 import { MasterService } from '../services/master.service';
 import { LocationsService } from '../services/locations.service';
@@ -14,14 +16,17 @@ import { NgSelectModule } from '@ng-select/ng-select';
   templateUrl: './branchwise.component.html',
   styleUrl: './branchwise.component.css'
 })
-export class BranchwiseComponent {
+export class BranchwiseComponent implements OnInit, OnDestroy {
 
+  private backSub!: Subscription;
   notyf: Notyf = new Notyf();
   public chartOptions!: Partial<ChartOptions>;
   branchList: any
   allBranchList: any = []
   modalSearchText: string = ''
   modalFilteredBranches: any = []
+  sliderIndex = 0;
+  readonly slidesVisible = 4;
   obj: any = {};
   stats: any = []
   tenantDetails: any = {}
@@ -68,6 +73,19 @@ export class BranchwiseComponent {
     this.getBranchDD()
     this.tenantDetails = JSON.parse(localStorage.getItem('tenant') || '{}');
     this.tenantDetails.image = `${this.baseurl}${this.tenantDetails['image']}`
+  }
+
+  ngOnInit(): void {
+    this.backSub = this.router.events.pipe(
+      filter(e => e instanceof NavigationStart && e.navigationTrigger === 'popstate')
+    ).subscribe(() => {
+      localStorage.clear();
+      this.router.navigateByUrl('/login', { replaceUrl: true });
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.backSub?.unsubscribe();
   }
 
   employeeList: any = []
@@ -298,6 +316,22 @@ createFlag = false;
 
   gotoback(){
     this.router.navigate(['landing-home']);
+  }
+
+  get maxSliderIndex(): number {
+    return Math.max(0, this.allBranchList.length - this.slidesVisible);
+  }
+
+  get sliderTranslate(): string {
+    return `translateX(-${this.sliderIndex * (100 / this.slidesVisible)}%)`;
+  }
+
+  prevSlide(): void {
+    if (this.sliderIndex > 0) this.sliderIndex--;
+  }
+
+  nextSlide(): void {
+    if (this.sliderIndex < this.maxSliderIndex) this.sliderIndex++;
   }
 
 }

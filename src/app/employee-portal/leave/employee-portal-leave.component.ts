@@ -66,13 +66,23 @@ export class EmployeePortalLeaveComponent implements OnInit {
   month = new Date().getMonth() + 1;
   year = new Date().getFullYear();
   loading = false;
+  pageSize = 5;
+  currentPage = 1;
+  searchQuery = '';
+  readonly pageSizeOptions = [5, 10, 25, 50];
   submitting = false;
   decliningId: string | null = null;
+  recommendingId: string | null = null;
+  approvingId: string | null = null;
+  decliningTeamId: string | null = null;
+  branches: any = [];
+  selectedBranchId = '';
 
   form: FormGroup;
 
   private notyf = new Notyf();
   private empId = '';
+  userDesignation = '';
 
   constructor(
     private fb: FormBuilder,
@@ -107,6 +117,7 @@ export class EmployeePortalLeaveComponent implements OnInit {
     try {
       const u = JSON.parse(localStorage.getItem('empPortalUser') || '{}');
       this.empId = u.id || '';
+      this.userDesignation = String(u.role || '').toLowerCase().trim();
     } catch {
       this.empId = '';
     }
@@ -115,6 +126,19 @@ export class EmployeePortalLeaveComponent implements OnInit {
       next: (t) => (this.types = t || []),
       error: (e: Error) => this.notyf.error(e.message || 'Could not load leave types'),
     });
+
+    console.log(this.isDirectorOrManager);
+
+
+    if (this.isDirectorOrManager) {
+      this.api.getBranches().subscribe({
+        next: (b) => (this.branches = b),
+        error: () => {},
+      });
+      console.log(this.branches,"branches");
+
+    }
+
     this.loadList();
 
     this.form.get('fromDate')?.valueChanges.subscribe(() => {
@@ -168,6 +192,20 @@ export class EmployeePortalLeaveComponent implements OnInit {
     return `${d} days`;
   }
 
+  get isTeamLead(): boolean {
+    console.log(this.userDesignation,"user designaiton");
+
+    return this.userDesignation.includes('teamleader') || this.userDesignation.includes('teamleader');
+  }
+
+  get isApprover(): boolean {
+    return this.userDesignation.includes('director') || this.userDesignation.includes('manager');
+  }
+
+  get isDirectorOrManager(): boolean {
+    return this.userDesignation.includes('director') || this.userDesignation.includes('manager');
+  }
+
   /** Restricted leave: unused balance expires at calendar year-end (no carry-forward). */
   get restrictedLeaveYearEndHint(): boolean {
     const id = this.form.get('leaveTypeId')?.value;
@@ -198,13 +236,51 @@ export class EmployeePortalLeaveComponent implements OnInit {
     }
   }
 
-  /** Rows for the active tab (my applications vs direct reports / team). */
+  /** Rows for the active tab, filtered by search query. */
   get displayLeaves(): unknown[] {
     if (!this.empId) return [];
     const isMine = (row: unknown) =>
       String((row as Record<string, unknown>)['employeeId']) === this.empId;
-    if (this.listTab === 'my') return this.leavesAll.filter(isMine);
-    return this.leavesAll.filter((r) => !isMine(r));
+    const tabFiltered = this.listTab === 'my'
+      ? this.leavesAll.filter(isMine)
+      : this.leavesAll.filter((r) => !isMine(r));
+    const q = this.searchQuery.trim().toLowerCase();
+    if (!q) return tabFiltered;
+    return tabFiltered.filter((row) => {
+      const r = row as Record<string, unknown>;
+      const name = String(r['employeeName'] ?? '').toLowerCase();
+      return name.includes(q);
+    });
+  }
+
+  onSearchChange(): void {
+    this.currentPage = 1;
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.displayLeaves.length / this.pageSize));
+  }
+
+  get pagedLeaves(): unknown[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.displayLeaves.slice(start, start + this.pageSize);
+  }
+
+  get pageNumbers(): number[] {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  goToPage(page: number): void {
+    if (page < 1 || page > this.totalPages) return;
+    this.currentPage = page;
+  }
+
+  get pageEnd(): number {
+    return Math.min(this.currentPage * this.pageSize, this.displayLeaves.length);
   }
 
   applicantName(row: unknown): string {
@@ -254,6 +330,62 @@ export class EmployeePortalLeaveComponent implements OnInit {
     });
   }
 
+  recommendLeave(row: unknown): void {
+    console.log(row,"::row");
+
+    const r = row as Record<string, unknown>;
+    const id = String(r['id'] ?? '');
+    if (!id) return;
+    this.recommendingId = id;
+    this.api.recommendLeave(id).subscribe({
+      next: () => {
+        this.recommendingId = null;
+        this.notyf.success('Leave recommended successfully.');
+        this.loadList();
+      },
+      error: (e: Error) => {
+        this.recommendingId = null;
+        this.notyf.error(e.message || 'Could not recommend leave.');
+      },
+    });
+  }
+
+  approveLeave(row: unknown): void {
+    const r = row as Record<string, unknown>;
+    const id = String(r['id'] ?? '');
+    if (!id) return;
+    this.approvingId = id;
+    this.api.approveLeave(id).subscribe({
+      next: () => {
+        this.approvingId = null;
+        this.notyf.success('Leave approved successfully.');
+        this.loadList();
+      },
+      error: (e: Error) => {
+        this.approvingId = null;
+        this.notyf.error(e.message || 'Could not approve leave.');
+      },
+    });
+  }
+
+  declineLeave(row: unknown): void {
+    const r = row as Record<string, unknown>;
+    const id = String(r['id'] ?? '');
+    if (!id) return;
+    this.decliningTeamId = id;
+    this.api.declineLeave(id).subscribe({
+      next: () => {
+        this.decliningTeamId = null;
+        this.notyf.success('Leave declined successfully.');
+        this.loadList();
+      },
+      error: (e: Error) => {
+        this.decliningTeamId = null;
+        this.notyf.error(e.message || 'Could not decline leave.');
+      },
+    });
+  }
+
   /** Stable row key for *ngFor. */
   trackLeaveRow(index: number, row: unknown): string {
     const r = row as Record<string, unknown>;
@@ -266,16 +398,24 @@ export class EmployeePortalLeaveComponent implements OnInit {
 
   setListTab(tab: 'my' | 'team'): void {
     this.listTab = tab;
+    this.currentPage = 1;
+    this.searchQuery = '';
+  }
+
+  onBranchChange(): void {
+    this.currentPage = 1;
+    this.loadList();
   }
 
   loadList(): void {
     this.loading = true;
-    this.api.getAppliedLeaves(this.month, this.year).subscribe({
+    this.api.getAppliedLeaves(this.month, this.year, this.selectedBranchId || undefined).subscribe({
       next: (res) => {
         this.loading = false;
         const data = res['data'];
         if (res['status'] === true && Array.isArray(data)) this.leavesAll = data;
         else this.leavesAll = [];
+        this.currentPage = 1;
       },
       error: () => {
         this.loading = false;

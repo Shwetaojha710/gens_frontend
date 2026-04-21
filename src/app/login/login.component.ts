@@ -82,7 +82,9 @@ export class LoginComponent {
           localStorage.setItem('branch', JSON.stringify(data.data.branch));
           localStorage.setItem('currency', JSON.stringify(data.data.currencyList));
           this.notyf.success(data.message);
-          this.router.navigate(['branchwise']);
+          const returnUrl = sessionStorage.getItem('returnUrl');
+          sessionStorage.removeItem('returnUrl');
+          this.router.navigateByUrl(returnUrl || '/branchwise', { replaceUrl: true });
         } else {
           this.notyf.error(data.message);
         }

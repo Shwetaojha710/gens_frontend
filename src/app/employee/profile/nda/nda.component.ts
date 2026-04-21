@@ -4,6 +4,7 @@ import html2pdf from 'html2pdf.js';
 import { Notyf } from 'notyf';
 import { FormsModule } from "@angular/forms";
 import { CommonModule, DatePipe } from '@angular/common';
+import { EmployeeService } from '../../../services/employee.service';
 @Component({
   selector: 'app-nda',
   imports: [FormsModule,CommonModule],
@@ -16,13 +17,31 @@ export class NdaComponent {
   personalDetails:any={}
   tenant:any={}
    notyf: Notyf;
- constructor(
-
-  ) {
+ constructor(private employeeService: EmployeeService) {
 
     this.personalDetails = JSON.parse(localStorage.getItem('employeeId') || '{}');
     this.tenant = JSON.parse(localStorage.getItem('tenant') || '{}');
     this.notyf = new Notyf();
+    this.loadData();
+  }
+
+  loadData(): void {
+    this.employeeService.getLetterData(this.personalDetails.id, 'nda').subscribe({
+      next: (res: any) => {
+        if (res.status && res.data) {
+          if (res.data.date) this.personalDetails.date = res.data.date;
+          if (res.data.place) this.personalDetails.place = res.data.place;
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  saveData(): void {
+    this.employeeService.saveLetterData(this.personalDetails.id, 'nda', {
+      date: this.personalDetails.date,
+      place: this.personalDetails.place
+    }).subscribe({ error: () => {} });
   }
   isEdit = false;
 
@@ -43,7 +62,8 @@ export class NdaComponent {
   }
 
   private readonly ndaPrintStyles = `
-    body { font-family: 'Times New Roman'; line-height: 1.6; padding: 40px; color: #000; background: #fff; }
+    @page { margin: 0; }
+    body { font-family: 'Times New Roman'; line-height: 1.6; padding: 15mm 20mm; color: #000; background: #fff; }
     h3 { text-align: center; text-decoration: underline; }
     ol { padding-left: 20px; }
     ul { padding-left: 20px; }

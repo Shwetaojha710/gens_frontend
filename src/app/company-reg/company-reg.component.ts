@@ -47,11 +47,14 @@ export class CompanyRegComponent implements OnInit {
     private route: ActivatedRoute,
   ) {
     this.form = this.fb.group({
-      tenantId: ['', Validators.required],
-      tenantName: ['', Validators.required],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
-      // image: ['', Validators.required]
+      tenantId: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9\-_]+$/)]],
+      tenantName: ['', [Validators.required, Validators.maxLength(60), Validators.pattern(/^[a-zA-Z0-9\s.\-&']+$/)]],
+      email: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$/)]],
+      password: ['', [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&_\-#])[A-Za-z\d@$!%*?&_\-#]{8,}$/)
+      ]],
     });
 
     this.notyf = new Notyf();

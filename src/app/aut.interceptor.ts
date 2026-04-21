@@ -52,6 +52,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
         }
 
         if (body && body.status === 'expired') {
+          // Save current page before clearing storage so login can redirect back
+          if (!superAdminToken && !req.url.includes('superadmin/') && !isEmpPortal) {
+            sessionStorage.setItem('returnUrl', router.url);
+          }
           localStorage.clear();
           // Superadmin: check by token presence OR by URL
           if (superAdminToken || req.url.includes('superadmin/')) {

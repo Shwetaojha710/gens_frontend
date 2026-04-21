@@ -7,10 +7,10 @@
     </label>
   </div>
   <div class="col-md-6 text-end">
-    <button type="button" class="btn btn-outline-primary me-2" (click)="printDoc()" [disabled]="isDownload">
+    <button type="button" class="btn btn-outline-primary me-2" (click)="saveData(); printDoc()" [disabled]="isDownload">
       <i class="fa fa-print mx-1"></i> Print
     </button>
-    <button type="button" class="btn btn-primary" (click)="downloadPDF()" [disabled]="isDownload">
+    <button type="button" class="btn btn-primary" (click)="saveData(); downloadPDF()" [disabled]="isDownload">
       <i class="fa fa-download mx-1"></i>
       <span *ngIf="isDownload">Generating...</span>
       <span *ngIf="!isDownload">Download PDF</span>
@@ -26,7 +26,7 @@
         <td>
           <b>Ref: Quaere/Emp/Offer/
             <span *ngIf="!isDownload">
-              <input type="text" [(ngModel)]="personalDetails.refNo" class="form-control d-inline-block" style="width:80px; height:24px; font-size:12px;" />
+              <input type="text" [(ngModel)]="personalDetails.refNo" (ngModelChange)="saveData()" class="form-control d-inline-block" style="width:80px; height:24px; font-size:12px;" />
             </span>
             <span *ngIf="isDownload">{{personalDetails.refNo}}</span>
           </b>
@@ -34,7 +34,7 @@
         <td style="text-align:right; color: #000;">
           <b>Dated:
             <span *ngIf="!isDownload">
-              <input type="date" [(ngModel)]="personalDetails.offerDate" class="form-control d-inline-block" style="width:140px; height:24px; font-size:12px;" />
+              <input type="date" [(ngModel)]="personalDetails.offerDate" (ngModelChange)="saveData()" class="form-control d-inline-block" style="width:140px; height:24px; font-size:12px;" />
             </span>
             <span *ngIf="isDownload">
               <span [innerHTML]="formatOrdinalDateHtml(personalDetails.offerDate)"></span>

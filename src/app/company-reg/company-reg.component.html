@@ -92,11 +92,16 @@
                   class="form-control"
                   id="company_name"
                   formControlName="tenantName"
+                  maxlength="60"
                   [ngClass]="{ 'is-invalid': isInvalid('tenantName') }"
                   placeholder="Company name"
                 />
                 <label for="company_name">Company name</label>
-                <div class="invalid-feedback">Company name is required.</div>
+                <div class="invalid-feedback">
+                  <span *ngIf="form.get('tenantName')?.errors?.['required']">Company name is required.</span>
+                  <span *ngIf="form.get('tenantName')?.errors?.['maxlength']">Company name cannot exceed 60 characters.</span>
+                  <span *ngIf="form.get('tenantName')?.errors?.['pattern']">Special characters are not allowed. Only letters, numbers, spaces, . - &amp; ' are permitted.</span>
+                </div>
               </div>
 
               <div class="form-floating form-floating-outline mb-3">
@@ -109,7 +114,10 @@
                   placeholder="Company code"
                 />
                 <label for="company_code">Company code</label>
-                <div class="invalid-feedback">Company code is required.</div>
+                <div class="invalid-feedback">
+                  <span *ngIf="form.get('tenantId')?.errors?.['required']">Company code is required.</span>
+                  <span *ngIf="form.get('tenantId')?.errors?.['pattern']">Only letters, numbers, - and _ are allowed. No spaces or special characters.</span>
+                </div>
               </div>
 
               <div class="form-floating form-floating-outline mb-3">
@@ -122,7 +130,10 @@
                   placeholder="Email"
                 />
                 <label for="email">Admin email</label>
-                <div class="invalid-feedback">Enter a valid email address.</div>
+                <div class="invalid-feedback">
+                  <span *ngIf="form.get('email')?.errors?.['required']">Email is required.</span>
+                  <span *ngIf="form.get('email')?.errors?.['email'] || form.get('email')?.errors?.['pattern']">Enter a valid email address. Special characters like spaces, #, $ are not allowed.</span>
+                </div>
               </div>
 
               <div class="form-floating form-floating-outline mb-3 position-relative">
@@ -143,7 +154,13 @@
                   tabindex="0"
                   aria-label="Toggle password visibility"
                 ></span>
-                <div class="invalid-feedback">Password is required.</div>
+                <div class="invalid-feedback">
+                  <span *ngIf="form.get('password')?.errors?.['required']">Password is required.</span>
+                  <span *ngIf="form.get('password')?.errors?.['minlength']">Password must be at least 8 characters.</span>
+                  <span *ngIf="form.get('password')?.errors?.['pattern'] && !form.get('password')?.errors?.['minlength']">
+                    Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character (&#64;$!%*?&amp;_-#).
+                  </span>
+                </div>
               </div>
 
               <div class="mb-4">

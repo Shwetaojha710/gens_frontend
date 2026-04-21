@@ -36,6 +36,20 @@ export const layoutRoutes: Routes = [
         loadComponent: () => import('../employee/list/list.component').then((m) => m.ListComponent),
       },
       {
+        path: 'employee/documents',
+        loadComponent: () =>
+          import('../employee/documents-overview/documents-overview.component').then(
+            (m) => m.DocumentsOverviewComponent,
+          ),
+      },
+      {
+        path: 'employee/all-letters',
+        loadComponent: () =>
+          import('../employee/all-letters/all-letters.component').then(
+            (m) => m.AllLettersComponent,
+          ),
+      },
+      {
         path: 'employee/joining',
         loadComponent: () => import('../employee/joining/joining.component').then((m) => m.JoiningComponent),
       },

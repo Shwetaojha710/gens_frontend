@@ -107,16 +107,39 @@ export class EmployeePortalService {
     );
   }
 
-  getAppliedLeaves(month: number, year: number): Observable<Record<string, unknown>> {
-    return this.http.post<Record<string, unknown>>(`${this.base}get-applied-leave-list`, {
-      month,
-      year,
-    });
+  getAppliedLeaves(month: number, year: number, branchId?: string): Observable<Record<string, unknown>> {
+    const body: Record<string, unknown> = { month, year };
+    if (branchId) body['branchId'] = branchId;
+    return this.http.post<Record<string, unknown>>(`${this.base}get-applied-leave-list`, body);
+  }
+
+  getBranches(): Observable<{ id: string; branchName: string }[]> {
+    return this.http
+      .post<{ status: unknown; data: { id: string; branchName: string }[] }>(`${this.base}app-branch-dd`, {})
+      .pipe(map((res) => (Array.isArray(res.data) ? res.data : [])));
   }
 
   selfDeclineLeave(id: string): Observable<unknown> {
     return this.unwrap(
       this.http.post<{ status: unknown; data: unknown }>(`${this.base}update-apply-leaves-status`, { id, status: 'self_declined' }),
+    );
+  }
+
+  recommendLeave(id: string): Observable<unknown> {
+    return this.unwrap(
+      this.http.post<{ status: unknown; data: unknown }>(`${this.base}update-apply-leaves-status`, { id, status: 'recommended' }),
+    );
+  }
+
+  approveLeave(id: string): Observable<unknown> {
+    return this.unwrap(
+      this.http.post<{ status: unknown; data: unknown }>(`${this.base}update-apply-leaves-status`, { id, status: 'approved' }),
+    );
+  }
+
+  declineLeave(id: string): Observable<unknown> {
+    return this.unwrap(
+      this.http.post<{ status: unknown; data: unknown }>(`${this.base}update-apply-leaves-status`, { id, status: 'rejected' }),
     );
   }
 
@@ -255,6 +278,19 @@ export class EmployeePortalService {
   getNotifications(): Observable<{ status: unknown; message?: string; data?: unknown }> {
     return this.http.get<{ status: unknown; message?: string; data?: unknown }>(
       `${this.base}notification`,
+    );
+  }
+
+  getEmpLetterDocs(): Observable<{ status: unknown; message?: string; data?: unknown }> {
+    return this.http.get<{ status: unknown; message?: string; data?: unknown }>(
+      `${this.base}get-emp-letter-docs`,
+    );
+  }
+
+  saveEmpLetterSignature(signature: string): Observable<{ status: unknown; message?: string }> {
+    return this.http.post<{ status: unknown; message?: string }>(
+      `${this.base}save-emp-letter-signature`,
+      { signature },
     );
   }
 }

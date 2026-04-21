@@ -185,6 +185,7 @@
                     <th>Name</th>
                     <th>Latitude</th>
                     <th>Longitude</th>
+                    <th>Description</th>
                     <th>Status</th>
                     <th>Created At</th>
                     <th>Actions</th>
@@ -205,6 +206,7 @@
                     <td>{{ item['name'] }}</td>
                     <td>{{ item['latitude'] || 0 }}</td>
                     <td>{{ item['longitude'] || 0 }}</td>
+                    <td>{{ item['description'] || 'Central administration and monitoring access.' }}</td>
                     <td>
                       <span class="badge overflow-hidden px-2" [ngClass]="getStatusClass(item['status'])">
                         {{ item['status'] }}

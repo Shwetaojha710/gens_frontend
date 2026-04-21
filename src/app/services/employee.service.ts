@@ -120,5 +120,16 @@ activeLocation(obj:any): Observable<any> {
   return this.http.post<any>(`${this.baseUrl}update-active-location`, obj);
 }
 
+saveLetterData(employeeId: string, type: 'nda' | 'appointment' | 'relieving' | 'offer', data: any): Observable<any> {
+  return this.http.post<any>(`${this.baseUrl}save-letter-data`, { employeeId, type, data });
+}
+
+getLetterData(employeeId: string, type: 'nda' | 'appointment' | 'relieving' | 'offer'): Observable<any> {
+  return this.http.post<any>(`${this.baseUrl}get-letter-data`, { employeeId, type });
+}
+
+getLetterStats(): Observable<any> {
+  return this.http.post<any>(`${this.baseUrl}get-letter-stats`, {});
+}
 
 }

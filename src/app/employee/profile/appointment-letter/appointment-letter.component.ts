@@ -3,6 +3,7 @@ import { Notyf } from 'notyf';
 import { DataService } from '../../../services/data.service';
 import { StatusService } from '../../../services/status.service';
 import { PayrollService } from '../../../services/payroll.service';
+import { EmployeeService } from '../../../services/employee.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
@@ -24,7 +25,7 @@ export class AppointmentLetterComponent {
      newObj:any
      obj:any={}
  constructor(
-public payrollService: PayrollService, private router: Router, public statusService: StatusService, public dataService: DataService
+public payrollService: PayrollService, private router: Router, public statusService: StatusService, public dataService: DataService, private employeeService: EmployeeService
   ) {
 
     this.tenant = JSON.parse(localStorage.getItem('tenant') || '{}');
@@ -34,14 +35,38 @@ public payrollService: PayrollService, private router: Router, public statusServ
     this.notyf = new Notyf();
     this.personalDetails = JSON.parse(localStorage.getItem('employeeId') || '{}');
     this.currency = JSON.parse(localStorage.getItem('currency') || '{}');
-       this.obj['status'] = 'active'
-    this.getSalarySetUpList()
-    this.ComponentDropdown()
+
+    this.obj['status'] = 'active';
+    this.getSalarySetUpList();
+    this.ComponentDropdown();
+    this.loadData();
+  }
+
+  loadData(): void {
+    this.employeeService.getLetterData(this.personalDetails.id, 'appointment').subscribe({
+      next: (res: any) => {
+        if (res.status && res.data) {
+          if (res.data.joiningDate) this.personalDetails.joiningDate = res.data.joiningDate;
+          if (res.data.ref_no) this.personalDetails.ref_no = res.data.ref_no;
+          if (res.data.designation) this.personalDetails.designation = res.data.designation;
+          if (res.data.salaryTable) this.salaryTable = res.data.salaryTable;
+          if (res.data.ctc != null) this.ctc = res.data.ctc;
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  saveData(): void {
+    this.employeeService.saveLetterData(this.personalDetails.id, 'appointment', {
+      joiningDate: this.personalDetails.joiningDate,
+      ref_no: this.personalDetails.ref_no,
+      designation: this.personalDetails.designation,
+      salaryTable: this.salaryTable,
+      ctc: this.ctc
+    }).subscribe({ error: () => {} });
   }
     async ngOnInit() {
-    this.obj['status'] = 'active'
-    this.getSalarySetUpList()
-    this.ComponentDropdown()
   }
   ComponentDD = []
     ComponentDropdown() {
@@ -324,8 +349,9 @@ printDoc() {
   });
 
   const content = `<!DOCTYPE html><html><head><title>Appointment Letter</title><style>
+    @page { margin: 0; }
     * { box-sizing: border-box; }
-    body { font-family: 'Times New Roman'; font-size: 14px; line-height: 1.6; padding: 40px; color: #000; background: #fff; }
+    body { font-family: 'Times New Roman'; font-size: 14px; line-height: 1.6; padding: 15mm 20mm; color: #000; background: #fff; }
     h3 { text-align: center; font-weight: bold; text-decoration: underline; margin-bottom: 30px; }
     h4 { text-align: center; }
     h4 + *, h4 + table { page-break-before: avoid; }
