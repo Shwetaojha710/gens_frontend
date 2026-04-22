@@ -57,6 +57,13 @@ export const employeePortalRoutes: Routes = [
             (m) => m.EmployeePortalReimbursementComponent,
           ),
       },
+      {
+        path: 'documents',
+        loadComponent: () =>
+          import('./documents/employee-portal-documents.component').then(
+            (m) => m.EmployeePortalDocumentsComponent,
+          ),
+      },
     ],
   },
 ];

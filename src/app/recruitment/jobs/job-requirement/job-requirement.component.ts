@@ -52,7 +52,7 @@ export class JobRequirementComponent {
 
     return '-';
   }
-  status: any = [{ value: 'open', label: 'Open' }, { value: 'draft', label: 'Draft' }, { value: 'closed', label: 'Closed' }]
+  status: any = [{ value: 'open', label: 'Open' }, { value: 'draft', label: 'Draft' }, { value: 'close', label: 'Closed' }]
   expireDays = [
     { value: 14, label: '14 days' },
     { value: 21, label: '21 days' },

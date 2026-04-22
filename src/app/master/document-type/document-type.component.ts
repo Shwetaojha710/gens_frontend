@@ -142,7 +142,7 @@ originalList:any = []
         console.log("response", response);
 
         if (status === true) {
-this.obj={}
+          this.obj={}
           this.notyf.success(message)
           this.fetchDocument();
           this.resetForm();

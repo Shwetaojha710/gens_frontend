@@ -1,10 +1,10 @@
  <!-- Action Buttons -->
 <div class="row mb-3 no-print">
   <div class="col-12 d-flex gap-2 justify-content-end">
-    <button type="button" class="btn btn-outline-secondary" (click)="printDoc()">
+    <button type="button" class="btn btn-outline-secondary" (click)="saveData(); printDoc()">
       <i class="ri ri-printer-line me-1"></i> Print / Save PDF
     </button>
-    <button type="button" class="btn btn-primary" (click)="downloadDoc()">
+    <button type="button" class="btn btn-primary" (click)="saveData(); downloadDoc()">
       <i class="ri ri-download-line me-1"></i> Download DOC
     </button>
   </div>
@@ -17,10 +17,10 @@
     <!-- Ref + Dated row -->
     <div class="ref-date-row">
       <div class="ref-left">
-        <b>Ref: Quaere/Emp/Relieving/<span *ngIf="!isDownload"><input type="text" [(ngModel)]="refNo" class="form-control d-inline-block" style="width:80px; height:24px; font-size:12px; padding:1px 4px; vertical-align:middle; font-weight:normal;" /></span><span *ngIf="isDownload">{{ refNo }}</span></b>
+        <b>Ref: Quaere/Emp/Relieving/<span *ngIf="!isDownload"><input type="text" [(ngModel)]="refNo" (ngModelChange)="saveData()" class="form-control d-inline-block" style="width:80px; height:24px; font-size:12px; padding:1px 4px; vertical-align:middle; font-weight:normal;" /></span><span *ngIf="isDownload">{{ refNo }}</span></b>
       </div>
       <div class="dated-right">
-        <b>Dated:&nbsp;<span *ngIf="!isDownload"><input type="date" [(ngModel)]="relievingDate" class="form-control d-inline-block" style="width:140px; height:24px; font-size:12px; padding:1px 4px; vertical-align:middle; font-weight:normal;" /></span><span *ngIf="isDownload">{{ relievingDate | date:'dd MMMM, yyyy' }}</span></b>
+        <b>Dated:&nbsp;<span *ngIf="!isDownload"><input type="date" [(ngModel)]="relievingDate" (ngModelChange)="saveData()" class="form-control d-inline-block" style="width:140px; height:24px; font-size:12px; padding:1px 4px; vertical-align:middle; font-weight:normal;" /></span><span *ngIf="isDownload">{{ relievingDate | date:'dd MMMM, yyyy' }}</span></b>
       </div>
     </div>
     <!-- EMPLOYEE ADDRESS -->
@@ -52,7 +52,7 @@
       <b>
         @if (!isDownload) {
           <span>
-            <input type="date" [(ngModel)]="relievingDate" class="form-control d-inline-block" style="width:150px; height:26px; font-size:13px; padding:1px 5px;" />
+            <input type="date" [(ngModel)]="relievingDate" (ngModelChange)="saveData()" class="form-control d-inline-block" style="width:150px; height:26px; font-size:13px; padding:1px 5px;" />
           </span>
         }
         @if (isDownload) {
@@ -66,7 +66,7 @@
       <b>
         @if (!isDownload) {
           <span>
-            <input type="date" [(ngModel)]="joiningDate" class="form-control d-inline-block" style="width:150px; height:26px; font-size:13px; padding:1px 5px;" />
+            <input type="date" [(ngModel)]="joiningDate" (ngModelChange)="saveData()" class="form-control d-inline-block" style="width:150px; height:26px; font-size:13px; padding:1px 5px;" />
           </span>
         }
         @if (isDownload) {

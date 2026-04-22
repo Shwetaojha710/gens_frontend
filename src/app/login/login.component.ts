@@ -82,7 +82,9 @@ export class LoginComponent {
           localStorage.setItem('branch', JSON.stringify(data.data.branch));
           localStorage.setItem('currency', JSON.stringify(data.data.currencyList));
           this.notyf.success(data.message);
-          this.router.navigate(['branchwise']);
+          const returnUrl = sessionStorage.getItem('returnUrl');
+          sessionStorage.removeItem('returnUrl');
+          this.router.navigateByUrl(returnUrl || '/branchwise', { replaceUrl: true });
         } else {
           this.notyf.error(data.message);
         }
@@ -182,6 +184,13 @@ export class LoginComponent {
 
   gotoRegister() {
     this.router.navigate(['company-reg']);
+  }
+
+  onInterviewerPhoneInput(event: Event) {
+    const value = (event.target as HTMLInputElement).value.replace(/\D/g, '');
+    if (value.length === 10 && /^[6-9]\d{9}$/.test(value)) {
+      this.sendInterviewerOtp();
+    }
   }
 
   onOtpInput(event: Event, next: HTMLInputElement | null) {

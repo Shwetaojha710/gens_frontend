@@ -1,12 +1,12 @@
 <div class="row mb-2">
   <div class="col-12 d-flex gap-2 justify-content-end">
-    <button type="button" class="btn btn-secondary" (click)="printDoc()">
+    <button type="button" class="btn btn-secondary" (click)="saveData(); printDoc()">
       <i class="fa fa-print mx-2"></i> Print
     </button>
     <!-- <button type="button" class="btn btn-danger" (click)="downloadPDF()">
       <i class="fa fa-file-pdf-o mx-2"></i> Download PDF
     </button> -->
-    <button type="button" class="btn btn-primary" (click)="downloadDoc()">
+    <button type="button" class="btn btn-primary" (click)="saveData(); downloadDoc()">
       <i class="fa fa-download mx-2"></i> Download Word
     </button>
   </div>
@@ -179,7 +179,7 @@ In recognition of these benefits, I agree to the following:
     <div class="col-4">
       <div class="d-flex gap-2 align-items-center">
         <span class="w-20"> Date : </span> <input type="date" [(ngModel)]="personalDetails.date"
-          class="form-control w-80" />
+          (ngModelChange)="saveData()" class="form-control w-80" />
       </div>
     </div>
 
@@ -190,7 +190,7 @@ In recognition of these benefits, I agree to the following:
     <div class="col-4">
       <div class="d-flex gap-2 align-items-center">
         <span class="w-20"> Place :</span> <input type="text" [(ngModel)]="personalDetails.place"
-          class="form-control" />
+          (ngModelChange)="saveData()" class="form-control" />
       </div>
     </div>
 

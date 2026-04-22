@@ -3,6 +3,7 @@ import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Notyf } from 'notyf';
+import { EmployeeService } from '../../../services/employee.service';
 @Component({
   selector: 'app-releving-letter',
   imports: [CommonModule, FormsModule, DatePipe],
@@ -20,7 +21,7 @@ export class RelevingLetterComponent {
   refNo: string = '';
   todayDate: string = '';
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private employeeService: EmployeeService) {
     this.notyf = new Notyf();
     this.personalDetails = JSON.parse(localStorage.getItem('employeeId') || '{}');
     this.tenant = JSON.parse(localStorage.getItem('tenant') || '{}');
@@ -33,6 +34,29 @@ export class RelevingLetterComponent {
     const year = today.getFullYear();
     const seq = String(Math.floor(Math.random() * 900) + 100).padStart(3, '0');
     this.refNo = this.personalDetails.relRefNo || `${year}/${seq}`;
+
+    this.loadData();
+  }
+
+  loadData(): void {
+    this.employeeService.getLetterData(this.personalDetails.id, 'relieving').subscribe({
+      next: (res: any) => {
+        if (res.status && res.data) {
+          if (res.data.relievingDate) this.relievingDate = res.data.relievingDate;
+          if (res.data.joiningDate) this.joiningDate = res.data.joiningDate;
+          if (res.data.refNo) this.refNo = res.data.refNo;
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  saveData(): void {
+    this.employeeService.saveLetterData(this.personalDetails.id, 'relieving', {
+      relievingDate: this.relievingDate,
+      joiningDate: this.joiningDate,
+      refNo: this.refNo
+    }).subscribe({ error: () => {} });
   }
 
   get salutation(): string {

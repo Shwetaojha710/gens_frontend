@@ -66,8 +66,9 @@ export class NavbarComponent {
       icon: 'ri-layout-2-line',
       children: [
         // { title: 'Employee List', icon: 'ri-file-list-2-line', link: '/layout/employee/list' },
-        { title: 'Add Employee', icon: 'ri-user-add-line', link: '/layout/employee/joining' },
-        { title: 'Apply Leave', icon: 'ri-file-list-2-line', link: '/layout/employee/apply-leave' },
+        { title: 'Add Employee',  icon: 'ri-user-add-line',         link: '/layout/employee/joining' },
+        { title: 'Apply Leave',   icon: 'ri-file-list-2-line',      link: '/layout/employee/apply-leave' },
+        { title: 'All Letters',   icon: 'ri-file-paper-2-line',     link: '/layout/employee/all-letters' },
       ]
     },
 

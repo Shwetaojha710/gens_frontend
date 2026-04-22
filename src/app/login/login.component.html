@@ -102,7 +102,7 @@
                 <div class="form-floating form-floating-outline mb-4">
                   <input type="tel" class="form-control" id="iv_phone" [formControl]="phoneControl"
                     [ngClass]="{ 'is-invalid': isInvalid(phoneForm, 'phone') }"
-                    placeholder="Mobile Number" />
+                    placeholder="Mobile Number" (input)="onInterviewerPhoneInput($event)" />
                   <label for="iv_phone">Mobile Number</label>
                   <div class="invalid-feedback" *ngIf="phoneControl.touched && phoneControl.hasError('required')">
                     Mobile number is required.

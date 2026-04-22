@@ -7,6 +7,7 @@ import { StatusService } from '../../../services/status.service';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { PageBreak } from 'docx';
+import { EmployeeService } from '../../../services/employee.service';
 
 
 @Component({
@@ -29,7 +30,8 @@ export class OfferLetterComponent implements OnInit {
     public payrollService: PayrollService,
     private router: Router,
     public statusService: StatusService,
-    public dataService: DataService
+    public dataService: DataService,
+    private employeeService: EmployeeService
   ) {
     this.tenant = JSON.parse(localStorage.getItem('tenant') || '{}');
     this.notyf = new Notyf();
@@ -40,10 +42,29 @@ export class OfferLetterComponent implements OnInit {
   }
 
   ngOnInit() {
-    // Load default letterhead as base64 so it renders correctly in PDF & print
     this.getBase64ImageFromUrl('/assets/img/Letterhead-2.png')
       .then(base64 => { this.letterheadImage = base64; })
-      .catch(() => { /* fallback to path */ });
+      .catch(() => {});
+    this.loadData();
+  }
+
+  loadData(): void {
+    this.employeeService.getLetterData(this.personalDetails.id, 'offer').subscribe({
+      next: (res: any) => {
+        if (res.status && res.data) {
+          if (res.data.refNo) this.personalDetails.refNo = res.data.refNo;
+          if (res.data.offerDate) this.personalDetails.offerDate = res.data.offerDate;
+        }
+      },
+      error: () => {}
+    });
+  }
+
+  saveData(): void {
+    this.employeeService.saveLetterData(this.personalDetails.id, 'offer', {
+      refNo: this.personalDetails.refNo,
+      offerDate: this.personalDetails.offerDate
+    }).subscribe({ error: () => {} });
   }
 
   onLetterheadUpload(event: Event) {

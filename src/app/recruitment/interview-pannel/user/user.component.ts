@@ -46,6 +46,45 @@ export class UserComponent implements OnInit {
   searchTerm = '';
   currentPage = 1;
   pageSize = 10;
+  fieldErrors: Record<string, string> = {};
+
+  private readonly NAME_SPECIAL_CHARS = /[+\-#$@!%^&*()=[\]{};:'"`,<>?/\\|~]/;
+  private readonly NAME_VALID = /^[a-zA-Z\s.]+$/;
+  private readonly EMAIL_BLOCKED = /[+\-#$]/;
+  private readonly EMAIL_VALID = /^[a-zA-Z0-9._%]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  blockNameSpecialChars(event: KeyboardEvent): void {
+    if (event.key.length === 1 && this.NAME_SPECIAL_CHARS.test(event.key)) {
+      event.preventDefault();
+    }
+  }
+
+  validateName(field: 'first_name' | 'last_name', value: string | undefined): void {
+    const label = field === 'first_name' ? 'First name' : 'Last name';
+    const val = value?.trim() || '';
+    if (!val) {
+      this.fieldErrors[field] = `${label} is required`;
+    } else if (this.NAME_SPECIAL_CHARS.test(val)) {
+      this.fieldErrors[field] = `${label} cannot contain special characters (+, -, #, $, etc.)`;
+    } else if (!this.NAME_VALID.test(val)) {
+      this.fieldErrors[field] = `${label} can only contain letters and spaces`;
+    } else {
+      delete this.fieldErrors[field];
+    }
+  }
+
+  validateEmail(value: string | undefined): void {
+    const val = value?.trim() || '';
+    if (!val) {
+      this.fieldErrors['email'] = 'Email is required';
+    } else if (this.EMAIL_BLOCKED.test(val)) {
+      this.fieldErrors['email'] = 'Email cannot contain +, -, # or $ characters';
+    } else if (!this.EMAIL_VALID.test(val)) {
+      this.fieldErrors['email'] = 'Please enter a valid email address';
+    } else {
+      delete this.fieldErrors['email'];
+    }
+  }
 
   constructor(
     private interviewService: InterviewService,
@@ -132,6 +171,7 @@ export class UserComponent implements OnInit {
 
   back(): void {
     this.obj = {};
+    this.fieldErrors = {};
     this.createFlag = false;
     this.updateFlag = false;
   }
@@ -240,38 +280,42 @@ export class UserComponent implements OnInit {
   }
 
   private isFormValid(): boolean {
-    if (!this.obj.first_name?.trim()) {
-      this.notyf.error('First name is required');
-      return false;
+    this.fieldErrors = {};
+
+    const firstName = this.obj.first_name?.trim() || '';
+    if (!firstName) {
+      this.fieldErrors['first_name'] = 'First name is required';
+    } else if (this.NAME_SPECIAL_CHARS.test(firstName) || !this.NAME_VALID.test(firstName)) {
+      this.fieldErrors['first_name'] = 'First name cannot contain special characters';
     }
-    if (!this.obj.last_name?.trim()) {
-      this.notyf.error('Last name is required');
-      return false;
+
+    const lastName = this.obj.last_name?.trim() || '';
+    if (!lastName) {
+      this.fieldErrors['last_name'] = 'Last name is required';
+    } else if (this.NAME_SPECIAL_CHARS.test(lastName) || !this.NAME_VALID.test(lastName)) {
+      this.fieldErrors['last_name'] = 'Last name cannot contain special characters';
     }
-    if (!this.obj.email?.trim()) {
-      this.notyf.error('Email is required');
-      return false;
+
+    const email = this.obj.email?.trim() || '';
+    if (!email) {
+      this.fieldErrors['email'] = 'Email is required';
+    } else if (this.EMAIL_BLOCKED.test(email)) {
+      this.fieldErrors['email'] = 'Email cannot contain +, -, # or $ characters';
+    } else if (!this.EMAIL_VALID.test(email)) {
+      this.fieldErrors['email'] = 'Please enter a valid email address';
     }
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(this.obj.email.trim())) {
-      this.notyf.error('Please enter a valid email address');
-      return false;
-    }
+
     if (!this.obj.mobile_no?.trim()) {
-      this.notyf.error('Mobile number is required');
-      return false;
+      this.fieldErrors['mobile_no'] = 'Mobile number is required';
+    } else if (!/^[6-9][0-9]{9}$/.test(this.obj.mobile_no.trim())) {
+      this.fieldErrors['mobile_no'] = 'Must be 10 digits starting with 6, 7, 8, or 9';
     }
-    const mobileRegex = /^[6-9][0-9]{9}$/;
-    if (!mobileRegex.test(this.obj.mobile_no.trim())) {
-      this.notyf.error('Mobile number must be 10 digits and start with 6, 7, 8, or 9');
-      return false;
-    }
-    if (!this.obj.department) {
-      this.notyf.error('Department is required');
-      return false;
-    }
-    if (!this.obj.designation) {
-      this.notyf.error('Designation is required');
+
+    if (!this.obj.department) this.fieldErrors['department'] = 'Department is required';
+    if (!this.obj.designation) this.fieldErrors['designation'] = 'Designation is required';
+
+    if (Object.keys(this.fieldErrors).length > 0) {
+      this.notyf.error(Object.values(this.fieldErrors)[0]);
       return false;
     }
     return true;

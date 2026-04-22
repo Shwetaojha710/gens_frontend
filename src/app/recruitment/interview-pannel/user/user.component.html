@@ -16,20 +16,56 @@
 
             <div class="col-12 col-md-6 col-lg-4">
               <label class="form-label fw-semibold">First Name <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" placeholder="Enter first name"
-                [(ngModel)]="obj['first_name']" name="first_name" />
+              <input
+                type="text"
+                class="form-control"
+                [class.is-invalid]="fieldErrors['first_name']"
+                placeholder="Enter first name"
+                [(ngModel)]="obj['first_name']"
+                name="first_name"
+                (keydown)="blockNameSpecialChars($event)"
+                (blur)="validateName('first_name', obj['first_name'])"
+                (input)="validateName('first_name', obj['first_name'])"
+              />
+              <div class="invalid-feedback" *ngIf="fieldErrors['first_name']">
+                {{ fieldErrors['first_name'] }}
+              </div>
             </div>
 
             <div class="col-12 col-md-6 col-lg-4">
               <label class="form-label fw-semibold">Last Name <span class="text-danger">*</span></label>
-              <input type="text" class="form-control" placeholder="Enter last name"
-                [(ngModel)]="obj['last_name']" name="last_name" />
+              <input
+                type="text"
+                class="form-control"
+                [class.is-invalid]="fieldErrors['last_name']"
+                placeholder="Enter last name"
+                [(ngModel)]="obj['last_name']"
+                name="last_name"
+                (keydown)="blockNameSpecialChars($event)"
+                (blur)="validateName('last_name', obj['last_name'])"
+                (input)="validateName('last_name', obj['last_name'])"
+              />
+              <div class="invalid-feedback" *ngIf="fieldErrors['last_name']">
+                {{ fieldErrors['last_name'] }}
+              </div>
             </div>
 
             <div class="col-12 col-md-6 col-lg-4">
               <label class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
-              <input type="email" class="form-control" placeholder="Enter email"
-                [(ngModel)]="obj['email']" name="email" />
+              <input
+                type="email"
+                class="form-control"
+                [class.is-invalid]="fieldErrors['email']"
+                placeholder="Enter email"
+                [(ngModel)]="obj['email']"
+                name="email"
+                (blur)="validateEmail(obj['email'])"
+                (input)="validateEmail(obj['email'])"
+              />
+              <div class="invalid-feedback" *ngIf="fieldErrors['email']">
+                {{ fieldErrors['email'] }}
+              </div>
+              <small class="text-muted" *ngIf="!fieldErrors['email']">No +, -, #, $ allowed</small>
             </div>
 
             <div class="col-12 col-md-6 col-lg-4">

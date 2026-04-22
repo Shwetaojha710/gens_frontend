@@ -9,7 +9,7 @@
   </p>
 
   <div class="row g-4 ep-leave-row">
-    <div class="col-lg-5">
+    <div class="col-lg-4">
       <div class="card ep-glass-card border-0 h-100 ep-leave-form-card">
         <div class="card-body">
           <div class="ep-leave-form-head">
@@ -135,7 +135,7 @@
       </div>
     </div>
 
-    <div class="col-lg-7">
+    <div class="col-lg-8">
       <div class="card ep-glass-card border-0 h-100 ep-leave-apps">
         <div class="card-header border-0 ep-leave-apps__header">
           <div class="ep-leave-apps__top">
@@ -181,6 +181,21 @@
             </div>
           </div>
 
+          <div *ngIf="isDirectorOrManager && branches.length > 0" class="ep-leave-branch-bar">
+            <i class="fas fa-code-branch ep-leave-branch-bar__icon"></i>
+            <label class="ep-leave-branch-bar__label">Branch</label>
+            <select
+              class="form-select form-select-sm ep-leave-branch-bar__select"
+              [(ngModel)]="selectedBranchId"
+              [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="onBranchChange()"
+              aria-label="Filter by branch"
+            >
+              <option value="All">All branches</option>
+              <option *ngFor="let b of branches" [value]="b.id">{{ b.name }}</option>
+            </select>
+          </div>
+
           <div class="ep-leave-segment" role="tablist">
             <button
               type="button"
@@ -208,6 +223,34 @@
           </div>
         </div>
 
+        <div class="ep-leave-controls">
+          <div class="ep-leave-search">
+            <i class="fas fa-search ep-leave-search__icon"></i>
+            <input
+              type="text"
+              class="ep-leave-search__input"
+              placeholder="Search by name…"
+              [(ngModel)]="searchQuery"
+              [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="onSearchChange()"
+              aria-label="Search applicant name"
+            />
+          </div>
+          <div class="ep-leave-pagesize">
+            <label class="ep-leave-pagesize__label">Show</label>
+            <select
+              class="form-select form-select-sm ep-leave-pagesize__select"
+              [(ngModel)]="pageSize"
+              [ngModelOptions]="{ standalone: true }"
+              (ngModelChange)="onPageSizeChange()"
+              aria-label="Rows per page"
+            >
+              <option *ngFor="let n of pageSizeOptions" [ngValue]="n">{{ n }}</option>
+            </select>
+            <span class="ep-leave-pagesize__label">rows</span>
+          </div>
+        </div>
+
         <div class="ep-leave-table-shell">
           <div *ngIf="loading" class="ep-leave-table-shell__loading">
             <div class="spinner-border text-primary ep-leave-spinner" role="status">
@@ -215,58 +258,145 @@
             </div>
           </div>
           <ng-container *ngIf="!loading && displayLeaves.length > 0">
-            <div class="table-responsive ep-leave-table-wrap">
+            <div class="ep-leave-table-wrap">
               <table class="table table-sm table-hover align-middle mb-0 ep-leave-table">
+                <colgroup>
+                  <col class="ep-col-applicant" />
+                  <col *ngIf="isDirectorOrManager" class="ep-col-branch" />
+                  <col class="ep-col-date" />
+                  <col class="ep-col-days" />
+                  <col class="ep-col-reason" />
+                  <col class="ep-col-status" />
+                  <col class="ep-col-action" />
+                </colgroup>
                 <thead>
                   <tr>
-                    <th scope="col">Applicant</th>
-                    <th scope="col">Type</th>
-                    <th scope="col">From</th>
-                    <th scope="col">To</th>
+                    <th scope="col">Applicant / Type</th>
+                    <th *ngIf="isDirectorOrManager" scope="col">Branch</th>
+                    <th scope="col">From - To</th>
                     <th scope="col" class="text-end">Days</th>
-                    <th scope="col" >Reason</th>
+                    <th scope="col">Reason</th>
                     <th scope="col">Status</th>
+                    <th scope="col">Action</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr *ngFor="let row of displayLeaves; trackBy: trackLeaveRow" class="ep-leave-table__row">
+                  <tr *ngFor="let row of pagedLeaves; trackBy: trackLeaveRow" class="ep-leave-table__row">
                     <td>
                       <div class="ep-leave-applicant">
                         <span class="ep-leave-avatar" [attr.aria-hidden]="true">{{ applicantInitials(row) }}</span>
-                        <span class="ep-leave-applicant__name">{{ applicantName(row) }}</span>
+                        <div class="ep-leave-applicant__info">
+                          <span class="ep-leave-applicant__name">{{ applicantName(row) }}</span>
+                          <span class="ep-leave-type">{{ $any(row).leaveName || '—' }}</span>
+                        </div>
                       </div>
                     </td>
-                    <td>
-                      <span class="ep-leave-type">{{ $any(row).leaveName || '—' }}</span>
+                    <td *ngIf="isDirectorOrManager" class="ep-leave-branch-cell">
+                      {{ $any(row).branchName || '—' }}
                     </td>
-                    <td class="text-nowrap ep-leave-date">{{ $any(row).fromDate | date : 'mediumDate' }}</td>
-                    <td class="text-nowrap ep-leave-date">{{ $any(row).toDate | date : 'mediumDate' }}</td>
-
+                    <td class="ep-leave-date">{{ $any(row).fromDate | date : 'MMM d' }} - {{ $any(row).toDate | date : 'MMM d' }}</td>
+                    <!-- <td class="ep-leave-date">{{ $any(row).toDate | date : 'MMM d' }}</td> -->
                     <td class="text-end fw-semibold ep-leave-days">{{ $any(row).days }}</td>
                     <td class="ep-leave-reason-cell">
-                      <span
-                        class="ep-leave-reason-text"
-                        [title]="$any(row).reason || ''"
-                      >
-                        {{ ($any(row).reason?.length > 60) ? ($any(row).reason | slice:0:60) + '…' : ($any(row).reason || '—') }}
+                      <span class="ep-leave-reason-text" [title]="$any(row).reason || ''">
+                        {{ $any(row).reason || '—' }}
                       </span>
                     </td>
                     <td>
                       <span [class]="leaveStatusClass($any(row).status)">{{ $any(row).status }}</span>
+                    </td>
+                    <td class="ep-leave-action-cell">
+                      <button
+                        *ngIf="listTab == 'my' && $any(row).status?.toLowerCase() == 'pending'"
+                        type="button"
+                        class="btn btn-sm btn-outline-danger ep-leave-self-decline"
+                        (click)="selfDecline(row)"
+                        [disabled]="decliningId === $any(row).id"
+                        title="Self decline"
+                      >
+                        <i class="fas fa-times" *ngIf="decliningId != $any(row).id"></i>
+                        <i class="fas fa-circle-notch fa-spin" *ngIf="decliningId == $any(row).id"></i>
+                      </button>
+                      <div *ngIf="listTab == 'team'" class="d-flex gap-1">
+                        <button
+                          *ngIf="isTeamLead && $any(row).status?.toLowerCase() == 'pending'"
+                          type="button"
+                          class="btn btn-sm btn-outline-warning"
+                          (click)="recommendLeave(row)"
+                          [disabled]="recommendingId == $any(row).id || approvingId == $any(row).id"
+                          title="Recommend"
+                        >
+                          <i class="fas fa-thumbs-up" *ngIf="recommendingId != $any(row).id"></i>
+                          <i class="fas fa-circle-notch fa-spin" *ngIf="recommendingId == $any(row).id"></i>
+                        </button>
+                        <button
+                          *ngIf="isApprover && ($any(row).status?.toLowerCase() == 'pending' || $any(row).status?.toLowerCase() == 'recommended')"
+                          type="button"
+                          class="btn btn-sm btn-outline-success"
+                          (click)="approveLeave(row)"
+                          [disabled]="approvingId == $any(row).id || recommendingId == $any(row).id || decliningTeamId == $any(row).id"
+                          title="Approve"
+                        >
+                          <i class="fas fa-check" *ngIf="approvingId != $any(row).id"></i>
+                          <i class="fas fa-circle-notch fa-spin" *ngIf="approvingId == $any(row).id"></i>
+                        </button>
+                        <button
+                          *ngIf="(isApprover || isTeamLead) && ($any(row).status?.toLowerCase() == 'pending' || $any(row).status?.toLowerCase() == 'recommended')"
+                          type="button"
+                          class="btn btn-sm btn-outline-danger"
+                          (click)="declineLeave(row)"
+                          [disabled]="decliningTeamId == $any(row).id || approvingId == $any(row).id || recommendingId == $any(row).id"
+                          title="Decline"
+                        >
+                          <i class="fas fa-times" *ngIf="decliningTeamId != $any(row).id"></i>
+                          <i class="fas fa-circle-notch fa-spin" *ngIf="decliningTeamId == $any(row).id"></i>
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </ng-container>
+
+          <nav *ngIf="!loading && displayLeaves.length > pageSize" class="ep-leave-pagination" aria-label="Leave table pagination">
+            <button
+              class="ep-leave-pagination__btn"
+              [disabled]="currentPage === 1"
+              (click)="goToPage(currentPage - 1)"
+              aria-label="Previous page"
+            >
+              <i class="fas fa-chevron-left"></i>
+            </button>
+            <button
+              *ngFor="let p of pageNumbers"
+              class="ep-leave-pagination__btn"
+              [class.ep-leave-pagination__btn--active]="p === currentPage"
+              (click)="goToPage(p)"
+              [attr.aria-current]="p === currentPage ? 'page' : null"
+            >{{ p }}</button>
+            <button
+              class="ep-leave-pagination__btn"
+              [disabled]="currentPage === totalPages"
+              (click)="goToPage(currentPage + 1)"
+              aria-label="Next page"
+            >
+              <i class="fas fa-chevron-right"></i>
+            </button>
+            <span class="ep-leave-pagination__info">
+              {{ (currentPage - 1) * pageSize + 1 }}–{{ pageEnd }} of {{ displayLeaves.length }}
+            </span>
+          </nav>
+
           <div *ngIf="!loading && displayLeaves.length === 0" class="ep-leave-empty">
             <div class="ep-leave-empty__icon">
               <i class="fas fa-inbox"></i>
             </div>
             <p class="ep-leave-empty__title mb-1">No applications</p>
             <p class="ep-leave-empty__hint mb-0 small text-muted">
-              <ng-container *ngIf="listTab === 'my'">No leave requests for this period.</ng-container>
-              <ng-container *ngIf="listTab === 'team'">No team requests for this period, or you have no reportees.</ng-container>
+              <ng-container *ngIf="searchQuery">No results for "{{ searchQuery }}".</ng-container>
+              <ng-container *ngIf="!searchQuery && listTab === 'my'">No leave requests for this period.</ng-container>
+              <ng-container *ngIf="!searchQuery && listTab === 'team'">No team requests for this period, or you have no reportees.</ng-container>
             </p>
           </div>
         </div>

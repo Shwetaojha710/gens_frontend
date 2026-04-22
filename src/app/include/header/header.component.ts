@@ -108,4 +108,9 @@ export class HeaderComponent {
     // this.router.navigate(['login']);
 
   }
+
+  get showLocationButton(): boolean {
+    const currentUrl = this.router.url;
+    return !currentUrl.startsWith('/recruitment') && !currentUrl.startsWith('/layout/employee');
+  }
 }

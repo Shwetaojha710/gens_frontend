@@ -1,9 +1,9 @@
 <div class="row mb-2">
   <div class="col-12 d-flex gap-2 justify-content-end">
-    <button type="button" class="btn btn-secondary" (click)="printDoc()">
+    <button type="button" class="btn btn-secondary" (click)="saveData(); printDoc()">
       <i class="fa fa-print mx-2"></i> Print
     </button>
-    <button type="button" class="btn btn-primary" (click)="downloadDoc()">
+    <button type="button" class="btn btn-primary" (click)="saveData(); downloadDoc()">
       <i class="fa fa-download mx-2"></i> Download Word
     </button>
   </div>
@@ -39,7 +39,7 @@
             style="text-align: right;margin: 0px !important;padding-bottom: 0px; font-weight: bold;display: flex; justify-content: end;">
             Date:
             <span style="text-align: right; font-weight: bold; margin-bottom: 5px;" *ngIf="isDownload==false">
-              <input type="date" [(ngModel)]="personalDetails.joiningDate" class="form-control w-80 h-30" />
+              <input type="date" [(ngModel)]="personalDetails.joiningDate" (ngModelChange)="saveData()" class="form-control w-80 h-30" />
             </span>
             <span style="text-align: right; font-weight: bold;" *ngIf="isDownload">{{personalDetails.joiningDate | date:'dd MMM, yyyy' | uppercase}}</span>
           </p>
@@ -47,7 +47,7 @@
           <p
             style="text-align: right;margin: 0px !important;padding-bottom: 0px; font-weight: bold;display: flex; justify-content: end;">
             Ref No: <span style="text-align: right; font-weight: bold;" *ngIf="isDownload==false">
-              <input type="text" [(ngModel)]="personalDetails.ref_no" class="form-control w-80 h-30" />
+              <input type="text" [(ngModel)]="personalDetails.ref_no" (ngModelChange)="saveData()" class="form-control w-80 h-30" />
             </span>
             <span style="text-align: right; font-weight: bold;" *ngIf="isDownload">{{personalDetails.ref_no}}</span>
           </p>
@@ -68,7 +68,7 @@
     <p style="font-size:12px;">
       The management takes great pride in informing you that you have been appointed as
        <span style="text-align: right; font-weight: bold; margin-bottom: 5px;" *ngIf="isDownload==false">
-              <input type="text" [(ngModel)]="personalDetails.designation" class=" w-10 h-30" />
+              <input type="text" [(ngModel)]="personalDetails.designation" (ngModelChange)="saveData()" class=" w-10 h-30" />
             </span>
             <span style="text-align: right; font-weight: bold;" *ngIf="isDownload">{{personalDetails.designation }}</span>
       <!-- <span >{{personalDetails.designation}}</span> -->
@@ -118,7 +118,7 @@
 
         <br clear="all" style="page-break-before: always;">
 
-      <li style="font-size:14px;">
+      <li style="font-size:14px; margin-top: 5px;">
         That the bifurcation of your salary into various heads is at the sole discretion of the Management. The
         Management
         is further empowered to re-structure your salary at any time in future at its sole discretion.

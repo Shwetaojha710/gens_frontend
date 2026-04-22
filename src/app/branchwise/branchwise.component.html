@@ -200,67 +200,78 @@
 
 
 
-            <div class="row g-3 mb-8 justify-content-center">
+            <!-- Grid layout: 4 or fewer branches -->
+            <div class="row g-3 mb-8 justify-content-center" *ngIf="allBranchList.length <= 4">
               <div class="col-md-12">
                 <div class="row justify-content-center g-3">
-
                   <div class="col-xl-3 col-lg-3 col-md-6 col-sm-6 col-xs-12 text-center"
-                    *ngFor="let branch of branchList">
-                    <!-- <div class="card card-100 text-center" style="padding: 40px 20px;">
-                      <div class="card-body">
-                        <div class="mb-4">
-                          <img src="/assets/img/logo/icomoon-free_office.svg" width="60">
-                        </div>
-
-                        <h5 class="card-title">{{ branch.name }}</h5>
-
-                        <p class="card-text">
-                          {{ branch.description || 'Central administration and monitoring access.' }}
-                        </p>
-
-                        <button class="btn btn-primary waves-effect waves-light" (click)="goToDashboard(branch)">
-                          Go to Dashboard
-                        </button>
-                      </div>
-                    </div> -->
+                    *ngFor="let branch of allBranchList">
                     <div class="card-wrapper" style="position:relative;">
-                      <!-- Edit button -->
-                      <!-- <button class="btn btn-sm btn-white"
-                        style="position: absolute;top: 54px;right: 42px;z-index: 10;border-radius: 27%;width: 32px;height: 32px;padding: 0;line-height: 1;"
-                        data-bs-toggle="modal" data-bs-target="#editBranchModal"
-                        (click)="openEditBranchModal(branch)"
-                        title="Edit Branch">
-                        <i class="icon-base ri ri-pencil-line icon-18px" style="font-size:15px;color:#005495;"></i>
-                      </button> -->
-
                       <div class="city-card"
                         [ngStyle]="{'background-image': 'url(' + getCardImageUrl(branch) + ')', 'background-size': 'cover', 'background-position': 'center'}">
-
                         <div class="overlay">
                           <h2 class="text-white text-uppercase city">{{ branch.name }}</h2>
                           <h4 class="text-white office">OFFICE</h4>
-
-                          <p class="text-uppercase sub-line">
-                            {{ branch.description || 'Central administration and monitoring access.' }}
-                          </p>
-
+                          <p class="text-uppercase sub-line">{{ branch.description || 'Central administration and monitoring access.' }}</p>
                           <button class="btn-dashboard" (click)="goToDashboard(branch)">Go To Dashboard</button>
                         </div>
-
                       </div>
                     </div>
-
                   </div>
-
                 </div>
               </div>
             </div>
 
-            <div class="buy-now" *ngIf="allBranchList.length > 4">
-              <button type="button" class="btn btn-outline-primary bg-white btn-buy-now waves-effect waves-light"
-                data-bs-toggle="modal" data-bs-target="#exampleModal">
-                View More ({{ allBranchList.length - 4 }})
-              </button>
+            <!-- Slider layout: more than 4 branches -->
+            <div class="bw-slider-section mb-8" *ngIf="allBranchList.length > 4">
+              <div class="bw-slider-wrapper">
+
+                <!-- Prev button -->
+                <button class="bw-slider-btn bw-slider-btn--prev"
+                  (click)="prevSlide()"
+                  [disabled]="sliderIndex === 0"
+                  aria-label="Previous">
+                  <i class="fas fa-chevron-left"></i>
+                </button>
+
+                <!-- Track -->
+                <div class="bw-slider-viewport">
+                  <div class="bw-slider-track"
+                    [style.transform]="sliderTranslate"
+                    [style.transition]="'transform 0.4s ease'">
+                    <div class="bw-slider-item" *ngFor="let branch of allBranchList">
+                      <div class="city-card"
+                        [ngStyle]="{'background-image': 'url(' + getCardImageUrl(branch) + ')', 'background-size': 'cover', 'background-position': 'center'}">
+                        <div class="overlay">
+                          <h2 class="text-white text-uppercase city">{{ branch.name }}</h2>
+                          <h4 class="text-white office">OFFICE</h4>
+                          <p class="text-uppercase sub-line">{{ branch.description || 'Central administration and monitoring access.' }}</p>
+                          <button class="btn-dashboard" (click)="goToDashboard(branch)">Go To Dashboard</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Next button -->
+                <button class="bw-slider-btn bw-slider-btn--next"
+                  (click)="nextSlide()"
+                  [disabled]="sliderIndex >= maxSliderIndex"
+                  aria-label="Next">
+                  <i class="fas fa-chevron-right"></i>
+                </button>
+
+              </div>
+
+              <!-- Dots -->
+              <div class="bw-slider-dots">
+                <span
+                  *ngFor="let branch of allBranchList; let i = index"
+                  class="bw-slider-dot"
+                  [class.bw-slider-dot--active]="i === sliderIndex"
+                  (click)="sliderIndex = i <= maxSliderIndex ? i : maxSliderIndex">
+                </span>
+              </div>
             </div>
 
             <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
