@@ -410,10 +410,10 @@
 .ep-col-applicant { width: 17%; }
 .ep-col-branch    { width: 11%; }
 .ep-col-date      { width: 12%; }
-.ep-col-days      { width: 6%; }
+.ep-col-days      { width: 7%; }
 .ep-col-reason    { width: auto; }
 .ep-col-status    { width: 10%; }
-.ep-col-action    { width: 7%; }
+.ep-col-action    { width: 9%; }
 
 .ep-leave-branch-cell {
   font-size: 0.78rem;
